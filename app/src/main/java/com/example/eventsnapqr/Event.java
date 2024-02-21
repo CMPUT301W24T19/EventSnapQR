@@ -1,0 +1,2 @@
+package com.example.eventsnapqr;public class Event {
+}
