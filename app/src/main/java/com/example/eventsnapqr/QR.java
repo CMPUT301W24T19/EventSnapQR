@@ -1,2 +1,4 @@
-package com.example.eventsnapqr;public class QR {
+package com.example.eventsnapqr;
+
+public class QR {
 }
