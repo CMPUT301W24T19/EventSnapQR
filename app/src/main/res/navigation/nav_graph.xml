@@ -1,0 +1,29 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainPageFragment">
+
+    <fragment
+        android:id="@+id/mainPageFragment"
+        android:name="com.example.eventsnapqr.MainPageFragment"
+        android:label="Main Page"
+        app:layout="@layout/fragment_main_page">
+
+        <action
+            android:id="@+id/action_mainPageFragment_to_organizeEventFragment"
+            app:destination="@id/organizeEventFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/organizeEventFragment"
+        android:name="com.example.eventsnapqr.OrganizeEventFragment"
+        android:label="Organize Event"
+        tools:layout="@layout/fragment_organize_event">
+        <action
+            android:id="@+id/action_organizeEventFragment_to_mainPageFragment"
+            app:destination="@id/mainPageFragment" />
+    </fragment>
+
+
+</navigation>
