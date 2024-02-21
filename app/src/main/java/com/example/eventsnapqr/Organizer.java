@@ -8,7 +8,5 @@ public class Organizer {
     private void createEvent(QR qrCode){
         Event newEvent = new Event(this, qrCode);
         myEvents.add(newEvent);
-
-
     }
 }

@@ -1,15 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+    <layouts>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_blank.xml">
+        <config>
+          <theme>@style/Theme.EventSnapQR</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_main_page.xml">
+        <config>
+          <theme>@style/Theme.EventSnapQR</theme>
+        </config>
+      </layout>
+    </layouts>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="96c26326-0028-429a-8726-7bad8c8d6119" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/eventsnapqr/Event.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/eventsnapqr/Organizer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/eventsnapqr/QR.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="96c26326-0028-429a-8726-7bad8c8d6119" name="Changes" comment="adding createEvent">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/eventsnapqr/MainPageFragment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/button_shapes.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_main_page.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/eventsnapqr/Event.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/eventsnapqr/Event.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/eventsnapqr/Organizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/eventsnapqr/Organizer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,6 +87,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="resourceFile" />
       </list>
     </option>
   </component>
@@ -92,6 +113,11 @@
     "last_opened_file_path": "/Users/mauriuskritzinger/AndroidStudioProjects/EventSnap/EventSnapQR"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="android.template.1409464174">
+      <recent name="com.example.eventsnapqr" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App">
       <module name="EventSnapQR.app.main" />
@@ -170,6 +196,19 @@
       <option name="presentableId" value="Default" />
       <updated>1708474356452</updated>
     </task>
+    <task id="LOCAL-00001" summary="adding createEvent">
+      <option name="closed" value="true" />
+      <created>1708488313452</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1708488313452</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="adding createEvent" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding createEvent" />
   </component>
 </project>
