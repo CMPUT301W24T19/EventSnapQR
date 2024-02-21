@@ -5,12 +5,17 @@
       <config />
     </shared>
     <layouts>
-      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_blank.xml">
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
         <config>
           <theme>@style/Theme.EventSnapQR</theme>
         </config>
       </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_main_page.xml">
+        <config>
+          <theme>@style/Theme.EventSnapQR</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/navigation/nav_graph.xml">
         <config>
           <theme>@style/Theme.EventSnapQR</theme>
         </config>
@@ -21,15 +26,12 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="96c26326-0028-429a-8726-7bad8c8d6119" name="Changes" comment="adding createEvent">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/eventsnapqr/MainPageFragment.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/button_shapes.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_main_page.xml" afterDir="false" />
+    <list default="true" id="96c26326-0028-429a-8726-7bad8c8d6119" name="Changes" comment="added Homepage UI">
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/navigation/nav_graph.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/eventsnapqr/Event.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/eventsnapqr/Event.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/eventsnapqr/Organizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/eventsnapqr/Organizer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/eventsnapqr/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/eventsnapqr/MainActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,6 +90,7 @@
       <list>
         <option value="Class" />
         <option value="resourceFile" />
+        <option value="navigationResourceFile" />
       </list>
     </option>
   </component>
@@ -102,17 +105,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/mauriuskritzinger/AndroidStudioProjects/EventSnap/EventSnapQR"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/mauriuskritzinger/AndroidStudioProjects/EventSnap/EventSnapQR&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="android.template.1409464174">
       <recent name="com.example.eventsnapqr" />
@@ -204,11 +207,20 @@
       <option name="project" value="LOCAL" />
       <updated>1708488313452</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="added Homepage UI">
+      <option name="closed" value="true" />
+      <created>1708491842138</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1708491842138</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="adding createEvent" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding createEvent" />
+    <MESSAGE value="added Homepage UI" />
+    <option name="LAST_COMMIT_MESSAGE" value="added Homepage UI" />
   </component>
 </project>
