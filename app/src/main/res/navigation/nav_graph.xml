@@ -8,11 +8,14 @@
         android:id="@+id/mainPageFragment"
         android:name="com.example.eventsnapqr.MainPageFragment"
         android:label="Main Page"
-        app:layout="@layout/fragment_main_page">
+        tools:layout="@layout/fragment_main_page">
 
         <action
             android:id="@+id/action_mainPageFragment_to_organizeEventFragment"
             app:destination="@id/organizeEventFragment" />
+        <action
+            android:id="@+id/action_mainPageFragment_to_adminModeMainPageFragment"
+            app:destination="@id/adminModeMainPageFragment" />
     </fragment>
 
     <fragment
@@ -22,6 +25,15 @@
         tools:layout="@layout/fragment_organize_event">
         <action
             android:id="@+id/action_organizeEventFragment_to_mainPageFragment"
+            app:destination="@id/mainPageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/adminModeMainPageFragment"
+        android:name="com.example.eventsnapqr.AdminModeMainPageFragment"
+        android:label="Admin Mode"
+        tools:layout="@layout/fragment_admin_mode_main_page">
+        <action
+            android:id="@+id/action_adminModeMainPageFragment_to_mainPageFragment"
             app:destination="@id/mainPageFragment" />
     </fragment>
 
