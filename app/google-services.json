@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "78946846463",
+    "project_id": "eventsnapqr",
+    "storage_bucket": "eventsnapqr.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78946846463:android:a8085b09425c0480422eca",
+        "android_client_info": {
+          "package_name": "com.example.eventsnapqr"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnFSMQN5fhgnWuyOGVXDXD5gj8vEwVRSs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
