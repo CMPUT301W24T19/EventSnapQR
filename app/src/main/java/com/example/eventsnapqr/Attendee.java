@@ -23,7 +23,7 @@ public class Attendee implements Role {
     }
 
     /**
-     * constuctor that can also take in a users scheduled events
+     * constructor that can also take in a users scheduled events
      * @param user the user associated with this attendee
      * @param currentEvents the users events in progress
      * @param futureEvents the users upcoming events

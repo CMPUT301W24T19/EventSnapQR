@@ -3,8 +3,8 @@ package com.example.eventsnapqr;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+//import androidx.navigation.NavController;
+//import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,8 +79,8 @@ public class MainPageFragment extends Fragment {
         buttonOrganizeEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                navController.navigate(R.id.action_mainPageFragment_to_organizeEventFragment);
+                //NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                //navController.navigate(R.id.action_mainPageFragment_to_organizeEventFragment);
             }
         });
         return view;
