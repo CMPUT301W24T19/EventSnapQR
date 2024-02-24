@@ -89,7 +89,7 @@ public class OrganizeEventFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                NavController.navigate(R.id.action_organizeEventFragment_to_mainPageFragment);
+                navController.navigate(R.id.action_organizeEventFragment_to_mainPageFragment);
             }
         });
         buttonAddEvent = view.findViewById(R.id.button_add_event);
@@ -105,7 +105,7 @@ public class OrganizeEventFragment extends Fragment {
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("bitmap", bitmap);
                     NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                    navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                    navController.navigate(R.id.action_qRDialogFragment_to_mainPageFragment, bundle);
                 } catch (Exception e) {
                     Log.v("Could not save qr code", e.toString());
                 }

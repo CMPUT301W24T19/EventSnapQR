@@ -25,5 +25,13 @@
             app:destination="@id/mainPageFragment" />
     </fragment>
 
-
+    <fragment
+        android:id="@+id/qRDialogFragment"
+        android:name="com.example.eventsnapqr.QRDialogFragment"
+        android:label="Organize Event"
+        tools:layout="@layout/fragment_q_r_dialog">
+        <action
+            android:id="@+id/action_qRDialogFragment_to_mainPageFragment"
+            app:destination="@id/mainPageFragment" />
+    </fragment>
 </navigation>
