@@ -38,7 +38,7 @@ public class OrganizeEventFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private ImageButton buttonBackButton;
+    private ImageView buttonBackButton;
     private Button buttonAddEvent;
 
     private Bitmap bitmap;
@@ -92,7 +92,7 @@ public class OrganizeEventFragment extends Fragment {
                 navController.navigate(R.id.action_organizeEventFragment_to_mainPageFragment);
             }
         });
-        buttonAddEvent = view.findViewById(R.id.button_add_event);
+        buttonAddEvent = view.findViewById(R.id.button_create);
 
         buttonAddEvent.setOnClickListener(new View.OnClickListener() {
             @Override
