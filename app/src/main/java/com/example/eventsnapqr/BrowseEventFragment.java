@@ -1,36 +1,36 @@
 package com.example.eventsnapqr;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ImageButton;
+import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link MainPageFragment#newInstance} factory method to
+ * Use the {@link BrowseEventFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MainPageFragment extends Fragment {
+public class BrowseEventFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private Button buttonOrganizeEvent;
-    private Button buttonAdminMainPage;
-    private Button buttonBrowseEvent;
+    private ImageButton buttonBackButton;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    public MainPageFragment() {
+    public BrowseEventFragment() {
         // Required empty public constructor
     }
 
@@ -40,11 +40,11 @@ public class MainPageFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment MainPageFragment.
+     * @return A new instance of fragment OrganizeEventFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MainPageFragment newInstance(String param1, String param2) {
-        MainPageFragment fragment = new MainPageFragment();
+    public static BrowseEventFragment newInstance(String param1, String param2) {
+        BrowseEventFragment fragment = new BrowseEventFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -59,39 +59,36 @@ public class MainPageFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
 
+        View view = inflater.inflate(R.layout.fragment_browse_events, container, false);
+        buttonBackButton = view.findViewById(R.id.button_back_button);
+        buttonBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                navController.navigate(R.id.action_browseEventFragment_to_mainPageFragment);
+            }
+        });
+        view.findViewById(R.id.view_on_events_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(v.getContext(), MyEventActivity.class));
+            }
+        });
+        ListView listview = view.findViewById(R.id.events);
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                startActivity(new Intent(view.getContext(), EventDetailsActivity.class).putExtra("event_name","event1"));
+            }
+        });
 
-        View view = inflater.inflate(R.layout.fragment_main_page, container, false);
-        buttonAdminMainPage = view.findViewById(R.id.admin_button);
-        buttonOrganizeEvent = view.findViewById(R.id.organize_event_button);
-        buttonAdminMainPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                // navController.navigate(R.id.action_mainPageFragment_to_adminModeMainPageFragment);
-            }
-        });
-        buttonOrganizeEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                navController.navigate(R.id.action_mainPageFragment_to_organizeEventFragment);
-            }
-        });
-        buttonBrowseEvent = view.findViewById(R.id.browse_events_button);
-        buttonBrowseEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                navController.navigate(R.id.action_mainPageFragment_to_browseEventFragment);
-            }
-        });
         return view;
     }
 }
