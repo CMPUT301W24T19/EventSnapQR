@@ -19,40 +19,47 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Browse Events"
+        android:text="Event Details"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/search_bar"
+    <TextView
+        android:id="@+id/milestone_alert_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="text"
-        android:text="Search"
-        app:layout_constraintTop_toBottomOf="@+id/page_name"
-        tools:layout_editor_absoluteX="100dp" />
+        android:text="Events I am Attending"
+        app:layout_constraintBottom_toTopOf="@+id/attending_events_list"
+        app:layout_constraintStart_toStartOf="@+id/attending_events_list" />
 
     <ListView
-        android:id="@+id/events"
+        android:id="@+id/attending_events_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.8"
+        app:layout_constraintHeight_percent="0.4"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_bar"
+        app:layout_constraintTop_toBottomOf="@+id/page_name"
         app:layout_constraintWidth_percent="0.9" />
 
-    <Button
-        android:id="@+id/view_my_events_button"
+    <TextView
+        android:id="@+id/organized_events_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="View My Events"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Events I have Organized"
+        app:layout_constraintBottom_toTopOf="@+id/organized_events_list"
+        app:layout_constraintStart_toStartOf="@+id/organized_events_list" />
+
+    <ListView
+        android:id="@+id/organized_events_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.4"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/events" />
+        app:layout_constraintTop_toBottomOf="@+id/attending_events_list"
+        app:layout_constraintWidth_percent="0.9" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

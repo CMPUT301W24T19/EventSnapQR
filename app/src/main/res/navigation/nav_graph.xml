@@ -23,19 +23,7 @@
         <action
             android:id="@+id/action_organizeEventFragment_to_mainPageFragment"
             app:destination="@id/mainPageFragment" />
-        <action
-            android:id="@+id/action_organizeEventFragment_to_qRDialogFragment"
-            app:destination="@+id/qRDialogFragment"
-        />
     </fragment>
-    <fragment
-        android:id="@+id/qRDialogFragment"
-        android:name="com.example.eventsnapqr.QRDialogFragment"
-        android:label="Save QR Code"
-        tools:layout="@layout/fragment_q_r_dialog">
-        <action
-            android:id="@+id/action_qRDialogFragment_to_mainPageFragment"
-            app:destination="@id/mainPageFragment" />
-    </fragment>
+
 
 </navigation>

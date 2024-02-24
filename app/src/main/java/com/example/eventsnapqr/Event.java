@@ -6,7 +6,7 @@ public class Event {
     private Organizer organizer;
     private QR qrCode;
     // private EventPoster poster;
-    private List<?> attendees;
+    private List<Attendee> attendees;
     public Event(Organizer organizer,QR qrCode){
         this.qrCode = qrCode;
         this.organizer = organizer;
