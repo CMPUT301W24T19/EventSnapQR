@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_mainPageFragment_to_adminModeMainPageFragment"
             app:destination="@id/adminModeMainPageFragment" />
+        <action
+            android:id="@+id/action_mainPageFragment_to_browseEventFragment"
+            app:destination="@+id/browseEventFragment" />
     </fragment>
 
     <fragment
@@ -36,6 +39,16 @@
             android:id="@+id/action_adminModeMainPageFragment_to_mainPageFragment"
             app:destination="@id/mainPageFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/browseEventFragment"
+        android:name="com.example.eventsnapqr.BrowseEventFragment"
+        android:label="Browse Events"
+        tools:layout="@layout/fragment_browse_events">
+        <action
+            android:id="@+id/action_browseEventFragment_to_mainPageFragment"
+            app:destination="@id/mainPageFragment" />
+    </fragment>
+
 
 
 </navigation>
