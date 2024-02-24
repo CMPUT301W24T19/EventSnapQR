@@ -48,11 +48,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Events I have Organized"
-        app:layout_constraintBottom_toTopOf="@+id/listView"
-        app:layout_constraintStart_toStartOf="@+id/listView" />
+        app:layout_constraintBottom_toTopOf="@+id/organized_events_list"
+        app:layout_constraintStart_toStartOf="@+id/organized_events_list" />
 
     <ListView
-        android:id="@+id/listView"
+        android:id="@+id/organized_events_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="32dp"

@@ -50,11 +50,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Events I have Organized"
-        app:layout_constraintBottom_toTopOf="@+id/listView"
-        app:layout_constraintStart_toStartOf="@+id/listView" />
+        app:layout_constraintBottom_toTopOf="@+id/organized_events_list"
+        app:layout_constraintStart_toStartOf="@+id/organized_events_list" />
 
     <ListView
-        android:id="@+id/listView"
+        android:id="@+id/organized_events_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="32dp"
@@ -71,7 +71,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/listView"
+        app:layout_constraintTop_toBottomOf="@+id/organized_events_list"
         android:gravity="center">
 
         <LinearLayout
@@ -81,30 +81,30 @@
             android:gravity="center">
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/attendee_map_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:text="Attendee Map"
                 android:layout_weight="0.35"
-                app:layout_constraintEnd_toStartOf="@+id/button3"
+                app:layout_constraintEnd_toStartOf="@+id/real_time_attendance_button"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/listView" />
+                app:layout_constraintTop_toBottomOf="@+id/organized_events_list" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/notify_attendee_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:text="Notify Attendees"
                 android:layout_weight="0.35"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/button3"
-                app:layout_constraintTop_toBottomOf="@+id/listView" />
+                app:layout_constraintStart_toEndOf="@+id/real_time_attendance_button"
+                app:layout_constraintTop_toBottomOf="@+id/organized_events_list" />
         </LinearLayout>
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/real_time_attendance_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Real-Time Attendance"
@@ -112,7 +112,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/listView"
+            app:layout_constraintTop_toBottomOf="@+id/organized_events_list"
             app:layout_constraintVertical_bias="0.811" />
     </LinearLayout>
 
