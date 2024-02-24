@@ -47,7 +47,7 @@
         android:entries="@array/browse_event_example"/>
 
     <Button
-        android:id="@+id/view_my_events_button"
+        android:id="@+id/view_on_events_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="View My Events"

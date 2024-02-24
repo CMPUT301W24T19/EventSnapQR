@@ -5,8 +5,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
-import androidmads.library.qrgenearator.QRGContents;
-import androidmads.library.qrgenearator.QRGEncoder;
+// import androidmads.library.qrgenearator.QRGContents;
+// import androidmads.library.qrgenearator.QRGEncoder;
 
 public class QR {
 
