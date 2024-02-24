@@ -47,6 +47,15 @@
             android:id="@+id/action_browseEventFragment_to_mainPageFragment"
             app:destination="@id/mainPageFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/adminModeFragment"
+        android:name="com.example.eventsnapqr.BrowseEventFragment"
+        android:label="Admin Mode"
+        tools:layout="@layout/fragment_admin_mode">
+        <action
+            android:id="@+id/action_mainPageFragment_to_adminModeFragment"
+            app:destination="@id/mainPageFragment" />
+    </fragment>
 
 
 </navigation>
