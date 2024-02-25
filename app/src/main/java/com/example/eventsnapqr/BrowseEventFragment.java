@@ -82,12 +82,12 @@ public class BrowseEventFragment extends Fragment {
             }
         });
         ListView listview = view.findViewById(R.id.events);
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startActivity(new Intent(view.getContext(), EventDetailsActivity.class).putExtra("event_name","event1"));
-            }
-        });
+//        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                startActivity(new Intent(view.getContext(), EventDetailsActivity.class).putExtra("event_name","event1"));
+//            }
+//        });
 
         return view;
     }
