@@ -1,5 +1,6 @@
 package com.example.eventsnapqr;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
@@ -13,6 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,10 +32,12 @@ public class QRDialogFragment extends DialogFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private ImageView imageQR;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private Button buttonExit;
+    private Button buttonSaveQR;
     public QRDialogFragment() {
         // Required empty public constructor
     }
@@ -61,7 +68,7 @@ public class QRDialogFragment extends DialogFragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-
+    private Bitmap bitmap;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -69,7 +76,7 @@ public class QRDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_q_r_dialog, container, false);
         Bundle bundle = getArguments();
         if (bundle != null) {
-            Bitmap bitmap = bundle.getParcelable("bitmap");
+            bitmap = bundle.getParcelable("bitmap");
             if (bitmap != null) {
                 imageQR = view.findViewById(R.id.imageview_qr);
                 imageQR.setImageBitmap(bitmap);
@@ -81,6 +88,27 @@ public class QRDialogFragment extends DialogFragment {
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                 navController.navigate(R.id.action_qRDialogFragment_to_mainPageFragment);
+            }
+        });
+        buttonSaveQR = view.findViewById(R.id.button_save_qr);
+        buttonSaveQR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    String filename = "QRCode.png";
+                    FileOutputStream outputStream = null;
+                    try {
+                        outputStream = getContext().openFileOutput(filename, Context.MODE_PRIVATE);
+                    } catch (FileNotFoundException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                    outputStream.close();
+                    Toast.makeText(getContext(), "QR Code saved successfully", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Failed to save QR Code", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         return view;
