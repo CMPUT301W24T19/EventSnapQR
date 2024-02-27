@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UserInfoActivity"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp">
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/baseline_arrow_back_24"
+            android:padding="5dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="User Information"/>
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_weight="1">
+
+
+        <ImageView
+            android:id="@+id/iv_profile_pic"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/profile_pic" />
+
+        <LinearLayout
+            android:layout_width="29dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+            <ImageView
+                android:id="@+id/iv_edit_profile"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+
+                app:srcCompat="@drawable/pen_icon" />
+
+            <ImageView
+                android:id="@+id/iv_upload_profile_pic"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+
+                app:srcCompat="@android:drawable/ic_menu_upload" />
+
+            <ImageView
+                android:id="@+id/iv_del_profile_pic"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+
+                app:srcCompat="@android:drawable/presence_busy" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="1">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name:"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+            <TextView
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:background="@color/material_dynamic_neutral60"
+                android:backgroundTint="#4A4A4A"
+                android:backgroundTintMode="add"
+                android:contentDescription=""/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email:"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+            <TextView
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:background="@color/material_dynamic_neutral60"
+                android:backgroundTint="#4A4A4A"
+                android:backgroundTintMode="add"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone Number:"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+            <TextView
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:background="@color/material_dynamic_neutral60"
+                android:backgroundTint="#4A4A4A"
+                android:backgroundTintMode="add"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Homepage:"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+            <TextView
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:background="@color/material_dynamic_neutral60"
+                android:backgroundTint="#4A4A4A"
+                android:backgroundTintMode="add"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+
+            <Switch
+                android:id="@+id/switch_geolocation"
+                android:layout_width="80dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="Geolocation" />
+            <View
+                android:layout_width="50dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+            <Switch
+                android:id="@+id/switch_notification"
+                android:layout_width="80dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="Notification" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

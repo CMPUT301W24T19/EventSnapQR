@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.2"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:gravity="start"
         android:paddingStart="16dp"
         android:paddingTop="16dp">
@@ -21,7 +21,17 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:text="ADMIN"
-            android:textSize="12sp" />
+            android:textSize="12sp"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <ImageView
+            android:id="@+id/iv_profile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/profile_pic"
+            android:padding="5dp"/>
     </LinearLayout>
 
     <TextView
