@@ -23,8 +23,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidmads.library.qrgenearator.QRGContents;
-import androidmads.library.qrgenearator.QRGEncoder;
+// import androidmads.library.qrgenearator.QRGContents;
+// import androidmads.library.qrgenearator.QRGEncoder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,7 +38,7 @@ public class OrganizeEventFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private ImageButton buttonBackButton;
+    private ImageView buttonBackButton;
     private Button buttonAddEvent;
 
     private Bitmap bitmap;
@@ -92,23 +92,23 @@ public class OrganizeEventFragment extends Fragment {
                 navController.navigate(R.id.action_organizeEventFragment_to_mainPageFragment);
             }
         });
-        buttonAddEvent = view.findViewById(R.id.button_add_event);
+        buttonAddEvent = view.findViewById(R.id.button_create);
 
         buttonAddEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                QRGEncoder qrgEncoder = new QRGEncoder("Link goes here", null, QRGContents.Type.TEXT, 5);
-                qrgEncoder.setColorBlack(Color.RED);
-                qrgEncoder.setColorWhite(Color.BLUE);
-                try {
-                    bitmap = qrgEncoder.getBitmap();
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("bitmap", bitmap);
-                    NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                    navController.navigate(R.id.action_qRDialogFragment_to_mainPageFragment, bundle);
-                } catch (Exception e) {
-                    Log.v("Could not save qr code", e.toString());
-                }
+//                QRGEncoder qrgEncoder = new QRGEncoder("Link goes here", null, QRGContents.Type.TEXT, 5);
+//                qrgEncoder.setColorBlack(Color.RED);
+//                qrgEncoder.setColorWhite(Color.BLUE);
+//                try {
+//                    bitmap = qrgEncoder.getBitmap();
+//                    Bundle bundle = new Bundle();
+//                    bundle.putParcelable("bitmap", bitmap);
+//                    NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+//                    navController.navigate(R.id.action_qRDialogFragment_to_mainPageFragment, bundle);
+//                } catch (Exception e) {
+//                    Log.v("Could not save qr code", e.toString());
+//                }
 
 
         }
