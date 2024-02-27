@@ -23,8 +23,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-// import androidmads.library.qrgenearator.QRGContents;
-// import androidmads.library.qrgenearator.QRGEncoder;
+import androidmads.library.qrgenearator.QRGContents;
+import androidmads.library.qrgenearator.QRGEncoder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -97,18 +97,22 @@ public class OrganizeEventFragment extends Fragment {
         buttonAddEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                QRGEncoder qrgEncoder = new QRGEncoder("Link goes here", null, QRGContents.Type.TEXT, 5);
-//                qrgEncoder.setColorBlack(Color.RED);
-//                qrgEncoder.setColorWhite(Color.BLUE);
-//                try {
-//                    bitmap = qrgEncoder.getBitmap();
-//                    Bundle bundle = new Bundle();
-//                    bundle.putParcelable("bitmap", bitmap);
-//                    NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-//                    navController.navigate(R.id.action_qRDialogFragment_to_mainPageFragment, bundle);
-//                } catch (Exception e) {
-//                    Log.v("Could not save qr code", e.toString());
-//                }
+                QRGEncoder qrgEncoder = new QRGEncoder("Link goes here", null, QRGContents.Type.TEXT, 5);
+                qrgEncoder.setColorBlack(Color.RED);
+                qrgEncoder.setColorWhite(Color.BLUE);
+                try {
+                    bitmap = qrgEncoder.getBitmap();
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("bitmap", bitmap);
+                    NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                    navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                    QR qRCode = new QR(bitmap);
+                    Event newEvent = new Event(new Organizer(new User("username"), null),qRCode);
+                    // getUser().addEvent(newEvent);
+                    Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Log.v("ORGANIZE EVENT ERROR", e.toString());
+                }
 
 
         }

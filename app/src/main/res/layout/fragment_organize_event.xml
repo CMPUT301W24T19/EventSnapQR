@@ -37,9 +37,9 @@
         <EditText
             android:layout_width="300dp"
             android:layout_height="40dp"
-            android:background="@color/material_dynamic_neutral60"
+
             android:backgroundTint="#4A4A4A"
-            android:backgroundTintMode="add"/>
+           />
 
     </LinearLayout>
 
@@ -79,7 +79,7 @@
             style="@android:style/Widget.EditText"
             android:layout_width="300dp"
             android:layout_height="120dp"
-            android:background="@color/material_dynamic_neutral60"
+
             android:backgroundTint="#4A4A4A"
             android:backgroundTintMode="add" />
 
@@ -109,7 +109,6 @@
         <EditText
             android:layout_width="300dp"
             android:layout_height="40dp"
-            android:background="@color/material_dynamic_neutral60"
             android:backgroundTint="#4A4A4A"
             android:backgroundTintMode="add"/>
     </LinearLayout>

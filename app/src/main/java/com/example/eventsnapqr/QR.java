@@ -1,5 +1,6 @@
 package com.example.eventsnapqr;
 
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.util.Log;
 import android.view.Display;
@@ -9,9 +10,10 @@ import android.view.WindowManager;
 // import androidmads.library.qrgenearator.QRGEncoder;
 
 public class QR {
-
-    public QR(){
-
+    private Bitmap bitmap;
+    private String link;
+    public QR(Bitmap bitmap){
+        this.bitmap = bitmap;
     }
     /**
     public makeQR(){

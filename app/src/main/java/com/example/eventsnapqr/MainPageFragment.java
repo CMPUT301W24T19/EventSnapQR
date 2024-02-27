@@ -25,7 +25,6 @@ public class MainPageFragment extends Fragment {
 
     private Button buttonOrganizeEvent;
     private Button buttonAdminMainPage;
-    private Button buttonBrowseEvent;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -74,7 +73,7 @@ public class MainPageFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                // navController.navigate(R.id.action_mainPageFragment_to_adminModeMainPageFragment);
+                //navController.navigate(R.id.action_mainPageFragment_to_adminModeMainPageFragment);
             }
         });
         buttonOrganizeEvent.setOnClickListener(new View.OnClickListener() {
@@ -82,22 +81,6 @@ public class MainPageFragment extends Fragment {
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                 navController.navigate(R.id.action_mainPageFragment_to_organizeEventFragment);
-            }
-        });
-        buttonBrowseEvent = view.findViewById(R.id.browse_events_button);
-        buttonBrowseEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                navController.navigate(R.id.action_mainPageFragment_to_browseEventFragment);
-            }
-        });
-
-        buttonBrowseEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                navController.navigate(R.id.action_mainPageFragment_to_adminModeFragment);
             }
         });
         return view;
