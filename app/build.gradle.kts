@@ -37,9 +37,6 @@ android {
 
 dependencies {
     implementation("com.journeyapps:zxing-android-embedded:4.1.0")
-    implementation(platform("com.google.firebase:firebase- bom:32.7.1"))
-    implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.firebase:firebase-database:20.0.3")
     implementation("com.google.zxing:core:3.4.0")
     implementation("androidmads.library.qrgenearator:QRGenearator:1.0.4")
     implementation("androidx.appcompat:appcompat:1.6.1")
