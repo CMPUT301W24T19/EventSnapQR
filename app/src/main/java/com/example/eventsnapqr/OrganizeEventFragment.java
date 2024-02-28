@@ -1,16 +1,30 @@
 package com.example.eventsnapqr;
 
+import static android.content.Context.WINDOW_SERVICE;
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import androidmads.library.qrgenearator.QRGContents;
+import androidmads.library.qrgenearator.QRGEncoder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +39,9 @@ public class OrganizeEventFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     private ImageButton buttonBackButton;
+    private Button buttonAddEvent;
+
+    private Bitmap bitmap;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -67,12 +84,34 @@ public class OrganizeEventFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_organize_event, container, false);
         buttonBackButton = view.findViewById(R.id.button_back_button);
+
         buttonBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                 navController.navigate(R.id.action_organizeEventFragment_to_mainPageFragment);
             }
+        });
+        buttonAddEvent = view.findViewById(R.id.button_add_event);
+
+        buttonAddEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                QRGEncoder qrgEncoder = new QRGEncoder("Link goes here", null, QRGContents.Type.TEXT, 5);
+                qrgEncoder.setColorBlack(Color.RED);
+                qrgEncoder.setColorWhite(Color.BLUE);
+                try {
+                    bitmap = qrgEncoder.getBitmap();
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("bitmap", bitmap);
+                    NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                    navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                } catch (Exception e) {
+                    Log.v("Could not save qr code", e.toString());
+                }
+
+
+        }
         });
         return view;
     }

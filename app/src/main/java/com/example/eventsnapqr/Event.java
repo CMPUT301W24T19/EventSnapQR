@@ -11,6 +11,8 @@ public class Event {
         this.qrCode = qrCode;
         this.organizer = organizer;
     }
+
+
     /**
     private void setPoster(EventPoster poster){
         this.poster = poster;
