@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@+id/notification_text"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.65" />
+        app:layout_constraintWidth_percent="0.65"/>
 
     <TextView
         android:id="@+id/notification_text"
