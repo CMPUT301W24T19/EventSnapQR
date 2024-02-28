@@ -77,16 +77,5 @@
             android:id="@+id/action_adminBrowseEventsFragment_to_AdminModeMainPageFragment"
             app:destination="@id/adminModeMainPageFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/browseEventFragment"
-        android:name="com.example.eventsnapqr.BrowseEventFragment"
-        android:label="Browse Events"
-        tools:layout="@layout/fragment_browse_events">
-        <action
-            android:id="@+id/action_browseEventFragment_to_mainPageFragment"
-            app:destination="@id/mainPageFragment" />
-    </fragment>
-
-
 
 </navigation>
