@@ -3,17 +3,21 @@ package com.example.eventsnapqr;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link AdminModeFragment#newInstance} factory method to
+ * Use the {@link AdminBrowseEventsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AdminModeFragment extends Fragment {
+public class AdminBrowseEventsFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -23,8 +27,9 @@ public class AdminModeFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private FloatingActionButton buttonBackToAdminMain;
 
-    public AdminModeFragment() {
+    public AdminBrowseEventsFragment() {
         // Required empty public constructor
     }
 
@@ -34,11 +39,11 @@ public class AdminModeFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment AdminModeFragment.
+     * @return A new instance of fragment AdminBrowseEvents.
      */
     // TODO: Rename and change types and number of parameters
-    public static AdminModeFragment newInstance(String param1, String param2) {
-        AdminModeFragment fragment = new AdminModeFragment();
+    public static AdminBrowseEventsFragment newInstance(String param1, String param2) {
+        AdminBrowseEventsFragment fragment = new AdminBrowseEventsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -55,10 +60,20 @@ public class AdminModeFragment extends Fragment {
         }
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_admin_browse_events, container, false);
+        buttonBackToAdminMain = view.findViewById(R.id.button_back_button);
+        buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                navController.navigate(R.id.action_adminBrowseEventsFragment_to_AdminModeMainPageFragment);
+            }
+        });
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_admin_mode, container, false);
+        return view;
     }
 }
