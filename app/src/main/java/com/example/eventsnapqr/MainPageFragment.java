@@ -25,7 +25,6 @@ public class MainPageFragment extends Fragment {
 
     private Button buttonOrganizeEvent;
     private Button buttonAdminMainPage;
-    private Button buttonBrowseEvent;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -70,12 +69,11 @@ public class MainPageFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main_page, container, false);
         buttonAdminMainPage = view.findViewById(R.id.admin_button);
         buttonOrganizeEvent = view.findViewById(R.id.organize_event_button);
-        buttonBrowseEvent = view.findViewById(R.id.browse_events_button);
         buttonAdminMainPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                navController.navigate(R.id.action_mainPageFragment_to_adminModeMainPageFragment);
+                //navController.navigate(R.id.action_mainPageFragment_to_adminModeMainPageFragment);
             }
         });
         buttonOrganizeEvent.setOnClickListener(new View.OnClickListener() {
@@ -85,13 +83,6 @@ public class MainPageFragment extends Fragment {
                 navController.navigate(R.id.action_mainPageFragment_to_organizeEventFragment);
             }
         });
-        buttonBrowseEvent.setOnClickListener((new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                navController.navigate(R.id.action_mainPageFragment_to_browseEventFragment);
-            }
-        }));
         return view;
     }
 }

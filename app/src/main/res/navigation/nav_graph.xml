@@ -8,18 +8,16 @@
         android:id="@+id/mainPageFragment"
         android:name="com.example.eventsnapqr.MainPageFragment"
         android:label="Main Page"
-        tools:layout="@layout/fragment_main_page">
+        app:layout="@layout/fragment_main_page">
 
         <action
             android:id="@+id/action_mainPageFragment_to_organizeEventFragment"
             app:destination="@id/organizeEventFragment" />
         <action
-            android:id="@+id/action_mainPageFragment_to_adminModeMainPageFragment"
-            app:destination="@id/adminModeMainPageFragment" />
-        <action
             android:id="@+id/action_mainPageFragment_to_browseEventFragment"
-            app:destination="@+id/browseEventFragment" />
+            app:destination="@id/browseEventFragment" />
     </fragment>
+
 
     <fragment
         android:id="@+id/organizeEventFragment"
@@ -29,37 +27,8 @@
         <action
             android:id="@+id/action_organizeEventFragment_to_mainPageFragment"
             app:destination="@id/mainPageFragment" />
-        <action
-            android:id="@+id/action_organizeEventFragment_to_qRDialogFragment"
-            app:destination="@+id/qRDialogFragment"
-        />
-    </fragment>
-    <fragment
-        android:id="@+id/qRDialogFragment"
-        android:name="com.example.eventsnapqr.QRDialogFragment"
-        android:label="Save QR Code"
-        tools:layout="@layout/fragment_q_r_dialog">
-        <action
-            android:id="@+id/action_qRDialogFragment_to_mainPageFragment"
-            app:destination="@id/mainPageFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/adminModeMainPageFragment"
-        android:name="com.example.eventsnapqr.AdminModeMainPageFragment"
-        android:label="Admin Mode"
-        tools:layout="@layout/fragment_admin_mode_main_page">
-        <action
-            android:id="@+id/action_adminModeMainPageFragment_to_mainPageFragment"
-            app:destination="@id/mainPageFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/browseEventFragment"
-        android:name="com.example.eventsnapqr.BrowseEventFragment"
-        android:label="Browse Events"
-        tools:layout="@layout/fragment_browse_events">
-        <action
-            android:id="@+id/action_browseEventFragment_to_mainPageFragment"
-            app:destination="@id/mainPageFragment" />
+        <action android:id="@+id/action_organizeEventFragment_to_qRDialogFragment"
+            app:destination="@+id/qRDialogFragment"/>
     </fragment>
 
     <fragment
@@ -71,4 +40,24 @@
             android:id="@+id/action_qRDialogFragment_to_mainPageFragment"
             app:destination="@id/mainPageFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/browseEventFragment"
+        android:name="com.example.eventsnapqr.BrowseEventFragment"
+        android:label="Browse Event"
+        tools:layout="@layout/fragment_browse_events">
+        <action
+            android:id="@+id/action_browseEventFragment_to_mainPageFragment"
+            app:destination="@id/mainPageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/adminModeFragment"
+        android:name="com.example.eventsnapqr.BrowseEventFragment"
+        android:label="Admin Mode"
+        tools:layout="@layout/fragment_admin_mode">
+        <action
+            android:id="@+id/action_mainPageFragment_to_adminModeFragment"
+            app:destination="@id/mainPageFragment" />
+    </fragment>
+
+
 </navigation>
