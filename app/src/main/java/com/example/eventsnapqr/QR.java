@@ -52,8 +52,7 @@ public class QR {
         }
     }
      **/
-
-
-
-
+    public String getLink() {
+        return link;
+    }
 }

@@ -1,5 +1,7 @@
 package com.example.eventsnapqr;
 
+import android.util.Log;
+
 import java.util.List;
 
 /**
@@ -18,17 +20,16 @@ public class Organizer implements Role {
      * @param user associated user
      * @param organizedEvents list of organized events
      */
-    public Organizer(User user, Event organizedEvents) {
+    public Organizer(User user) {
         this.user = user;
-        this.organizedEvents.add(organizedEvents);
     }
 
     /**
      * creates a new event
      * @param qrCode
      */
-    private void createEvent(QR qrCode){
-        Event newEvent = new Event(this, qrCode);
+    private void createEvent(QR qrCode, String eventName){
+        Event newEvent = new Event(this, qrCode, eventName);
         organizedEvents.add(newEvent);
     }
 
