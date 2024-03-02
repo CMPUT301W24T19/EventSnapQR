@@ -32,8 +32,9 @@
         <action
             android:id="@+id/action_organizeEventFragment_to_mainPageFragment"
             app:destination="@id/mainPageFragment" />
-        <action android:id="@+id/action_organizeEventFragment_to_qRDialogFragment"
-            app:destination="@+id/qRDialogFragment"/>
+        <action
+            android:id="@+id/action_organizeEventFragment_to_qRDialogFragment"
+            app:destination="@+id/qRDialogFragment" />
     </fragment>
 
     <fragment
@@ -65,6 +66,9 @@
         <action
             android:id="@+id/action_adminModeMainPageFragment_to_adminBrowseEventsFragment"
             app:destination="@id/adminModeBrowseEventsFragment" />
+        <action
+            android:id="@+id/action_adminModeMainPageFragment_to_adminBrowseProfilesFragment"
+            app:destination="@id/adminModeBrowseProfilesFragment" />
     </fragment>
     <fragment
         android:id="@+id/adminModeBrowseEventsFragment"
@@ -73,6 +77,15 @@
         tools:layout="@layout/fragment_admin_browse_events">
         <action
             android:id="@+id/action_adminBrowseEventsFragment_to_AdminModeMainPageFragment"
+            app:destination="@id/adminModeMainPageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/adminModeBrowseProfilesFragment"
+        android:name="com.example.eventsnapqr.AdminBrowseProfilesFragment"
+        android:label="Admin Browse Events"
+        tools:layout="@layout/fragment_admin_browse_profiles">
+        <action
+            android:id="@+id/action_adminBrowseProfilesFragment_to_AdminModeMainPageFragment"
             app:destination="@id/adminModeMainPageFragment" />
     </fragment>
     <fragment

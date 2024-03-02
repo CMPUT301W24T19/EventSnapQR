@@ -25,8 +25,7 @@ public class MainActivity extends AppCompatActivity {
         // Add the user to Firebase
         firebaseController.addUser(newUser);
         // Navigate to MainPageFragment
-
-
+        
     }
 
 }
