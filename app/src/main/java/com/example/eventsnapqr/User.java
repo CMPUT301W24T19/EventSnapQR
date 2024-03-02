@@ -13,17 +13,15 @@ public class User {
     private String homepage; // user website
     private String contactInfo; // further contact information
     private List<Role> userRoles; // list of roles this user currently has
-    private FirebaseController firebaseController;
+    private String deviceID; // the device id associated with the user
 
     public User() {}
     /**
      * constructor for a user using only their name
      * @param name name of the user
      */
-    public User(String name) {
+    public User(String name, String deviceID) {
         this.name = name;
-        firebaseController = FirebaseController.getInstance();
-        firebaseController.addUser(this);
     }
 
     /**
@@ -80,5 +78,13 @@ public class User {
      */
     public List<Role> getRoles() {
         return userRoles;
+    }
+
+    /**
+     * getter method for associated deviceID of the user
+     * @return deviceID
+     */
+    public String getDeviceID() {
+        return deviceID;
     }
 }

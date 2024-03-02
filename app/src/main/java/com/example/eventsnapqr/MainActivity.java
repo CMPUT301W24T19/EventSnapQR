@@ -19,13 +19,6 @@ public class MainActivity extends AppCompatActivity {
         // Set up NavController
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         navController.navigate(R.id.mainPageFragment);
-        User newUser = new User("John Doe");
-        newUser.setHomepage("https://johndoe.com");
-        newUser.setContactInfo("john@example.com");
-        // Add the user to Firebase
-        firebaseController.addUser(newUser);
-        // Navigate to MainPageFragment
-        
     }
 
 }

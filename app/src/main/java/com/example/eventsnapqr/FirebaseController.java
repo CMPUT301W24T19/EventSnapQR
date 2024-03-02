@@ -13,11 +13,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class FirebaseController {
     private static FirebaseController instance;
-    //private final DatabaseReference databaseReference;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-
+    private CollectionReference eventReference = db.collection("events");
+    private CollectionReference userReference = db.collection("users");
     private FirebaseController() {
-        //databaseReference = FirebaseDatabase.getInstance().getReference();
+
     }
 
     public static synchronized FirebaseController getInstance() {
@@ -26,10 +26,7 @@ public class FirebaseController {
         }
         return instance;
     }
-/*
-    public DatabaseReference getDatabaseReference() {
-        return databaseReference;
-    }*/
+
     public void addUser(User user) {
         /*
         String userId = databaseReference.child("users").push().getKey();
@@ -53,7 +50,6 @@ public class FirebaseController {
     }
 
     public void addEvent(Event event) {
-        CollectionReference eventReference = db.collection("events");
         eventReference
                 .document("event name")
                 .set(event)
