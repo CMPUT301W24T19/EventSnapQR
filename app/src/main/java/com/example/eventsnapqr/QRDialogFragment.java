@@ -16,6 +16,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
@@ -74,14 +78,31 @@ public class QRDialogFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_q_r_dialog, container, false);
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            bitmap = bundle.getParcelable("bitmap");
-            if (bitmap != null) {
-                imageQR = view.findViewById(R.id.imageview_qr);
-                imageQR.setImageBitmap(bitmap);
-            }
+//        Bundle bundle = getArguments();
+//        if (bundle != null) {
+//            bitmap = bundle.getParcelable("bitmap");
+//            if (bitmap != null) {
+//                imageQR = view.findViewById(R.id.imageview_qr);
+//                imageQR.setImageBitmap(bitmap);
+//            }
+//        }
+        String textToEncode = "Event Barcode";
+
+        BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+        try{
+            bitmap = barcodeEncoder.encodeBitmap(textToEncode, BarcodeFormat.QR_CODE, 400, 400);
+        } catch (WriterException e) {
+            e.printStackTrace();
         }
+
+        if (bitmap != null) {
+            // Setting the QR code bitmap to ImageView
+
+            imageQR = view.findViewById(R.id.imageview_qr);
+            imageQR.setImageBitmap(bitmap);
+        }
+
+
         buttonExit = view.findViewById(R.id.button_exit);
         buttonExit.setOnClickListener(new View.OnClickListener() {
             @Override
