@@ -19,6 +19,7 @@ import java.util.Map;
 public class Event {
     private Organizer organizer;
     private QR qrCode;
+    private FirebaseController firebaseController;
 
 
     private String eventName;
@@ -30,30 +31,12 @@ public class Event {
     }
 
     public Event(Organizer organizer, QR qrCode, String eventName) {
-        Log.d("TAG", "debug");
+        //Log.d("TAG", "debug");
         this.qrCode = qrCode;
         this.organizer = organizer;
         this.eventName = eventName;
-        FirebaseFirestore db;
-        db = FirebaseFirestore.getInstance();
-        final CollectionReference eventReference = db.collection("events");
-
-        eventReference
-                .document("event name")
-                .set(this)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.d("TAG", "Data has been added successfully!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("TAG", "Data could not be added!" + e.toString());
-                    }
-                });
-
+        firebaseController = FirebaseController.getInstance();
+        firebaseController.addEvent(this);
     }
 
     public String getOrganizer() {
