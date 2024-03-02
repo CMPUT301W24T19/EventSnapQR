@@ -1,5 +1,6 @@
 package com.example.eventsnapqr;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -81,8 +82,10 @@ public class MainPageFragment extends Fragment {
         buttonOrganizeEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                navController.navigate(R.id.action_mainPageFragment_to_organizeEventFragment);
+                Intent intent = new Intent(getContext(), OrganizeAnEventActivity.class);
+                startActivity(intent);
+                //NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                //navController.navigate(R.id.action_mainPageFragment_to_organizeEventFragment);
             }
         });
         buttonBrowseEvent.setOnClickListener((new View.OnClickListener() {
