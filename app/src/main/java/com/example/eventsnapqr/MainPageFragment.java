@@ -27,6 +27,7 @@ public class MainPageFragment extends Fragment {
     private Button buttonOrganizeEvent;
     private Button buttonAdminMainPage;
     private Button buttonBrowseEvent;
+    private Button buttonScanQR;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -72,6 +73,7 @@ public class MainPageFragment extends Fragment {
         buttonAdminMainPage = view.findViewById(R.id.admin_button);
         buttonOrganizeEvent = view.findViewById(R.id.organize_event_button);
         buttonBrowseEvent = view.findViewById(R.id.browse_events_button);
+        buttonScanQR = view.findViewById(R.id.scan_qr_button);
         buttonAdminMainPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,6 +97,13 @@ public class MainPageFragment extends Fragment {
                 navController.navigate(R.id.action_mainPageFragment_to_browseEventFragment);
             }
         }));
+        buttonScanQR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ScanQRActivity.class);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 }

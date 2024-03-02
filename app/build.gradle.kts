@@ -36,11 +36,16 @@ android {
 }
 
 dependencies {
-    implementation("com.journeyapps:zxing-android-embedded:4.1.0")
-    implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
+    val camerax_version = "1.3.1"
+
+    implementation("androidx.camera:camera-camera2:$camerax_version")
+    implementation("androidx.camera:camera-lifecycle:$camerax_version")
+    implementation("androidx.camera:camera-view:1.3.1")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-database:20.3.1")
-    implementation("com.google.zxing:core:3.4.0")
+    implementation("com.google.zxing:core:3.5.3")
     implementation("androidmads.library.qrgenearator:QRGenearator:1.0.4")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")

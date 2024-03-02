@@ -75,5 +75,18 @@
             android:id="@+id/action_adminBrowseEventsFragment_to_AdminModeMainPageFragment"
             app:destination="@id/adminModeMainPageFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/scanCameraFragment"
+        android:name="com.example.eventsnapqr.ScanCameraFragment"
+        android:label="Scan QR Activity"
+        tools:layout="@layout/fragment_scan_camera">
 
+    </fragment>
+    <fragment
+        android:id="@+id/scanQROptionsFragment"
+        android:name="com.example.eventsnapqr.ScanQROptionsFragment"
+        android:label="Scan QR Activity"
+        tools:layout="@layout/fragment_scan_q_r_options">
+
+    </fragment>
 </navigation>
