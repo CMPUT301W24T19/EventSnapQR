@@ -94,7 +94,9 @@ public class OrganizeEventFragment extends Fragment {
     }
 
     private void createEvent() {
-        QRGEncoder qrgEncoder = new QRGEncoder("Link goes here", null, QRGContents.Type.TEXT, 5);
+        String eventName = editTextEventName.getText().toString();
+
+        QRGEncoder qrgEncoder = new QRGEncoder(generateLink(eventName,"userId"), null, QRGContents.Type.TEXT, 5);
         qrgEncoder.setColorBlack(Color.RED);
         qrgEncoder.setColorWhite(Color.BLUE);
         try {
@@ -113,8 +115,8 @@ public class OrganizeEventFragment extends Fragment {
         }
     }
     public String generateLink(String eventName, String eventId){
-        String h = "h";
-        return h;
+        String h = "com.example.eventsnapqr://com.example.eventsnapqr/join/event";
+        return h+"/"+eventName+"/"+eventId;
     }
 
 }
