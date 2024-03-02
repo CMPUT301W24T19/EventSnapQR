@@ -13,13 +13,17 @@ public class User {
     private String homepage; // user website
     private String contactInfo; // further contact information
     private List<Role> userRoles; // list of roles this user currently has
+    private FirebaseController firebaseController;
 
+    public User() {}
     /**
      * constructor for a user using only their name
      * @param name name of the user
      */
     public User(String name) {
         this.name = name;
+        firebaseController = FirebaseController.getInstance();
+        firebaseController.addUser(this);
     }
 
     /**

@@ -13,11 +13,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class FirebaseController {
     private static FirebaseController instance;
-    private final DatabaseReference databaseReference;
+    //private final DatabaseReference databaseReference;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private FirebaseController() {
-        databaseReference = FirebaseDatabase.getInstance().getReference();
+        //databaseReference = FirebaseDatabase.getInstance().getReference();
     }
 
     public static synchronized FirebaseController getInstance() {
@@ -26,13 +26,30 @@ public class FirebaseController {
         }
         return instance;
     }
-
+/*
     public DatabaseReference getDatabaseReference() {
         return databaseReference;
-    }
+    }*/
     public void addUser(User user) {
+        /*
         String userId = databaseReference.child("users").push().getKey();
-        databaseReference.child("users").child(userId).setValue(user);
+        databaseReference.child("users").child(userId).setValue(user);*/
+        CollectionReference userReference = db.collection("users");
+        userReference
+                .document("user name")
+                .set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d("TAG", "Data has been added successfully!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("TAG", "Data could not be added!" + e.toString());
+                    }
+                });
     }
 
     public void addEvent(Event event) {
