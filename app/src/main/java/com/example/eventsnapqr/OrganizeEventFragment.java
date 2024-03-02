@@ -38,6 +38,7 @@ public class OrganizeEventFragment extends Fragment {
         // Required empty public constructor
     }
 
+
     public static OrganizeEventFragment newInstance(String param1, String param2) {
         OrganizeEventFragment fragment = new OrganizeEventFragment();
         Bundle args = new Bundle();
@@ -63,7 +64,6 @@ public class OrganizeEventFragment extends Fragment {
                 createEvent();
             }
         });
-
         return view;
     }
 
@@ -85,7 +85,6 @@ public class OrganizeEventFragment extends Fragment {
             editTextEventDesc.setError("Event description cannot be empty");
             return false;
         }
-
         return true;
     }
 
@@ -113,4 +112,9 @@ public class OrganizeEventFragment extends Fragment {
             Log.v("ORGANIZE EVENT ERROR", e.toString());
         }
     }
+    public String generateLink(String eventName, String eventId){
+        String h = "h";
+        return h;
+    }
+
 }
