@@ -8,7 +8,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
 
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -21,16 +23,21 @@
         android:theme="@style/Theme.EventSnapQR"
         tools:targetApi="31">
         <activity
+            android:name=".BrowseEventActivity"
+            android:exported="false" />
+        <activity
             android:name=".ScanQRActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
-                    android:scheme="com.example.eventsnapqr"
                     android:host="com.example.eventsnapqr"
-                    android:pathPrefix="/join/event" />
+                    android:pathPrefix="/join/event"
+                    android:scheme="com.example.eventsnapqr" />
             </intent-filter>
         </activity>
         <activity

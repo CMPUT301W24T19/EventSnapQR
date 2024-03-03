@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder> {
@@ -46,7 +45,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
         ImageView ivProfile;
         public ProfileViewHolder(View itemView) {
             super(itemView);
-            ivProfile = itemView.findViewById(R.id.iv_profile); // Initialize the ImageView
+            ivProfile = itemView.findViewById(R.id.view_user_button); // Initialize the ImageView
         }
     }
 

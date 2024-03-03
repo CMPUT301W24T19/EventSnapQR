@@ -4,21 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a user object that can take the roles of an
- * attendee, organizer and/or an admin. The user has a name,
- * homepage, contact info, and a set of roles.
+ * Represents a user object that has the ability of an
+ * organizer and attendee
  */
-public class User {
+public class User implements Attendee, Organizer {
     private String name; // name of the user
     private String homepage; // user website
     private String contactInfo; // further contact information
-    private List<Role> userRoles; // list of roles this user currently has
     private String deviceID; // the device id associated with the user
 
-    public User() {}
     /**
-     * constructor for a user using only their name
-     * @param name name of the user
+     * Constructor for user using their name and a unique device id
+     * @param name
+     * @param deviceID
      */
     public User(String name, String deviceID) {
         this.name = name;
@@ -73,18 +71,15 @@ public class User {
     }
 
     /**
-     * getter method for roles of the user
-     * @return list of roles
-     */
-    public List<Role> getRoles() {
-        return userRoles;
-    }
-
-    /**
      * getter method for associated deviceID of the user
      * @return deviceID
      */
     public String getDeviceID() {
         return deviceID;
+    }
+
+    public User getUser() {
+
+        return null;
     }
 }
