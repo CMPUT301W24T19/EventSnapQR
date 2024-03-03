@@ -33,6 +33,7 @@ public class OrganizeEventFragment extends Fragment {
 
     private String param1;
     private String param2;
+    private String deviceID;
 
     public OrganizeEventFragment() {
         // Required empty public constructor
@@ -106,9 +107,8 @@ public class OrganizeEventFragment extends Fragment {
             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
             navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
             QR qrCode = new QR(qrBitmap);
-            Organizer organizer = new Organizer(new User("username", "u"));
-            Event newEvent = new Event(organizer, qrCode, "EventName");
-            // getUser().addEvent(newEvent);
+            User organizer = new User("John doe", deviceID);
+            Event newEvent = new Event("EventName", organizer, qrCode);
             Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Log.v("ORGANIZE EVENT ERROR", e.toString());
