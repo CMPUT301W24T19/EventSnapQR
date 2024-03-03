@@ -9,6 +9,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class FirebaseController {
@@ -26,7 +27,15 @@ public class FirebaseController {
         }
         return instance;
     }
-
+    public Boolean checkUserExists(String androidId){
+        CollectionReference users = db.collection("users");
+        DocumentReference user = users.document(androidId);
+        if(user != null){
+            Log.d("User found", "user found:"+androidId);
+            return true;
+        }
+        return false;
+    }
     public void addUser(User user) {
         /*
         String userId = databaseReference.child("users").push().getKey();
