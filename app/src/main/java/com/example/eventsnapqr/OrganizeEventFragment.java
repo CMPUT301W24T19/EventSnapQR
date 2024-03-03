@@ -107,8 +107,10 @@ public class OrganizeEventFragment extends Fragment {
             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
             navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
             QR qrCode = new QR(qrBitmap);
+
             User organizer = new User("John doe", deviceID);
-            Event newEvent = new Event("EventName", organizer, qrCode);
+            Event newEvent = new Event( organizer, qrCode, "event_name", "TESTURL.com");
+
             Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Log.v("ORGANIZE EVENT ERROR", e.toString());

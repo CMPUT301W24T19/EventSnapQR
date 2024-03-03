@@ -77,4 +77,9 @@ public class User implements Attendee, Organizer {
     public String getDeviceID() {
         return deviceID;
     }
+
+    public User getUser() {
+
+        return null;
+    }
 }

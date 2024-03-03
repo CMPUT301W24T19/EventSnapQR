@@ -6,13 +6,11 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -21,19 +19,18 @@ import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link AdminBrowseProfilesFragment#newInstance} factory method to
+ * Use the {@link AdminBrowseImagesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AdminBrowseProfilesFragment extends Fragment {
+public class AdminBrowseImagesFragment extends Fragment {
 
-    // Assuming you have a RecyclerView in your fragment_admin_browse_profiles.xml
     private RecyclerView recyclerView;
-    private ProfileAdapter adapter;
-    private List<User> profileList;
-    private List<User> dummyUsers;
+    private String mParam1;
+    private String mParam2;
     FloatingActionButton buttonBackToAdminMain;
+    private List<Event> dummyPosters;
 
-    public AdminBrowseProfilesFragment() {
+    public AdminBrowseImagesFragment() {
         // Required empty public constructor
     }
 
@@ -43,11 +40,11 @@ public class AdminBrowseProfilesFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment AdminBrowseProfilesFragment.
+     * @return A new instance of fragment AdminBrowseImagesFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AdminBrowseProfilesFragment newInstance(String param1, String param2) {
-        AdminBrowseProfilesFragment fragment = new AdminBrowseProfilesFragment();
+    public static AdminBrowseImagesFragment newInstance(String param1, String param2) {
+        AdminBrowseImagesFragment fragment = new AdminBrowseImagesFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -56,44 +53,34 @@ public class AdminBrowseProfilesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        profileList = new ArrayList<>();
-        adapter = new ProfileAdapter(profileList);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_admin_browse_profiles, container, false);
-
-        dummyUsers = new ArrayList<>();
-        for (int i = 1; i <= 30; i++) {
-            User user = new User("User " + i, "u");
-            user.setHomepage("https://homepage.com/user" + i);
-            user.setContactInfo("user" + i + "@example.com");
-            dummyUsers.add(user);
-        }
-
-        adapter = new ProfileAdapter(dummyUsers);
-        recyclerView = view.findViewById(R.id.rv_profile_thumbnails);
-        int numberOfColumns = 3;
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numberOfColumns));
-        recyclerView.setAdapter(adapter);
-
+        View view = inflater.inflate(R.layout.fragment_admin_browse_images, container, false);
         buttonBackToAdminMain = view.findViewById(R.id.button_back_button);
+
+        dummyPosters = new ArrayList<>();
+        for (int i = 1; i <= 30; i++) {
+            String dummyUrl = "https://example.com/poster" + i + ".png";
+            Event event = new Event();
+            event.setPosterUrl(dummyUrl);
+            dummyPosters.add(event);
+        }
         buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                navController.navigate(R.id.action_adminBrowseProfilesFragment_to_AdminModeMainPageFragment);
+                navController.navigate(R.id.action_adminBrowseImagesFragment_to_AdminModeMainPageFragment);
             }
         });
+        recyclerView = view.findViewById(R.id.rv_event_posters);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
-        loadProfiles();
+        EventPosterAdapter adapter = new EventPosterAdapter(dummyPosters);
+        recyclerView.setAdapter(adapter);
 
         return view;
-    }
-    private void loadProfiles() {
-        adapter.notifyDataSetChanged();
     }
 }

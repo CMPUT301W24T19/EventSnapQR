@@ -31,6 +31,7 @@ public class AdminModeMainPageFragment extends Fragment {
     private FloatingActionButton buttonBackToMain;
     private Button browseEventsButton;
     private Button browseProfilesButton;
+    private Button browseImagesButton;
 
 
     public AdminModeMainPageFragment() {
@@ -71,6 +72,7 @@ public class AdminModeMainPageFragment extends Fragment {
         buttonBackToMain = view.findViewById(R.id.button_back_button);
         browseEventsButton = view.findViewById(R.id.buttonBrowseEvents);
         browseProfilesButton = view.findViewById(R.id.buttonBrowseUserProfiles);
+        browseImagesButton = view.findViewById(R.id.buttonBrowseImages);
         buttonBackToMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,6 +92,13 @@ public class AdminModeMainPageFragment extends Fragment {
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                 navController.navigate(R.id.action_adminModeMainPageFragment_to_adminBrowseProfilesFragment);
+            }
+        });
+        browseImagesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                navController.navigate(R.id.action_adminModeMainPageFragment_to_adminBrowseImagesFragment);
             }
         });
         return view;

@@ -1,20 +1,6 @@
 package com.example.eventsnapqr;
 
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Event {
     private String eventName; // name of the event
@@ -23,31 +9,39 @@ public class Event {
     private FirebaseController firebaseController;
     private List<User> attendees;
 
-    /**
-     * Constructor for event using the event name, a user who will be
-     * its organizer, and the QR generated/provided for the event
-     * @param eventName
-     * @param organizer
-     * @param qrCode
-     */
-    public Event(String eventName, User organizer, QR qrCode) {
-        //Log.d("TAG", "debug");
-        this.eventName = eventName;
+    private String posterUrl; // URL for the event poster image
+
+
+    public Event() {
+        // Default constructor if needed
+    }
+
+    public Event(User organizer, QR qrCode, String eventName, String posterUrl) {
         this.organizer = organizer;
         this.qrCode = qrCode;
+        this.eventName = eventName;
+        this.posterUrl = posterUrl;
         firebaseController = FirebaseController.getInstance();
         firebaseController.addEvent(this);
     }
 
-    public String getEventName() {
-        return eventName;
+    // Getter for organizer's name
+    public String getOrganizer() {
+        return organizer.getUser().getName();
     }
 
-    public User getOrganizer() {
-        return organizer;
-    }
-
+    // Getter for QR code link
     public String getQrCode() {
         return qrCode.getLink();
+    }
+
+    // Getter for the poster URL
+    public String getPosterUrl() {
+        return posterUrl;
+    }
+
+    // Setter for the poster resource URL
+    public void setPosterUrl(String posterUrl) {
+        this.posterUrl = posterUrl;
     }
 }
