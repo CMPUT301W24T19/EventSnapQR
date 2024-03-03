@@ -29,6 +29,14 @@ public class BrowseEventFragment extends Fragment {
         eventListView.setAdapter(eventAdapter);
         db = FirebaseFirestore.getInstance();
         loadEvents();
+
+        view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requireActivity().onBackPressed();
+            }
+        });
+
         return view;
     }
 

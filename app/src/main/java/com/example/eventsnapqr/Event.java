@@ -17,40 +17,37 @@ import java.util.List;
 import java.util.Map;
 
 public class Event {
-    private Organizer organizer;
-    private QR qrCode;
+    private String eventName; // name of the event
+    private User organizer; // user who organized the event
+    private QR qrCode; // qr code for the event
     private FirebaseController firebaseController;
+    private List<User> attendees;
 
-    private String eventName;
-
-    // private EventPoster poster;
-    private List<Attendee> attendees;
-    private FirebaseController controller;
-    public Event() {
-    }
-
-    public Event(Organizer organizer, QR qrCode, String eventName) {
+    /**
+     * Constructor for event using the event name, a user who will be
+     * its organizer, and the QR generated/provided for the event
+     * @param eventName
+     * @param organizer
+     * @param qrCode
+     */
+    public Event(String eventName, User organizer, QR qrCode) {
         //Log.d("TAG", "debug");
-        this.qrCode = qrCode;
-        this.organizer = organizer;
         this.eventName = eventName;
+        this.organizer = organizer;
+        this.qrCode = qrCode;
         firebaseController = FirebaseController.getInstance();
         firebaseController.addEvent(this);
     }
 
-    public String getOrganizer() {
-        return organizer.getUser().getName();
-    }
-    public String getQrCode() {
-        return qrCode.getLink();
-    }
-
-    /**
-    private void setPoster(EventPoster poster){
-        this.poster = poster;
-    }
-    **/
     public String getEventName() {
         return eventName;
+    }
+
+    public User getOrganizer() {
+        return organizer;
+    }
+
+    public String getQrCode() {
+        return qrCode.getLink();
     }
 }
