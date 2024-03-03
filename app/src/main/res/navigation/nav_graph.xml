@@ -69,6 +69,9 @@
         <action
             android:id="@+id/action_adminModeMainPageFragment_to_adminBrowseProfilesFragment"
             app:destination="@id/adminModeBrowseProfilesFragment" />
+        <action
+            android:id="@+id/action_adminModeMainPageFragment_to_adminBrowseImagesFragment"
+            app:destination="@id/adminModeBrowseImagesFragment" />
     </fragment>
     <fragment
         android:id="@+id/adminModeBrowseEventsFragment"
@@ -86,6 +89,15 @@
         tools:layout="@layout/fragment_admin_browse_profiles">
         <action
             android:id="@+id/action_adminBrowseProfilesFragment_to_AdminModeMainPageFragment"
+            app:destination="@id/adminModeMainPageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/adminModeBrowseImagesFragment"
+        android:name="com.example.eventsnapqr.AdminBrowseImagesFragment"
+        android:label="Admin Browse Events"
+        tools:layout="@layout/fragment_admin_browse_images">
+        <action
+            android:id="@+id/action_adminBrowseImagesFragment_to_AdminModeMainPageFragment"
             app:destination="@id/adminModeMainPageFragment" />
     </fragment>
     <fragment

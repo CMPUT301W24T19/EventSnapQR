@@ -28,8 +28,8 @@ public class Organizer implements Role {
      * creates a new event
      * @param qrCode
      */
-    private void createEvent(QR qrCode, String eventName){
-        Event newEvent = new Event(this, qrCode, eventName);
+    private void createEvent(QR qrCode, String eventName, String posterUrl){
+        Event newEvent = new Event(this, qrCode, eventName, posterUrl);
         organizedEvents.add(newEvent);
     }
 
