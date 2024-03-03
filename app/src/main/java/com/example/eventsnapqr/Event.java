@@ -21,7 +21,6 @@ public class Event {
     private QR qrCode;
     private FirebaseController firebaseController;
 
-
     private String eventName;
 
     // private EventPoster poster;
@@ -51,4 +50,7 @@ public class Event {
         this.poster = poster;
     }
     **/
+    public String getEventName() {
+        return eventName;
+    }
 }
