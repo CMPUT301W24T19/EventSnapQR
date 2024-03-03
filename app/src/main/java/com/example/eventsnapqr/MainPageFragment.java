@@ -7,10 +7,12 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +30,7 @@ public class MainPageFragment extends Fragment {
     private Button buttonAdminMainPage;
     private Button buttonBrowseEvent;
     private Button buttonScanQR;
+    private ImageView buttonViewProfile;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -74,6 +77,7 @@ public class MainPageFragment extends Fragment {
         buttonOrganizeEvent = view.findViewById(R.id.organize_event_button);
         buttonBrowseEvent = view.findViewById(R.id.browse_events_button);
         buttonScanQR = view.findViewById(R.id.scan_qr_button);
+        buttonViewProfile = view.findViewById(R.id.view_user_button);
         buttonAdminMainPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,6 +105,13 @@ public class MainPageFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), ScanQRActivity.class);
+                startActivity(intent);
+            }
+        });
+        buttonViewProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), UserInfoActivity.class);
                 startActivity(intent);
             }
         });
