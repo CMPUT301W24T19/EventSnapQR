@@ -53,10 +53,10 @@
                 app:srcCompat="@drawable/pen_icon" />
 
             <ImageView
-                android:id="@+id/iv_upload_profile_pic"
+                android:id="@+id/upload_profile_button"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-
+                android:clickable="true"
                 app:srcCompat="@android:drawable/ic_menu_upload" />
 
             <ImageView
