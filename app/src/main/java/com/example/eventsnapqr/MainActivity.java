@@ -17,7 +17,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        FirebaseController firebaseController = FirebaseController.getInstance();
         ContentResolver contentResolver = getBaseContext().getContentResolver();
         androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
         FirebaseController.OnUserExistenceCheckedListener listener = new FirebaseController.OnUserExistenceCheckedListener() {
