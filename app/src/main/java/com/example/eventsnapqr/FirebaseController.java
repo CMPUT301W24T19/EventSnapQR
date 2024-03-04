@@ -10,6 +10,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class FirebaseController {
@@ -17,7 +18,7 @@ public class FirebaseController {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference eventReference = db.collection("events");
     private CollectionReference userReference = db.collection("users");
-    private FirebaseController() {
+    FirebaseController() {
 
     }
 
@@ -27,13 +28,31 @@ public class FirebaseController {
         }
         return instance;
     }
-    public Boolean checkUserExists(String androidId){
-        CollectionReference users = db.collection("users");
-        DocumentReference user = users.document(androidId);
-        if(user != null){
-            Log.d("User found", "user found:"+androidId);
-            return true;
-        }
+    public static void checkUserExists(String androidId, final OnUserExistenceCheckedListener listener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("users").document(androidId);
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Log.d("User found", "User found: " + androidId);
+                    listener.onUserExistenceChecked(true);
+                } else {
+                    Log.d("User not found", "User not found: " + androidId);
+                    listener.onUserExistenceChecked(false);
+                }
+            } else {
+                Log.d("Error", "Error getting document: " + task.getException());
+                listener.onUserExistenceChecked(false); // Assume user doesn't exist if there's an error
+            }
+        });
+    }
+
+    public interface OnUserExistenceCheckedListener {
+        void onUserExistenceChecked(boolean exists);
+    }
+    public Boolean isAdmin(String androidId){
+        // implement admin check here
         return false;
     }
     public void addUser(User user) {
@@ -42,7 +61,7 @@ public class FirebaseController {
         databaseReference.child("users").child(userId).setValue(user);*/
         CollectionReference userReference = db.collection("users");
         userReference
-                .document("user name")
+                .document(user.getDeviceID())
                 .set(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

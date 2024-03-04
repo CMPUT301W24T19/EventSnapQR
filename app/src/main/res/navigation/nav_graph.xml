@@ -22,7 +22,15 @@
             android:id="@+id/action_mainPageFragment_to_adminModeMainPageFragment"
             app:destination="@id/adminModeMainPageFragment" />
     </fragment>
-
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.example.eventsnapqr.SignUpFragment"
+        android:label="Sign Up"
+        tools:layout="@layout/fragment_sign_up">
+        <action
+            android:id="@+id/action_singUpFragment_to_mainPageFragment"
+            app:destination="@id/mainPageFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/organizeEventFragment"

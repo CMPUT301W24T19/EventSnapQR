@@ -20,6 +20,7 @@ public class User implements Attendee, Organizer {
      */
     public User(String name, String deviceID) {
         this.name = name;
+        this.deviceID = deviceID;
     }
 
     /**
