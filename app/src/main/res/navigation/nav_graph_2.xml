@@ -7,7 +7,14 @@
     <fragment
         android:id="@+id/yourEventFragment"
         android:name="com.example.eventsnapqr.YourEventFragment"
-        android:label="YourEventFragment" />
+        android:label="YourEventFragment" >
+        <action
+            android:id="@+id/action_yourEventFragment_to_realTimeAttendanceFragment"
+            app:destination="@id/realTimeAttendanceFragment" />
+        <action
+            android:id="@+id/action_yourEventFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
     <fragment
         android:id="@+id/myEventsFragment"
         android:name="com.example.eventsnapqr.MyEventsFragment"
@@ -16,4 +23,12 @@
             android:id="@+id/action_myEventsFragment_to_yourEventFragment"
             app:destination="@id/yourEventFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/realTimeAttendanceFragment"
+        android:name="com.example.eventsnapqr.RealTimeAttendanceFragment"
+        android:label="RealTimeAttendanceFragment" />
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.eventsnapqr.MapFragment"
+        android:label="MapFragment" />
 </navigation>
