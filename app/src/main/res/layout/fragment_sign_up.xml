@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="text"
-            android:text="Name" />
+            android:hint="Name" />
 
         <EditText
             android:id="@+id/edit_text_number"
@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="text"
-            android:text="Number" />
+            android:hint="Number" />
 
         <EditText
             android:id="@+id/edit_text_email"
@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="text"
-            android:text="Email" />
+            android:hint="Email" />
 
         <EditText
             android:id="@+id/edit_text_homepage"
@@ -61,12 +61,13 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="text"
-            android:text="Homepage" />
+            android:hint ="Homepage" />
 
         <Button
             android:id="@+id/button_sign_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@color/white"
             android:text="Sign Up!" />
     </LinearLayout>
 
