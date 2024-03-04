@@ -25,7 +25,7 @@ public class YourEventFragment extends Fragment {
 
     private ListView attendeeListView;
     private ArrayAdapter<String> eventAdapter;
-    private List<String> eventNames;
+    private List<String> attendeeNames;
     private FirebaseFirestore db;
 
     private String eventName;
@@ -50,12 +50,12 @@ public class YourEventFragment extends Fragment {
          * Replace this with the database entry
          * */
         attendeeListView = view.findViewById(R.id.attendee_list);
-        eventNames = new ArrayList<>();
-        eventNames.add("Attendee 1");
-        eventNames.add("Attendee 2");
-        eventNames.add("Attendee 3");
-        eventNames.add("Attendee 4");
-        eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, eventNames);
+        attendeeNames = new ArrayList<>();
+        attendeeNames.add("Attendee 1");
+        attendeeNames.add("Attendee 2");
+        attendeeNames.add("Attendee 3");
+        attendeeNames.add("Attendee 4");
+        eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, attendeeNames);
 
         attendeeListView.setAdapter(eventAdapter);
 
@@ -67,7 +67,7 @@ public class YourEventFragment extends Fragment {
         });
 
         attendeeListView.setOnItemClickListener((parent, view1, position, id) -> {
-            String attendeeName = eventNames.get(position);
+            String attendeeName = attendeeNames.get(position);
             CreateDialog(attendeeName);
         });
 
@@ -96,9 +96,21 @@ public class YourEventFragment extends Fragment {
         navController.navigate(R.id.action_yourEventFragment_to_realTimeAttendanceFragment);
     }
 
+    public long TimesStatistics(String attendeeName){
+        long times = 0;
+        for (String attendee : attendeeNames){
+            if (attendee.equals(attendeeName)){
+                // Replace this with the database entry
+                times += 1;
+            }
+        }
+        return times;
+    }
+
     public void CreateDialog(String attendeeName){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(attendeeName + " has checked in your event Y times.")
+        long times = TimesStatistics(attendeeName);
+        builder.setMessage(attendeeName + " has checked in your event " + times + " times.")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // START THE GAME!
