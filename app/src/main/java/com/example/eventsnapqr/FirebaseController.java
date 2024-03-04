@@ -94,4 +94,37 @@ public class FirebaseController {
                     }
                 });
     }
+
+    /**
+     * method that creates a user object based on a given androidID and the associated
+     * data from the firestore database. very similar to checkUserExists
+     * @param androidID
+     * @param listener
+     */
+    public void getUser(String androidID, OnUserRetrievedListener listener) {
+        DocumentReference userRef = db.collection("users").document(androidID);
+
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Log.d("User found", "User found: " + androidID);
+                    String name = document.getString("name");
+                    String deviceID = androidID;
+                    User user = new User(name, deviceID);
+                    listener.onUserRetrieved(user);
+                } else {
+                    Log.d("User not found", "User not found: " + androidID);
+                    listener.onUserRetrieved(null);
+                }
+            } else {
+                Log.d("Error", "Error getting document: " + task.getException());
+                listener.onUserRetrieved(null);
+            }
+        });
+    }
+
+    public interface OnUserRetrievedListener {
+        void onUserRetrieved(User user);
+    }
 }
