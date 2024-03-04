@@ -63,6 +63,14 @@ public class MyEventsFragment extends Fragment {
             goToYourEventActivity(eventName);
         });
 
+        attend_eventListView.setOnItemClickListener((parent, view1, position, id) -> {
+            String eventName = eventNames.get(position);
+            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_2);
+            Bundle bundle = new Bundle();
+            bundle.putString("eventName", eventName);
+            navController.navigate(R.id.action_myEventsFragment_to_eventDetailFragmentFromGraph2, bundle);
+        });
+
         return v;
     }
 

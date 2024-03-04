@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_myEventsFragment_to_yourEventFragment"
             app:destination="@id/yourEventFragment" />
+        <action
+            android:id="@+id/action_myEventsFragment_to_eventDetailFragmentFromGraph2"
+            app:destination="@id/eventDetailFragmentFromGraph2" />
     </fragment>
     <fragment
         android:id="@+id/realTimeAttendanceFragment"
@@ -31,4 +34,8 @@
         android:id="@+id/mapFragment"
         android:name="com.example.eventsnapqr.MapFragment"
         android:label="MapFragment" />
+    <fragment
+        android:id="@+id/eventDetailFragmentFromGraph2"
+        android:name="com.example.eventsnapqr.eventDetailFragmentFromGraph2"
+        android:label="eventDetailFragmentFromGraph2" />
 </navigation>
