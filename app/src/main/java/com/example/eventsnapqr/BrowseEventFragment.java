@@ -51,6 +51,14 @@ public class BrowseEventFragment extends Fragment {
             }
         });
 
+        eventListView.setOnItemClickListener((parent, view1, position, id) -> {
+            String eventName = eventNames.get(position);
+            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+            Bundle bundle = new Bundle();
+            bundle.putString("eventName", eventName);
+            navController.navigate(R.id.action_browseEventFragment_to_eventDetailFragment, bundle);
+        });
+
         return view;
     }
 
@@ -70,7 +78,9 @@ public class BrowseEventFragment extends Fragment {
                         }
                         eventAdapter.notifyDataSetChanged();
                     }
-                    else {} // error handling?
+                    else {
+                        Toast.makeText(requireContext(), "Error loading events", Toast.LENGTH_SHORT).show();
+                    } // error handling?
                 });
     }
 }
