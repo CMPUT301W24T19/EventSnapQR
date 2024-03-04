@@ -51,29 +51,31 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Checked in"
-        app:layout_constraintBottom_toTopOf="@+id/organized_events_list"
-        app:layout_constraintStart_toStartOf="@+id/organized_events_list" />
+        tools:layout_editor_absoluteX="41dp"
+        tools:layout_editor_absoluteY="281dp" />
 
     <ListView
-        android:id="@+id/organized_events_list"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="32dp"
+        android:id="@+id/attendee_list"
+        android:layout_width="365dp"
+        android:layout_height="295dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginBottom="7dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.35"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/milestone_alert_content"
-        app:layout_constraintWidth_percent="0.8" />
+        app:layout_constraintTop_toBottomOf="@+id/checked_in_text" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organized_events_list">
+        app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -90,7 +92,7 @@
                 android:text="Attendee Map"
                 app:layout_constraintEnd_toStartOf="@+id/real_time_attendance_button"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/organized_events_list" />
+                app:layout_constraintTop_toBottomOf="@+id/orgnized_events_list" />
 
             <Button
                 android:id="@+id/notify_attendee_button"
@@ -101,7 +103,7 @@
                 android:text="Notify Attendees"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/real_time_attendance_button"
-                app:layout_constraintTop_toBottomOf="@+id/organized_events_list" />
+                app:layout_constraintTop_toBottomOf="@+id/orgnized_events_list" />
         </LinearLayout>
 
         <Button
@@ -113,7 +115,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/organized_events_list"
+            app:layout_constraintTop_toBottomOf="@+id/orgnized_events_list"
             app:layout_constraintVertical_bias="0.811" />
     </LinearLayout>
 

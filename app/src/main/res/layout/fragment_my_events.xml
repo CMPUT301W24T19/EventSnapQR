@@ -37,6 +37,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="50dp"
+        android:entries="@array/attended_event_example"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.4"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,14 +49,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Events I have Organized"
-        app:layout_constraintBottom_toTopOf="@+id/organized_events_list"
-        app:layout_constraintStart_toStartOf="@+id/organized_events_list" />
+        app:layout_constraintBottom_toTopOf="@+id/orgnized_events_list"
+        app:layout_constraintStart_toStartOf="@+id/orgnized_events_list" />
 
     <ListView
-        android:id="@+id/organized_events_list"
+        android:id="@+id/orgnized_events_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="32dp"
+        android:entries="@array/organized_event_example"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.4"
         app:layout_constraintStart_toStartOf="parent"
