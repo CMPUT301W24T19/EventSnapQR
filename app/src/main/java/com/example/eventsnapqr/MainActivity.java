@@ -17,7 +17,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        FirebaseController firebaseController = FirebaseController.getInstance();
         ContentResolver contentResolver = getBaseContext().getContentResolver();
         androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
         FirebaseController.OnUserExistenceCheckedListener listener = new FirebaseController.OnUserExistenceCheckedListener() {
@@ -35,23 +34,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         FirebaseController.checkUserExists(androidId, listener);
-        /**
-        if(firebaseController.checkUserExists(androidId)){
-            NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-            navController.navigate(R.id.mainPageFragment);
-        }
-        else if(firebaseController.isAdmin(androidId)){
-            // show admin button
-        }
-        else{
-            NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-            Bundle bundle = new Bundle();
-            bundle.putString("userId", androidId);
-            navController.navigate(R.id.signUpFragment, bundle);
-        }
-         **/
-
-
     }
     public void signUp(){
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
