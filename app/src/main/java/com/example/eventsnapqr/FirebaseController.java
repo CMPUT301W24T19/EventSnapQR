@@ -16,7 +16,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FirebaseController {
     private static FirebaseController instance;
@@ -78,7 +81,8 @@ public class FirebaseController {
     public void addAttendee(String eventIdentifier, Attendee attendee) {
         DocumentReference eventToAttend = eventReference.document(eventIdentifier);
         CollectionReference attendees = eventToAttend.collection("attendees");
-        attendees.add(attendee)
+
+        attendees.add(attendee.getDeviceID())
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
@@ -93,6 +97,7 @@ public class FirebaseController {
                         Log.w("attendee not added", "Error adding attendee document", e);
                     }
                 });
+        /**
         attendees.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -102,6 +107,7 @@ public class FirebaseController {
                 // do more
             }
         });
+         **/
     }
     public void addUser(User user) {
         /*
@@ -124,9 +130,40 @@ public class FirebaseController {
                     }
                 });
     }
-
     public void addEvent(Event event) {
-        eventReference
+        Map<String, Object> eventData = new HashMap<>();
+        eventData.put("link", event.getQrCode().getLink());
+        if(eventReference != null){
+            eventReference.add(eventData).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+                    Log.d("Added event succes", "succesfully added event: " + documentReference.getId());
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d("Added event failure", "failed to add event: " + e + Arrays.toString(e.getStackTrace()));
+                }
+            });
+        }
+
+
+        /**
+         attendees.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        @Override
+        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+        QuerySnapshot doc = task.getResult();
+
+        List<DocumentSnapshot> attendees = doc.getDocuments();
+        // do more
+        }
+        });
+         **/
+    }
+    /**
+    public void addEvent(Event event) {
+        eventReference.add()
                 .document(event.getQrCode().getLink())
                 .set(event)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -142,7 +179,7 @@ public class FirebaseController {
                     }
                 });
     }
-
+**/
     /**
      * method that creates a user object based on a given androidID and the associated
      * data from the firestore database. very similar to checkUserExists
