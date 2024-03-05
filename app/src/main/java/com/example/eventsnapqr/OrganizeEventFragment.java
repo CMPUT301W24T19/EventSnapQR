@@ -37,13 +37,13 @@ public class OrganizeEventFragment extends Fragment {
     private Button addEventButton;
     private EditText editTextEventName;
     private EditText editTextEventDesc;
-
+    private EditText editTextMaxAttendees;
     private Bitmap qrBitmap;
 
     private String param1;
     private String param2;
     private String androidID;
-    private FirebaseController firebaseController;
+    private FirebaseController firebaseController = new FirebaseController();
 
     public OrganizeEventFragment() {
         // Required empty public constructor
@@ -69,6 +69,7 @@ public class OrganizeEventFragment extends Fragment {
         addEventButton = view.findViewById(R.id.button_create);
         editTextEventName = view.findViewById(R.id.editTextEventName);
         editTextEventDesc = view.findViewById(R.id.editTextEventDesc);
+        editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
 
         backButton.setOnClickListener(v -> navigateToMainPageFragment());
         addEventButton.setOnClickListener(v -> {
@@ -107,6 +108,11 @@ public class OrganizeEventFragment extends Fragment {
 
     private void createEvent() {
         String eventName = editTextEventName.getText().toString(); // get the name of the event
+        String eventDesc = editTextEventDesc.getText().toString(); // get the description of the event
+        String maxAttendeesInput = editTextMaxAttendees.getText().toString();
+        Integer eventMaxAttendees = !maxAttendeesInput.isEmpty() ? Integer.valueOf(maxAttendeesInput) : null;
+
+
         // retrieve user from the database based on the androidID, create a new user and event object
         FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
             @Override
@@ -124,10 +130,8 @@ public class OrganizeEventFragment extends Fragment {
                         bundle.putParcelable("bitmap", qrBitmap);
                         QR qrCode = new QR(qrBitmap, link);
                         // Use the retrieved user to create the event
-                        Event newEvent = new Event(user, qrCode, eventName, "TESTURL.com");
+                        Event newEvent = new Event(user, qrCode, eventName, eventDesc, "TestURL.com", eventMaxAttendees);
                         if(newEvent != null){
-                            firebaseController = new FirebaseController();
-                            firebaseController.addEvent(newEvent);
                             Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
                             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                             navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
