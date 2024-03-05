@@ -134,7 +134,7 @@ public class FirebaseController {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("event name", event.getEventName());
         eventData.put("QR link", event.getQrCode().getLink());
-        eventData.put("organizer ID", event.getOrganizer());
+        eventData.put("organizer ID", event.getOrganizer().getDeviceID());
         eventData.put("description", event.getDescription());
         if (event.getPosterUrl() != null) {
             eventData.put("posterURL", event.getPosterUrl());
@@ -220,5 +220,45 @@ public class FirebaseController {
 
     public interface OnUserRetrievedListener {
         void onUserRetrieved(User user);
+    }
+
+    /**
+     * Method that retrieves event details based on the given event identifier.
+     * @param eventIdentifier The identifier of the event to retrieve.
+     * @param listener        Listener to handle the event retrieval result.
+     */
+    public void getEvent(String eventIdentifier, OnEventRetrievedListener listener) {
+        DocumentReference eventRef = db.collection("events").document(eventIdentifier);
+
+        eventRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Log.d("Event found", "Event found: " + eventIdentifier);
+                    String eventName = document.getString("event name");
+                    String organizerID = document.getString("organizer ID");
+                    String qrLink = document.getString("QR link");
+                    String description = document.getString("description");
+                    String posterUrl = document.getString("posterURL");
+                    Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
+
+                    Event event = new Event(new User("", organizerID), new QR(null, qrLink), eventName, description, posterUrl, maxAttendees);
+                    listener.onEventRetrieved(event);
+                } else {
+                    Log.d("Event not found", "Event not found: " + eventIdentifier);
+                    listener.onEventRetrieved(null);
+                }
+            } else {
+                Log.d("Error", "Error getting document: " + task.getException());
+                listener.onEventRetrieved(null);
+            }
+        });
+    }
+
+    /**
+     * Interface to handle event retrieval.
+     */
+    public interface OnEventRetrievedListener {
+        void onEventRetrieved(Event event);
     }
 }

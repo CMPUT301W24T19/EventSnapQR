@@ -6,11 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+
+import com.google.firebase.Firebase;
 
 public class EventDetailFragment extends Fragment {
     public EventDetailFragment() {
@@ -23,6 +26,7 @@ public class EventDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             eventName = getArguments().getString("eventName");
+            loadEventDetails(eventName);
         }
     }
 
@@ -60,4 +64,32 @@ public class EventDetailFragment extends Fragment {
         builder.create().show();
     }
 
+    private void loadEventDetails(String eventIdentifier) {
+        FirebaseController.getInstance().getEvent(eventIdentifier, new FirebaseController.OnEventRetrievedListener() {
+            @Override
+            public void onEventRetrieved(Event event) {
+                if (event != null) {
+                    // Event details retrieved successfully, update UI with event details
+                    displayEventDetails(event);
+                } else {
+                    Toast.makeText(requireContext(), "Failed to retrieve event details", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void displayEventDetails(Event event) {
+        // Update UI elements with event details
+        TextView eventDescription = getView().findViewById(R.id.description_content);
+        eventDescription.setText(event.getDescription());
+
+        TextView eventName = getView().findViewById(R.id.page_name);
+        eventName.setText(event.getEventName());
+
+        TextView eventOrganizer = getView().findViewById(R.id.organizer_content);
+        eventOrganizer.setText(event.getOrganizer().getName());
+
+        TextView eventMaxAttendees = getView().findViewById(R.id.max_attendees_content);
+        eventMaxAttendees.setText(event.getMaxAttendees() != null ? event.getMaxAttendees().toString() : "No Max Attendees");
+    }
 }

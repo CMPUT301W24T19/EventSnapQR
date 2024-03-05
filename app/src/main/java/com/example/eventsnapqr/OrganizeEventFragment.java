@@ -132,6 +132,8 @@ public class OrganizeEventFragment extends Fragment {
                         // Use the retrieved user to create the event
                         Event newEvent = new Event(user, qrCode, eventName, eventDesc, "TestURL.com", eventMaxAttendees);
                         if(newEvent != null){
+                            firebaseController = FirebaseController.getInstance();
+                            firebaseController.addEvent(newEvent);
                             Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
                             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                             navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
