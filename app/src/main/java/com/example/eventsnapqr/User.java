@@ -7,7 +7,8 @@ import java.util.List;
  * Represents a user object that has the ability of an
  * organizer and attendee
  */
-public class User implements Attendee, Organizer {
+public class User{
+//public class User implements Attendee, Organizer {
     private String name; // name of the user
     private String homepage; // user website
     private String contactInfo; // further contact information

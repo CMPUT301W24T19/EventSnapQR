@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseController.OnUserRetrievedListener listener = new FirebaseController.OnUserRetrievedListener() {
                     @Override
                     public void onUserRetrieved(User user) {
-                        controller.addAttendee(eventLink, user);
+                        controller.addAttendee(eventLink, (Attendee)user);
                     }
                 };
                 controller.getUser(androidId, listener); // eventLink uniquely identifies each event document in database

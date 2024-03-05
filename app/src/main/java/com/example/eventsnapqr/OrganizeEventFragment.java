@@ -114,6 +114,7 @@ public class OrganizeEventFragment extends Fragment {
                 if (user != null) {
                     // User retrieved successfully, proceed with event creation
                     String link = generateLink(eventName, user.getDeviceID());
+                    Log.d("QR link generated", "QR link: " + link);
                     QRGEncoder qrgEncoder = new QRGEncoder(link, null, QRGContents.Type.TEXT, 5);
                     qrgEncoder.setColorBlack(Color.RED);
                     qrgEncoder.setColorWhite(Color.BLUE);
@@ -121,13 +122,17 @@ public class OrganizeEventFragment extends Fragment {
                         qrBitmap = qrgEncoder.getBitmap();
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("bitmap", qrBitmap);
-                        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                        navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                         QR qrCode = new QR(qrBitmap, link);
                         // Use the retrieved user to create the event
                         Event newEvent = new Event(user, qrCode, eventName, "TESTURL.com");
-                        firebaseController.addEvent(newEvent);
-                        Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
+                        if(newEvent != null){
+                            firebaseController = new FirebaseController();
+                            firebaseController.addEvent(newEvent);
+                            Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
+                            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                            navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                        }
+
                     } catch (Exception e) {
                         Log.v("ORGANIZE EVENT ERROR", e.toString());
                     }
