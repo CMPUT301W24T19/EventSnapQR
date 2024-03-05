@@ -97,7 +97,7 @@ public class FirebaseController {
 
     public void addEvent(Event event) {
         eventReference
-                .document("event name")
+                .document(event.getQrCode().getLink())
                 .set(event)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

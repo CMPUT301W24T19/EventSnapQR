@@ -31,9 +31,10 @@ public class Event {
     }
 
     // Getter for QR code link
-    public String getQrCode() {
-        return qrCode.getLink();
+    public QR getQrCode() {
+        return qrCode;
     }
+
 
     // Getter for the poster URL
     public String getPosterUrl() {

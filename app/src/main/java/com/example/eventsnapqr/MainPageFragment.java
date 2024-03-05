@@ -71,7 +71,11 @@ public class MainPageFragment extends Fragment {
             admin = false;
         }
     }
-
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("Admin", admin);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

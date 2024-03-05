@@ -3,6 +3,7 @@ package com.example.eventsnapqr;
 import static androidx.camera.core.impl.utils.ContextUtil.getBaseContext;
 
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -98,8 +99,8 @@ public class OrganizeEventFragment extends Fragment {
     }
 
     private void navigateToMainPageFragment() {
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_organizeEventFragment_to_mainPageFragment);
+        Intent intent = new Intent(requireContext(), MainActivity.class);
+        startActivity(intent);
     }
 
     private void createEvent() {
@@ -110,7 +111,8 @@ public class OrganizeEventFragment extends Fragment {
             public void onUserRetrieved(User user) {
                 if (user != null) {
                     // User retrieved successfully, proceed with event creation
-                    QRGEncoder qrgEncoder = new QRGEncoder(generateLink(eventName, user.getDeviceID()), null, QRGContents.Type.TEXT, 5);
+                    String link = generateLink(eventName, user.getDeviceID());
+                    QRGEncoder qrgEncoder = new QRGEncoder(link, null, QRGContents.Type.TEXT, 5);
                     qrgEncoder.setColorBlack(Color.RED);
                     qrgEncoder.setColorWhite(Color.BLUE);
                     try {
@@ -119,7 +121,7 @@ public class OrganizeEventFragment extends Fragment {
                         bundle.putParcelable("bitmap", qrBitmap);
                         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                         navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
-                        QR qrCode = new QR(qrBitmap);
+                        QR qrCode = new QR(qrBitmap, link);
 
                         // Use the retrieved user to create the event
                         Event newEvent = new Event(user, qrCode, eventName, "TESTURL.com");
