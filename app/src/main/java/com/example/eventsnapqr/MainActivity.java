@@ -27,7 +27,13 @@ public class MainActivity extends AppCompatActivity {
             Log.d("event link", "link: " + eventLink);
             if (eventLink != null) {
                 FirebaseController controller = FirebaseController.getInstance();
-                controller.addAttendee(eventLink); // eventLink uniquely identifies each event document in database
+                FirebaseController.OnUserRetrievedListener listener = new FirebaseController.OnUserRetrievedListener() {
+                    @Override
+                    public void onUserRetrieved(User user) {
+                        controller.addAttendee(eventLink, user);
+                    }
+                };
+                controller.getUser(androidId, listener); // eventLink uniquely identifies each event document in database
             } else {
                 // Do nothing
             }
