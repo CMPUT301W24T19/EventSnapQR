@@ -18,6 +18,7 @@ public class FirebaseController {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference eventReference = db.collection("events");
     private CollectionReference userReference = db.collection("users");
+    private CollectionReference adminReference = db.collection("admin");
     FirebaseController() {
 
     }
@@ -28,9 +29,27 @@ public class FirebaseController {
         }
         return instance;
     }
-    public static void checkUserExists(String androidId, final OnUserExistenceCheckedListener listener) {
+    public static void checkUserExists(String androidId, final Authenticator listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userRef = db.collection("users").document(androidId);
+        DocumentReference admin = db.collection("admin").document(androidId);
+        admin.get().addOnCompleteListener(task -> {
+            if(task.isSuccessful()){
+                DocumentSnapshot document = task.getResult();
+                if(document.exists()){
+                    Log.d("Admin found", "Admin found: " + androidId);
+                    listener.onAdminExistenceChecked(true);
+                }
+                else {
+                    Log.d("Admin not found", "Admin not found: " + androidId);
+                    listener.onAdminExistenceChecked(false);
+                }
+            }
+            else {
+                Log.d("Error", "Error getting document: " + task.getException());
+                listener.onAdminExistenceChecked(false); // Assume not found if there's an error
+            }
+        });
         userRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
@@ -48,13 +67,12 @@ public class FirebaseController {
         });
     }
 
-    public interface OnUserExistenceCheckedListener {
+    public interface Authenticator {
         void onUserExistenceChecked(boolean exists);
+        void onAdminExistenceChecked(boolean exists);
     }
-    public Boolean isAdmin(String androidId){
-        // implement admin check here
-        return false;
-    }
+
+
     public void addUser(User user) {
         /*
         String userId = databaseReference.child("users").push().getKey();

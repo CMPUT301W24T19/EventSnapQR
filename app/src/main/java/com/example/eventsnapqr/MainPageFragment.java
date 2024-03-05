@@ -3,6 +3,7 @@ package com.example.eventsnapqr;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -31,6 +32,7 @@ public class MainPageFragment extends Fragment {
     private Button buttonBrowseEvent;
     private Button buttonScanQR;
     private ImageView buttonViewProfile;
+    private Boolean admin;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -61,19 +63,26 @@ public class MainPageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            admin = getArguments().getBoolean("Admin");
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
+        else {
+            admin = false;
+        }
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
         View view = inflater.inflate(R.layout.fragment_main_page, container, false);
         buttonAdminMainPage = view.findViewById(R.id.admin_button);
+        if(admin){
+            buttonAdminMainPage.setVisibility(View.VISIBLE);
+        }else{
+            buttonAdminMainPage.setVisibility(View.GONE);
+        }
         buttonOrganizeEvent = view.findViewById(R.id.organize_event_button);
         buttonBrowseEvent = view.findViewById(R.id.browse_events_button);
         buttonScanQR = view.findViewById(R.id.scan_qr_button);
@@ -90,8 +99,6 @@ public class MainPageFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), OrganizeAnEventActivity.class);
                 startActivity(intent);
-                //NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                //navController.navigate(R.id.action_mainPageFragment_to_organizeEventFragment);
             }
         });
         buttonBrowseEvent.setOnClickListener((new View.OnClickListener() {

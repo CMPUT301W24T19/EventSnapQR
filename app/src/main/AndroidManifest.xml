@@ -33,11 +33,11 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
+                    android:scheme="eventsnapqr"
                     android:host="com.example.eventsnapqr"
-                    android:pathPrefix="/join/event"
-                    android:scheme="com.example.eventsnapqr" />
+                    android:pathPrefix="/join/event" />
+
             </intent-filter>
         </activity>
         <activity

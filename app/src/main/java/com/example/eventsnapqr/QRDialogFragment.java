@@ -1,6 +1,7 @@
 package com.example.eventsnapqr;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
@@ -107,8 +108,11 @@ public class QRDialogFragment extends DialogFragment {
         buttonExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                navController.navigate(R.id.action_qRDialogFragment_to_mainPageFragment);
+
+                Intent intent = new Intent(requireContext(), MainActivity.class);
+                startActivity(intent);
+               // NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                //navController.navigate(R.id.action_qRDialogFragment_to_mainPageFragment);
             }
         });
         buttonSaveQR = view.findViewById(R.id.button_save_qr);

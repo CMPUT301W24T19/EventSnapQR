@@ -117,8 +117,8 @@ public class OrganizeEventFragment extends Fragment {
         }
     }
     public String generateLink(String eventName, String eventId){
-        String h = "com.example.eventsnapqr://com.example.eventsnapqr/join/event";
-        return h+"/"+eventName+"/"+eventId;
+        String base = "eventsnapqr://com.example.eventsnapqr/join/event";
+        return base + "/" + eventName + "/" + eventId;
     }
 
 }
