@@ -12,9 +12,11 @@ import android.view.WindowManager;
 public class QR {
     private Bitmap bitmap;
     private String link;
-    public QR(Bitmap bitmap){
+    public QR(Bitmap bitmap, String link){
+        this.link = link;
         this.bitmap = bitmap;
     }
+
     /**
     public makeQR(){
         WindowManager manager = (WindowManager) getSystemService(WINDOW_SERVICE);
