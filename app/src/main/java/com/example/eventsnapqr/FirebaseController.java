@@ -4,14 +4,19 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.List;
 
 public class FirebaseController {
     private static FirebaseController instance;
@@ -70,11 +75,19 @@ public class FirebaseController {
         void onUserExistenceChecked(boolean exists);
         void onAdminExistenceChecked(boolean exists);
     }
-    public void addAttendee(String eventIdentifier){
+    public void addAttendee(String eventIdentifier) {
         DocumentReference eventToAttend = eventReference.document(eventIdentifier);
+        CollectionReference attendees = eventToAttend.collection("attendees");
 
+        attendees.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                QuerySnapshot doc = task.getResult();
+                List<DocumentSnapshot> attendees = doc.getDocuments();
+                // do more
+            }
+        });
     }
-
     public void addUser(User user) {
         /*
         String userId = databaseReference.child("users").push().getKey();
