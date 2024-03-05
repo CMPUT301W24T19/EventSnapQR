@@ -83,14 +83,14 @@ public class FirebaseController {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         // Attendee document added successfully
-                        Log.d(TAG, "Attendee document added with ID: " + documentReference.getId());
+                        Log.d("attendee added", "Attendee document added with ID: " + documentReference.getId());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         // Failed to add attendee document
-                        Log.w(TAG, "Error adding attendee document", e);
+                        Log.w("attendee not added", "Error adding attendee document", e);
                     }
                 });
         attendees.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
