@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,15 +61,25 @@ public class SignUpFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_sign_up, container, false);
         editTextEmail = v.findViewById(R.id.edit_text_email);
+
         editTextHomepage = v.findViewById(R.id.edit_text_homepage);
+        String homepageInput = editTextHomepage.getText().toString().trim().isEmpty() ? null : editTextHomepage.getText().toString().trim();
+
         editTextName = v.findViewById(R.id.edit_text_name);
+
+        // ensure correct number formatting
         editTextNumber = v.findViewById(R.id.edit_text_number);
+        editTextNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+        editTextNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(14)});
+
         buttonSignUp = v.findViewById(R.id.button_sign_up);
         buttonSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(validateInput()){
-                    User newUser = new User(editTextName.getText().toString(), androidId);
+                    User newUser = new User(editTextName.getText().toString(), androidId,
+                            editTextHomepage.getText().toString(), editTextNumber.getText().toString(),
+                            editTextEmail.getText().toString());
                     firebaseController.addUser(newUser);
                     goToMainPage();
                 }

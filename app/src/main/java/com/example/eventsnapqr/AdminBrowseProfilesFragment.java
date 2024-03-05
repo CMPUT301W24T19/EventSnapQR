@@ -70,7 +70,6 @@ public class AdminBrowseProfilesFragment extends Fragment {
         for (int i = 1; i <= 30; i++) {
             User user = new User("User " + i, "u");
             user.setHomepage("https://homepage.com/user" + i);
-            user.setContactInfo("user" + i + "@example.com");
             dummyUsers.add(user);
         }
 

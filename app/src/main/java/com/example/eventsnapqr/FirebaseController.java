@@ -110,26 +110,32 @@ public class FirebaseController {
          **/
     }
     public void addUser(User user) {
-        /*
-        String userId = databaseReference.child("users").push().getKey();
-        databaseReference.child("users").child(userId).setValue(user);*/
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("name", user.getName());
+        if (user.getHomepage() != null) {
+            userData.put("homepage", user.getHomepage());
+        }
+        userData.put("phoneNumber", user.getPhoneNumber());
+        userData.put("email", user.getEmail());
+        userData.put("deviceID", user.getDeviceID());
         CollectionReference userReference = db.collection("users");
         userReference
-                .document(user.getDeviceID())
-                .set(user)
+                .document(user.getDeviceID()) // Assuming deviceID is unique for each user
+                .set(userData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        Log.d("TAG", "Data has been added successfully!");
+                        Log.d("Added user success", "User added successfully!");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d("TAG", "Data could not be added!" + e.toString());
+                        Log.d("Added user failure", "Failed to add user: " + e);
                     }
                 });
     }
+
     public void addEvent(Event event) {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("event name", event.getEventName());
