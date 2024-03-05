@@ -36,8 +36,6 @@ public class Event {
         this.description = description;
         this.posterUrl = posterUrl;
         this.maxAttendees = maxAttendees;
-        firebaseController = FirebaseController.getInstance();
-        firebaseController.addEvent(this);
     }
 
     /**
@@ -49,11 +47,11 @@ public class Event {
     }
 
     /**
-     * getter method to return the device id of the organizing user
+     * getter method to return the organizing user
      * @return deviceID of the user
      */
-    public String getOrganizer() {
-        return organizer.getDeviceID();
+    public User getOrganizer() {
+        return organizer;
     }
 
     /**

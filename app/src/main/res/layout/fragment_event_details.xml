@@ -31,51 +31,72 @@
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.5"
+        app:layout_constraintHeight_percent="0.4"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_back_button"
         app:layout_constraintWidth_percent="0.9"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
+
     <TextView
-        android:id="@+id/announcement_text"
+        android:id="@+id/organizer_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="Announcements"
+        android:layout_marginTop="16dp"
+        android:text="Organizer"
         app:layout_constraintStart_toStartOf="@+id/event_poster"
         app:layout_constraintTop_toBottomOf="@+id/event_poster" />
 
     <TextView
-        android:id="@+id/announcement_content"
+        android:id="@+id/organizer_content"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="#BCBCBC"
-        android:text="Announcement content"
-        app:layout_constraintHeight_percent="0.1"
-        app:layout_constraintStart_toStartOf="@+id/announcement_text"
-        app:layout_constraintTop_toBottomOf="@+id/announcement_text"
+        android:padding="8dp"
+        app:layout_constraintHeight_percent="0.05"
+        app:layout_constraintStart_toStartOf="@+id/organizer_text"
+        app:layout_constraintTop_toBottomOf="@+id/organizer_text"
         app:layout_constraintWidth_percent="0.9" />
 
     <TextView
         android:id="@+id/description_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="16dp"
         android:text="Description"
-        app:layout_constraintStart_toStartOf="@+id/announcement_content"
-        app:layout_constraintTop_toBottomOf="@+id/announcement_content" />
+        app:layout_constraintStart_toStartOf="@+id/event_poster"
+        app:layout_constraintTop_toBottomOf="@+id/organizer_content" />
 
     <TextView
         android:id="@+id/description_content"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="#BCBCBC"
-        android:text="Description content"
+        android:padding="8dp"
         app:layout_constraintHeight_percent="0.1"
         app:layout_constraintStart_toStartOf="@+id/description_text"
         app:layout_constraintTop_toBottomOf="@+id/description_text"
+        app:layout_constraintWidth_percent="0.9" />
+
+    <TextView
+        android:id="@+id/max_attendees_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Max Attendees"
+        app:layout_constraintStart_toStartOf="@+id/event_poster"
+        app:layout_constraintTop_toBottomOf="@+id/description_content" />
+
+    <TextView
+        android:id="@+id/max_attendees_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#BCBCBC"
+        android:padding="8dp"
+        app:layout_constraintHeight_percent="0.05"
+        app:layout_constraintStart_toStartOf="@+id/max_attendees_text"
+        app:layout_constraintTop_toBottomOf="@+id/max_attendees_text"
         app:layout_constraintWidth_percent="0.9" />
 
     <Button
@@ -86,6 +107,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/description_content" />
+        app:layout_constraintTop_toBottomOf="@+id/max_attendees_content"
+        android:layout_marginTop="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
