@@ -132,7 +132,16 @@ public class FirebaseController {
     }
     public void addEvent(Event event) {
         Map<String, Object> eventData = new HashMap<>();
-        eventData.put("link", event.getQrCode().getLink());
+        eventData.put("event name", event.getEventName());
+        eventData.put("QR link", event.getQrCode().getLink());
+        eventData.put("organizer ID", event.getOrganizer());
+        eventData.put("description", event.getDescription());
+        if (event.getPosterUrl() != null) {
+            eventData.put("posterURL", event.getPosterUrl());
+        }
+        if (event.getMaxAttendees() != null) {
+            eventData.put("maxAttendees", event.getMaxAttendees());
+        }
         if(eventReference != null){
             eventReference.add(eventData).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                 @Override
