@@ -66,12 +66,14 @@ public class FirebaseController {
             }
         });
     }
-
     public interface Authenticator {
         void onUserExistenceChecked(boolean exists);
         void onAdminExistenceChecked(boolean exists);
     }
+    public void addAttendee(String eventIdentifier){
+        DocumentReference eventToAttend = eventReference.document(eventIdentifier);
 
+    }
 
     public void addUser(User user) {
         /*

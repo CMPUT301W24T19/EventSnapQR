@@ -124,11 +124,9 @@ public class OrganizeEventFragment extends Fragment {
                         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                         navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                         QR qrCode = new QR(qrBitmap, link);
-
                         // Use the retrieved user to create the event
                         Event newEvent = new Event(user, qrCode, eventName, "TESTURL.com");
                         firebaseController.addEvent(newEvent);
-
                         Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
                     } catch (Exception e) {
                         Log.v("ORGANIZE EVENT ERROR", e.toString());
@@ -142,7 +140,8 @@ public class OrganizeEventFragment extends Fragment {
     }
 
     public String generateLink(String eventName, String organizerId) {
-        String prefix = "eventsnapqr:";
+        // eventsnapqr://com.example.eventsnapqr/join/event <-- link prefix
+        String prefix = "eventsnapqr://com.example.eventsnapqr/join/event";
         return prefix + "/" + organizerId + "/" + eventName;
     }
 }
