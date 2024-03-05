@@ -75,14 +75,29 @@ public class FirebaseController {
         void onUserExistenceChecked(boolean exists);
         void onAdminExistenceChecked(boolean exists);
     }
-    public void addAttendee(String eventIdentifier) {
+    public void addAttendee(String eventIdentifier, Attendee attendee) {
         DocumentReference eventToAttend = eventReference.document(eventIdentifier);
         CollectionReference attendees = eventToAttend.collection("attendees");
-
+        attendees.add(attendee)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        // Attendee document added successfully
+                        Log.d(TAG, "Attendee document added with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Failed to add attendee document
+                        Log.w(TAG, "Error adding attendee document", e);
+                    }
+                });
         attendees.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 QuerySnapshot doc = task.getResult();
+
                 List<DocumentSnapshot> attendees = doc.getDocuments();
                 // do more
             }
