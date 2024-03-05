@@ -2,6 +2,8 @@ package com.example.eventsnapqr;
 
 import static androidx.camera.core.impl.utils.ContextUtil.getBaseContext;
 
+import static com.google.common.hash.Hashing.sha256;
+
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -138,9 +140,9 @@ public class OrganizeEventFragment extends Fragment {
             }
         });
     }
-    public String generateLink(String eventName, String eventId){
-        String base = "eventsnapqr://com.example.eventsnapqr/join/event";
-        return base + "/" + eventName + "/" + eventId;
-    }
 
+    public String generateLink(String eventName, String organizerId) {
+        String prefix = "eventsnapqr:";
+        return prefix + "/" + organizerId + "/" + eventName;
+    }
 }
