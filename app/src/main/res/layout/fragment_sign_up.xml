@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Sign Up for EventSnapQR!"
+            android:text="Complete your EventSnapQR Profile!"
             android:textAlignment="center"
             android:textSize="24sp" />
     </LinearLayout>
@@ -44,8 +44,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="number"
-            android:hint="Number" />
+            android:inputType="phone"
+            android:hint="Phone Number" />
 
         <EditText
             android:id="@+id/edit_text_email"
@@ -68,7 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:text="Sign Up!" />
+            android:text="Continue" />
     </LinearLayout>
 
 </LinearLayout>
