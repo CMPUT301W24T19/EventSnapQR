@@ -1,8 +1,12 @@
 package com.example.eventsnapqr;
 
+import static androidx.camera.core.impl.utils.ContextUtil.getBaseContext;
+
+import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +19,8 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+
+import com.google.firebase.Firebase;
 
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
@@ -33,7 +39,8 @@ public class OrganizeEventFragment extends Fragment {
 
     private String param1;
     private String param2;
-    private String deviceID;
+    private String androidID;
+    private FirebaseController firebaseController;
 
     public OrganizeEventFragment() {
         // Required empty public constructor
@@ -53,7 +60,8 @@ public class OrganizeEventFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_organize_event, container, false);
-
+        androidID = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        Log.d("Device ID", "Android ID: " + androidID);
         backButton = view.findViewById(R.id.button_back_button);
         addEventButton = view.findViewById(R.id.button_create);
         editTextEventName = view.findViewById(R.id.editTextEventName);
@@ -95,26 +103,38 @@ public class OrganizeEventFragment extends Fragment {
     }
 
     private void createEvent() {
-        String eventName = editTextEventName.getText().toString();
+        String eventName = editTextEventName.getText().toString(); // get the name of the event
+        // retrieve user from the database based on the androidID, create a new user and event object
+        FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
+            @Override
+            public void onUserRetrieved(User user) {
+                if (user != null) {
+                    // User retrieved successfully, proceed with event creation
+                    QRGEncoder qrgEncoder = new QRGEncoder(generateLink(eventName, user.getDeviceID()), null, QRGContents.Type.TEXT, 5);
+                    qrgEncoder.setColorBlack(Color.RED);
+                    qrgEncoder.setColorWhite(Color.BLUE);
+                    try {
+                        qrBitmap = qrgEncoder.getBitmap();
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("bitmap", qrBitmap);
+                        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                        navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                        QR qrCode = new QR(qrBitmap);
 
-        QRGEncoder qrgEncoder = new QRGEncoder(generateLink(eventName,"userId"), null, QRGContents.Type.TEXT, 5);
-        qrgEncoder.setColorBlack(Color.RED);
-        qrgEncoder.setColorWhite(Color.BLUE);
-        try {
-            qrBitmap = qrgEncoder.getBitmap();
-            Bundle bundle = new Bundle();
-            bundle.putParcelable("bitmap", qrBitmap);
-            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-            navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
-            QR qrCode = new QR(qrBitmap);
+                        // Use the retrieved user to create the event
+                        Event newEvent = new Event(user, qrCode, eventName, "TESTURL.com");
+                        firebaseController.addEvent(newEvent);
 
-            User organizer = new User("John doe", deviceID);
-            Event newEvent = new Event( organizer, qrCode, "event_name", "TESTURL.com");
-
-            Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            Log.v("ORGANIZE EVENT ERROR", e.toString());
-        }
+                        Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        Log.v("ORGANIZE EVENT ERROR", e.toString());
+                    }
+                } else {
+                    // Handle case where user is not found
+                    Log.d("User not found", "User with ID " + androidID + " not found");
+                }
+            }
+        });
     }
     public String generateLink(String eventName, String eventId){
         String base = "eventsnapqr://com.example.eventsnapqr/join/event";
