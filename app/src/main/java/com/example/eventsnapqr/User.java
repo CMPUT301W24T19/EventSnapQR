@@ -26,7 +26,9 @@ public class User {
         this.name = name;
         this.deviceID = deviceID;
     }
-
+    public User(String deviceID) {
+        this.deviceID = deviceID;
+    }
     /**
      * Constructor for user using their name, a unique device id, homepage and contact info
      * @param name name of the user

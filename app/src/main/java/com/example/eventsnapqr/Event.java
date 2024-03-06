@@ -37,7 +37,23 @@ public class Event {
         this.posterUrl = posterUrl;
         this.maxAttendees = maxAttendees;
     }
-
+    public void setQR(QR qrCode){
+        this.qrCode = qrCode;
+    }
+    /**
+     * set method to set the description of the event
+     * @return eventName string
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    /**
+     * set method to set the organizer of the event
+     * @return eventName string
+     */
+    public void setOrganizer(User user) {
+        this.organizer = user;
+    }
     /**
      * getter method to return the name of the event
      * @return eventName string
@@ -45,7 +61,13 @@ public class Event {
     public String getEventName() {
         return eventName;
     }
-
+    /**
+     * setter method to set the name of the event
+     * @return n/a
+     */
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
     /**
      * getter method to return the organizing user
      * @return deviceID of the user
