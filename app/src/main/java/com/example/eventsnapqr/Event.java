@@ -5,6 +5,7 @@ import android.net.Uri;
 import java.util.List;
 
 public class Event {
+
     private List<User> attendees;
     private String posterUrl;
     private String eventName; // name of the event
