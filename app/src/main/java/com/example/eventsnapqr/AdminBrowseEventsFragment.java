@@ -11,6 +11,7 @@ import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,7 +26,7 @@ import java.util.List;
  * Use the {@link AdminBrowseEventsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AdminBrowseEventsFragment extends Fragment {
+public class AdminBrowseEventsFragment extends Fragment implements FirebaseController.OnEventsLoadedListener{
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -68,7 +69,8 @@ public class AdminBrowseEventsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        firebaseController = new FirebaseController();
+
+
     }
     private ArrayList<Event> eventsDataList;
     private EventAdapter eventAdapter;
@@ -78,13 +80,18 @@ public class AdminBrowseEventsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_admin_browse_events, container, false);
 
         listView = view.findViewById(R.id.events);
+        firebaseController = new FirebaseController();
+        firebaseController.getEvents(this);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                firebaseController.deleteEvent(eventsDataList.get(position));
+                eventsDataList.remove(position);
+                eventAdapter.notifyDataSetChanged();
+            }
+        });
 
 
-        eventsDataList = firebaseController.getEvents();
-
-        eventAdapter = new EventAdapter(getContext(), eventsDataList);
-        listView.setAdapter(eventAdapter);
-        eventAdapter.notifyDataSetChanged();
 
 
         buttonBackToAdminMain = view.findViewById(R.id.button_back_button);
@@ -99,23 +106,30 @@ public class AdminBrowseEventsFragment extends Fragment {
         // Inflate the layout for this fragment
         return view;
     }
+
+    @Override
+    public void onEventsLoaded(ArrayList<Event> events) {
+        this.eventsDataList = events;
+        eventAdapter = new EventAdapter(getContext(), eventsDataList);
+        listView.setAdapter(eventAdapter);
+        eventAdapter.notifyDataSetChanged();
+    }
 }
 class EventAdapter extends ArrayAdapter<Event> {
 
     private LayoutInflater inflater;
-    private List<Event> events;
+    private ArrayList<Event> events;
     private Context context;
-    public EventAdapter(Context context, List<Event> events) {
+    public EventAdapter(Context context, ArrayList<Event> events) {
         super(context, 0, events);
         inflater = LayoutInflater.from(context);
         this.context = context;
         this.events = events;
-    }
 
+    }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
-
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.item_event, parent, false);
             viewHolder = new ViewHolder();
@@ -125,7 +139,6 @@ class EventAdapter extends ArrayAdapter<Event> {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-
         // Get the event at the specified position
         Event event = getItem(position);
         if (event != null) {
@@ -137,7 +150,6 @@ class EventAdapter extends ArrayAdapter<Event> {
                 viewHolder.eventOrganizerTextView.setText("Unknown Organizer");
             }
         }
-
         return convertView;
     }
 
@@ -146,4 +158,6 @@ class EventAdapter extends ArrayAdapter<Event> {
         TextView eventOrganizerTextView;
         // Add more views if needed
     }
+
+
 }
