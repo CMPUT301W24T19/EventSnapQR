@@ -11,6 +11,7 @@ import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -81,7 +82,14 @@ public class AdminBrowseEventsFragment extends Fragment implements FirebaseContr
         listView = view.findViewById(R.id.events);
         firebaseController = new FirebaseController();
         firebaseController.getEvents(this);
-
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                firebaseController.deleteEvent(eventsDataList.get(position));
+                eventsDataList.remove(position);
+                eventAdapter.notifyDataSetChanged();
+            }
+        });
 
 
 
