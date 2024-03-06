@@ -14,8 +14,10 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -97,17 +99,6 @@ public class FirebaseController {
                         Log.w("attendee not added", "Error adding attendee document", e);
                     }
                 });
-        /**
-        attendees.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                QuerySnapshot doc = task.getResult();
-
-                List<DocumentSnapshot> attendees = doc.getDocuments();
-                // do more
-            }
-        });
-         **/
     }
     public void addUser(User user) {
         Map<String, Object> userData = new HashMap<>();
@@ -135,7 +126,34 @@ public class FirebaseController {
                     }
                 });
     }
+    void parseDocuments(List<DocumentSnapshot> documents) {
+        for(DocumentSnapshot doc: documents){
+            Event event = new Event();
 
+
+            QR qr = new QR(doc.getString("QR link"));
+            event.setQR(qr);
+            event.setOrganizer(new User(doc.getString("organizer ID")));
+            //doc.get("attendees");
+            event.setDescription(doc.getString("description"));
+            event.setEventName(doc.getString("event name"));
+            event.setPosterUrl(doc.getString("posterURL"));
+            events.add(event);
+            //Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees)
+        }
+    }
+    ArrayList<Event> events = new ArrayList<>();
+    public ArrayList<Event> getEvents(){
+        eventReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if(!queryDocumentSnapshots.isEmpty()){
+                    parseDocuments(queryDocumentSnapshots.getDocuments());
+                }
+            }
+        });
+        return events;
+    }
     public void addEvent(Event event) {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("event name", event.getEventName());
