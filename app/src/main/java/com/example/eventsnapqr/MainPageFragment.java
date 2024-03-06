@@ -68,6 +68,7 @@ public class MainPageFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
     private void auth(){
         ContentResolver contentResolver = getContext().getContentResolver();
@@ -93,8 +94,8 @@ public class MainPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_page, container, false);
-        buttonAdminMainPage = view.findViewById(R.id.admin_button);
         auth();
+        buttonAdminMainPage = view.findViewById(R.id.admin_button);
         buttonOrganizeEvent = view.findViewById(R.id.organize_event_button);
         buttonBrowseEvent = view.findViewById(R.id.browse_events_button);
         buttonScanQR = view.findViewById(R.id.scan_qr_button);
