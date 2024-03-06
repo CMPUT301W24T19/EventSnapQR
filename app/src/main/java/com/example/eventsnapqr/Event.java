@@ -3,13 +3,13 @@ package com.example.eventsnapqr;
 import java.util.List;
 
 public class Event {
-    private String eventName; // name of the event
-    private User organizer; // user who organized the event
-    private QR qrCode; // qr code for the event
+    private String eventName;
+    private User organizer;
+    private QR qrCode;
     private FirebaseController firebaseController;
     private List<User> attendees;
 
-    private String posterUrl; // URL for the event poster image
+    private String posterUrl;
 
 
     public Event() {

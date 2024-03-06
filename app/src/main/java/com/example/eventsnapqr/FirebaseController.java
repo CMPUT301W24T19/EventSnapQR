@@ -14,12 +14,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class FirebaseController {
     private static FirebaseController instance;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference eventReference = db.collection("events");
-    private CollectionReference userReference = db.collection("users");
-    private FirebaseController() {
+    private FirebaseFirestore db;
+    private CollectionReference eventReference;
+    private CollectionReference userReference;
 
+    FirebaseController() {
     }
+
 
     public static synchronized FirebaseController getInstance() {
         if (instance == null) {

@@ -81,5 +81,5 @@ public class User implements Attendee, Organizer {
     public User getUser() {
 
         return null;
-    }
-}
+
+}}
