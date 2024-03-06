@@ -8,6 +8,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -24,6 +25,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.firebase.Firebase;
+
+import java.util.ArrayList;
 
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
@@ -117,6 +120,7 @@ public class OrganizeEventFragment extends Fragment {
         FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
             @Override
             public void onUserRetrieved(User user) {
+
                 if (user != null) {
                     // User retrieved successfully, proceed with event creation
                     String link = generateLink(eventName, user.getDeviceID());
@@ -134,10 +138,25 @@ public class OrganizeEventFragment extends Fragment {
                         Log.d("USER NAME", newEvent.getOrganizer().getName());
                         if(newEvent != null){
                             firebaseController = FirebaseController.getInstance();
-                            firebaseController.addEvent(newEvent);
-                            Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
-                            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                            navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                            ArrayList<Event> allEvents = new ArrayList<>();
+                            firebaseController.getEvents(new FirebaseController.OnEventsLoadedListener(){
+                                @Override
+                                public void onEventsLoaded(ArrayList<Event> events) {
+                                    allEvents.addAll(events);
+                                }
+                            });
+                            if(!allEvents.isEmpty()) {
+                                if (!checkEventExists(newEvent, allEvents)) {
+                                    firebaseController.addEvent(newEvent);
+                                    Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
+                                    NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                                    navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                                }
+                                else{
+                                    Toast.makeText(requireContext(), "Error: Event already exists", Toast.LENGTH_LONG).show();
+                                }
+                            }
+
                         }
 
                     } catch (Exception e) {
@@ -150,10 +169,19 @@ public class OrganizeEventFragment extends Fragment {
             }
         });
     }
-
+    boolean checkEventExists(Event event, ArrayList<Event> events){
+        for(Event e : events){
+            if(e.getQrCode().getLink().equals(event.getQrCode().getLink())){
+                return true;
+            }
+        }
+        return false;
+    }
     public String generateLink(String eventName, String organizerId) {
         // eventsnapqr://com.example.eventsnapqr/join/event <-- link prefix
         String prefix = "eventsnapqr://com.example.eventsnapqr/join/event";
         return prefix + "/" + organizerId + "/" + eventName;
     }
+
+
 }
