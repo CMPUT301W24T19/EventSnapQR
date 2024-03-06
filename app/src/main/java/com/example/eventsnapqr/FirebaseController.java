@@ -11,6 +11,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -264,7 +265,9 @@ public class FirebaseController {
                     Log.d("User found", "User found: " + androidID);
                     String name = document.getString("name");
                     String deviceID = androidID;
+                    String profileURI = document.getString("profile uri");
                     User user = new User(name, deviceID);
+                    user.setProfilePicture(profileURI);
                     listener.onUserRetrieved(user);
                 } else {
                     Log.d("User not found", "User not found: " + androidID);

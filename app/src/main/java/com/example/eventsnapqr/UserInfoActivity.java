@@ -19,7 +19,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -34,6 +38,7 @@ public class UserInfoActivity extends AppCompatActivity {
     StorageReference storageRef = storage.getReference();
     String androidID;
     ImageView profilePictureImage;
+    String profilePictureURI;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,22 +57,44 @@ public class UserInfoActivity extends AppCompatActivity {
         ContentResolver contentResolver = getBaseContext().getContentResolver();
         androidID = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
 
+        FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
+            @Override
+            public void onUserRetrieved(User user) {
+                if (user != null) {
+                    if (user.getProfilePicture() != null) {
+                        Glide.with(getBaseContext())
+                                .load(Uri.parse(user.getProfilePicture()))
+                                .dontAnimate()
+                                .into(profilePictureImage);
+                    }
+                }
+            }
+        });
+
         ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
                     // Callback is invoked after the user selects a media item or closes the
                     // photo picker.
                     if (uri != null) {
                         StorageReference userRef = storageRef.child("users/" + androidID);  // specifies the path on the cloud storage
-                        userRef.putFile(uri);  // puts the file into the referenced path
-                        FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
-                            @Override
-                            public void onUserRetrieved(User user) {
-                                if (user != null) {
-                                    user.setProfilePicture(uri.toString());
-                                    FirebaseController.getInstance().addUser(user);
-                                }
-                            }
-                        });
+                        userRef.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+                            userRef.getDownloadUrl().addOnSuccessListener(uri1 -> {
+                                profilePictureURI = String.valueOf(uri1);
+                                FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
+                                    @Override
+                                    public void onUserRetrieved(User user) {
+                                        if (user != null) {
+                                            user.setProfilePicture(profilePictureURI);
+                                            FirebaseController.getInstance().addUser(user);
+                                        }
+                                    }
+                                });
+                                Glide.with(this)
+                                        .load(uri1)
+                                        .dontAnimate()
+                                        .into(profilePictureImage);
+                            });
+                        });  // puts the file into the referenced path
                     } else {
                         Log.d("TAG", "No media selected");
                     }
