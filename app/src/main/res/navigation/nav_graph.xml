@@ -18,9 +18,7 @@
         <action
             android:id="@+id/action_mainPageFragment_to_browseEventFragment"
             app:destination="@+id/browseEventFragment" />
-        <action
-            android:id="@+id/action_mainPageFragment_to_adminModeMainPageFragment"
-            app:destination="@id/adminModeMainPageFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"

@@ -1,15 +1,12 @@
 package com.example.eventsnapqr;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -107,6 +104,7 @@ public class FirebaseController {
         userData.put("phoneNumber", user.getPhoneNumber());
         userData.put("email", user.getEmail());
         userData.put("deviceID", user.getDeviceID());
+        userData.put("profile uri", user.getProfilePicture());
         CollectionReference userReference = db.collection("users");
         userReference
                 .document(user.getDeviceID()) // Assuming deviceID is unique for each user
@@ -169,7 +167,7 @@ public class FirebaseController {
             //doc.get("attendees");
             event.setDescription(doc.getString("description"));
             event.setEventName(doc.getString("event name"));
-            event.setPosterUrl(doc.getString("posterURL"));
+            event.setPosterUri(doc.getString("posterURL"));
             events.add(event);
             //Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees)
         }
@@ -199,8 +197,8 @@ public class FirebaseController {
         eventData.put("QR link", event.getQrCode().getLink());
         eventData.put("organizer ID", event.getOrganizer().getDeviceID());
         eventData.put("description", event.getDescription());
-        if (event.getPosterUrl() != null) {
-            eventData.put("posterURL", event.getPosterUrl());
+        if (event.getPosterUri() != null) {
+            eventData.put("posterURL", event.getPosterUri());
         }
         if (event.getMaxAttendees() != null) {
             eventData.put("maxAttendees", event.getMaxAttendees());
@@ -237,7 +235,9 @@ public class FirebaseController {
                     Log.d("User found", "User found: " + androidID);
                     String name = document.getString("name");
                     String deviceID = androidID;
+                    String profileURI = document.getString("profile uri");
                     User user = new User(name, deviceID);
+                    user.setProfilePicture(profileURI);
                     listener.onUserRetrieved(user);
                 } else {
                     Log.d("User not found", "User not found: " + androidID);
@@ -271,15 +271,15 @@ public class FirebaseController {
                     String organizerID = document.getString("organizer ID");
                     String qrLink = document.getString("QR link");
                     String description = document.getString("description");
-                    String posterUrl = document.getString("posterURL");
+                    String posterUri = document.getString("posterURL");
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
-
+                  
                     // retrieve the user who organized the event
                     getUser(organizerID, new OnUserRetrievedListener() {
                         @Override
                         public void onUserRetrieved(User user) {
                             if (user != null) {
-                                Event event = new Event(user, new QR(null, qrLink), eventName, description, posterUrl, maxAttendees);
+                                Event event = new Event(user, new QR(null, qrLink), eventName, description, posterUri, maxAttendees);
                                 listener.onEventRetrieved(event);
                             } else {
                                 Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);

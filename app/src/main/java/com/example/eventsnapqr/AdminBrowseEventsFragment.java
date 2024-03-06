@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -38,8 +39,6 @@ public class AdminBrowseEventsFragment extends Fragment implements FirebaseContr
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     private FloatingActionButton buttonBackToAdminMain;
 
     public AdminBrowseEventsFragment() {
@@ -58,8 +57,6 @@ public class AdminBrowseEventsFragment extends Fragment implements FirebaseContr
     public static AdminBrowseEventsFragment newInstance(String param1, String param2) {
         AdminBrowseEventsFragment fragment = new AdminBrowseEventsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,11 +65,6 @@ public class AdminBrowseEventsFragment extends Fragment implements FirebaseContr
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
 
 
     }
@@ -87,6 +79,7 @@ public class AdminBrowseEventsFragment extends Fragment implements FirebaseContr
         View view = inflater.inflate(R.layout.fragment_admin_browse_events, container, false);
         searchButton = view.findViewById(R.id.button_search);
         editTextSearch = view.findViewById(R.id.search_bar);
+
         viewList = new ArrayList<>();
         FirebaseController.OnEventsLoadedListener controllerRef = this::onEventsLoaded;
         searchButton.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +99,8 @@ public class AdminBrowseEventsFragment extends Fragment implements FirebaseContr
             }
         });
         listView = view.findViewById(R.id.events);
+        final ProgressBar progressBar = view.findViewById(R.id.progress_bar); // Make sure you have a ProgressBar in your layout
+        progressBar.setVisibility(View.VISIBLE);
         firebaseController = new FirebaseController();
         firebaseController.getEvents(this);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -127,7 +122,6 @@ public class AdminBrowseEventsFragment extends Fragment implements FirebaseContr
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // User clicked No, dismiss the dialog
                         dialog.dismiss();
                     }
                 });
@@ -145,16 +139,20 @@ public class AdminBrowseEventsFragment extends Fragment implements FirebaseContr
             }
         });
 
-        // Inflate the layout for this fragment
         return view;
     }
 
     @Override
     public void onEventsLoaded(ArrayList<Event> events) {
+
+        if (getView() != null) {
+            final ProgressBar progressBar = getView().findViewById(R.id.progress_bar);
+            progressBar.setVisibility(View.GONE);
+        }
+
         this.eventsDataList = events;
         eventAdapter = new EventAdapter(getContext(), eventsDataList);
         listView.setAdapter(eventAdapter);
-        eventAdapter.notifyDataSetChanged();
     }
 }
 class EventAdapter extends ArrayAdapter<Event> {

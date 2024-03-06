@@ -20,11 +20,21 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Firebase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.net.URI;
 
 import java.util.ArrayList;
 
@@ -42,11 +52,15 @@ public class OrganizeEventFragment extends Fragment {
     private EditText editTextEventDesc;
     private EditText editTextMaxAttendees;
     private Bitmap qrBitmap;
+    private ImageView uploadPosterButton;
 
     private String param1;
     private String param2;
     private String androidID;
     private FirebaseController firebaseController = new FirebaseController();
+    private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+    Uri imageUri;
+    String uriString;
 
     public OrganizeEventFragment() {
         // Required empty public constructor
@@ -73,11 +87,33 @@ public class OrganizeEventFragment extends Fragment {
         editTextEventName = view.findViewById(R.id.editTextEventName);
         editTextEventDesc = view.findViewById(R.id.editTextEventDesc);
         editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
+        uploadPosterButton = view.findViewById(R.id.upload_poster_button);
+
+        ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
+                registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                    // Callback is invoked after the user selects a media item or closes the
+                    // photo picker.
+                    if (uri != null) {
+                        Log.d("TAG", "Selected URI: " + uri);
+                        imageUri = uri;
+                    } else {
+                        Log.d("TAG", "No media selected");
+                    }
+                });
 
         backButton.setOnClickListener(v -> navigateToMainPageFragment());
         addEventButton.setOnClickListener(v -> {
             if (validateInput()) {
                 createEvent();
+            }
+        });
+
+        uploadPosterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickMedia.launch(new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build());
             }
         });
         return view;
@@ -133,8 +169,21 @@ public class OrganizeEventFragment extends Fragment {
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("bitmap", qrBitmap);
                         QR qrCode = new QR(qrBitmap, link);
+                        if (imageUri != null) {
+                            StorageReference userRef = storageRef.child("eventPosters/" + imageUri.getLastPathSegment());  // specifies the path on the cloud storage
+                            userRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
+                                userRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                    imageUri = uri;
+                                    uriString = imageUri.toString();
+                                    Log.d("TAG", "String URI: " + uriString);
+                                });
+                            });  // puts the file into the referenced path
+                        }
+                        else {
+                            uriString = null;
+                        }
                         // Use the retrieved user to create the event
-                        Event newEvent = new Event(user, qrCode, eventName, eventDesc, "TestURL.com", eventMaxAttendees);
+                        Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees);
                         Log.d("USER NAME", newEvent.getOrganizer().getName());
                         if(newEvent != null){
                             firebaseController = FirebaseController.getInstance();
@@ -182,6 +231,5 @@ public class OrganizeEventFragment extends Fragment {
         String prefix = "eventsnapqr://com.example.eventsnapqr/join/event";
         return prefix + "/" + organizerId + "/" + eventName;
     }
-
 
 }
