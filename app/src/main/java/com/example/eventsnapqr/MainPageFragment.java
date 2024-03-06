@@ -1,5 +1,6 @@
 package com.example.eventsnapqr;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +34,7 @@ public class MainPageFragment extends Fragment {
     private Button buttonBrowseEvent;
     private Button buttonScanQR;
     private ImageView buttonViewProfile;
-    private Boolean admin;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -63,30 +65,36 @@ public class MainPageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            admin = getArguments().getBoolean("Admin");
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        else {
-            admin = false;
-        }
     }
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean("Admin", admin);
-    }
+    private void auth(){
+        ContentResolver contentResolver = getContext().getContentResolver();
+        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+        FirebaseController.Authenticator listener = new FirebaseController.Authenticator() {
+            @Override
+            public void onUserExistenceChecked(boolean exists) {
+                // do nothing
+            }
+            @Override
+            public void onAdminExistenceChecked(boolean exists) {
+                if(exists){
+                    buttonAdminMainPage.setVisibility(View.VISIBLE);
+                }else{
+                    buttonAdminMainPage.setVisibility(View.GONE);
+                }
+            }
+        };
+        FirebaseController.checkUserExists(androidId, listener);
 
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_page, container, false);
         buttonAdminMainPage = view.findViewById(R.id.admin_button);
-        if(admin){
-            buttonAdminMainPage.setVisibility(View.VISIBLE);
-        }else{
-            buttonAdminMainPage.setVisibility(View.GONE);
-        }
+        auth();
         buttonOrganizeEvent = view.findViewById(R.id.organize_event_button);
         buttonBrowseEvent = view.findViewById(R.id.browse_events_button);
         buttonScanQR = view.findViewById(R.id.scan_qr_button);

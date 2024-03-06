@@ -58,9 +58,7 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onAdminExistenceChecked(boolean exists) {
-                if(exists){
-                    adminMode();
-                }
+                // do nothing
             }
         };
         FirebaseController.checkUserExists(androidId, listener);
@@ -75,12 +73,6 @@ public class MainActivity extends AppCompatActivity {
     public void goToMainPage(){
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         navController.navigate(R.id.mainPageFragment);
-    }
-    public void adminMode(){
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("Admin",true);
-        navController.navigate(R.id.mainPageFragment, bundle);
     }
 
 
