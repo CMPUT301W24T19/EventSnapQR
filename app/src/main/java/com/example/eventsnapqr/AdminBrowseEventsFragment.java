@@ -11,7 +11,10 @@ import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -25,7 +28,7 @@ import java.util.List;
  * Use the {@link AdminBrowseEventsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AdminBrowseEventsFragment extends Fragment {
+public class AdminBrowseEventsFragment extends Fragment implements FirebaseController.OnEventsLoadedListener{
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -68,24 +71,49 @@ public class AdminBrowseEventsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        firebaseController = new FirebaseController();
+
+
     }
+    private Button searchBtn;
     private ArrayList<Event> eventsDataList;
     private EventAdapter eventAdapter;
+    private EditText editTextSearch;
+    private ArrayList<Event> viewList;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin_browse_events, container, false);
+        searchBtn = view.findViewById(R.id.button_search);
+        editTextSearch = view.findViewById(R.id.search_bar);
+        viewList = new ArrayList<>();
+        FirebaseController.OnEventsLoadedListener controllerRef = this::onEventsLoaded;
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewList.clear();
+                for(Event e: eventsDataList){
+                    if(e.getQrCode().getLink().contains(editTextSearch.getText())){
+                        viewList.add(e);
+                    }
+                }
+                if(!viewList.isEmpty()){
+                    eventAdapter = new EventAdapter(getContext(),viewList);
+                    listView.setAdapter(eventAdapter);
 
+                }
+            }
+        });
         listView = view.findViewById(R.id.events);
-
-
-        eventsDataList = firebaseController.getEvents();
-
-        eventAdapter = new EventAdapter(getContext(), eventsDataList);
-        listView.setAdapter(eventAdapter);
-        eventAdapter.notifyDataSetChanged();
-
+        firebaseController = new FirebaseController();
+        firebaseController.getEvents(this);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                firebaseController.deleteEvent(eventsDataList.get(position));
+                eventsDataList.remove(position);
+                eventAdapter.notifyDataSetChanged();
+            }
+        });
 
         buttonBackToAdminMain = view.findViewById(R.id.button_back_button);
         buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {
@@ -99,51 +127,58 @@ public class AdminBrowseEventsFragment extends Fragment {
         // Inflate the layout for this fragment
         return view;
     }
+
+    @Override
+    public void onEventsLoaded(ArrayList<Event> events) {
+        this.eventsDataList = events;
+        eventAdapter = new EventAdapter(getContext(), eventsDataList);
+        listView.setAdapter(eventAdapter);
+        eventAdapter.notifyDataSetChanged();
+    }
 }
 class EventAdapter extends ArrayAdapter<Event> {
 
     private LayoutInflater inflater;
-    private List<Event> events;
+    private ArrayList<Event> events;
     private Context context;
-    public EventAdapter(Context context, List<Event> events) {
+    public EventAdapter(Context context, ArrayList<Event> events) {
         super(context, 0, events);
         inflater = LayoutInflater.from(context);
         this.context = context;
         this.events = events;
-    }
 
+    }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
-
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.item_event, parent, false);
             viewHolder = new ViewHolder();
             viewHolder.eventNameTextView = convertView.findViewById(R.id.textview_event_name);
-            viewHolder.eventOrganizerTextView = convertView.findViewById(R.id.textview_event_organizer);
+            viewHolder.qrLinkTextView = convertView.findViewById(R.id.textview_qr_link);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-
         // Get the event at the specified position
         Event event = getItem(position);
         if (event != null) {
             viewHolder.eventNameTextView.setText(event.getEventName());
             // Check if organizer is not null before accessing its properties
             if (event.getOrganizer() != null) {
-                viewHolder.eventOrganizerTextView.setText(event.getOrganizer().getDeviceID());
+                viewHolder.qrLinkTextView.setText(event.getQrCode().getLink());
             } else {
-                viewHolder.eventOrganizerTextView.setText("Unknown Organizer");
+                viewHolder.qrLinkTextView.setText("Unknown link");
             }
         }
-
         return convertView;
     }
 
     private static class ViewHolder {
         TextView eventNameTextView;
-        TextView eventOrganizerTextView;
+        TextView qrLinkTextView;
         // Add more views if needed
     }
+
+
 }

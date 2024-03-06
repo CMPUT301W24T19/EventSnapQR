@@ -123,11 +123,45 @@ public class FirebaseController {
                     }
                 });
     }
+    public void deleteEvent(Event event) {
+        String link = event.getQrCode().getLink();
+
+        // Perform a query to find the document with the matching link
+        eventReference.whereEqualTo("QR link", link)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            // Delete the document
+                            document.getReference().delete()
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Document successfully deleted
+                                            // You may want to notify the user or perform other actions here
+                                            Log.d("Delete event", "Delete SUCCESS");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Handle errors
+                                        }
+                                    });
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle errors
+                    }
+                });
+    }
     void parseDocuments(List<DocumentSnapshot> documents) {
         for(DocumentSnapshot doc: documents){
             Event event = new Event();
-
-
             QR qr = new QR(doc.getString("QR link"));
             event.setQR(qr);
             event.setOrganizer(new User(doc.getString("organizer ID")));
@@ -139,17 +173,21 @@ public class FirebaseController {
             //Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees)
         }
     }
+    public interface OnEventsLoadedListener {
+        void onEventsLoaded(ArrayList<Event> events);
+    }
     ArrayList<Event> events = new ArrayList<>();
-    public ArrayList<Event> getEvents(){
+    public void getEvents(final OnEventsLoadedListener listener) {
         eventReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                if(!queryDocumentSnapshots.isEmpty()){
+                if (!queryDocumentSnapshots.isEmpty()) {
+                    events.clear(); // Clear the events list before adding new data
                     parseDocuments(queryDocumentSnapshots.getDocuments());
+                    listener.onEventsLoaded(events);
                 }
             }
         });
-        return events;
     }
     public void addEvent(Event event) {
         Map<String, Object> eventData = new HashMap<>();
