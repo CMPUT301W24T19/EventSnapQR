@@ -1,6 +1,8 @@
 package com.example.eventsnapqr;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -74,7 +76,7 @@ public class AdminBrowseEventsFragment extends Fragment implements FirebaseContr
 
 
     }
-    private Button searchBtn;
+    private Button searchButton;
     private ArrayList<Event> eventsDataList;
     private EventAdapter eventAdapter;
     private EditText editTextSearch;
@@ -83,11 +85,11 @@ public class AdminBrowseEventsFragment extends Fragment implements FirebaseContr
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin_browse_events, container, false);
-        searchBtn = view.findViewById(R.id.button_search);
+        searchButton = view.findViewById(R.id.button_search);
         editTextSearch = view.findViewById(R.id.search_bar);
         viewList = new ArrayList<>();
         FirebaseController.OnEventsLoadedListener controllerRef = this::onEventsLoaded;
-        searchBtn.setOnClickListener(new View.OnClickListener() {
+        searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 viewList.clear();
@@ -109,9 +111,28 @@ public class AdminBrowseEventsFragment extends Fragment implements FirebaseContr
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                firebaseController.deleteEvent(eventsDataList.get(position));
-                eventsDataList.remove(position);
-                eventAdapter.notifyDataSetChanged();
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle("Delete Event");
+                Event event = eventsDataList.get(position);
+                builder.setMessage("Are you sure you want to delete the event: " + event.getEventName() + "?");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User clicked Yes, delete the event
+                        firebaseController.deleteEvent(event);
+                        eventsDataList.remove(position);
+                        eventAdapter.notifyDataSetChanged();
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User clicked No, dismiss the dialog
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
 
@@ -179,6 +200,4 @@ class EventAdapter extends ArrayAdapter<Event> {
         TextView qrLinkTextView;
         // Add more views if needed
     }
-
-
 }
