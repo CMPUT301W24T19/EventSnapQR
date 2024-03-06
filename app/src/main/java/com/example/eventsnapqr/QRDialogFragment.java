@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -113,6 +114,7 @@ public class QRDialogFragment extends DialogFragment {
             }
         });
         buttonSaveQR = view.findViewById(R.id.button_save_qr);
+
         buttonSaveQR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,6 +128,10 @@ public class QRDialogFragment extends DialogFragment {
                     }
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
                     outputStream.close();
+
+                    // Using MediaStore to store the image in device
+                    MediaStore.Images.Media.insertImage(getContext().getContentResolver(),bitmap,"QR Code",null);
+
                     Toast.makeText(getContext(), "QR Code saved successfully", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
