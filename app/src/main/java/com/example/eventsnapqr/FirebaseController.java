@@ -185,9 +185,12 @@ public class FirebaseController {
                     parseDocuments(queryDocumentSnapshots.getDocuments());
                     listener.onEventsLoaded(events);
                 }
+
             }
         });
     }
+
+
     public void addEvent(Event event) {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("event name", event.getEventName());

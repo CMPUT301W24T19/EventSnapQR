@@ -2,12 +2,17 @@ package com.example.eventsnapqr;
 
 import android.net.Uri;
 
+
 import java.util.List;
 
 public class Event {
 
+
     private List<User> attendees;
     private String posterUrl;
+
+
+
     private String eventName; // name of the event
     private User organizer; // user who organized the event
     private QR qrCode; // qr code for the event
@@ -17,6 +22,7 @@ public class Event {
     private List<User> signedUpAttendees; // list of users who have signed up
     private List<User> checkedInAttendees; // list of users who are currently checked in
     private FirebaseController firebaseController; // instance of the firebase controller
+
 
     public Event() {
 
