@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -72,13 +74,35 @@ public class AdminBrowseEventsFragment extends Fragment implements FirebaseContr
 
 
     }
+    private Button searchBtn;
     private ArrayList<Event> eventsDataList;
     private EventAdapter eventAdapter;
+    private EditText editTextSearch;
+    private ArrayList<Event> viewList;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin_browse_events, container, false);
+        searchBtn = view.findViewById(R.id.button_search);
+        editTextSearch = view.findViewById(R.id.search_bar);
+        viewList = new ArrayList<>();
+        FirebaseController.OnEventsLoadedListener controllerRef = this::onEventsLoaded;
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewList.clear();
+                for(Event e: eventsDataList){
+                    if(e.getQrCode().getLink().contains(editTextSearch.getText())){
+                        viewList.add(e);
+                    }
+                }
+                if(!viewList.isEmpty()){
+                    eventAdapter = new EventAdapter(getContext(),viewList);
+                    listView.setAdapter(eventAdapter);
 
+                }
+            }
+        });
         listView = view.findViewById(R.id.events);
         firebaseController = new FirebaseController();
         firebaseController.getEvents(this);
@@ -90,9 +114,6 @@ public class AdminBrowseEventsFragment extends Fragment implements FirebaseContr
                 eventAdapter.notifyDataSetChanged();
             }
         });
-
-
-
 
         buttonBackToAdminMain = view.findViewById(R.id.button_back_button);
         buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {
@@ -134,7 +155,7 @@ class EventAdapter extends ArrayAdapter<Event> {
             convertView = inflater.inflate(R.layout.item_event, parent, false);
             viewHolder = new ViewHolder();
             viewHolder.eventNameTextView = convertView.findViewById(R.id.textview_event_name);
-            viewHolder.eventOrganizerTextView = convertView.findViewById(R.id.textview_event_organizer);
+            viewHolder.qrLinkTextView = convertView.findViewById(R.id.textview_qr_link);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -145,9 +166,9 @@ class EventAdapter extends ArrayAdapter<Event> {
             viewHolder.eventNameTextView.setText(event.getEventName());
             // Check if organizer is not null before accessing its properties
             if (event.getOrganizer() != null) {
-                viewHolder.eventOrganizerTextView.setText(event.getOrganizer().getDeviceID());
+                viewHolder.qrLinkTextView.setText(event.getQrCode().getLink());
             } else {
-                viewHolder.eventOrganizerTextView.setText("Unknown Organizer");
+                viewHolder.qrLinkTextView.setText("Unknown link");
             }
         }
         return convertView;
@@ -155,7 +176,7 @@ class EventAdapter extends ArrayAdapter<Event> {
 
     private static class ViewHolder {
         TextView eventNameTextView;
-        TextView eventOrganizerTextView;
+        TextView qrLinkTextView;
         // Add more views if needed
     }
 
