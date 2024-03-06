@@ -24,6 +24,7 @@ public class BrowseEventFragment extends Fragment {
     private ListView eventListView;
     private ArrayAdapter<String> eventAdapter;
     private List<String> eventNames;
+    private List<String> eventIds;
     private FirebaseFirestore db;
 
     @Override
@@ -31,6 +32,7 @@ public class BrowseEventFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_browse_events, container, false);
         eventListView = view.findViewById(R.id.events);
         eventNames = new ArrayList<>();
+        eventIds = new ArrayList<>();
         eventAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, eventNames);
         eventListView.setAdapter(eventAdapter);
         db = FirebaseFirestore.getInstance();
@@ -52,10 +54,10 @@ public class BrowseEventFragment extends Fragment {
         });
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
-            String eventName = eventNames.get(position);
+            String eventId = eventIds.get(position);
             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
             Bundle bundle = new Bundle();
-            bundle.putString("eventName", eventName);
+            bundle.putString("eventId", eventId);
             navController.navigate(R.id.action_browseEventFragment_to_eventDetailFragment, bundle);
         });
 
@@ -73,8 +75,8 @@ public class BrowseEventFragment extends Fragment {
                     if (task.isSuccessful()) {
                         eventNames.clear();
                         for (DocumentSnapshot document : task.getResult()) {
-                            String eventName = document.getId();
-                            eventNames.add(eventName);
+                            eventIds.add(document.getId());
+                            eventNames.add(document.getString("event name"));
                         }
                         eventAdapter.notifyDataSetChanged();
                     }
