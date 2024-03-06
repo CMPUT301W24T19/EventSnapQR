@@ -1,16 +1,18 @@
 package com.example.eventsnapqr;
 
-import android.util.Log;
+import android.net.Uri;
 
 import java.util.List;
 
 public class Event {
 
+    private List<User> attendees;
+    private String posterUrl;
     private String eventName; // name of the event
     private User organizer; // user who organized the event
     private QR qrCode; // qr code for the event
     private String description; // description of the event
-    private String posterUrl; // URL for the event poster image
+    private String posterUri; // URL for the event poster image
     private Integer maxAttendees; // optional max attendees
     private List<User> signedUpAttendees; // list of users who have signed up
     private List<User> checkedInAttendees; // list of users who are currently checked in
@@ -27,15 +29,15 @@ public class Event {
      * @param qrCode QR generated for the event
      * @param eventName name of the event
      * @param description description of the event
-     * @param posterUrl URL for the event poster
+     * @param posterUri URL for the event poster
      * @param maxAttendees maximum number of attendees
      */
-    public Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees) {
+    public Event(User organizer, QR qrCode, String eventName, String description, String posterUri, Integer maxAttendees) {
         this.organizer = organizer;
         this.qrCode = qrCode;
         this.eventName = eventName;
         this.description = description;
-        this.posterUrl = posterUrl;
+        this.posterUri = posterUri;
         this.maxAttendees = maxAttendees;
     }
     public void setQR(QR qrCode){
@@ -97,16 +99,16 @@ public class Event {
      * getter method to return the URL of the event poster
      * @return poster URL
      */
-    public String getPosterUrl() {
-        return posterUrl;
+    public String getPosterUri() {
+        return posterUri;
     }
 
     /**
      * setter method for the poster URL
-     * @param posterUrl string
+     * @param posterUri string
      */
-    public void setPosterUrl(String posterUrl) {
-        this.posterUrl = posterUrl;
+    public void setPosterUri(String posterUri) {
+        this.posterUri = posterUri;
     }
 
     /**

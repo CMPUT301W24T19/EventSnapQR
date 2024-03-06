@@ -36,6 +36,7 @@ android {
 }
 
 dependencies {
+    implementation("com.firebaseui:firebase-ui-storage:7.2.0")
     implementation("com.google.firebase:firebase-storage:20.3.0")
     val camerax_version = "1.3.1"
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
