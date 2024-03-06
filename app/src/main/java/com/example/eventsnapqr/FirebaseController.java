@@ -29,8 +29,7 @@ public class FirebaseController {
     private CollectionReference eventReference = db.collection("events");
     private CollectionReference userReference = db.collection("users");
     private CollectionReference adminReference = db.collection("admin");
-    FirebaseController() {
-
+    FirebaseController() {}
 
     public static synchronized FirebaseController getInstance() {
         if (instance == null) {

@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Event {
 <<<<<<< HEAD
+<<<<<<< HEAD
     private String eventName;
     private User organizer;
     private QR qrCode;
@@ -15,6 +16,9 @@ public class Event {
     private String posterUrl;
 
 =======
+=======
+
+>>>>>>> c5dc6a338ea97803f0c0920578be5b790516fddf
     private String eventName; // name of the event
     private User organizer; // user who organized the event
     private QR qrCode; // qr code for the event
@@ -24,7 +28,11 @@ public class Event {
     private List<User> signedUpAttendees; // list of users who have signed up
     private List<User> checkedInAttendees; // list of users who are currently checked in
     private FirebaseController firebaseController; // instance of the firebase controller
+<<<<<<< HEAD
 >>>>>>> 9af50ec93a9e0c955be995986e1d5a5d14bac95b
+=======
+
+>>>>>>> c5dc6a338ea97803f0c0920578be5b790516fddf
 
     public Event() {
 
