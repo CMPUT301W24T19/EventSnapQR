@@ -109,7 +109,7 @@ public class Event {
      * @param posterUri string
      */
     public void setPosterUri(String posterUri) {
-        this.posterUri = posterUri;
+        this.posterUri = Uri.parse(posterUri);
     }
 
     /**
