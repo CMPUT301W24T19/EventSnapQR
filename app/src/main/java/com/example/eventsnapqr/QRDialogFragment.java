@@ -1,6 +1,7 @@
 package com.example.eventsnapqr;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
@@ -9,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,11 +109,12 @@ public class QRDialogFragment extends DialogFragment {
         buttonExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                navController.navigate(R.id.action_qRDialogFragment_to_mainPageFragment);
+                Intent intent = new Intent(requireContext(), MainActivity.class);
+                startActivity(intent);
             }
         });
         buttonSaveQR = view.findViewById(R.id.button_save_qr);
+
         buttonSaveQR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,6 +128,10 @@ public class QRDialogFragment extends DialogFragment {
                     }
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
                     outputStream.close();
+
+                    // Using MediaStore to store the image in device
+                    MediaStore.Images.Media.insertImage(getContext().getContentResolver(),bitmap,"QR Code",null);
+
                     Toast.makeText(getContext(), "QR Code saved successfully", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_2"
+    app:startDestination="@id/myEventsFragment">
+
+    <fragment
+        android:id="@+id/yourEventFragment"
+        android:name="com.example.eventsnapqr.YourEventFragment"
+        android:label="YourEventFragment" >
+        <action
+            android:id="@+id/action_yourEventFragment_to_realTimeAttendanceFragment"
+            app:destination="@id/realTimeAttendanceFragment" />
+        <action
+            android:id="@+id/action_yourEventFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/myEventsFragment"
+        android:name="com.example.eventsnapqr.MyEventsFragment"
+        android:label="MyEventsFragment" >
+        <action
+            android:id="@+id/action_myEventsFragment_to_yourEventFragment"
+            app:destination="@id/yourEventFragment" />
+        <action
+            android:id="@+id/action_myEventsFragment_to_eventDetailFragmentFromGraph2"
+            app:destination="@id/eventDetailFragmentFromGraph2" />
+    </fragment>
+    <fragment
+        android:id="@+id/realTimeAttendanceFragment"
+        android:name="com.example.eventsnapqr.RealTimeAttendanceFragment"
+        android:label="RealTimeAttendanceFragment" />
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.eventsnapqr.MapFragment"
+        android:label="MapFragment" />
+    <fragment
+        android:id="@+id/eventDetailFragmentFromGraph2"
+        android:name="com.example.eventsnapqr.eventDetailFragmentFromGraph2"
+        android:label="eventDetailFragmentFromGraph2" />
+</navigation>

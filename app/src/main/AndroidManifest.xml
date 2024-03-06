@@ -19,7 +19,6 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
         android:theme="@style/Theme.EventSnapQR"
         tools:targetApi="31">
         <activity
@@ -28,17 +27,7 @@
         <activity
             android:name=".ScanQRActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="com.example.eventsnapqr"
-                    android:pathPrefix="/join/event"
-                    android:scheme="com.example.eventsnapqr" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".OrganizeAnEventActivity"
@@ -53,9 +42,14 @@
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <data
+                    android:scheme="eventsnapqr"
+                    android:host="com.example.eventsnapqr"
+                    android:pathPrefix="/join/event" />
             </intent-filter>
         </activity>
     </application>
