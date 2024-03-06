@@ -78,7 +78,7 @@ public class FirebaseController {
         void onUserExistenceChecked(boolean exists);
         void onAdminExistenceChecked(boolean exists);
     }
-    public void addAttendee(String eventIdentifier, Attendee attendee) {
+    public void addAttendee(String eventIdentifier, User attendee) {
         DocumentReference eventToAttend = eventReference.document(eventIdentifier);
         CollectionReference attendees = eventToAttend.collection("attendees");
 
@@ -202,7 +202,7 @@ public class FirebaseController {
         if (event.getMaxAttendees() != null) {
             eventData.put("maxAttendees", event.getMaxAttendees());
         }
-        if(eventReference != null){
+        if (eventReference != null) {
             eventReference.add(eventData).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                 @Override
                 public void onSuccess(DocumentReference documentReference) {
@@ -216,39 +216,8 @@ public class FirebaseController {
                 }
             });
         }
-
-
-        /**
-         attendees.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-        @Override
-        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-        QuerySnapshot doc = task.getResult();
-
-        List<DocumentSnapshot> attendees = doc.getDocuments();
-        // do more
-        }
-        });
-         **/
     }
-    /**
-    public void addEvent(Event event) {
-        eventReference.add()
-                .document(event.getQrCode().getLink())
-                .set(event)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.d("TAG", "Data has been added successfully!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("TAG", "Data could not be added!" + e.toString());
-                    }
-                });
-    }
-**/
+
     /**
      * method that creates a user object based on a given androidID and the associated
      * data from the firestore database. very similar to checkUserExists
@@ -302,8 +271,19 @@ public class FirebaseController {
                     String posterUrl = document.getString("posterURL");
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
 
-                    Event event = new Event(new User("", organizerID), new QR(null, qrLink), eventName, description, posterUrl, maxAttendees);
-                    listener.onEventRetrieved(event);
+                    // retrieve the user who organized the event
+                    getUser(organizerID, new OnUserRetrievedListener() {
+                        @Override
+                        public void onUserRetrieved(User user) {
+                            if (user != null) {
+                                Event event = new Event(user, new QR(null, qrLink), eventName, description, posterUrl, maxAttendees);
+                                listener.onEventRetrieved(event);
+                            } else {
+                                Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);
+                                listener.onEventRetrieved(null);
+                            }
+                        }
+                    });
                 } else {
                     Log.d("Event not found", "Event not found: " + eventIdentifier);
                     listener.onEventRetrieved(null);
@@ -316,7 +296,7 @@ public class FirebaseController {
     }
 
     /**
-     * Interface to handle event retrieval.
+     * interface to handle event retrieval.
      */
     public interface OnEventRetrievedListener {
         void onEventRetrieved(Event event);

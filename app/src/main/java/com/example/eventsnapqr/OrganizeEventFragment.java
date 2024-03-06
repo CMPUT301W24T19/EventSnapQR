@@ -131,6 +131,7 @@ public class OrganizeEventFragment extends Fragment {
                         QR qrCode = new QR(qrBitmap, link);
                         // Use the retrieved user to create the event
                         Event newEvent = new Event(user, qrCode, eventName, eventDesc, "TestURL.com", eventMaxAttendees);
+                        Log.d("USER NAME", newEvent.getOrganizer().getName());
                         if(newEvent != null){
                             firebaseController = FirebaseController.getInstance();
                             firebaseController.addEvent(newEvent);
