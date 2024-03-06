@@ -90,13 +90,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
+
             <TextView
+                android:id="@+id/name_context"
                 android:layout_width="300dp"
                 android:layout_height="50dp"
                 android:background="@color/material_dynamic_neutral60"
                 android:backgroundTint="#4A4A4A"
                 android:backgroundTintMode="add"
-                android:contentDescription=""/>
+                android:contentDescription="" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -111,12 +113,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
+
             <TextView
+                android:id="@+id/email_context"
                 android:layout_width="300dp"
                 android:layout_height="50dp"
                 android:background="@color/material_dynamic_neutral60"
                 android:backgroundTint="#4A4A4A"
-                android:backgroundTintMode="add"/>
+                android:backgroundTintMode="add" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -131,12 +135,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
+
             <TextView
+                android:id="@+id/phone_context"
                 android:layout_width="300dp"
                 android:layout_height="50dp"
                 android:background="@color/material_dynamic_neutral60"
                 android:backgroundTint="#4A4A4A"
-                android:backgroundTintMode="add"/>
+                android:backgroundTintMode="add" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -151,12 +157,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
+
             <TextView
+                android:id="@+id/homepage_context"
                 android:layout_width="300dp"
                 android:layout_height="50dp"
                 android:background="@color/material_dynamic_neutral60"
                 android:backgroundTint="#4A4A4A"
-                android:backgroundTintMode="add"/>
+                android:backgroundTintMode="add" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"

@@ -10,6 +10,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -39,6 +40,11 @@ public class UserInfoActivity extends AppCompatActivity {
     String androidID;
     ImageView profilePictureImage;
     String profilePictureURI;
+    TextView userName;
+    TextView email;
+    TextView phoneNumber;
+    TextView homepage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +53,11 @@ public class UserInfoActivity extends AppCompatActivity {
         buttonAddImage = findViewById(R.id.upload_profile_button);
         buttonRemoveImage = findViewById(R.id.delete_profile_button);
         profilePictureImage = findViewById(R.id.iv_profile_pic);
+        userName = findViewById(R.id.name_context);
+        email = findViewById(R.id.email_context);
+        phoneNumber = findViewById(R.id.phone_context);
+        homepage = findViewById(R.id.homepage_context);
+
         buttonBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,6 +78,10 @@ public class UserInfoActivity extends AppCompatActivity {
                                 .dontAnimate()
                                 .into(profilePictureImage);
                     }
+                    userName.setText(user.getName());
+                    email.setText(user.getEmail());
+                    phoneNumber.setText(user.getPhoneNumber());
+                    homepage.setText(user.getHomepage());
                 }
             }
         });
