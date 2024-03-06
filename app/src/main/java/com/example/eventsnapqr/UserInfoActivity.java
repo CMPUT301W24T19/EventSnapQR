@@ -16,12 +16,14 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -127,7 +129,39 @@ public class UserInfoActivity extends AppCompatActivity {
         buttonRemoveImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
+                    @Override
+                    public void onUserRetrieved(User user) {
+                        if (user != null) {
+                            if (user.getProfilePicture() != null) {
+                                String[] uriPaths = Uri.parse(user.getProfilePicture()).getPath().split("/");
+                                String storagePath = uriPaths[uriPaths.length - 2] + "/" + uriPaths[uriPaths.length - 1];
+                                Log.d("TAG", "Path: " + storagePath);
+                                storageRef.child(storagePath).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        Log.d("TAG", "Picture successfully deleted");
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d("TAG", "Picture not deleted");
+                                    }
+                                });
+                                user.setProfilePicture(null);
+                                FirebaseController.getInstance().addUser(user);
+                                storageRef.child("defaultPics/profile_pic.webp").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        Glide.with(getBaseContext())
+                                                .load(uri)
+                                                .into(profilePictureImage);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
             }
         });
     }
