@@ -20,13 +20,13 @@ public class EventDetailFragment extends Fragment {
         // Required empty public constructor
     }
 
-    private String eventName;
+    private String eventId;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            eventName = getArguments().getString("eventName");
-            loadEventDetails(eventName);
+            eventId = getArguments().getString("eventId");
+            loadEventDetails(eventId);
         }
     }
 
@@ -43,7 +43,7 @@ public class EventDetailFragment extends Fragment {
         view.findViewById(R.id.sign_up_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CreateDialog(eventName);
+                CreateDialog(eventId);
             }
         });
 
