@@ -25,13 +25,16 @@ import java.util.Map;
 
 public class FirebaseController {
     private static FirebaseController instance;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference eventReference = db.collection("events");
     private CollectionReference userReference = db.collection("users");
     private CollectionReference adminReference = db.collection("admin");
     FirebaseController() {
 
+
+    FirebaseController() {
     }
+
 
     public static synchronized FirebaseController getInstance() {
         if (instance == null) {
