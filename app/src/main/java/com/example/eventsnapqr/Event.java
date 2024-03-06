@@ -1,6 +1,9 @@
 package com.example.eventsnapqr;
 
-import android.util.Log;
+import android.net.Uri;
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
@@ -9,11 +12,12 @@ public class Event {
     private User organizer; // user who organized the event
     private QR qrCode; // qr code for the event
     private String description; // description of the event
-    private String posterUrl; // URL for the event poster image
+    private Uri posterUri; // URL for the event poster image
     private Integer maxAttendees; // optional max attendees
     private List<User> signedUpAttendees; // list of users who have signed up
     private List<User> checkedInAttendees; // list of users who are currently checked in
     private FirebaseController firebaseController; // instance of the firebase controller
+    private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
 
     public Event() {
 
@@ -26,15 +30,15 @@ public class Event {
      * @param qrCode QR generated for the event
      * @param eventName name of the event
      * @param description description of the event
-     * @param posterUrl URL for the event poster
+     * @param posterUri URL for the event poster
      * @param maxAttendees maximum number of attendees
      */
-    public Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees) {
+    public Event(User organizer, QR qrCode, String eventName, String description, Uri posterUri, Integer maxAttendees) {
         this.organizer = organizer;
         this.qrCode = qrCode;
         this.eventName = eventName;
         this.description = description;
-        this.posterUrl = posterUrl;
+        this.posterUri = posterUri;
         this.maxAttendees = maxAttendees;
     }
     public void setQR(QR qrCode){
@@ -96,16 +100,16 @@ public class Event {
      * getter method to return the URL of the event poster
      * @return poster URL
      */
-    public String getPosterUrl() {
-        return posterUrl;
+    public String getPosterUri() {
+        return posterUri.toString();
     }
 
     /**
      * setter method for the poster URL
-     * @param posterUrl string
+     * @param posterUri string
      */
-    public void setPosterUrl(String posterUrl) {
-        this.posterUrl = posterUrl;
+    public void setPosterUri(String posterUri) {
+        this.posterUri = posterUri;
     }
 
     /**

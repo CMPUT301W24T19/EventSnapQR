@@ -1,20 +1,16 @@
 package com.example.eventsnapqr;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -137,7 +133,7 @@ public class FirebaseController {
             //doc.get("attendees");
             event.setDescription(doc.getString("description"));
             event.setEventName(doc.getString("event name"));
-            event.setPosterUrl(doc.getString("posterURL"));
+            event.setPosterUri(doc.getString("posterURL"));
             events.add(event);
             //Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees)
         }
@@ -160,8 +156,8 @@ public class FirebaseController {
         eventData.put("QR link", event.getQrCode().getLink());
         eventData.put("organizer ID", event.getOrganizer().getDeviceID());
         eventData.put("description", event.getDescription());
-        if (event.getPosterUrl() != null) {
-            eventData.put("posterURL", event.getPosterUrl());
+        if (event.getPosterUri() != null) {
+            eventData.put("posterURL", event.getPosterUri());
         }
         if (event.getMaxAttendees() != null) {
             eventData.put("maxAttendees", event.getMaxAttendees());
@@ -263,10 +259,10 @@ public class FirebaseController {
                     String organizerID = document.getString("organizer ID");
                     String qrLink = document.getString("QR link");
                     String description = document.getString("description");
-                    String posterUrl = document.getString("posterURL");
+                    String posterUri = document.getString("posterURL");
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
 
-                    Event event = new Event(new User("", organizerID), new QR(null, qrLink), eventName, description, posterUrl, maxAttendees);
+                    Event event = new Event(new User("", organizerID), new QR(null, qrLink), eventName, description, Uri.parse(posterUri), maxAttendees);
                     listener.onEventRetrieved(event);
                 } else {
                     Log.d("Event not found", "Event not found: " + eventIdentifier);

@@ -65,7 +65,7 @@ public class AdminBrowseImagesFragment extends Fragment {
         for (int i = 1; i <= 30; i++) {
             String dummyUrl = "https://example.com/poster" + i + ".png";
             Event event = new Event();
-            event.setPosterUrl(dummyUrl);
+            event.setPosterUri(dummyUrl);
             dummyPosters.add(event);
         }
         buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {

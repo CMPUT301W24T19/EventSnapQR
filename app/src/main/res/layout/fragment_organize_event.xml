@@ -52,11 +52,12 @@
             android:layout_height="wrap_content"
             android:text="Upload poster:"/>
         <ImageView
-            android:id="@+id/iv_upload_poster"
+            android:id="@+id/upload_poster_button"
             android:layout_width="40dp"
             android:layout_height="40dp"
             app:srcCompat="@android:drawable/ic_menu_upload"
-            android:padding="5dp"/>
+            android:padding="5dp"
+            android:clickable="true"/>
 
     </LinearLayout>
 
