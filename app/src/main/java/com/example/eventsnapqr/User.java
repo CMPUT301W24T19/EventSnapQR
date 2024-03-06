@@ -1,5 +1,7 @@
 package com.example.eventsnapqr;
 
+import android.net.Uri;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,7 @@ public class User {
     private String deviceID; // the device id associated with the user
     private List<Event> organizedEvents;
     private List<Event> attendingEvents;
+    private String profilePicture;
 
     /**
      * Constructor for user using their name and a unique device id
@@ -115,6 +118,13 @@ public class User {
      */
     public String getDeviceID() {
         return deviceID;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+    public String getProfilePicture() {
+        return this.profilePicture;
     }
 
     public User getUser() {

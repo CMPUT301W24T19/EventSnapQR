@@ -12,7 +12,7 @@ public class Event {
     private User organizer; // user who organized the event
     private QR qrCode; // qr code for the event
     private String description; // description of the event
-    private Uri posterUri; // URL for the event poster image
+    private String posterUri; // URL for the event poster image
     private Integer maxAttendees; // optional max attendees
     private List<User> signedUpAttendees; // list of users who have signed up
     private List<User> checkedInAttendees; // list of users who are currently checked in
@@ -33,7 +33,7 @@ public class Event {
      * @param posterUri URL for the event poster
      * @param maxAttendees maximum number of attendees
      */
-    public Event(User organizer, QR qrCode, String eventName, String description, Uri posterUri, Integer maxAttendees) {
+    public Event(User organizer, QR qrCode, String eventName, String description, String posterUri, Integer maxAttendees) {
         this.organizer = organizer;
         this.qrCode = qrCode;
         this.eventName = eventName;
@@ -101,7 +101,7 @@ public class Event {
      * @return poster URL
      */
     public String getPosterUri() {
-        return posterUri.toString();
+        return posterUri;
     }
 
     /**
@@ -109,7 +109,7 @@ public class Event {
      * @param posterUri string
      */
     public void setPosterUri(String posterUri) {
-        this.posterUri = Uri.parse(posterUri);
+        this.posterUri = posterUri;
     }
 
     /**

@@ -105,6 +105,7 @@ public class FirebaseController {
         userData.put("phoneNumber", user.getPhoneNumber());
         userData.put("email", user.getEmail());
         userData.put("deviceID", user.getDeviceID());
+        userData.put("profile uri", user.getProfilePicture());
         CollectionReference userReference = db.collection("users");
         userReference
                 .document(user.getDeviceID()) // Assuming deviceID is unique for each user
@@ -262,7 +263,7 @@ public class FirebaseController {
                     String posterUri = document.getString("posterURL");
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
 
-                    Event event = new Event(new User("", organizerID), new QR(null, qrLink), eventName, description, Uri.parse(posterUri), maxAttendees);
+                    Event event = new Event(new User("", organizerID), new QR(null, qrLink), eventName, description, posterUri, maxAttendees);
                     listener.onEventRetrieved(event);
                 } else {
                     Log.d("Event not found", "Event not found: " + eventIdentifier);

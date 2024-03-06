@@ -58,6 +58,7 @@ public class OrganizeEventFragment extends Fragment {
     private FirebaseController firebaseController = new FirebaseController();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
     Uri imageUri;
+    String uriString;
 
     public OrganizeEventFragment() {
         // Required empty public constructor
@@ -170,11 +171,16 @@ public class OrganizeEventFragment extends Fragment {
                             userRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
                                 userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                     imageUri = uri;
+                                    uriString = imageUri.toString();
+                                    Log.d("TAG", "String URI: " + uriString);
                                 });
                             });  // puts the file into the referenced path
                         }
+                        else {
+                            uriString = null;
+                        }
                         // Use the retrieved user to create the event
-                        Event newEvent = new Event(user, qrCode, eventName, eventDesc, imageUri, eventMaxAttendees);
+                        Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees);
                         if(newEvent != null){
                             firebaseController = FirebaseController.getInstance();
                             firebaseController.addEvent(newEvent);
