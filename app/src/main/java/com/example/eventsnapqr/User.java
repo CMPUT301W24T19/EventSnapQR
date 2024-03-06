@@ -7,11 +7,15 @@ import java.util.List;
  * Represents a user object that has the ability of an
  * organizer and attendee
  */
-public class User implements Attendee, Organizer {
+public class User {
+//public class User implements Attendee, Organizer {
     private String name; // name of the user
-    private String homepage; // user website
-    private String contactInfo; // further contact information
+    private String homepage; // users website
+    private String phoneNumber; // users phone number
+    private String email; // users email
     private String deviceID; // the device id associated with the user
+    private List<Event> organizedEvents;
+    private List<Event> attendingEvents;
 
     /**
      * Constructor for user using their name and a unique device id
@@ -20,6 +24,25 @@ public class User implements Attendee, Organizer {
      */
     public User(String name, String deviceID) {
         this.name = name;
+        this.deviceID = deviceID;
+    }
+    public User(String deviceID) {
+        this.deviceID = deviceID;
+    }
+    /**
+     * Constructor for user using their name, a unique device id, homepage and contact info
+     * @param name name of the user
+     * @param deviceID unique id of the users device
+     * @param homepage the user can add a homepage if wanted
+     * @param phoneNumber the users phone number (pt1 of contact info)
+     * @param email the users email (pt2 of contact info)
+     */
+    public User(String name, String deviceID, String homepage, String phoneNumber, String email) {
+        this.name = name;
+        this.deviceID = deviceID;
+        this.homepage = homepage;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
     }
 
     /**
@@ -55,19 +78,35 @@ public class User implements Attendee, Organizer {
     }
 
     /**
-     * getting method for contact information
-     * @return contact information
+     * getter method to retrieve users phone number
+     * @return phone number of the user
      */
-    public String getContactInfo() {
-        return contactInfo;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
     /**
-     * setter method for contact information
-     * @param contactInfo new contact information
+     * setter method if the user needs to update their number
+     * @param phoneNumber new phone number
      */
-    public void setContactInfo(String contactInfo) {
-        this.contactInfo = contactInfo;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    /**
+     * getter method to retrieve users email
+     * @return users email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * setter method if the user needs to update their email
+     * @param email new email
+     */
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     /**

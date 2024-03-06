@@ -1,12 +1,15 @@
 package com.example.eventsnapqr;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +34,7 @@ public class MainPageFragment extends Fragment {
     private Button buttonBrowseEvent;
     private Button buttonScanQR;
     private ImageView buttonViewProfile;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -66,13 +70,31 @@ public class MainPageFragment extends Fragment {
         }
 
     }
+    private void auth(){
+        ContentResolver contentResolver = getContext().getContentResolver();
+        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+        FirebaseController.Authenticator listener = new FirebaseController.Authenticator() {
+            @Override
+            public void onUserExistenceChecked(boolean exists) {
+                // do nothing
+            }
+            @Override
+            public void onAdminExistenceChecked(boolean exists) {
+                if(exists){
+                    buttonAdminMainPage.setVisibility(View.VISIBLE);
+                }else{
+                    buttonAdminMainPage.setVisibility(View.GONE);
+                }
+            }
+        };
+        FirebaseController.checkUserExists(androidId, listener);
 
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
         View view = inflater.inflate(R.layout.fragment_main_page, container, false);
+        auth();
         buttonAdminMainPage = view.findViewById(R.id.admin_button);
         buttonOrganizeEvent = view.findViewById(R.id.organize_event_button);
         buttonBrowseEvent = view.findViewById(R.id.browse_events_button);
@@ -90,8 +112,6 @@ public class MainPageFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), OrganizeAnEventActivity.class);
                 startActivity(intent);
-                //NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                //navController.navigate(R.id.action_mainPageFragment_to_organizeEventFragment);
             }
         });
         buttonBrowseEvent.setOnClickListener((new View.OnClickListener() {

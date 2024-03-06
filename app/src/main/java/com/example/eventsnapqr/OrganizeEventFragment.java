@@ -1,8 +1,15 @@
 package com.example.eventsnapqr;
 
+import static androidx.camera.core.impl.utils.ContextUtil.getBaseContext;
+
+import static com.google.common.hash.Hashing.sha256;
+
+import android.content.ContentResolver;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +23,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.firebase.Firebase;
+
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 
@@ -28,12 +37,13 @@ public class OrganizeEventFragment extends Fragment {
     private Button addEventButton;
     private EditText editTextEventName;
     private EditText editTextEventDesc;
-
+    private EditText editTextMaxAttendees;
     private Bitmap qrBitmap;
 
     private String param1;
     private String param2;
-    private String deviceID;
+    private String androidID;
+    private FirebaseController firebaseController = new FirebaseController();
 
     public OrganizeEventFragment() {
         // Required empty public constructor
@@ -53,11 +63,13 @@ public class OrganizeEventFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_organize_event, container, false);
-
+        androidID = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        Log.d("Device ID", "Android ID: " + androidID);
         backButton = view.findViewById(R.id.button_back_button);
         addEventButton = view.findViewById(R.id.button_create);
         editTextEventName = view.findViewById(R.id.editTextEventName);
         editTextEventDesc = view.findViewById(R.id.editTextEventDesc);
+        editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
 
         backButton.setOnClickListener(v -> navigateToMainPageFragment());
         addEventButton.setOnClickListener(v -> {
@@ -90,35 +102,57 @@ public class OrganizeEventFragment extends Fragment {
     }
 
     private void navigateToMainPageFragment() {
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_organizeEventFragment_to_mainPageFragment);
+        Intent intent = new Intent(requireContext(), MainActivity.class);
+        startActivity(intent);
     }
 
     private void createEvent() {
-        String eventName = editTextEventName.getText().toString();
+        String eventName = editTextEventName.getText().toString(); // get the name of the event
+        String eventDesc = editTextEventDesc.getText().toString(); // get the description of the event
+        String maxAttendeesInput = editTextMaxAttendees.getText().toString();
+        Integer eventMaxAttendees = !maxAttendeesInput.isEmpty() ? Integer.valueOf(maxAttendeesInput) : null;
 
-        QRGEncoder qrgEncoder = new QRGEncoder(generateLink(eventName,"userId"), null, QRGContents.Type.TEXT, 5);
-        qrgEncoder.setColorBlack(Color.RED);
-        qrgEncoder.setColorWhite(Color.BLUE);
-        try {
-            qrBitmap = qrgEncoder.getBitmap();
-            Bundle bundle = new Bundle();
-            bundle.putParcelable("bitmap", qrBitmap);
-            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-            navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
-            QR qrCode = new QR(qrBitmap);
 
-            User organizer = new User("John doe", deviceID);
-            Event newEvent = new Event( organizer, qrCode, "event_name", "TESTURL.com");
+        // retrieve user from the database based on the androidID, create a new user and event object
+        FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
+            @Override
+            public void onUserRetrieved(User user) {
+                if (user != null) {
+                    // User retrieved successfully, proceed with event creation
+                    String link = generateLink(eventName, user.getDeviceID());
+                    Log.d("QR link generated", "QR link: " + link);
+                    QRGEncoder qrgEncoder = new QRGEncoder(link, null, QRGContents.Type.TEXT, 5);
+                    qrgEncoder.setColorBlack(Color.RED);
+                    qrgEncoder.setColorWhite(Color.BLUE);
+                    try {
+                        qrBitmap = qrgEncoder.getBitmap();
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("bitmap", qrBitmap);
+                        QR qrCode = new QR(qrBitmap, link);
+                        // Use the retrieved user to create the event
+                        Event newEvent = new Event(user, qrCode, eventName, eventDesc, "TestURL.com", eventMaxAttendees);
+                        if(newEvent != null){
+                            firebaseController = FirebaseController.getInstance();
+                            firebaseController.addEvent(newEvent);
+                            Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
+                            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                            navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                        }
 
-            Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            Log.v("ORGANIZE EVENT ERROR", e.toString());
-        }
+                    } catch (Exception e) {
+                        Log.v("ORGANIZE EVENT ERROR", e.toString());
+                    }
+                } else {
+                    // Handle case where user is not found
+                    Log.d("User not found", "User with ID " + androidID + " not found");
+                }
+            }
+        });
     }
-    public String generateLink(String eventName, String eventId){
-        String h = "com.example.eventsnapqr://com.example.eventsnapqr/join/event";
-        return h+"/"+eventName+"/"+eventId;
-    }
 
+    public String generateLink(String eventName, String organizerId) {
+        // eventsnapqr://com.example.eventsnapqr/join/event <-- link prefix
+        String prefix = "eventsnapqr://com.example.eventsnapqr/join/event";
+        return prefix + "/" + organizerId + "/" + eventName;
+    }
 }

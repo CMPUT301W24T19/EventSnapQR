@@ -1,7 +1,7 @@
-# EventSnapQR
 EventSnapQR is an event planning application developed for Android. It features QR scanning, multi-user interaction, geolocation verification and more!
 
 # Group Members
+
 | CCID     | Username        |
 |----------|-----------------|
 | alfartos | joseph8071      |
@@ -16,3 +16,4 @@ EventSnapQR is an event planning application developed for Android. It features 
 - [CRC Cards](https://github.com/CMPUT301W24T19/EventSnapQR/wiki/Project-Part-2-%E2%80%90-CRC-Cards)
 - [Storyboard Sequence Diagram](https://github.com/CMPUT301W24T19/EventSnapQR/wiki/Project-Part-2-%E2%80%90-Storyboard-Sequence-Diagram)
 - [UI Mockups](https://github.com/CMPUT301W24T19/EventSnapQR/wiki/Project-Part-2-%E2%80%90-UI-Mockups)
+- [UML Class Diagram](https://github.com/CMPUT301W24T19/EventSnapQR/wiki/Project-Part-3-‐-UML-Class-Diagram)

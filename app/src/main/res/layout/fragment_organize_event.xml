@@ -108,7 +108,7 @@
             android:layout_weight="1"/>
         <EditText
             android:id="@+id/editTextMaxAttendees"
-            android:inputType="numberPassword"
+            android:inputType="number"
             android:layout_width="300dp"
             android:layout_height="40dp"
             android:backgroundTint="#4A4A4A"

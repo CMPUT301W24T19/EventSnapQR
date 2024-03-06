@@ -9,4 +9,25 @@
         <item>Event6</item>
         <item>Event7</item>
     </string-array>
+    <string-array name="attendee_example">
+        <item>Attendee1</item>
+        <item>Attendee2</item>
+        <item>Attendee3</item>
+        <item>Attendee4</item>
+        <item>Attendee5</item>
+        <item>Attendee6</item>
+        <item>Attendee7</item>
+    </string-array>
+    <string-array name="organized_event_example">
+        <item>Event1</item>
+        <item>Event2</item>
+        <item>Event3</item>
+        <item>Event4</item>
+    </string-array>
+    <string-array name="attended_event_example">
+        <item>Event1</item>
+        <item>Event2</item>
+        <item>Event3</item>
+        <item>Event4</item>
+    </string-array>
 </resources>
