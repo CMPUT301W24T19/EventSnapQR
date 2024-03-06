@@ -22,6 +22,7 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:text="ADMIN"
+            android:visibility="gone"
             android:textSize="12sp"/>
         <View
             android:layout_width="0dp"
