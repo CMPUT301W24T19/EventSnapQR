@@ -142,17 +142,21 @@ public class FirebaseController {
             //Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees)
         }
     }
+    public interface OnEventsLoadedListener {
+        void onEventsLoaded(ArrayList<Event> events);
+    }
     ArrayList<Event> events = new ArrayList<>();
-    public ArrayList<Event> getEvents(){
+    public void getEvents(final OnEventsLoadedListener listener) {
         eventReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                if(!queryDocumentSnapshots.isEmpty()){
+                if (!queryDocumentSnapshots.isEmpty()) {
+                    events.clear(); // Clear the events list before adding new data
                     parseDocuments(queryDocumentSnapshots.getDocuments());
+                    listener.onEventsLoaded(events);
                 }
             }
         });
-        return events;
     }
     public void addEvent(Event event) {
         Map<String, Object> eventData = new HashMap<>();
