@@ -10,8 +10,14 @@ public interface Organizer {
     // US 01.01.02
     void reuseQRCodeForEvent(Event event, String qrCode);
 
+    void reuseQRCodeForEvent(Event event, QR qrCode);
+
     // US 01.02.01
     List<User> viewEventAttendees(String eventId);
+
+    void viewEventAttendees(String eventId, User.OnAttendeesRetrievedListener listener);
+
+    <OnAttendeesRetrievedListener> void viewEventAttendees(String eventId, OnAttendeesRetrievedListener listener);
 
     // US 01.03.01
     void sendNotificationsToAttendees(String eventId, String message);

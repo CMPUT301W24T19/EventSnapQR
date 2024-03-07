@@ -1,6 +1,11 @@
 package com.example.eventsnapqr;
 
-import android.net.Uri;
+import static android.content.ContentValues.TAG;
+
+import android.util.Log;
+
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,10 +133,8 @@ public class User implements Attendee, Organizer{
     }
 
     public User getUser() {
-
-        return null;
-
-}
+        return this;
+    }
     @Override
     public void checkIntoEvent(String qrCode) {
         // Implementation depends on QR code scanning and event check-in logic
@@ -139,14 +142,13 @@ public class User implements Attendee, Organizer{
 
     @Override
     public void uploadProfilePicture(String profilePictureUri) {
-        this.profilePicture = profilePictureUri;
+        setProfilePicture(profilePictureUri);
     }
 
     @Override
     public void removeProfilePicture() {
-        this.profilePicture = null; // Or a default image URI
+        setProfilePicture(null);
     }
-
     @Override
     public void updateProfileInfo(String name, String homepage, String phoneNumber, String email) {
         setName(name);
@@ -168,8 +170,7 @@ public class User implements Attendee, Organizer{
 
     @Override
     public String generateProfilePictureFromName(String name) {
-        // Placeholder: generate and return a URI based on the name
-        return "generated_uri_based_on_name";
+        return "uri_to_generated_profile_picture_based_on_name";
     }
 
     @Override
@@ -181,7 +182,8 @@ public class User implements Attendee, Organizer{
 
     @Override
     public List<Event> browseEvents() {
-        // Placeholder: return a list of available events
+        // This would typically involve fetching a list of events from a database or backend service.
+        // Return a mocked list of events or fetch from your database.
         return new ArrayList<>();
     }
 
@@ -192,20 +194,41 @@ public class User implements Attendee, Organizer{
     @Override
     public Event createNewEvent(String eventName, String eventDescription) {
         // Placeholder: create a new event, generate a unique QR code, and add it to createdEvents
-        Event newEvent = new Event(/* parameters including QR code */);
+        Event newEvent = new Event();
         createdEvents.add(newEvent);
         return newEvent;
     }
 
     @Override
-    public void reuseQRCodeForEvent(Event event, String qrCode) {
-        // Placeholder: assign an existing QR code to the specified event
+    public void reuseQRCodeForEvent(Event event, QR qrCode) {
+        // Logic to associate an existing QR code with an event
+        event.setQR(qrCode);
+        // Update the event in the database
+    }
+    public interface OnAttendeesRetrievedListener {
+        void onAttendeesRetrieved(List<User> attendees);
+        void onAttendeesRetrievedFailed(Exception e);
     }
 
     @Override
-    public List<User> viewEventAttendees(String eventId) {
-        // Placeholder: return a list of attendees for the specified event
-        return new ArrayList<>();
+    public void viewEventAttendees(String eventId, final OnAttendeesRetrievedListener listener) {
+        List<User> attendeesList = new ArrayList<>();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("events").document(eventId).collection("attendees")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            User attendee = document.toObject(User.class);
+                            attendeesList.add(attendee);
+                        }
+                        listener.onAttendeesRetrieved(attendeesList);
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                        listener.onAttendeesRetrievedFailed(task.getException());
+                    }
+                });
     }
 
     @Override
