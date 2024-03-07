@@ -5,8 +5,10 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -14,6 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.net.Authenticator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,21 +43,17 @@ public class FirebaseController {
         DocumentReference admin = db.collection("admin").document(androidId);
         admin.get().addOnCompleteListener(task -> {
             if(task.isSuccessful()){
-                Log.d("TAG", "Task successful");
                 DocumentSnapshot document = task.getResult();
                 if(document.exists()){
-                    Log.d("TAG", "Admin found");
                     Log.d("Admin found", "Admin found: " + androidId);
                     listener.onAdminExistenceChecked(true);
                 }
                 else {
-                    Log.d("TAG", "Admin not found");
                     Log.d("Admin not found", "Admin not found: " + androidId);
                     listener.onAdminExistenceChecked(false);
                 }
             }
             else {
-                Log.d("TAG", "Error finding admin");
                 Log.d("Error", "Error getting document: " + task.getException());
                 listener.onAdminExistenceChecked(false); // Assume not found if there's an error
             }

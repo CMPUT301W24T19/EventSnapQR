@@ -81,12 +81,9 @@ public class MainPageFragment extends Fragment {
             }
             @Override
             public void onAdminExistenceChecked(boolean exists) {
-                Log.d("TAG", "Check admin");
                 if(exists){
-                    Log.d("TAG", "Set visible");
                     buttonAdminMainPage.setVisibility(View.VISIBLE);
                 }else{
-                    Log.d("TAG", "Set invisible");
                     buttonAdminMainPage.setVisibility(View.GONE);
                 }
             }
