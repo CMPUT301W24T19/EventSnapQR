@@ -96,7 +96,7 @@
         android:id="@+id/adminModeBrowseEventsFragment"
         android:name="com.example.eventsnapqr.AdminBrowseEventsFragment"
         android:label="Admin Browse Events"
-        tools:layout="@layout/fragment_admin_browse_event">
+        tools:layout="@layout/fragment_admin_browse_events">
         <action
             android:id="@+id/action_adminBrowseEventsFragment_to_AdminModeMainPageFragment"
             app:destination="@id/adminModeMainPageFragment" />
