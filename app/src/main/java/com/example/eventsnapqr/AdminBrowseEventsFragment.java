@@ -1,6 +1,5 @@
 package com.example.eventsnapqr;
 
-
 import static androidx.core.content.ContentProviderCompat.requireContext;
 import static androidx.core.content.ContextCompat.startActivity;
 import android.app.AlertDialog;
@@ -38,7 +37,6 @@ public class AdminBrowseEventsFragment extends Fragment {
     private List<String> eventIds;
     private FirebaseFirestore db;
     private Button searchButton;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin_browse_events, container, false);
@@ -59,7 +57,7 @@ public class AdminBrowseEventsFragment extends Fragment {
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
             String eventId = eventIds.get(position);
-            showEventDetailsDialog(eventId);
+            showEventDetailsDialog(eventId, position);
         });
 
         return view;
@@ -70,29 +68,32 @@ public class AdminBrowseEventsFragment extends Fragment {
         startActivity(intent);
     }
 
-    private void showEventDetailsDialog(String eventId) {
-        // Obtain instance of FirebaseController
+    private void showEventDetailsDialog(String eventId, int position) {
         FirebaseController firebaseController = FirebaseController.getInstance();
 
-        // Call getEvent method passing eventId and a listener
         firebaseController.getEvent(eventId, new FirebaseController.OnEventRetrievedListener() {
             @Override
             public void onEventRetrieved(Event event) {
                 if (event != null) {
                     // Event retrieved successfully, show dialog with event details
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext()); // Replace YourActivityName with the name of your activity
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle("Event Details")
                             .setMessage("Event Name: " + event.getEventName() + "\n"
                                     + "Organizer Name: " + event.getOrganizer().getName() + "\n"
                                     + "Organizer ID: " + event.getOrganizer().getDeviceID() + "\n"
                                     + "Description: " + event.getDescription())
                             .setPositiveButton("View Page", (dialog, which) -> {
-                                // Handle view page action
+                                // Use the position parameter directly
+                                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                                Bundle bundle = new Bundle();
+                                bundle.putString("eventId", eventId);
+                                navController.navigate(R.id.action_adminBrowseEventsFragment_to_eventDetailFragment, bundle);
+
                             })
                             .setNegativeButton("Delete", (dialog, which) -> {
-                                showDeleteConfirmationDialog(event); // Call delete confirmation function
+                                showDeleteConfirmationDialog(event);
                             })
-                            .setNeutralButton("Cancel", null) // Do nothing
+                            .setNeutralButton("Cancel", null)
                             .create()
                             .show();
                 }
@@ -126,7 +127,7 @@ public class AdminBrowseEventsFragment extends Fragment {
                     FirebaseController.getInstance().deleteEvent(event);
                     eventAdapter.notifyDataSetChanged();
                 })
-                .setNegativeButton("No", null) // do nothing
+                .setNegativeButton("No", null)
                 .create()
                 .show();
     }
