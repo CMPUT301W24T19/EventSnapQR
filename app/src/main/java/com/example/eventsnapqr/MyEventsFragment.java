@@ -34,8 +34,8 @@ public class MyEventsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_my_events, container, false);
-        attend_eventListView = v.findViewById(R.id.attending_events_list);
-        orgnize_eventListView = v.findViewById(R.id.orgnized_events_list);
+        //attend_eventListView = v.findViewById(R.id.attending_events_list);
+        //orgnize_eventListView = v.findViewById(R.id.orgnized_events_list);
 
         /*
         * Should be replaced by entries from the database
@@ -45,9 +45,9 @@ public class MyEventsFragment extends Fragment {
         eventNames.add("Event 2");
         eventNames.add("Event 3");
         eventNames.add("Event 4");
-        eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, eventNames);
+        /*eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, eventNames);
         attend_eventListView.setAdapter(eventAdapter);
-        orgnize_eventListView.setAdapter(eventAdapter);
+        orgnize_eventListView.setAdapter(eventAdapter);*/
 
         db = FirebaseFirestore.getInstance();
 
@@ -57,7 +57,7 @@ public class MyEventsFragment extends Fragment {
                 requireActivity().finish();
             }
         });
-
+/*
         orgnize_eventListView.setOnItemClickListener((parent, view, position, id) -> {
             String eventName = eventNames.get(position);
             goToYourEventActivity(eventName);
@@ -70,7 +70,7 @@ public class MyEventsFragment extends Fragment {
             bundle.putString("eventName", eventName);
             navController.navigate(R.id.action_myEventsFragment_to_eventDetailFragmentFromGraph2, bundle);
         });
-
+*/
         return v;
     }
 
