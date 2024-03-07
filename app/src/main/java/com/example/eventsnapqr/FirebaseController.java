@@ -102,41 +102,33 @@ public class FirebaseController {
                 });
     }
     public void deleteEvent(Event event) {
-        String link = event.getQrCode().getLink();
+        String eventId = event.getEventID();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Perform a query to find the document with the matching link
-        eventReference.whereEqualTo("QRLink", link)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            // Delete the document
-                            document.getReference().delete()
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            // Document successfully deleted
-                                            // You may want to notify the user or perform other actions here
-                                            Log.d("Delete event", "Delete SUCCESS");
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            // Handle errors
-                                        }
-                                    });
-                        }
+        // Delete the event from the main 'events' collection.
+        db.collection("events").document(eventId).delete()
+                .addOnSuccessListener(aVoid -> Log.d("Delete Event", "Event successfully deleted: " + eventId))
+                .addOnFailureListener(e -> Log.e("Delete Event", "Error deleting event: " + eventId, e));
+
+        // Now, iterate through all users to remove the event from their 'organizedEvents' and 'promisedEvents' subcollections.
+        db.collection("users").get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        String userId = documentSnapshot.getId();
+
+                        // Attempt to delete from 'organizedEvents'.
+                        db.collection("users").document(userId).collection("organizedEvents").document(eventId).delete();
+
+                        // Attempt to delete from 'promisedEvents'.
+                        db.collection("users").document(userId).collection("promisedEvents").document(eventId).delete();
+
+                        Log.d("Delete Event from User", "Attempted to delete event from user: " + userId);
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle errors
-                    }
-                });
+                .addOnFailureListener(e -> Log.e("Delete Event from Users", "Error accessing users for event deletion", e));
     }
+
+
     void parseDocuments(List<DocumentSnapshot> documents) {
         for(DocumentSnapshot doc: documents){
             Event event = new Event();
