@@ -69,7 +69,7 @@ public class AdminModeMainPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin_mode_main_page, container, false);
-        buttonBackToMain = view.findViewById(R.id.button_back_button);
+        buttonBackToMain = view.findViewById(R.id.button_back);
         browseEventsButton = view.findViewById(R.id.buttonBrowseEvents);
         browseProfilesButton = view.findViewById(R.id.buttonBrowseUserProfiles);
         browseImagesButton = view.findViewById(R.id.buttonBrowseImages);
