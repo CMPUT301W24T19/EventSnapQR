@@ -117,12 +117,11 @@ public class EventDetailFragment extends Fragment {
 
     private void displayEventDetails(Event event) {
         eventPosterImage = getView().findViewById(R.id.event_poster);
-        if (event.getPosterUri() != null) {
-            Glide.with(requireContext())
-                    .load(Uri.parse(event.getPosterUri()))
-                    .dontAnimate()
-                    .into(eventPosterImage);
-        }
+        Glide.with(requireContext())
+                .placeholder(R.drawable.place_holder_img)
+                .load(Uri.parse(event.getPosterUri()))
+                .dontAnimate()
+                .into(eventPosterImage);
 
         eventDescription = getView().findViewById(R.id.description_content);
         eventDescription.setText(event.getDescription());
