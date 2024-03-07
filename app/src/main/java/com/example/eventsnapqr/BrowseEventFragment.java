@@ -76,13 +76,13 @@ public class BrowseEventFragment extends Fragment {
                         eventNames.clear();
                         for (DocumentSnapshot document : task.getResult()) {
                             eventIds.add(document.getId());
-                            eventNames.add(document.getString("event name"));
+                            eventNames.add(document.getString("eventName"));
                         }
                         eventAdapter.notifyDataSetChanged();
                     }
                     else {
                         Toast.makeText(requireContext(), "Error loading events", Toast.LENGTH_SHORT).show();
-                    } // error handling?
+                    }
                 });
     }
 }
