@@ -100,7 +100,7 @@ public class AdminBrowseEventFragment extends Fragment implements FirebaseContro
         final ProgressBar progressBar = view.findViewById(R.id.progress_bar); // Make sure you have a ProgressBar in your layout
         progressBar.setVisibility(View.VISIBLE);
         firebaseController = new FirebaseController();
-        firebaseController.getEvents(this);
+        firebaseController.getAllEvents(this);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -17,6 +17,8 @@ import androidx.navigation.Navigation;
 
 import com.google.firebase.Firebase;
 
+import java.util.List;
+
 public class EventDetailFragment extends Fragment {
     public EventDetailFragment() {
         // Required empty public constructor
@@ -50,16 +52,22 @@ public class EventDetailFragment extends Fragment {
                 FirebaseController.getInstance().getUser(androidId, new FirebaseController.OnUserRetrievedListener() {
                     @Override
                     public void onUserRetrieved(User user) {
+                        List<Attendee> attendees;
                         if (user != null) {
                             FirebaseController.getInstance().getEvent(eventId, new FirebaseController.OnEventRetrievedListener() {
                                 @Override
                                 public void onEventRetrieved(Event event) {
                                     if (event != null) {
-                                        // Event retrieved successfully, now add user as attendee and promise to go to the event
-                                        FirebaseController.getInstance().addAttendeeToEvent(event, user);
-                                        FirebaseController.getInstance().addPromiseToGo(user, event);
-                                        // Show success dialog
-                                        CreateDialog(event.getEventName());
+                                        if (event.getOrganizer().getCheckInCount(event.getOrganizer().getDeviceID(), event.getEventID()) < event.getMaxAttendees()) {
+                                            // Event retrieved successfully, now add user as attendee and promise to go to the event
+                                            FirebaseController.getInstance().addAttendeeToEvent(event, user);
+                                            FirebaseController.getInstance().addPromiseToGo(user, event);
+                                            // Show success dialog
+                                            CreateDialog(event.getEventName());
+                                        }
+                                        else {
+                                            Toast.makeText(requireContext(), "Failed to retrieve event details", Toast.LENGTH_SHORT).show();
+                                        }
                                     } else {
                                         Toast.makeText(requireContext(), "Failed to retrieve event details", Toast.LENGTH_SHORT).show();
                                     }
