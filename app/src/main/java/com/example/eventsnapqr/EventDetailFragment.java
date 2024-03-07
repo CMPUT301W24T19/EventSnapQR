@@ -92,5 +92,8 @@ public class EventDetailFragment extends Fragment {
 
         TextView eventMaxAttendees = getView().findViewById(R.id.max_attendees_content);
         eventMaxAttendees.setText(event.getMaxAttendees() != null ? event.getMaxAttendees().toString() : "No Max Attendees");
+
+        TextView eventAnnouncement = getView().findViewById(R.id.announce_content);
+        eventAnnouncement.setText(event.getAnnouncement());
     }
 }

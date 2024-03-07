@@ -54,6 +54,7 @@ public class OrganizeEventFragment extends Fragment {
     private EditText editTextMaxAttendees;
     private Bitmap qrBitmap;
     private ImageView uploadPosterButton;
+    private EditText editAnnouncements;
 
     private String param1;
     private String param2;
@@ -89,6 +90,7 @@ public class OrganizeEventFragment extends Fragment {
         editTextEventDesc = view.findViewById(R.id.editTextEventDesc);
         editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
         uploadPosterButton = view.findViewById(R.id.upload_poster_button);
+        editAnnouncements = view.findViewById(R.id.editAnnouncements);
 
         ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
@@ -151,6 +153,7 @@ public class OrganizeEventFragment extends Fragment {
         String eventDesc = editTextEventDesc.getText().toString(); // get the description of the event
         String maxAttendeesInput = editTextMaxAttendees.getText().toString();
         Integer eventMaxAttendees = !maxAttendeesInput.isEmpty() ? Integer.valueOf(maxAttendeesInput) : null;
+        String announcement = editAnnouncements.getText().toString();
 
 
         // retrieve user from the database based on the androidID, create a new user and event object
@@ -184,7 +187,7 @@ public class OrganizeEventFragment extends Fragment {
                             uriString = null;
                         }
                         // Use the retrieved user to create the event
-                        Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees);
+                        Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees,announcement);
                         Log.d("USER NAME", newEvent.getOrganizer().getName());
                         if(newEvent != null){
                             firebaseController = FirebaseController.getInstance();

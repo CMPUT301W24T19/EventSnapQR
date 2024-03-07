@@ -74,9 +74,29 @@
         android:layout_height="0dp"
         android:background="#BCBCBC"
         android:padding="8dp"
-        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintHeight_percent="0.06"
         app:layout_constraintStart_toStartOf="@+id/description_text"
         app:layout_constraintTop_toBottomOf="@+id/description_text"
+        app:layout_constraintWidth_percent="0.9" />
+
+    <TextView
+        android:id="@+id/announce_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Announcements"
+        app:layout_constraintStart_toStartOf="@+id/event_poster"
+        app:layout_constraintTop_toBottomOf="@+id/description_content" />
+
+    <TextView
+        android:id="@+id/announce_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#BCBCBC"
+        android:padding="8dp"
+        app:layout_constraintHeight_percent="0.09"
+        app:layout_constraintStart_toStartOf="@+id/announce_text"
+        app:layout_constraintTop_toBottomOf="@+id/announce_text"
         app:layout_constraintWidth_percent="0.9" />
 
     <TextView
@@ -86,7 +106,7 @@
         android:layout_marginTop="16dp"
         android:text="Max Attendees"
         app:layout_constraintStart_toStartOf="@+id/event_poster"
-        app:layout_constraintTop_toBottomOf="@+id/description_content" />
+        app:layout_constraintTop_toBottomOf="@+id/announce_content" />
 
     <TextView
         android:id="@+id/max_attendees_content"
