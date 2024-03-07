@@ -128,12 +128,12 @@ public class OrganizeEventFragment extends Fragment {
             editTextEventName.setError("Event name cannot be empty");
             return false;
         }
-
+/*
         if (eventName.length() > 50) {
             editTextEventName.setError("Event name cannot exceed 50 characters");
             return false;
         }
-
+*/
         if (eventDesc.isEmpty()) {
             editTextEventDesc.setError("Event description cannot be empty");
             return false;
@@ -176,7 +176,7 @@ public class OrganizeEventFragment extends Fragment {
                                 userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                     imageUri = uri;
                                     uriString = imageUri.toString();
-                                    Log.d("TAG", "String URI: " + uriString);
+                                    //Log.d("TAG", "String URI: " + uriString);
                                 });
                             });  // puts the file into the referenced path
                         }
