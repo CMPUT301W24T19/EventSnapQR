@@ -37,6 +37,7 @@ import com.google.firebase.storage.StorageReference;
 import java.net.URI;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
@@ -144,7 +145,7 @@ public class OrganizeEventFragment extends Fragment {
         Intent intent = new Intent(requireContext(), MainActivity.class);
         startActivity(intent);
     }
-
+    private ArrayList<Event> allEvents;
     private void createEvent() {
         String eventName = editTextEventName.getText().toString(); // get the name of the event
         String eventDesc = editTextEventDesc.getText().toString(); // get the description of the event
@@ -187,14 +188,15 @@ public class OrganizeEventFragment extends Fragment {
                         Log.d("USER NAME", newEvent.getOrganizer().getName());
                         if(newEvent != null){
                             firebaseController = FirebaseController.getInstance();
-                            ArrayList<Event> allEvents = new ArrayList<>();
+                            //ArrayList<Event> allEvents;
                             firebaseController.getEvents(new FirebaseController.OnEventsLoadedListener(){
                                 @Override
                                 public void onEventsLoaded(ArrayList<Event> events) {
+                                    allEvents = new ArrayList<>();
                                     allEvents.addAll(events);
                                 }
                             });
-                            if(!allEvents.isEmpty()) {
+                            if(allEvents != null) {
                                 if (!checkEventExists(newEvent, allEvents)) {
                                     firebaseController.addEvent(newEvent);
                                     Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
