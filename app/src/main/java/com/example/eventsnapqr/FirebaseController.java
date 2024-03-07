@@ -171,6 +171,7 @@ public class FirebaseController {
             event.setDescription(doc.getString("description"));
             event.setEventName(doc.getString("event name"));
             event.setPosterUri(doc.getString("posterURL"));
+            event.setAnnouncement(doc.getString("announcement"));
             events.add(event);
             //Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees)
         }
@@ -203,6 +204,7 @@ public class FirebaseController {
         eventData.put("QR link", event.getQrCode().getLink());
         eventData.put("organizer ID", event.getOrganizer().getDeviceID());
         eventData.put("description", event.getDescription());
+        eventData.put("announcement",event.getAnnouncement());
         if (event.getPosterUri() != null) {
             eventData.put("posterURL", event.getPosterUri());
         }
@@ -314,13 +316,15 @@ public class FirebaseController {
                     String posterUri = document.getString("posterURL");
                     String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
-                  
+                    String announcement = document.getString("announcement");
+
+
                     // retrieve the user who organized the event
                     getUser(organizerID, new OnUserRetrievedListener() {
                         @Override
                         public void onUserRetrieved(User user) {
                             if (user != null) {
-                                Event event = new Event(user, new QR(null, qrLink), eventName, description, posterUri, maxAttendees, eventId);
+                                Event event = new Event(user, new QR(null, qrLink), eventName, description, posterUri, maxAttendees, eventId, announcement);
                                 listener.onEventRetrieved(event);
                             } else {
                                 Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);

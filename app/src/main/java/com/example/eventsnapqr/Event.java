@@ -14,6 +14,7 @@ public class Event {
     private String description; // description of the event
     private String posterUri; // URL for the event poster image
     private Integer maxAttendees; // optional max attendees
+    private String announcement; //announcements related to the Event
     private String eventID;
     private List<User> attendees;
     private List<User> signedUpAttendees; // list of users who have signed up
@@ -33,16 +34,29 @@ public class Event {
      * @param description description of the event
      * @param posterUri URL for the event poster
      * @param maxAttendees maximum number of attendees
+     * @param announcement announcements related to the event
      */
-    public Event(User organizer, QR qrCode, String eventName, String description, String posterUri, Integer maxAttendees, String eventID) {
+    public Event(User organizer, QR qrCode, String eventName, String description, String posterUri, Integer maxAttendees, String eventID, String announcement) {
         this.organizer = organizer;
         this.qrCode = qrCode;
         this.eventName = eventName;
         this.description = description;
         this.posterUri = posterUri;
         this.maxAttendees = maxAttendees;
+        this.announcement = announcement;
         this.eventID = eventID;
     }
+
+    /**
+     * set method to set the Announcements of the event
+     * @param  announcement String
+     */
+    public void setAnnouncement(String announcement){this.announcement = announcement;}
+    /**
+     * getter method to return the description of the event as a string
+     * @return announcement
+     */
+    public String getAnnouncement(){return announcement;}
     public void setQR(QR qrCode){
         this.qrCode = qrCode;
     }
