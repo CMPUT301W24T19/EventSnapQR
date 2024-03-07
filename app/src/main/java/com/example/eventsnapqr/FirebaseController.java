@@ -222,6 +222,36 @@ public class FirebaseController {
                     });
         }
     }
+    ArrayList<User> users = new ArrayList<>();
+    public void getAllUsers(OnAllUsersLoadedListener listener){
+        userReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if (!queryDocumentSnapshots.isEmpty()) {
+                    users.clear();
+                    parseUsers(queryDocumentSnapshots.getDocuments());
+                    listener.onUsersLoaded(users);
+                }
+
+            }
+        });
+
+    }
+
+    void parseUsers(List<DocumentSnapshot> documents){
+        for(DocumentSnapshot doc: documents){
+            String phoneNumber = doc.getString("phoneNumber");
+            String name = doc.getString("name");
+            String email = doc.getString("email");
+            String deviceID = doc.getString("deviceID");
+            String link = doc.getString("profile uri");
+            User user = new User(name, deviceID, link, phoneNumber,email);
+            users.add(user);
+        }
+    }
+    public interface OnAllUsersLoadedListener{
+        void onUsersLoaded(List<User> users);
+    }
 
     /**
      * method that creates a user object based on a given androidID and the associated
