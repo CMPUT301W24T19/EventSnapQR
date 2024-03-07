@@ -1,7 +1,5 @@
 package com.example.eventsnapqr;
 
-import static android.content.ContentValues.TAG;
-
 import android.util.Log;
 
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -200,37 +198,51 @@ public class User implements Attendee, Organizer{
     }
 
     @Override
+    public void reuseQRCodeForEvent(Event event, String qrCode) {
+
+    }
+
+    @Override
     public void reuseQRCodeForEvent(Event event, QR qrCode) {
         // Logic to associate an existing QR code with an event
         event.setQR(qrCode);
         // Update the event in the database
     }
-    public interface OnAttendeesRetrievedListener {
-        void onAttendeesRetrieved(List<User> attendees);
-        void onAttendeesRetrievedFailed(Exception e);
-    }
-
 
     @Override
-    public void viewEventAttendees(String eventId, final OnAttendeesRetrievedListener listener) {
-        List<User> attendeesList = new ArrayList<>();
+    public void viewEventAttendees(String eventId) {
+
+    }
+
+    @Override
+    public <OnAttendeesRetrievedListener> void viewEventAttendees(String eventId, OnAttendeesRetrievedListener onAttendeesRetrievedListener) {
+
+    }
+
+    public interface AttendeesCallback { // use this interface to get list of users by calling viewEventAttendees("eventId", new AttendeesCallback()
+        void onCallback(List<User> userList);
+    }
+
+    @Override
+    public void viewEventAttendees(String eventId, AttendeesCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        List<User> userList = new ArrayList<>();
 
         db.collection("events").document(eventId).collection("attendees")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            User attendee = document.toObject(User.class);
-                            attendeesList.add(attendee);
+                            User user = document.toObject(User.class);
+                            userList.add(user);
                         }
-                        listener.onAttendeesRetrieved(attendeesList);
+                        callback.onCallback(userList);
                     } else {
-                        Log.d(TAG, "Error getting documents: ", task.getException());
-                        listener.onAttendeesRetrievedFailed(task.getException());
+                        Log.d("viewEventAttendees", "Error getting documents: ", task.getException());
                     }
                 });
     }
+
 
 
     @Override
