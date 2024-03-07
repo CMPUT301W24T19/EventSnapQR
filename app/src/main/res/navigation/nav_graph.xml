@@ -84,7 +84,7 @@
             app:destination="@id/mainPageFragment" />
         <action
             android:id="@+id/action_adminModeMainPageFragment_to_adminBrowseEventsFragment"
-            app:destination="@id/adminModeBrowseEventsFragment" />
+            app:destination="@id/adminBrowseEventsFragment" />
         <action
             android:id="@+id/action_adminModeMainPageFragment_to_adminBrowseProfilesFragment"
             app:destination="@id/adminModeBrowseProfilesFragment" />
@@ -92,6 +92,7 @@
             android:id="@+id/action_adminModeMainPageFragment_to_adminBrowseImagesFragment"
             app:destination="@id/adminModeBrowseImagesFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/adminModeBrowseEventsFragment"
         android:name="com.example.eventsnapqr.AdminBrowseEventsFragment"
@@ -127,12 +128,18 @@
 
     </fragment>
     <fragment
-        android:id="@+id/scanQROptionsFragment"
-        android:name="com.example.eventsnapqr.ScanQROptionsFragment"
-        android:label="Scan QR Activity"
-        tools:layout="@layout/fragment_scan_q_r_options">
-
+        android:id="@+id/adminBrowseEventsFragment"
+        android:name="com.example.eventsnapqr.AdminBrowseEventsFragment"
+        android:label="Admin Browse Events"
+        tools:layout="@layout/fragment_admin_browse_events">
+        <action
+            android:id="@+id/action_adminBrowseEventsFragment_to_eventDetailFragment"
+            app:destination="@id/eventDetailFragment" />
+        <action
+            android:id="@+id/action_adminBrowseEventsFragment_to_AdminModeMainPageFragment"
+            app:destination="@id/adminModeMainPageFragment" />
     </fragment>
+
     <activity
         android:id="@+id/myEventActivity2"
         android:name="com.example.eventsnapqr.MyEventActivity"
