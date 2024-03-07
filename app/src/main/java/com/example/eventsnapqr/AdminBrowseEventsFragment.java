@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AdminBrowseEventsFragment extends Fragment {
@@ -37,12 +39,34 @@ public class AdminBrowseEventsFragment extends Fragment {
     private List<String> eventIds;
     private FirebaseFirestore db;
     private Button searchButton;
+    private EditText searchBar;
+    private ArrayList<String> viewList = new ArrayList<>();
+    //edit this one
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin_browse_events, container, false);
         eventListView = view.findViewById(R.id.events);
         eventNames = new ArrayList<>();
+        searchBar = view.findViewById(R.id.search_bar);
         eventIds = new ArrayList<>();
+        searchButton = view.findViewById(R.id.button_search);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewList.clear();
+
+                for(String eventName: eventNames){
+                    if(eventName.contains(searchBar.getText())){
+                        viewList.add(eventName);
+                    }
+                }
+                if(!viewList.isEmpty()){
+                    eventAdapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,viewList );
+                    eventListView.setAdapter(eventAdapter);
+
+                }
+            }
+        });
         eventAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, eventNames);
         eventListView.setAdapter(eventAdapter);
         db = FirebaseFirestore.getInstance();
