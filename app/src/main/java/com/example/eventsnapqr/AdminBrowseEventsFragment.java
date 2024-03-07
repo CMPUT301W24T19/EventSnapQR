@@ -28,6 +28,7 @@ import androidx.navigation.Navigation;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,12 +59,16 @@ public class AdminBrowseEventsFragment extends Fragment {
                 for(String eventName: eventNames){
                     if(eventName.contains(searchBar.getText())){
                         viewList.add(eventName);
+                        eventAdapter.notifyDataSetChanged();
                     }
                 }
                 if(!viewList.isEmpty()){
                     eventAdapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,viewList );
                     eventListView.setAdapter(eventAdapter);
-
+                }
+                else{
+                    Toast.makeText(getContext(), "No events found with: " + searchBar.getText(), Toast.LENGTH_LONG).show();
+                    eventAdapter.notifyDataSetChanged();
                 }
             }
         });
