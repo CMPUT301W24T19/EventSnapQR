@@ -21,6 +21,13 @@
 
     </fragment>
     <fragment
+        android:id="@+id/adminUserDetailsFragment"
+        android:name="com.example.eventsnapqr.AdminUserDetailsFragment"
+        android:label="Sign Up"
+        tools:layout="@layout/fragment_admin_user_details">
+
+    </fragment>
+    <fragment
         android:id="@+id/signUpFragment"
         android:name="com.example.eventsnapqr.SignUpFragment"
         android:label="Sign Up"
