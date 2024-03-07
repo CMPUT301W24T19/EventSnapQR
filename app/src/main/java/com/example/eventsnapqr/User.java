@@ -28,6 +28,9 @@ public class User implements Attendee, Organizer{
     private List<Event> createdEvents = new ArrayList<>(); // Events created by the user as an organizer
     private List<Event> signedUpEvents = new ArrayList<>();
     private String profilePicture;
+    public User() {
+        //empty constructor
+    }
 
     /**
      * Constructor for user using their name and a unique device id

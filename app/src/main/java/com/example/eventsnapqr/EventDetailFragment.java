@@ -1,12 +1,16 @@
 package com.example.eventsnapqr;
 
+import static androidx.camera.core.impl.utils.ContextUtil.getBaseContext;
+
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.Firebase;
 
 import java.util.ArrayList;
@@ -27,6 +32,13 @@ public class EventDetailFragment extends Fragment {
 
     private String eventId;
     private String androidId;
+    private TextView eventName;
+    private TextView eventDescription;
+    private ImageView eventPosterImage;
+    private TextView eventOrganizer;
+    private TextView eventMaxAttendees;
+    private TextView eventAnnouncement;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,20 +132,26 @@ public class EventDetailFragment extends Fragment {
     }
 
     private void displayEventDetails(Event event) {
-        // Update UI elements with event details
-        TextView eventDescription = getView().findViewById(R.id.description_content);
+        eventPosterImage = getView().findViewById(R.id.event_poster);
+        Glide.with(requireContext())
+                .load(event.getPosterUri())
+                .placeholder(R.drawable.place_holder_img)
+                .dontAnimate()
+                .into(eventPosterImage);
+
+        eventDescription = getView().findViewById(R.id.description_content);
         eventDescription.setText(event.getDescription());
 
-        TextView eventName = getView().findViewById(R.id.page_name);
+        eventName = getView().findViewById(R.id.page_name);
         eventName.setText(event.getEventName());
 
-        TextView eventOrganizer = getView().findViewById(R.id.organizer_content);
+        eventOrganizer = getView().findViewById(R.id.organizer_content);
         eventOrganizer.setText(event.getOrganizer().getName());
 
-        TextView eventMaxAttendees = getView().findViewById(R.id.max_attendees_content);
+        eventMaxAttendees = getView().findViewById(R.id.max_attendees_content);
         eventMaxAttendees.setText(event.getMaxAttendees() != null ? event.getMaxAttendees().toString() : "No Max Attendees");
 
-        TextView eventAnnouncement = getView().findViewById(R.id.announce_content);
+        eventAnnouncement = getView().findViewById(R.id.announce_content);
         eventAnnouncement.setText(event.getAnnouncement());
     }
 }
