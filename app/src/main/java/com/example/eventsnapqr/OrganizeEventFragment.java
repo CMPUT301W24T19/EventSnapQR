@@ -182,7 +182,6 @@ public class OrganizeEventFragment extends Fragment {
                                 userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                     imageUri = uri;
                                     uriString = imageUri.toString();
-                                    Log.d("TAG", "Uri string is true");
                                     // Use the retrieved user to create the event
                                     Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
                                     Log.d("USER NAME", newEvent.getOrganizer().getName());

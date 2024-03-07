@@ -3,7 +3,6 @@ package com.example.eventsnapqr;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -24,7 +23,6 @@ import android.widget.TextView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -102,7 +100,7 @@ public class AdminBrowseEventsFragment extends Fragment implements FirebaseContr
         final ProgressBar progressBar = view.findViewById(R.id.progress_bar); // Make sure you have a ProgressBar in your layout
         progressBar.setVisibility(View.VISIBLE);
         firebaseController = new FirebaseController();
-        firebaseController.getEvents(this);
+        firebaseController.getAllEvents(this);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
