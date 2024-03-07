@@ -49,7 +49,8 @@ public class BrowseEventFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // Toast.makeText(requireContext(), "View on events button clicked", Toast.LENGTH_SHORT).show();
-                gotoMyEventActivity();
+                Intent intent = new Intent(getContext(), MyEventActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -62,11 +63,6 @@ public class BrowseEventFragment extends Fragment {
         });
 
         return view;
-    }
-
-    public void gotoMyEventActivity() {
-        Intent intent = new Intent(getContext(), MyEventActivity.class);
-        startActivity(intent);
     }
 
     private void loadEvents() {
