@@ -173,26 +173,31 @@ public class OrganizeEventFragment extends Fragment {
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("bitmap", qrBitmap);
                         QR qrCode = new QR(qrBitmap, link);
-                        Log.d("TAG", "2");
                         if (imageUri != null) {
-                            Log.d("TAG", "3");
-                            StorageReference userRef = storageRef.child("eventPosters/" + link);  // specifies the path on the cloud storage
-                            Log.d("TAG", "4");
+                            StorageReference userRef = storageRef.child("eventPosters/" + eventID);  // specifies the path on the cloud storage
                             userRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
                                 userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                     imageUri = uri;
                                     uriString = imageUri.toString();
                                     Log.d("TAG", "Uri string is true");
+                                    // Use the retrieved user to create the event
+                                    Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees, eventID);
+                                    Log.d("USER NAME", newEvent.getOrganizer().getName());
+                                    firebaseController.addEvent(newEvent);
+                                    NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                                    navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                                 });
                             });  // puts the file into the referenced path
                         }
                         else {
                             uriString = null;
+                            // Use the retrieved user to create the event
+                            Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees, eventID);
+                            Log.d("USER NAME", newEvent.getOrganizer().getName());
+                            firebaseController.addEvent(newEvent);
+                            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                            navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                         }
-                        // Use the retrieved user to create the event
-                        Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees, eventID);
-                        Log.d("USER NAME", newEvent.getOrganizer().getName());
-                        firebaseController.addEvent(newEvent);
                         /*if(newEvent != null){
                             firebaseController = FirebaseController.getInstance();
                             //ArrayList<Event> allEvents;
@@ -206,8 +211,6 @@ public class OrganizeEventFragment extends Fragment {
                                         firebaseController.addOrganizedEvent(user, newEvent);
                                         Log.d("TAG", "Event ID " + newEvent.getEventID());
                                         Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
-                                        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                                        navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                                     }
                                     else{
                                         Toast.makeText(requireContext(), "Error: Event already exists", Toast.LENGTH_LONG).show();
