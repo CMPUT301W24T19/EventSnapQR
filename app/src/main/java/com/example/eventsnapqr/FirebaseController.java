@@ -381,17 +381,21 @@ public class FirebaseController {
      */
     public void addAttendeeToEvent(Event event, User user) {
         DocumentReference eventRef = eventReference.document(event.getEventID());
-
-        eventRef.collection("attendees").document(user.getDeviceID()).set(new HashMap<>())
+        Map<String, Object> attendeeData = new HashMap<>();
+        attendeeData.put("checkedIn", 0); // Set checkedIn field to 0
+        eventRef.collection("attendees").document(user.getDeviceID())
+                .set(attendeeData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        // On success
                         Log.d("Added attendee to event", "Attendee added to event: " + event.getEventID());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        // On failure
                         Log.d("Failed to add attendee to event",
                                 "Failed to add attendee to event: " + event.getEventID());
                     }
