@@ -126,7 +126,7 @@ public class AdminBrowseEventsFragment extends Fragment {
                     FirebaseController.getInstance().deleteEvent(event);
                     eventAdapter.notifyDataSetChanged();
                 })
-                .setNegativeButton("No", null) // do nothing
+                .setNegativeButton("No", null)
                 .create()
                 .show();
     }

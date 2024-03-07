@@ -3,6 +3,7 @@ package com.example.eventsnapqr;
 import static java.security.AccessController.getContext;
 
 import android.content.ContentResolver;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -85,6 +86,15 @@ public class UserInfoActivity extends AppCompatActivity {
                     phoneNumber.setText(user.getPhoneNumber());
                     homepage.setText(user.getHomepage());
                 }
+                if (profilePictureURI == null || profilePictureURI.isEmpty()){
+                    userName.setText(user.getName());
+                    Bitmap initialsImageBitmap = user.generateInitialsImage(userName.getText().toString());
+                    profilePictureImage.setImageBitmap(initialsImageBitmap);
+                    email.setText(user.getEmail());
+                    phoneNumber.setText(user.getPhoneNumber());
+                    homepage.setText(user.getHomepage());
+
+                }
             }
         });
 
@@ -150,14 +160,21 @@ public class UserInfoActivity extends AppCompatActivity {
                                 });
                                 user.setProfilePicture(null);
                                 FirebaseController.getInstance().addUser(user);
-                                storageRef.child("defaultPics/profile_pic.webp").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        Glide.with(getBaseContext())
-                                                .load(uri)
-                                                .into(profilePictureImage);
-                                    }
-                                });
+                                //Commenting this code, as this puts a default image from firebase if no profile pic, but I now have the initials working
+//                                storageRef.child("defaultPics/profile_pic.webp").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                                    @Override
+//                                    public void onSuccess(Uri uri) {
+//                                        Glide.with(getBaseContext())
+//                                                .load(uri)
+//                                                .into(profilePictureImage);
+//                                    }
+//                                });
+                                //setting profile pic to name initials after successful delete of profile image
+                                if (profilePictureURI == null || profilePictureURI.isEmpty()) {
+                                    userName.setText(user.getName());
+                                    Bitmap initialsImageBitmap = user.generateInitialsImage(userName.getText().toString());
+                                    profilePictureImage.setImageBitmap(initialsImageBitmap);
+                                }
                             }
                         }
                     }
