@@ -126,6 +126,8 @@ public class MainPageFragment extends Fragment {
         buttonScanQR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ScanQRActivity.class);
+                startActivity(intent);
             }
         });
         buttonViewProfile.setOnClickListener(new View.OnClickListener() {

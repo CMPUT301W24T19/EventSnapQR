@@ -1,5 +1,6 @@
 package com.example.eventsnapqr;
 
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -12,7 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +33,7 @@ public class AdminBrowseImagesFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     FloatingActionButton buttonBackToAdminMain;
-    private List<Event> dummyPosters;
+    private List<Event> posters;
 
     public AdminBrowseImagesFragment() {
         // Required empty public constructor
@@ -61,13 +66,26 @@ public class AdminBrowseImagesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_admin_browse_images, container, false);
         buttonBackToAdminMain = view.findViewById(R.id.button_back_button);
 
+        posters = new ArrayList<>();
+        FirebaseController.getInstance().getEvents(new FirebaseController.OnEventsLoadedListener() {
+            @Override
+            public void onEventsLoaded(ArrayList<Event> events) {
+                posters.addAll(events);
+            }
+        });
+/*
+        for (int i = 0; i < posters.size(); i++) {
+            Uri uri = Uri.parse(posters.get(i).getPosterUri());
+
+        }
+        /*
         dummyPosters = new ArrayList<>();
         for (int i = 1; i <= 30; i++) {
             String dummyUrl = "https://example.com/poster" + i + ".png";
             Event event = new Event();
             event.setPosterUri(dummyUrl);
             dummyPosters.add(event);
-        }
+        }*/
         buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,7 +96,7 @@ public class AdminBrowseImagesFragment extends Fragment {
         recyclerView = view.findViewById(R.id.rv_event_posters);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
-        EventPosterAdapter adapter = new EventPosterAdapter(dummyPosters);
+        EventPosterAdapter adapter = new EventPosterAdapter(posters);
         recyclerView.setAdapter(adapter);
 
         return view;

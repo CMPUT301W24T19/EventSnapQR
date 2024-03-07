@@ -1,6 +1,7 @@
 package com.example.eventsnapqr;
 
 import android.net.Uri;
+import android.util.Log;
 
 
 import java.util.List;
@@ -13,11 +14,11 @@ public class Event {
     private String description; // description of the event
     private String posterUri; // URL for the event poster image
     private Integer maxAttendees; // optional max attendees
+    private String eventID;
     private List<User> attendees;
     private List<User> signedUpAttendees; // list of users who have signed up
     private List<User> checkedInAttendees; // list of users who are currently checked in
     private FirebaseController firebaseController; // instance of the firebase controller
-
 
     public Event() {
 
@@ -33,13 +34,14 @@ public class Event {
      * @param posterUri URL for the event poster
      * @param maxAttendees maximum number of attendees
      */
-    public Event(User organizer, QR qrCode, String eventName, String description, String posterUri, Integer maxAttendees) {
+    public Event(User organizer, QR qrCode, String eventName, String description, String posterUri, Integer maxAttendees, String eventID) {
         this.organizer = organizer;
         this.qrCode = qrCode;
         this.eventName = eventName;
         this.description = description;
         this.posterUri = posterUri;
         this.maxAttendees = maxAttendees;
+        this.eventID = eventID;
     }
     public void setQR(QR qrCode){
         this.qrCode = qrCode;
@@ -135,5 +137,12 @@ public class Event {
         else {
             throw new IllegalArgumentException();
         }
+    }
+    public String getEventID() {
+        return this.eventID;
+    }
+
+    public void setEventID(String eventID) {
+        this.eventID = eventID;
     }
 }

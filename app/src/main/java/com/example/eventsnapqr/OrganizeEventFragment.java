@@ -60,8 +60,8 @@ public class OrganizeEventFragment extends Fragment {
     private String androidID;
     private FirebaseController firebaseController = new FirebaseController();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-    Uri imageUri;
-    String uriString;
+    private Uri imageUri;
+    private String uriString;
 
     public OrganizeEventFragment() {
         // Required empty public constructor
@@ -145,6 +145,7 @@ public class OrganizeEventFragment extends Fragment {
         Intent intent = new Intent(requireContext(), MainActivity.class);
         startActivity(intent);
     }
+
     private ArrayList<Event> allEvents;
     private void createEvent() {
         String eventName = editTextEventName.getText().toString(); // get the name of the event
@@ -160,23 +161,28 @@ public class OrganizeEventFragment extends Fragment {
 
                 if (user != null) {
                     // User retrieved successfully, proceed with event creation
-                    String link = generateLink(eventName, user.getDeviceID());
+                    String eventID = FirebaseController.getInstance().getUniqueEventID();
+                    String link = generateLink(eventID, user.getDeviceID());
                     Log.d("QR link generated", "QR link: " + link);
                     QRGEncoder qrgEncoder = new QRGEncoder(link, null, QRGContents.Type.TEXT, 5);
                     qrgEncoder.setColorBlack(Color.RED);
                     qrgEncoder.setColorWhite(Color.BLUE);
+                    Log.d("TAG", "1");
                     try {
                         qrBitmap = qrgEncoder.getBitmap();
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("bitmap", qrBitmap);
                         QR qrCode = new QR(qrBitmap, link);
+                        Log.d("TAG", "2");
                         if (imageUri != null) {
-                            StorageReference userRef = storageRef.child("eventPosters/" + imageUri.getLastPathSegment());  // specifies the path on the cloud storage
+                            Log.d("TAG", "3");
+                            StorageReference userRef = storageRef.child("eventPosters/" + link);  // specifies the path on the cloud storage
+                            Log.d("TAG", "4");
                             userRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
                                 userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                     imageUri = uri;
                                     uriString = imageUri.toString();
-                                    //Log.d("TAG", "String URI: " + uriString);
+                                    Log.d("TAG", "Uri string is true");
                                 });
                             });  // puts the file into the referenced path
                         }
@@ -184,7 +190,7 @@ public class OrganizeEventFragment extends Fragment {
                             uriString = null;
                         }
                         // Use the retrieved user to create the event
-                        Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees);
+                        Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees, eventID);
                         Log.d("USER NAME", newEvent.getOrganizer().getName());
                         if(newEvent != null){
                             firebaseController = FirebaseController.getInstance();
@@ -197,6 +203,7 @@ public class OrganizeEventFragment extends Fragment {
                                     if (!checkEventExists(newEvent, allEvents)) {
                                         firebaseController.addEvent(newEvent);
                                         firebaseController.addOrganizedEvent(user, newEvent);
+                                        Log.d("TAG", "Event ID " + newEvent.getEventID());
                                         Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
                                         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                                         navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
