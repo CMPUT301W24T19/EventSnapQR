@@ -175,7 +175,7 @@ public class OrganizeEventFragment extends Fragment {
                                 userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                     imageUri = uri;
                                     uriString = imageUri.toString();
-                                    Log.d("TAG", "String URI: " + uriString);
+                                    //Log.d("TAG", "String URI: " + uriString);
                                 });
                             });  // puts the file into the referenced path
                         }

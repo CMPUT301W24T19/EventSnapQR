@@ -40,17 +40,21 @@ public class FirebaseController {
         DocumentReference admin = db.collection("admin").document(androidId);
         admin.get().addOnCompleteListener(task -> {
             if(task.isSuccessful()){
+                Log.d("TAG", "Task successful");
                 DocumentSnapshot document = task.getResult();
                 if(document.exists()){
+                    Log.d("TAG", "Admin found");
                     Log.d("Admin found", "Admin found: " + androidId);
                     listener.onAdminExistenceChecked(true);
                 }
                 else {
+                    Log.d("TAG", "Admin not found");
                     Log.d("Admin not found", "Admin not found: " + androidId);
                     listener.onAdminExistenceChecked(false);
                 }
             }
             else {
+                Log.d("TAG", "Error finding admin");
                 Log.d("Error", "Error getting document: " + task.getException());
                 listener.onAdminExistenceChecked(false); // Assume not found if there's an error
             }

@@ -71,6 +71,7 @@ public class MainPageFragment extends Fragment {
 
     }
     private void auth(){
+        Log.d("TAG", "authing");
         ContentResolver contentResolver = getContext().getContentResolver();
         String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
         FirebaseController.Authenticator listener = new FirebaseController.Authenticator() {
@@ -80,9 +81,12 @@ public class MainPageFragment extends Fragment {
             }
             @Override
             public void onAdminExistenceChecked(boolean exists) {
+                Log.d("TAG", "Check admin");
                 if(exists){
+                    Log.d("TAG", "Set visible");
                     buttonAdminMainPage.setVisibility(View.VISIBLE);
                 }else{
+                    Log.d("TAG", "Set invisible");
                     buttonAdminMainPage.setVisibility(View.GONE);
                 }
             }
