@@ -206,19 +206,23 @@ public class FirebaseController {
         if (event.getMaxAttendees() != null) {
             eventData.put("maxAttendees", event.getMaxAttendees());
         }
-        if (eventReference != null) {
-            eventReference.add(eventData).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                @Override
-                public void onSuccess(DocumentReference documentReference) {
-                    Log.d("Added event succes", "succesfully added event: " + documentReference.getId());
 
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.d("Added event failure", "failed to add event: " + e + Arrays.toString(e.getStackTrace()));
-                }
-            });
+        // format document id
+        String documentId = event.getEventName() + "-" + event.getOrganizer().getDeviceID();
+        if (eventReference != null) {
+            eventReference.document(documentId).set(eventData)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("Added event success", "successfully added event: " + documentId);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d("Added event failure", "failed to add event: " + e.getMessage());
+                        }
+                    });
         }
     }
 
@@ -307,4 +311,25 @@ public class FirebaseController {
     public interface OnEventRetrievedListener {
         void onEventRetrieved(Event event);
     }
+
+    public void addOrganizedEvent(User user, Event event) {
+        DocumentReference userRef = userReference.document(user.getDeviceID());
+
+        String documentId = event.getEventName() + "-" + user.getDeviceID();
+
+        userRef.collection("organized events").document(documentId).set(new HashMap<>())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Added organized event", "Event added to organized events subcollection for user: " + user.getDeviceID());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Failed to add organized event", "Failed to add event to organized events subcollection for user: " + user.getDeviceID());
+                    }
+                });
+    }
+
 }
