@@ -78,26 +78,7 @@ public class FirebaseController {
         void onUserExistenceChecked(boolean exists);
         void onAdminExistenceChecked(boolean exists);
     }
-    public void addAttendee(String eventIdentifier, User attendee) {
-        DocumentReference eventToAttend = eventReference.document(eventIdentifier);
-        CollectionReference attendees = eventToAttend.collection("attendees");
 
-        attendees.add(attendee.getDeviceID())
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        // Attendee document added successfully
-                        Log.d("attendee added", "Attendee document added with ID: " + documentReference.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Failed to add attendee document
-                        Log.w("attendee not added", "Error adding attendee document", e);
-                    }
-                });
-    }
     public void addUser(User user) {
         Map<String, Object> userData = new HashMap<>();
         userData.put("name", user.getName());
@@ -346,12 +327,15 @@ public class FirebaseController {
         void onEventRetrieved(Event event);
     }
 
+    /**
+     * adds an event reference to the specified users organized events subcollection
+     * @param user the user to add the event to
+     * @param event the event to add to the user
+     */
     public void addOrganizedEvent(User user, Event event) {
         DocumentReference userRef = userReference.document(user.getDeviceID());
 
-        String documentId = event.getEventName() + "-" + user.getDeviceID();
-
-        userRef.collection("organized events").document(documentId).set(new HashMap<>())
+        userRef.collection("organized events").document(event.getEventID()).set(new HashMap<>())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -366,4 +350,53 @@ public class FirebaseController {
                 });
     }
 
+    /**
+     * adds an event to the specified users promise to go subcollection
+     * @param user the user to add the event to
+     * @param event the event to add to the user
+     */
+    public void addPromiseToGo(User user, Event event) {
+        DocumentReference userRef = userReference.document(user.getDeviceID());
+
+        userRef.collection("promisedEvents").document(event.getEventID()).set(new HashMap<>())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Added event to users promised events",
+                                "Event added to promised events subcollection for user: " + user.getDeviceID());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Failed to add to users promised events",
+                                "Failed to add event to users promised events subcollection for user: " + user.getDeviceID());
+                    }
+                });
+    }
+
+    /**
+     * add an attendee to the specified events attendee subcollection
+     * @param event the event to add the user to
+     * @param user the attendee to add to the list
+     */
+    public void addAttendeeToEvent(Event event, User user) {
+        DocumentReference eventRef = userReference.document(event.getEventID());
+
+        eventRef.collection("attendees").document(user.getDeviceID()).set(new HashMap<>())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Added attendee to event", "Attendee added to event: " + event.getEventID());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Failed to add attendee to event",
+                                "Failed to add attendee to event: " + event.getEventID());
+                    }
+                });
+
+    }
 }
