@@ -66,7 +66,7 @@ public class EventDetailFragment extends Fragment {
                                                 attendeeList.addAll(userList);
                                             }
                                         });
-                                        if (event.getMaxAttendees() != null || attendeeList.size() < event.getMaxAttendees()) {
+                                        if (event.getMaxAttendees() == null || attendeeList.size() < event.getMaxAttendees()) {
                                             // Event retrieved successfully, now add user as attendee and promise to go to the event
                                             FirebaseController.getInstance().addAttendeeToEvent(event, user);
                                             FirebaseController.getInstance().addPromiseToGo(user, event);
