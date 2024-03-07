@@ -34,15 +34,6 @@ public class MyEventsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_my_events, container, false);
-        //attend_eventListView = v.findViewById(R.id.attending_events_list);
-        //orgnize_eventListView = v.findViewById(R.id.orgnized_events_list);
-
-        /*
-        * Should be replaced by entries from the database
-        * */
-        /*eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, eventNames);
-        attend_eventListView.setAdapter(eventAdapter);
-        orgnize_eventListView.setAdapter(eventAdapter);*/
         attend_eventListView = v.findViewById(R.id.attending_events_list);
         orgnize_eventListView = v.findViewById(R.id.orgnized_events_list);
         androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -97,17 +88,24 @@ public class MyEventsFragment extends Fragment {
                                     .document(eventId)
                                     .get()
                                     .addOnSuccessListener(eventDocument -> {
-                                        String eventName = eventDocument.getString("event name");
-                                        eventNames.add(eventName);
-                                        eventAdapter.notifyDataSetChanged();
+                                        if (eventDocument != null && eventDocument.exists()) {
+                                            String eventName = eventDocument.getString("eventName");
+                                            eventNames.add(eventName);
+                                            eventAdapter.notifyDataSetChanged();
+                                        } else {
+                                            Log.d(TAG, "fetchEvents: Event document not found for eventId: " + eventId);
+                                        }
                                     })
                                     .addOnFailureListener(e -> {
+                                        Log.e("FETCH ERROR", "Error fetching event document", e);
                                     });
                         }
                     } else {
-                        Log.d("FETCH ERROR", "Error fetching subcollection documents", task.getException());
+                        Log.e("FETCH ERROR", "Error fetching subcollection documents", task.getException());
                     }
                 });
     }
+
+
 
 }
