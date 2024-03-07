@@ -381,7 +381,7 @@ public class FirebaseController {
      * @param user the attendee to add to the list
      */
     public void addAttendeeToEvent(Event event, User user) {
-        DocumentReference eventRef = userReference.document(event.getEventID());
+        DocumentReference eventRef = eventReference.document(event.getEventID());
 
         eventRef.collection("attendees").document(user.getDeviceID()).set(new HashMap<>())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -397,6 +397,5 @@ public class FirebaseController {
                                 "Failed to add attendee to event: " + event.getEventID());
                     }
                 });
-
     }
 }

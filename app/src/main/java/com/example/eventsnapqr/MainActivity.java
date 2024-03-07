@@ -14,7 +14,7 @@ import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseController.Authenticator listener;
-    @SuppressLint("HardwareIds") private String androidId;
+    private String androidId;
     @Override
     protected void onResume() {
         super.onResume();
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseController.OnUserRetrievedListener listener = new FirebaseController.OnUserRetrievedListener() {
                     @Override
                     public void onUserRetrieved(User user) {
-                        controller.addAttendee(eventLink, user);
+
                     }
                 };
                 controller.getUser(androidId, listener); // eventLink uniquely identifies each event document in database

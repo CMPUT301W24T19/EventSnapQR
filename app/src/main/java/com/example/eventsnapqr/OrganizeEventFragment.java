@@ -195,6 +195,7 @@ public class OrganizeEventFragment extends Fragment {
                             Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees, eventID);
                             Log.d("USER NAME", newEvent.getOrganizer().getName());
                             firebaseController.addEvent(newEvent);
+                            firebaseController.addOrganizedEvent(user, newEvent);
                             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                             navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                         }
