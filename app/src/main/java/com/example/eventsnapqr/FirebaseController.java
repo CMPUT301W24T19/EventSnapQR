@@ -1,14 +1,11 @@
 package com.example.eventsnapqr;
 
-import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -16,9 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.net.Authenticator;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -152,6 +147,7 @@ public class FirebaseController {
             event.setDescription(doc.getString("description"));
             event.setEventName(doc.getString("eventName"));
             event.setPosterUri(doc.getString("posterURL"));
+            event.setAnnouncement(doc.getString("announcement"));
             events.add(event);
             //Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees)
         }
@@ -160,7 +156,7 @@ public class FirebaseController {
         void onEventsLoaded(ArrayList<Event> events);
     }
     ArrayList<Event> events = new ArrayList<>();
-    public void getEvents(final OnEventsLoadedListener listener) {
+    public void getAllEvents(final OnEventsLoadedListener listener) {
         eventReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -184,6 +180,7 @@ public class FirebaseController {
         eventData.put("QRLink", event.getQrCode().getLink());
         eventData.put("organizerID", event.getOrganizer().getDeviceID());
         eventData.put("description", event.getDescription());
+        eventData.put("announcement",event.getAnnouncement());
         if (event.getPosterUri() != null) {
             eventData.put("posterURI", event.getPosterUri());
         }
@@ -295,13 +292,15 @@ public class FirebaseController {
                     String posterUri = document.getString("posterURI");
                     String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
-                  
+                    String announcement = document.getString("announcement");
+
+
                     // retrieve the user who organized the event
                     getUser(organizerID, new OnUserRetrievedListener() {
                         @Override
                         public void onUserRetrieved(User user) {
                             if (user != null) {
-                                Event event = new Event(user, new QR(null, qrLink), eventName, description, posterUri, maxAttendees, eventId);
+                                Event event = new Event(user, new QR(null, qrLink), eventName, description, posterUri, maxAttendees, eventId, announcement);
                                 listener.onEventRetrieved(event);
                             } else {
                                 Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);

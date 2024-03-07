@@ -34,6 +34,15 @@ public class MyEventsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_my_events, container, false);
+        //attend_eventListView = v.findViewById(R.id.attending_events_list);
+        //orgnize_eventListView = v.findViewById(R.id.orgnized_events_list);
+
+        /*
+        * Should be replaced by entries from the database
+        * */
+        /*eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, eventNames);
+        attend_eventListView.setAdapter(eventAdapter);
+        orgnize_eventListView.setAdapter(eventAdapter);*/
         attend_eventListView = v.findViewById(R.id.attending_events_list);
         orgnize_eventListView = v.findViewById(R.id.orgnized_events_list);
         androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -53,6 +62,20 @@ public class MyEventsFragment extends Fragment {
                 requireActivity().finish();
             }
         });
+/*
+        orgnize_eventListView.setOnItemClickListener((parent, view, position, id) -> {
+            String eventName = eventNames.get(position);
+            goToYourEventActivity(eventName);
+        });
+
+        attend_eventListView.setOnItemClickListener((parent, view1, position, id) -> {
+            String eventName = eventNames.get(position);
+            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_2);
+            Bundle bundle = new Bundle();
+            bundle.putString("eventName", eventName);
+            navController.navigate(R.id.action_myEventsFragment_to_eventDetailFragmentFromGraph2, bundle);
+        });
+*/
 
         fetchEvents("organizedEvents", orgnize_eventListView, orgnize_eventNames, orgnize_eventAdapter);
         fetchEvents("promisedEvents", attend_eventListView, attend_eventNames, attend_eventAdapter);

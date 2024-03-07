@@ -1,7 +1,12 @@
 package com.example.eventsnapqr;
 
+
 import static androidx.core.content.ContentProviderCompat.requireContext;
 import static androidx.core.content.ContextCompat.startActivity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Bundle;
 
 import static java.security.AccessController.getContext;
 
@@ -24,7 +29,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class AdminBrowseEventsFragment extends Fragment {
     private ListView eventListView;
