@@ -192,7 +192,8 @@ public class OrganizeEventFragment extends Fragment {
                         // Use the retrieved user to create the event
                         Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees, eventID);
                         Log.d("USER NAME", newEvent.getOrganizer().getName());
-                        if(newEvent != null){
+                        firebaseController.addEvent(newEvent);
+                        /*if(newEvent != null){
                             firebaseController = FirebaseController.getInstance();
                             //ArrayList<Event> allEvents;
                             firebaseController.getEvents(new FirebaseController.OnEventsLoadedListener(){
@@ -215,7 +216,7 @@ public class OrganizeEventFragment extends Fragment {
                             });
 
 
-                        }
+                        }*/
 
                     } catch (Exception e) {
                         Log.v("ORGANIZE EVENT ERROR", e.toString());
