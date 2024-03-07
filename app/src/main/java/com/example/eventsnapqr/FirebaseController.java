@@ -73,26 +73,7 @@ public class FirebaseController {
         void onUserExistenceChecked(boolean exists);
         void onAdminExistenceChecked(boolean exists);
     }
-    public void addAttendee(String eventIdentifier, User attendee) {
-        DocumentReference eventToAttend = eventReference.document(eventIdentifier);
-        CollectionReference attendees = eventToAttend.collection("attendees");
 
-        attendees.add(attendee.getDeviceID())
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        // Attendee document added successfully
-                        Log.d("attendee added", "Attendee document added with ID: " + documentReference.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Failed to add attendee document
-                        Log.w("attendee not added", "Error adding attendee document", e);
-                    }
-                });
-    }
     public void addUser(User user) {
         Map<String, Object> userData = new HashMap<>();
         userData.put("name", user.getName());
@@ -166,6 +147,7 @@ public class FirebaseController {
             event.setDescription(doc.getString("description"));
             event.setEventName(doc.getString("event name"));
             event.setPosterUri(doc.getString("posterURL"));
+            event.setAnnouncement(doc.getString("announcement"));
             events.add(event);
             //Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees)
         }
@@ -198,6 +180,7 @@ public class FirebaseController {
         eventData.put("QR link", event.getQrCode().getLink());
         eventData.put("organizer ID", event.getOrganizer().getDeviceID());
         eventData.put("description", event.getDescription());
+        eventData.put("announcement",event.getAnnouncement());
         if (event.getPosterUri() != null) {
             eventData.put("posterURL", event.getPosterUri());
         }
@@ -222,6 +205,36 @@ public class FirebaseController {
                         }
                     });
         }
+    }
+    ArrayList<User> users = new ArrayList<>();
+    public void getAllUsers(OnAllUsersLoadedListener listener){
+        userReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if (!queryDocumentSnapshots.isEmpty()) {
+                    users.clear();
+                    parseUsers(queryDocumentSnapshots.getDocuments());
+                    listener.onUsersLoaded(users);
+                }
+
+            }
+        });
+
+    }
+
+    void parseUsers(List<DocumentSnapshot> documents){
+        for(DocumentSnapshot doc: documents){
+            String phoneNumber = doc.getString("phoneNumber");
+            String name = doc.getString("name");
+            String email = doc.getString("email");
+            String deviceID = doc.getString("deviceID");
+            String link = doc.getString("profile uri");
+            User user = new User(name, deviceID, link, phoneNumber,email);
+            users.add(user);
+        }
+    }
+    public interface OnAllUsersLoadedListener{
+        void onUsersLoaded(List<User> users);
     }
 
     /**
@@ -279,13 +292,15 @@ public class FirebaseController {
                     String posterUri = document.getString("posterURL");
                     String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
-                  
+                    String announcement = document.getString("announcement");
+
+
                     // retrieve the user who organized the event
                     getUser(organizerID, new OnUserRetrievedListener() {
                         @Override
                         public void onUserRetrieved(User user) {
                             if (user != null) {
-                                Event event = new Event(user, new QR(null, qrLink), eventName, description, posterUri, maxAttendees, eventId);
+                                Event event = new Event(user, new QR(null, qrLink), eventName, description, posterUri, maxAttendees, eventId, announcement);
                                 listener.onEventRetrieved(event);
                             } else {
                                 Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);
@@ -311,12 +326,15 @@ public class FirebaseController {
         void onEventRetrieved(Event event);
     }
 
+    /**
+     * adds an event reference to the specified users organized events subcollection
+     * @param user the user to add the event to
+     * @param event the event to add to the user
+     */
     public void addOrganizedEvent(User user, Event event) {
         DocumentReference userRef = userReference.document(user.getDeviceID());
 
-        String documentId = event.getEventName() + "-" + user.getDeviceID();
-
-        userRef.collection("organized events").document(documentId).set(new HashMap<>())
+        userRef.collection("organized events").document(event.getEventID()).set(new HashMap<>())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -331,4 +349,52 @@ public class FirebaseController {
                 });
     }
 
+    /**
+     * adds an event to the specified users promise to go subcollection
+     * @param user the user to add the event to
+     * @param event the event to add to the user
+     */
+    public void addPromiseToGo(User user, Event event) {
+        DocumentReference userRef = userReference.document(user.getDeviceID());
+
+        userRef.collection("promisedEvents").document(event.getEventID()).set(new HashMap<>())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Added event to users promised events",
+                                "Event added to promised events subcollection for user: " + user.getDeviceID());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Failed to add to users promised events",
+                                "Failed to add event to users promised events subcollection for user: " + user.getDeviceID());
+                    }
+                });
+    }
+
+    /**
+     * add an attendee to the specified events attendee subcollection
+     * @param event the event to add the user to
+     * @param user the attendee to add to the list
+     */
+    public void addAttendeeToEvent(Event event, User user) {
+        DocumentReference eventRef = eventReference.document(event.getEventID());
+
+        eventRef.collection("attendees").document(user.getDeviceID()).set(new HashMap<>())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Added attendee to event", "Attendee added to event: " + event.getEventID());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Failed to add attendee to event",
+                                "Failed to add attendee to event: " + event.getEventID());
+                    }
+                });
+    }
 }

@@ -1,18 +1,18 @@
 package com.example.eventsnapqr;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -26,9 +26,9 @@ import java.util.List;
  */
 public class AdminBrowseProfilesFragment extends Fragment {
 
-    private RecyclerView recyclerView;
+    private ListView listView;
     private ProfileAdapter adapter;
-    private List<User> profileList;
+    private ArrayList<User> profileList;
     private List<User> dummyUsers;
     FloatingActionButton buttonBackToAdminMain;
 
@@ -56,27 +56,40 @@ public class AdminBrowseProfilesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         profileList = new ArrayList<>();
-        adapter = new ProfileAdapter(profileList);
-
+        adapter = new ProfileAdapter(requireContext(),profileList);
     }
+
+    private ArrayList<User> usersDataList;
+    private ProfileAdapter profileAdapter;
+    FirebaseController firebaseController = new FirebaseController();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin_browse_profiles, container, false);
 
-        dummyUsers = new ArrayList<>();
-        for (int i = 1; i <= 30; i++) {
-            User user = new User("User " + i, "u");
-            user.setHomepage("https://homepage.com/user" + i);
-            dummyUsers.add(user);
-        }
+        listView =  view.findViewById(R.id.rv_profile_thumbnails);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                User user = (User) listView.getItemAtPosition(position);
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                Bundle bundle = new Bundle();
+                bundle.putString("userId", user.getDeviceID());
+                navController.navigate(R.id.adminUserDetailsFragment,bundle);
+            }
+        });
 
-        adapter = new ProfileAdapter(dummyUsers);
-        recyclerView = view.findViewById(R.id.rv_profile_thumbnails);
-        int numberOfColumns = 3;
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numberOfColumns));
-        recyclerView.setAdapter(adapter);
+        FirebaseController.OnAllUsersLoadedListener listener = new FirebaseController.OnAllUsersLoadedListener() {
+            @Override
+            public void onUsersLoaded(List<User> users) {
+                usersDataList = new ArrayList<>();
+                usersDataList.addAll(users);
+                profileAdapter = new ProfileAdapter(getContext(),usersDataList);
+                listView.setAdapter(profileAdapter);
+            }
+        };
+        firebaseController.getAllUsers(listener);
 
         buttonBackToAdminMain = view.findViewById(R.id.button_back_button);
         buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {
@@ -91,6 +104,7 @@ public class AdminBrowseProfilesFragment extends Fragment {
 
         return view;
     }
+
     private void loadProfiles() {
         adapter.notifyDataSetChanged();
     }
