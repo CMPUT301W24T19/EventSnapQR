@@ -2,6 +2,7 @@ package com.example.eventsnapqr;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ public class EventDetailFragment extends Fragment {
     }
 
     private String eventId;
+    private String androidId;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +31,7 @@ public class EventDetailFragment extends Fragment {
             eventId = getArguments().getString("eventId");
             loadEventDetails(eventId);
         }
+        androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     @Override
@@ -44,10 +47,31 @@ public class EventDetailFragment extends Fragment {
         view.findViewById(R.id.sign_up_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CreateDialog(eventId);
+                FirebaseController.getInstance().getUser(androidId, new FirebaseController.OnUserRetrievedListener() {
+                    @Override
+                    public void onUserRetrieved(User user) {
+                        if (user != null) {
+                            FirebaseController.getInstance().getEvent(eventId, new FirebaseController.OnEventRetrievedListener() {
+                                @Override
+                                public void onEventRetrieved(Event event) {
+                                    if (event != null) {
+                                        // Event retrieved successfully, now add user as attendee and promise to go to the event
+                                        FirebaseController.getInstance().addAttendeeToEvent(event, user);
+                                        FirebaseController.getInstance().addPromiseToGo(user, event);
+                                        // Show success dialog
+                                        CreateDialog(event.getEventName());
+                                    } else {
+                                        Toast.makeText(requireContext(), "Failed to retrieve event details", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                        } else {
+                            Toast.makeText(requireContext(), "Failed to retrieve user details", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
         });
-
         return view;
     }
 
