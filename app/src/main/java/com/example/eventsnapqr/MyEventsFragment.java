@@ -54,7 +54,6 @@ public class MyEventsFragment extends Fragment {
             }
         });
 
-        // Fetching organized events
         fetchEvents("organized events", orgnize_eventListView, orgnize_eventNames, orgnize_eventAdapter);
         fetchEvents("promisedEvents", attend_eventListView, attend_eventNames, attend_eventAdapter);
 
@@ -71,7 +70,6 @@ public class MyEventsFragment extends Fragment {
                         eventNames.clear();
                         for (DocumentSnapshot document : task.getResult()) {
                             String eventId = document.getId();
-                            // Assuming "events" is the main events collection
                             db.collection("events")
                                     .document(eventId)
                                     .get()
@@ -81,7 +79,6 @@ public class MyEventsFragment extends Fragment {
                                         eventAdapter.notifyDataSetChanged();
                                     })
                                     .addOnFailureListener(e -> {
-                                        // Handle failure
                                     });
                         }
                     } else {
