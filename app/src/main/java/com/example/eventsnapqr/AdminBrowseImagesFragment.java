@@ -1,6 +1,5 @@
 package com.example.eventsnapqr;
 
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -9,15 +8,12 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,12 +63,17 @@ public class AdminBrowseImagesFragment extends Fragment {
         buttonBackToAdminMain = view.findViewById(R.id.button_back_button);
 
         posters = new ArrayList<>();
-        FirebaseController.getInstance().getEvents(new FirebaseController.OnEventsLoadedListener() {
+        FirebaseController.getInstance().getAllEvents(new FirebaseController.OnEventsLoadedListener() {
             @Override
             public void onEventsLoaded(ArrayList<Event> events) {
-                posters.addAll(events);
+                //Log.d("TAG", "True");
+                //posterUris.addAll(events);
+                //Log.d("TAG", "" + posters.get(2).getEventID());
             }
         });
+        for (int i = 0; i < posters.size(); i++) {
+            Log.d("TAG", posters.get(i).getPosterUri());
+        }
 /*
         for (int i = 0; i < posters.size(); i++) {
             Uri uri = Uri.parse(posters.get(i).getPosterUri());
