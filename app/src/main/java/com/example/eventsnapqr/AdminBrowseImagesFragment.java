@@ -2,6 +2,7 @@ package com.example.eventsnapqr;
 
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -14,6 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,19 +67,24 @@ public class AdminBrowseImagesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin_browse_images, container, false);
         buttonBackToAdminMain = view.findViewById(R.id.button_back_button);
+        recyclerView = view.findViewById(R.id.rv_event_posters);
 
         posters = new ArrayList<>();
-        FirebaseController.getInstance().getAllEvents(new FirebaseController.OnEventsLoadedListener() {
+        FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onEventsLoaded(ArrayList<Event> events) {
-                //Log.d("TAG", "True");
-                //posterUris.addAll(events);
-                //Log.d("TAG", "" + posters.get(2).getEventID());
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                posters.clear();
+                for (QueryDocumentSnapshot doc: value) {
+                    String posterUri = (String) doc.getData().get("posterURL");
+                    Event event = new Event(null, null, null, null, posterUri, null, null, null);
+                    posters.add(event);
+                }
+                
+                recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+                EventPosterAdapter adapter = new EventPosterAdapter(posters);
+                recyclerView.setAdapter(adapter);
             }
         });
-        for (int i = 0; i < posters.size(); i++) {
-            Log.d("TAG", posters.get(i).getPosterUri());
-        }
 /*
         for (int i = 0; i < posters.size(); i++) {
             Uri uri = Uri.parse(posters.get(i).getPosterUri());
@@ -94,11 +105,6 @@ public class AdminBrowseImagesFragment extends Fragment {
                 navController.navigate(R.id.action_adminBrowseImagesFragment_to_AdminModeMainPageFragment);
             }
         });
-        recyclerView = view.findViewById(R.id.rv_event_posters);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-
-        EventPosterAdapter adapter = new EventPosterAdapter(posters);
-        recyclerView.setAdapter(adapter);
 
         return view;
     }

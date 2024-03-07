@@ -34,22 +34,15 @@ public class MyEventsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_my_events, container, false);
-<<<<<<< HEAD
         //attend_eventListView = v.findViewById(R.id.attending_events_list);
         //orgnize_eventListView = v.findViewById(R.id.orgnized_events_list);
 
         /*
         * Should be replaced by entries from the database
         * */
-        eventNames = new ArrayList<>();
-        eventNames.add("Event 1");
-        eventNames.add("Event 2");
-        eventNames.add("Event 3");
-        eventNames.add("Event 4");
         /*eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, eventNames);
         attend_eventListView.setAdapter(eventAdapter);
         orgnize_eventListView.setAdapter(eventAdapter);*/
-=======
         attend_eventListView = v.findViewById(R.id.attending_events_list);
         orgnize_eventListView = v.findViewById(R.id.orgnized_events_list);
         androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -60,7 +53,6 @@ public class MyEventsFragment extends Fragment {
         orgnize_eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, orgnize_eventNames);
         attend_eventListView.setAdapter(attend_eventAdapter);
         orgnize_eventListView.setAdapter(orgnize_eventAdapter);
->>>>>>> b73cd197c5adcd3689a80cafa9989156654d5ae5
 
         db = FirebaseFirestore.getInstance();
 
@@ -70,7 +62,6 @@ public class MyEventsFragment extends Fragment {
                 requireActivity().finish();
             }
         });
-<<<<<<< HEAD
 /*
         orgnize_eventListView.setOnItemClickListener((parent, view, position, id) -> {
             String eventName = eventNames.get(position);
@@ -85,12 +76,10 @@ public class MyEventsFragment extends Fragment {
             navController.navigate(R.id.action_myEventsFragment_to_eventDetailFragmentFromGraph2, bundle);
         });
 */
-=======
 
         fetchEvents("organized events", orgnize_eventListView, orgnize_eventNames, orgnize_eventAdapter);
         fetchEvents("promisedEvents", attend_eventListView, attend_eventNames, attend_eventAdapter);
 
->>>>>>> b73cd197c5adcd3689a80cafa9989156654d5ae5
         return v;
     }
 
