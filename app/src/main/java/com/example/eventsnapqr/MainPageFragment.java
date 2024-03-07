@@ -19,6 +19,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link MainPageFragment#newInstance} factory method to
@@ -30,7 +33,7 @@ public class MainPageFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    private boolean isAdmin;
     private Button buttonOrganizeEvent;
     private Button buttonAdminMainPage;
     private Button buttonBrowseEvent;
@@ -82,11 +85,13 @@ public class MainPageFragment extends Fragment {
             }
             @Override
             public void onAdminExistenceChecked(boolean exists) {
-                if(exists){
+                /*if(exists){
                     buttonAdminMainPage.setVisibility(View.VISIBLE);
                 }else{
                     buttonAdminMainPage.setVisibility(View.GONE);
-                }
+                }*/
+                isAdmin = exists;
+                Log.d("TAG", "Admin is " + isAdmin);
             }
         };
         FirebaseController.checkUserExists(androidId, listener);
@@ -98,6 +103,13 @@ public class MainPageFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main_page, container, false);
         auth();
         buttonAdminMainPage = view.findViewById(R.id.admin_button);
+        Log.d("TAG", "Admin " + isAdmin);
+        if (isAdmin) {
+            buttonAdminMainPage.setVisibility(View.VISIBLE);
+        }
+        else {
+            buttonAdminMainPage.setVisibility(View.GONE);
+        }
         buttonOrganizeEvent = view.findViewById(R.id.organize_event_button);
         buttonBrowseEvent = view.findViewById(R.id.browse_events_button);
         buttonScanQR = view.findViewById(R.id.scan_qr_button);
