@@ -127,12 +127,12 @@ public class OrganizeEventFragment extends Fragment {
             editTextEventName.setError("Event name cannot be empty");
             return false;
         }
-
+/*
         if (eventName.length() > 50) {
             editTextEventName.setError("Event name cannot exceed 50 characters");
             return false;
         }
-
+*/
         if (eventDesc.isEmpty()) {
             editTextEventDesc.setError("Event description cannot be empty");
             return false;
