@@ -21,9 +21,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Theme.EventSnapQR"
         tools:targetApi="31">
-        <activity
-            android:name=".BrowseEventActivity"
-            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".BrowseEventActivity"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".ScanQRActivity"
             android:exported="true">

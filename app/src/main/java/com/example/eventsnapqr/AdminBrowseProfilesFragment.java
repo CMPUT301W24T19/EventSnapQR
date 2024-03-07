@@ -26,7 +26,6 @@ import java.util.List;
  */
 public class AdminBrowseProfilesFragment extends Fragment {
 
-    // Assuming you have a RecyclerView in your fragment_admin_browse_profiles.xml
     private RecyclerView recyclerView;
     private ProfileAdapter adapter;
     private List<User> profileList;
