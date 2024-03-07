@@ -134,8 +134,8 @@ public class EventDetailFragment extends Fragment {
     private void displayEventDetails(Event event) {
         eventPosterImage = getView().findViewById(R.id.event_poster);
         Glide.with(requireContext())
+                .load(event.getPosterUri())
                 .placeholder(R.drawable.place_holder_img)
-                .load(Uri.parse(event.getPosterUri()))
                 .dontAnimate()
                 .into(eventPosterImage);
 
