@@ -193,7 +193,10 @@ public class FirebaseController {
         });
     }
 
-
+    public String getUniqueEventID() {
+        DocumentReference addedDocRef = eventReference.document();
+        return addedDocRef.getId();
+    }
     public void addEvent(Event event) {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("event name", event.getEventName());
@@ -208,13 +211,13 @@ public class FirebaseController {
         }
 
         // format document id
-        String documentId = event.getEventName() + "-" + event.getOrganizer().getDeviceID();
+        //String documentId = event.getEventName() + "-" + event.getOrganizer().getDeviceID();
         if (eventReference != null) {
-            eventReference.document(documentId).set(eventData)
+            eventReference.document(event.getEventID()).set(eventData)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Log.d("Added event success", "successfully added event: " + documentId);
+                            Log.d("Added event success", "successfully added event: " + event.getEventID());
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -309,6 +312,7 @@ public class FirebaseController {
                     String qrLink = document.getString("QR link");
                     String description = document.getString("description");
                     String posterUri = document.getString("posterURL");
+                    String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
                   
                     // retrieve the user who organized the event
@@ -316,7 +320,7 @@ public class FirebaseController {
                         @Override
                         public void onUserRetrieved(User user) {
                             if (user != null) {
-                                Event event = new Event(user, new QR(null, qrLink), eventName, description, posterUri, maxAttendees);
+                                Event event = new Event(user, new QR(null, qrLink), eventName, description, posterUri, maxAttendees, eventId);
                                 listener.onEventRetrieved(event);
                             } else {
                                 Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);
