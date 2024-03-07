@@ -17,6 +17,7 @@ import androidx.navigation.Navigation;
 
 import com.google.firebase.Firebase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EventDetailFragment extends Fragment {
@@ -58,7 +59,14 @@ public class EventDetailFragment extends Fragment {
                                 @Override
                                 public void onEventRetrieved(Event event) {
                                     if (event != null) {
-                                        if (event.getOrganizer().getCheckInCount(event.getOrganizer().getDeviceID(), event.getEventID()) < event.getMaxAttendees()) {
+                                        List<User> attendeeList = new ArrayList<>();
+                                        event.getOrganizer().viewEventAttendees(event.getEventID(), new User.AttendeesCallback() {
+                                            @Override
+                                            public void onCallback(List<User> userList) {
+                                                attendeeList.addAll(userList);
+                                            }
+                                        });
+                                        if (attendeeList.size() < event.getMaxAttendees()) {
                                             // Event retrieved successfully, now add user as attendee and promise to go to the event
                                             FirebaseController.getInstance().addAttendeeToEvent(event, user);
                                             FirebaseController.getInstance().addPromiseToGo(user, event);
