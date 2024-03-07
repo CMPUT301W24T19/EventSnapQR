@@ -194,20 +194,19 @@ public class OrganizeEventFragment extends Fragment {
                                 public void onEventsLoaded(ArrayList<Event> events) {
                                     allEvents = new ArrayList<>();
                                     allEvents.addAll(events);
+                                    if (!checkEventExists(newEvent, allEvents)) {
+                                        firebaseController.addEvent(newEvent);
+                                        firebaseController.addOrganizedEvent(user, newEvent);
+                                        Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
+                                        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                                        navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                                    }
+                                    else{
+                                        Toast.makeText(requireContext(), "Error: Event already exists", Toast.LENGTH_LONG).show();
+                                    }
                                 }
                             });
-                            if(allEvents != null) {
-                                if (!checkEventExists(newEvent, allEvents)) {
-                                    firebaseController.addEvent(newEvent);
-                                    firebaseController.addOrganizedEvent(user, newEvent);
-                                    Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
-                                    NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                                    navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
-                                }
-                                else{
-                                    Toast.makeText(requireContext(), "Error: Event already exists", Toast.LENGTH_LONG).show();
-                                }
-                            }
+
 
                         }
 
