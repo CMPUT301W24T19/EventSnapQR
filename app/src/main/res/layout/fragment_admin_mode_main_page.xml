@@ -56,9 +56,9 @@
             android:id="@+id/buttonBrowseUserProfiles"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:text="Browse User Profiles"
             android:layout_marginBottom="8dp"
-            android:background="@color/white"/>
+            android:background="@color/white"
+            android:text="Browse Profiles" />
 
         <Button
             android:id="@+id/buttonBrowseImages"
@@ -72,8 +72,8 @@
             android:id="@+id/buttonBrowseEvents"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:text="Remove Events"
-            android:background="@color/white" />
+            android:background="@color/white"
+            android:text="Browse Events" />
     </LinearLayout>
 
 </LinearLayout>

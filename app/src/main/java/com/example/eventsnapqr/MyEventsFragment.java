@@ -77,7 +77,7 @@ public class MyEventsFragment extends Fragment {
         });
 */
 
-        fetchEvents("organized events", orgnize_eventListView, orgnize_eventNames, orgnize_eventAdapter);
+        fetchEvents("organizedEvents", orgnize_eventListView, orgnize_eventNames, orgnize_eventAdapter);
         fetchEvents("promisedEvents", attend_eventListView, attend_eventNames, attend_eventAdapter);
 
         return v;

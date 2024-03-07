@@ -83,7 +83,7 @@ public class FirebaseController {
         userData.put("phoneNumber", user.getPhoneNumber());
         userData.put("email", user.getEmail());
         userData.put("deviceID", user.getDeviceID());
-        userData.put("profile uri", user.getProfilePicture());
+        userData.put("profileURI", user.getProfilePicture());
         CollectionReference userReference = db.collection("users");
         userReference
                 .document(user.getDeviceID()) // Assuming deviceID is unique for each user
@@ -105,7 +105,7 @@ public class FirebaseController {
         String link = event.getQrCode().getLink();
 
         // Perform a query to find the document with the matching link
-        eventReference.whereEqualTo("QR link", link)
+        eventReference.whereEqualTo("QRLink", link)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -140,12 +140,12 @@ public class FirebaseController {
     void parseDocuments(List<DocumentSnapshot> documents) {
         for(DocumentSnapshot doc: documents){
             Event event = new Event();
-            QR qr = new QR(doc.getString("QR link"));
+            QR qr = new QR(doc.getString("QRLink"));
             event.setQR(qr);
-            event.setOrganizer(new User(doc.getString("organizer ID")));
+            event.setOrganizer(new User(doc.getString("organizerID")));
             //doc.get("attendees");
             event.setDescription(doc.getString("description"));
-            event.setEventName(doc.getString("event name"));
+            event.setEventName(doc.getString("eventName"));
             event.setPosterUri(doc.getString("posterURL"));
             event.setAnnouncement(doc.getString("announcement"));
             events.add(event);
@@ -176,13 +176,13 @@ public class FirebaseController {
     }
     public void addEvent(Event event) {
         Map<String, Object> eventData = new HashMap<>();
-        eventData.put("event name", event.getEventName());
-        eventData.put("QR link", event.getQrCode().getLink());
-        eventData.put("organizer ID", event.getOrganizer().getDeviceID());
+        eventData.put("eventName", event.getEventName());
+        eventData.put("QRLink", event.getQrCode().getLink());
+        eventData.put("organizerID", event.getOrganizer().getDeviceID());
         eventData.put("description", event.getDescription());
         eventData.put("announcement",event.getAnnouncement());
         if (event.getPosterUri() != null) {
-            eventData.put("posterURL", event.getPosterUri());
+            eventData.put("posterURI", event.getPosterUri());
         }
         if (event.getMaxAttendees() != null) {
             eventData.put("maxAttendees", event.getMaxAttendees());
@@ -228,7 +228,7 @@ public class FirebaseController {
             String name = doc.getString("name");
             String email = doc.getString("email");
             String deviceID = doc.getString("deviceID");
-            String link = doc.getString("profile uri");
+            String link = doc.getString("profileURI");
             User user = new User(name, deviceID, link, phoneNumber,email);
             users.add(user);
         }
@@ -253,7 +253,7 @@ public class FirebaseController {
                     Log.d("User found", "User found: " + androidID);
                     String name = document.getString("name");
                     String deviceID = androidID;
-                    String profileURI = document.getString("profile uri");
+                    String profileURI = document.getString("profileURI");
                     User user = new User(name, deviceID);
                     user.setProfilePicture(profileURI);
                     listener.onUserRetrieved(user);
@@ -285,11 +285,11 @@ public class FirebaseController {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     Log.d("Event found", "Event found: " + eventIdentifier);
-                    String eventName = document.getString("event name");
-                    String organizerID = document.getString("organizer ID");
-                    String qrLink = document.getString("QR link");
+                    String eventName = document.getString("eventName");
+                    String organizerID = document.getString("organizerID");
+                    String qrLink = document.getString("QRLink");
                     String description = document.getString("description");
-                    String posterUri = document.getString("posterURL");
+                    String posterUri = document.getString("posterURI");
                     String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
                     String announcement = document.getString("announcement");
@@ -334,7 +334,7 @@ public class FirebaseController {
     public void addOrganizedEvent(User user, Event event) {
         DocumentReference userRef = userReference.document(user.getDeviceID());
 
-        userRef.collection("organized events").document(event.getEventID()).set(new HashMap<>())
+        userRef.collection("organizedEvents").document(event.getEventID()).set(new HashMap<>())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
