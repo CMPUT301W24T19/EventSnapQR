@@ -400,10 +400,15 @@ public class User implements Attendee, Organizer{
 
     @Override
     public void limitNumberOfAttendees(String eventId, int limit) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("events").document(eventId)
-                .update("attendeeLimit", limit)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Attendee limit updated successfully for event: " + eventId))
-                .addOnFailureListener(e -> Log.e(TAG, "Error updating attendee limit for event: " + eventId, e));
+
     }
+
+//    @Override
+//    public void limitNumberOfAttendees(String eventId, int limit) {
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        db.collection("events").document(eventId)
+//                .update("attendeeLimit", limit)
+//                .addOnSuccessListener(aVoid -> Log.d(TAG, "Attendee limit updated successfully for event: " + eventId))
+//                .addOnFailureListener(e -> Log.e(TAG, "Error updating attendee limit for event: " + eventId, e));
+//    }
 }
