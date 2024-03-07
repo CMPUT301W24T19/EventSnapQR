@@ -1,10 +1,15 @@
 package com.example.eventsnapqr;
 
-import android.util.Log;
 
+import static android.content.ContentValues.TAG;
+import android.util.Log;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.net.Uri;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,6 +131,32 @@ public class User implements Attendee, Organizer{
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
     }
+
+    public Bitmap generateInitialsImage(String name) {
+        // Generating default image from user's name initials
+        Bitmap bitmap = Bitmap.createBitmap(550, 550, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.GRAY);
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(340);
+        paint.setTextAlign(Paint.Align.CENTER);
+        String[] names = name.split("\\s+");
+        if (names.length > 0) {
+            String initials;
+            if (names.length == 1) {
+                // If user only has first name, displaying first 2 letters on profile
+                initials = names[0].substring(0, 2).toUpperCase();
+            } else {
+                // If 2(First,last,middle) or more names gives displaying initials of first and last name on profile pic
+                initials = names[0].substring(0, 1).toUpperCase() + names[names.length - 1].substring(0, 1).toUpperCase();
+            }
+            canvas.drawText(initials, 260, 360, paint);
+        }
+
+        return bitmap;
+    }
+
     public String getProfilePicture() {
         return this.profilePicture;
     }
