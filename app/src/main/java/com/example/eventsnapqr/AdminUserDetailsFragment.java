@@ -54,7 +54,7 @@ public class AdminUserDetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_admin_user_details, container, false);
         final TextView textViewUserName = view.findViewById(R.id.text_view_name);
         final TextView textViewUserID = view.findViewById(R.id.text_view_id);
-        TextView textViewHomepage = view.findViewById(R.id.text_view_homepage);
+        
         if (getArguments() != null) {
             String userId = getArguments().getString("userId");
             firebaseController = new FirebaseController();
