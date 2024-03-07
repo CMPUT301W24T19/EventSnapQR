@@ -5,8 +5,10 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -14,6 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.net.Authenticator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -191,7 +194,10 @@ public class FirebaseController {
         });
     }
 
-
+    public String getUniqueEventID() {
+        DocumentReference addedDocRef = eventReference.document();
+        return addedDocRef.getId();
+    }
     public void addEvent(Event event) {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("event name", event.getEventName());
@@ -207,13 +213,13 @@ public class FirebaseController {
         }
 
         // format document id
-        String documentId = event.getEventName() + "-" + event.getOrganizer().getDeviceID();
+        //String documentId = event.getEventName() + "-" + event.getOrganizer().getDeviceID();
         if (eventReference != null) {
-            eventReference.document(documentId).set(eventData)
+            eventReference.document(event.getEventID()).set(eventData)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Log.d("Added event success", "successfully added event: " + documentId);
+                            Log.d("Added event success", "successfully added event: " + event.getEventID());
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -223,6 +229,36 @@ public class FirebaseController {
                         }
                     });
         }
+    }
+    ArrayList<User> users = new ArrayList<>();
+    public void getAllUsers(OnAllUsersLoadedListener listener){
+        userReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if (!queryDocumentSnapshots.isEmpty()) {
+                    users.clear();
+                    parseUsers(queryDocumentSnapshots.getDocuments());
+                    listener.onUsersLoaded(users);
+                }
+
+            }
+        });
+
+    }
+
+    void parseUsers(List<DocumentSnapshot> documents){
+        for(DocumentSnapshot doc: documents){
+            String phoneNumber = doc.getString("phoneNumber");
+            String name = doc.getString("name");
+            String email = doc.getString("email");
+            String deviceID = doc.getString("deviceID");
+            String link = doc.getString("profile uri");
+            User user = new User(name, deviceID, link, phoneNumber,email);
+            users.add(user);
+        }
+    }
+    public interface OnAllUsersLoadedListener{
+        void onUsersLoaded(List<User> users);
     }
 
     /**
@@ -278,6 +314,7 @@ public class FirebaseController {
                     String qrLink = document.getString("QR link");
                     String description = document.getString("description");
                     String posterUri = document.getString("posterURL");
+                    String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
                     String announcement = document.getString("announcement");
 
@@ -287,7 +324,7 @@ public class FirebaseController {
                         @Override
                         public void onUserRetrieved(User user) {
                             if (user != null) {
-                                Event event = new Event(user, new QR(null, qrLink), eventName, description, posterUri, maxAttendees,announcement);
+                                Event event = new Event(user, new QR(null, qrLink), eventName, description, posterUri, maxAttendees, eventId, announcement);
                                 listener.onEventRetrieved(event);
                             } else {
                                 Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);

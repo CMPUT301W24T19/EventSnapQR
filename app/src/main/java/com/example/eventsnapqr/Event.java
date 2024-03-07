@@ -1,17 +1,12 @@
 package com.example.eventsnapqr;
 
 import android.net.Uri;
+import android.util.Log;
 
 
 import java.util.List;
 
 public class Event {
-
-
-    private List<User> attendees;
-    private String posterUrl;
-
-
 
     private String eventName; // name of the event
     private User organizer; // user who organized the event
@@ -20,10 +15,11 @@ public class Event {
     private String posterUri; // URL for the event poster image
     private Integer maxAttendees; // optional max attendees
     private String announcement; //announcements related to the Event
+    private String eventID;
+    private List<User> attendees;
     private List<User> signedUpAttendees; // list of users who have signed up
     private List<User> checkedInAttendees; // list of users who are currently checked in
     private FirebaseController firebaseController; // instance of the firebase controller
-
 
     public Event() {
 
@@ -40,7 +36,7 @@ public class Event {
      * @param maxAttendees maximum number of attendees
      * @param announcement announcements related to the event
      */
-    public Event(User organizer, QR qrCode, String eventName, String description, String posterUri, Integer maxAttendees, String announcement) {
+    public Event(User organizer, QR qrCode, String eventName, String description, String posterUri, Integer maxAttendees, String eventID, String announcement) {
         this.organizer = organizer;
         this.qrCode = qrCode;
         this.eventName = eventName;
@@ -48,6 +44,7 @@ public class Event {
         this.posterUri = posterUri;
         this.maxAttendees = maxAttendees;
         this.announcement = announcement;
+        this.eventID = eventID;
     }
 
     /**
@@ -145,5 +142,21 @@ public class Event {
      */
     public void setMaxAttendees(Integer maxAttendees) {
         this.maxAttendees = maxAttendees;
+    }
+
+    public void addAttendee(User attendee) {
+        if (this.maxAttendees != null && this.attendees.size() < this.maxAttendees) {
+            this.attendees.add(attendee);
+        }
+        else {
+            throw new IllegalArgumentException();
+        }
+    }
+    public String getEventID() {
+        return this.eventID;
+    }
+
+    public void setEventID(String eventID) {
+        this.eventID = eventID;
     }
 }

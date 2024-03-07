@@ -61,8 +61,8 @@ public class OrganizeEventFragment extends Fragment {
     private String androidID;
     private FirebaseController firebaseController = new FirebaseController();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-    Uri imageUri;
-    String uriString;
+    private Uri imageUri;
+    private String uriString;
 
     public OrganizeEventFragment() {
         // Required empty public constructor
@@ -130,12 +130,12 @@ public class OrganizeEventFragment extends Fragment {
             editTextEventName.setError("Event name cannot be empty");
             return false;
         }
-
+/*
         if (eventName.length() > 50) {
             editTextEventName.setError("Event name cannot exceed 50 characters");
             return false;
         }
-
+*/
         if (eventDesc.isEmpty()) {
             editTextEventDesc.setError("Event description cannot be empty");
             return false;
@@ -147,6 +147,7 @@ public class OrganizeEventFragment extends Fragment {
         Intent intent = new Intent(requireContext(), MainActivity.class);
         startActivity(intent);
     }
+
     private ArrayList<Event> allEvents;
     private void createEvent() {
         String eventName = editTextEventName.getText().toString(); // get the name of the event
@@ -163,33 +164,45 @@ public class OrganizeEventFragment extends Fragment {
 
                 if (user != null) {
                     // User retrieved successfully, proceed with event creation
-                    String link = generateLink(eventName, user.getDeviceID());
+                    String eventID = FirebaseController.getInstance().getUniqueEventID();
+                    String link = generateLink(eventID, user.getDeviceID());
                     Log.d("QR link generated", "QR link: " + link);
                     QRGEncoder qrgEncoder = new QRGEncoder(link, null, QRGContents.Type.TEXT, 5);
                     qrgEncoder.setColorBlack(Color.RED);
                     qrgEncoder.setColorWhite(Color.BLUE);
+                    Log.d("TAG", "1");
                     try {
                         qrBitmap = qrgEncoder.getBitmap();
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("bitmap", qrBitmap);
                         QR qrCode = new QR(qrBitmap, link);
                         if (imageUri != null) {
-                            StorageReference userRef = storageRef.child("eventPosters/" + imageUri.getLastPathSegment());  // specifies the path on the cloud storage
+                            StorageReference userRef = storageRef.child("eventPosters/" + eventID);  // specifies the path on the cloud storage
                             userRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
                                 userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                     imageUri = uri;
                                     uriString = imageUri.toString();
-                                    Log.d("TAG", "String URI: " + uriString);
+                                    Log.d("TAG", "Uri string is true");
+                                    // Use the retrieved user to create the event
+                                    Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
+                                    Log.d("USER NAME", newEvent.getOrganizer().getName());
+                                    firebaseController.addEvent(newEvent);
+                                    NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                                    navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                                 });
                             });  // puts the file into the referenced path
                         }
                         else {
                             uriString = null;
+                            // Use the retrieved user to create the event
+                            Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
+                            Log.d("USER NAME", newEvent.getOrganizer().getName());
+                            firebaseController.addEvent(newEvent);
+                            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                            navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                         }
                         // Use the retrieved user to create the event
-                        Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees,announcement);
-                        Log.d("USER NAME", newEvent.getOrganizer().getName());
-                        if(newEvent != null){
+                        /*if(newEvent != null){
                             firebaseController = FirebaseController.getInstance();
                             //ArrayList<Event> allEvents;
                             firebaseController.getEvents(new FirebaseController.OnEventsLoadedListener(){
@@ -200,9 +213,8 @@ public class OrganizeEventFragment extends Fragment {
                                     if (!checkEventExists(newEvent, allEvents)) {
                                         firebaseController.addEvent(newEvent);
                                         firebaseController.addOrganizedEvent(user, newEvent);
+                                        Log.d("TAG", "Event ID " + newEvent.getEventID());
                                         Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
-                                        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                                        navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                                     }
                                     else{
                                         Toast.makeText(requireContext(), "Error: Event already exists", Toast.LENGTH_LONG).show();
@@ -211,7 +223,7 @@ public class OrganizeEventFragment extends Fragment {
                             });
 
 
-                        }
+                        }*/
 
                     } catch (Exception e) {
                         Log.v("ORGANIZE EVENT ERROR", e.toString());
