@@ -35,18 +35,18 @@ import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 
 public class UserInfoActivity extends AppCompatActivity {
-    ImageView buttonBackButton;
-    ImageView buttonAddImage;
-    ImageView buttonRemoveImage;
-    FirebaseStorage storage = FirebaseStorage.getInstance();
-    StorageReference storageRef = storage.getReference();
-    String androidID;
-    ImageView profilePictureImage;
-    String profilePictureURI;
-    TextView userName;
-    TextView email;
-    TextView phoneNumber;
-    TextView homepage;
+    private ImageView buttonBackButton;
+    private ImageView buttonAddImage;
+    private ImageView buttonRemoveImage;
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
+    private StorageReference storageRef = storage.getReference();
+    private String androidID;
+    private ImageView profilePictureImage;
+    private String profilePictureURI;
+    private TextView userName;
+    private TextView email;
+    private TextView phoneNumber;
+    private TextView homepage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
