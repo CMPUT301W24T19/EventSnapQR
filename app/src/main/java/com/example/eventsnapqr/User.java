@@ -210,6 +210,7 @@ public class User implements Attendee, Organizer{
         void onAttendeesRetrievedFailed(Exception e);
     }
 
+
     @Override
     public void viewEventAttendees(String eventId, final OnAttendeesRetrievedListener listener) {
         List<User> attendeesList = new ArrayList<>();
@@ -230,6 +231,7 @@ public class User implements Attendee, Organizer{
                     }
                 });
     }
+
 
     @Override
     public void sendNotificationsToAttendees(String eventId, String message) {
