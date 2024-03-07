@@ -4,12 +4,13 @@ package com.example.eventsnapqr;
 import static android.content.ContentValues.TAG;
 import android.util.Log;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.net.Uri;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -254,72 +255,160 @@ public class User implements Attendee, Organizer{
         void onCallback(List<User> userList);
     }
 
+
     @Override
     public void viewEventAttendees(String eventId, AttendeesCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        List<User> userList = new ArrayList<>();
-
         db.collection("events").document(eventId).collection("attendees")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<User> attendees = new ArrayList<>();
+                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        User attendee = documentSnapshot.toObject(User.class);
+                        attendees.add(attendee);
+                    }
+                    callback.onCallback(attendees);
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Error getting event attendees", e));
+    }
+
+    @Override
+    public void sendNotificationsToAttendees(String eventId, String message) {
+
+    }
+
+
+//    @Override for final part************************
+//    public void sendNotificationsToAttendees(String eventId, String message) {
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        // Fetch attendees for the given event
+//        db.collection("events").document(eventId).collection("attendees")
+//                .get()
+//                .addOnSuccessListener(queryDocumentSnapshots -> {
+//                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+//                        String userId = documentSnapshot.getId();
+//                        // Assume there's a method to send notification to a user by userId
+//                        sendNotificationToUser(userId, message);
+//                    }
+//                })
+//                .addOnFailureListener(e -> Log.e(TAG, "Error getting event attendees", e));
+//    }
+
+    @Override
+    public void uploadEventPoster(String eventId, String posterUri) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("events").document(eventId)
+                .update("posterUri", posterUri)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Poster updated successfully for event: " + eventId))
+                .addOnFailureListener(e -> Log.e(TAG, "Error updating poster for event: " + eventId, e));
+    }
+
+    @Override
+    public void trackRealTimeAttendance(String eventId) {
+        // This method's implementation is more about setting up Firestore to listen to changes in real-time
+        // Assuming there's a collection 'checkIns' under each event where check-ins are recorded
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("events").document(eventId).collection("checkIns")
+                .addSnapshotListener((snapshots, e) -> {
+                    if (e != null) {
+                        Log.e(TAG, "Listen failed.", e);
+                        return;
+                    }
+                    // Process each document and potentially update UI or internal state
+                    for (QueryDocumentSnapshot doc : snapshots) {
+                        Log.d(TAG, "Checked in: " + doc.getId());
+                        // Update UI or state as necessary
+                    }
+                });
+    }
+
+    @Override
+    public void shareQRCodeImage(String qrCode, String platform) {
+        // Assuming you have a URI for the QR code image stored in Firestore Storage
+        String qrCodeImageUri = "path_to_your_qr_code_image_in_firestore_storage";
+        // Logic to share this URI with other platforms or apps goes here.
+        // This can involve creating an intent for sharing with other apps.
+    }
+
+    @Override
+    public void generatePromotionQRCode(String eventId) {
+
+    }
+
+    @Override
+    public void viewCheckInLocations(String eventId) {
+
+    }
+
+    @Override
+    public int getCheckInCount(String userId, String eventId) {
+        return 0;
+    }
+
+
+//    @Override
+//    public void generatePromotionQRCode(String eventId) {
+//        // Placeholder: generate a unique promotion QR code that links to the event description and poster
+//    }
+
+//    @Override final checkpoint*************
+//    public void viewCheckInLocations(String eventId) {
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        db.collection("events").document(eventId).collection("checkIns")
+//                .get()
+//                .addOnSuccessListener(queryDocumentSnapshots -> {
+//                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+//                        // Assuming each check-in document contains a location field
+//                        GeoPoint location = documentSnapshot.getGeoPoint("location");
+//                        if (location != null) {
+//                            // Logic to display this location on a map
+//                            // For example, markLocationOnMap(location.getLatitude(), location.getLongitude());
+//                        }
+//                    }
+//                })
+//                .addOnFailureListener(e -> Log.e(TAG, "Error getting check-in locations", e));
+//    }
+
+
+//    @Override final checkpoint *******************
+//    public int getCheckInCount(String userId, String eventId) {
+//        // Placeholder: return the number of times the specified user has checked into the event
+//        return 0; // Example return value
+//    }
+
+    @Override
+    public List<User> viewSignedUpAttendees(String eventId) {
+        // Assuming 'promisedEvents' is a field in the user document that contains event IDs the user has signed up for
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        List<User> signedUpAttendees = new ArrayList<>();
+        db.collection("users")
+                .whereArrayContains("promisedEvents", eventId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             User user = document.toObject(User.class);
-                            userList.add(user);
+                            signedUpAttendees.add(user);
                         }
-                        callback.onCallback(userList);
+                        // Process signed up attendees as needed
                     } else {
-                        Log.d("viewEventAttendees", "Error getting documents: ", task.getException());
+                        Log.d(TAG, "Error getting signed up attendees: ", task.getException());
                     }
                 });
-    }
-
-
-
-    @Override
-    public void sendNotificationsToAttendees(String eventId, String message) {
-        // Placeholder: send a notification message to all attendees of the specified event
-    }
-
-    @Override
-    public void uploadEventPoster(String eventId, String posterUri) {
-        // Placeholder: upload and associate an event poster with the specified event
-    }
-
-    @Override
-    public void trackRealTimeAttendance(String eventId) {
-        // Placeholder: implement real-time attendance tracking for the specified event
-    }
-
-    @Override
-    public void shareQRCodeImage(String qrCode, String platform) {
-        // Placeholder: share the QR code image to other apps or platforms
-    }
-
-    @Override
-    public void generatePromotionQRCode(String eventId) {
-        // Placeholder: generate a unique promotion QR code that links to the event description and poster
-    }
-
-    @Override
-    public void viewCheckInLocations(String eventId) {
-        // Placeholder: display a map showing where users have checked in from
-    }
-
-    @Override
-    public int getCheckInCount(String userId, String eventId) {
-        // Placeholder: return the number of times the specified user has checked into the event
-        return 0; // Example return value
-    }
-
-    @Override
-    public List<User> viewSignedUpAttendees(String eventId) {
-        // Placeholder: return a list of users who have signed up to attend the event
-        return new ArrayList<>();
+        return signedUpAttendees;
     }
 
     @Override
     public void limitNumberOfAttendees(String eventId, int limit) {
-        // Placeholder: optionally limit the number of attendees that can sign up for the event
+
     }
+
+//    @Override
+//    public void limitNumberOfAttendees(String eventId, int limit) {
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        db.collection("events").document(eventId)
+//                .update("attendeeLimit", limit)
+//                .addOnSuccessListener(aVoid -> Log.d(TAG, "Attendee limit updated successfully for event: " + eventId))
+//                .addOnFailureListener(e -> Log.e(TAG, "Error updating attendee limit for event: " + eventId, e));
+//    }
 }
