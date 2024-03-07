@@ -199,6 +199,7 @@ public class OrganizeEventFragment extends Fragment {
                             if(allEvents != null) {
                                 if (!checkEventExists(newEvent, allEvents)) {
                                     firebaseController.addEvent(newEvent);
+                                    firebaseController.addOrganizedEvent(user, newEvent);
                                     Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
                                     NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                                     navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
