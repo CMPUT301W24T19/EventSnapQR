@@ -93,18 +93,25 @@ public class SignUpFragment extends Fragment {
         navController.navigate(R.id.mainPageFragment);
     }
     public Boolean validateInput(){
-        if(editTextName.getText().toString().replaceAll(" ","").isEmpty()){
+        if(editTextName.getText().toString().trim().isEmpty()){
             editTextName.setError("Name field cannot be empty");
             return false;
         }
-        if(editTextEmail.getText().toString().replaceAll(" ","").isEmpty()){
+
+        String emailInput = editTextEmail.getText().toString().trim();
+        if(emailInput.isEmpty()){
             editTextEmail.setError("Email field cannot be empty");
             return false;
+        } else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(emailInput).matches()){
+            editTextEmail.setError("Please enter a valid email address");
+            return false;
         }
-        if(editTextNumber.getText().toString().replaceAll(" ","").isEmpty()){
+
+        if(editTextNumber.getText().toString().trim().isEmpty()){
             editTextNumber.setError("Number field cannot be empty");
             return false;
         }
         return true;
     }
+
 }
