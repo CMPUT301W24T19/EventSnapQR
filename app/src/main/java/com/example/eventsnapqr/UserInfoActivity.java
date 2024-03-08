@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +32,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
 
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
@@ -47,10 +51,14 @@ public class UserInfoActivity extends AppCompatActivity {
     private String androidID;
     private ImageView profilePictureImage;
     private String profilePictureURI;
-    private TextView userName;
-    private TextView email;
-    private TextView phoneNumber;
-    private TextView homepage;
+    private EditText userName;
+    private EditText email;
+    private EditText phoneNumber;
+    private EditText homepage;
+    private Button saveButton;
+    private boolean editMode = false;
+    private ImageView editButton;
+    private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
 
     /**
      * What should be executed when the fragment is created
@@ -69,7 +77,16 @@ public class UserInfoActivity extends AppCompatActivity {
         email = findViewById(R.id.email_context);
         phoneNumber = findViewById(R.id.phone_context);
         homepage = findViewById(R.id.homepage_context);
+        saveButton = findViewById(R.id.button_save_button);
+        editButton = findViewById(R.id.button_edit_profile_button);
 
+
+        userName.setEnabled(editMode);
+        email.setEnabled(editMode);
+        phoneNumber.setEnabled(editMode);
+        homepage.setEnabled(editMode);
+
+        saveButton.setVisibility(View.INVISIBLE);
         buttonBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,25 +105,20 @@ public class UserInfoActivity extends AppCompatActivity {
                         Glide.with(getBaseContext())
                                 .load(Uri.parse(user.getProfilePicture()))
                                 .into(profilePictureImage);
-                    }else {
-                        // Handle case where there is no profile picture
-                        // For example, set a default drawable
-                        profilePictureImage.setImageResource(R.drawable.profile_pic);
+                    }
+                    else if (user.getProfilePicture() == null || user.getProfilePicture().isEmpty()) {
+                        Bitmap initialsImageBitmap = user.generateInitialsImage(user.getName().toString());
+                        profilePictureImage.setImageBitmap(initialsImageBitmap);
                     }
 
                     userName.setText(user.getName());
+                    Log.d("TAG", "User name: " + user.getName());
                     email.setText(user.getEmail());
+                    Log.d("TAG", "User email: " + user.getEmail());
                     phoneNumber.setText(user.getPhoneNumber());
+                    Log.d("TAG", "User phone number: " + user.getPhoneNumber());
                     homepage.setText(user.getHomepage());
-                }
-                if (profilePictureURI == null || profilePictureURI.isEmpty()){
-                    userName.setText(user.getName());
-                    Bitmap initialsImageBitmap = user.generateInitialsImage(userName.getText().toString());
-                    profilePictureImage.setImageBitmap(initialsImageBitmap);
-                    email.setText(user.getEmail());
-                    phoneNumber.setText(user.getPhoneNumber());
-                    homepage.setText(user.getHomepage());
-
+                    Log.d("TAG", "User homepage: " + user.getHomepage());
                 }
             }
         });
@@ -120,19 +132,17 @@ public class UserInfoActivity extends AppCompatActivity {
                         userRef.putFile(uri).addOnSuccessListener(taskSnapshot -> {
                             userRef.getDownloadUrl().addOnSuccessListener(uri1 -> {
                                 profilePictureURI = String.valueOf(uri1);
-                                FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
-                                    @Override
-                                    public void onUserRetrieved(User user) {
-                                        if (user != null) {
-                                            user.setProfilePicture(profilePictureURI);
-                                            FirebaseController.getInstance().addUser(user);
-                                        }
-                                    }
-                                });
                                 Glide.with(this)
                                         .load(uri1)
                                         .dontAnimate()
                                         .into(profilePictureImage);
+                                FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
+                                    @Override
+                                    public void onUserRetrieved(User user) {
+                                        user.setProfilePicture(profilePictureURI);
+                                        FirebaseController.getInstance().addUser(user);
+                                    }
+                                });
                             });
                         });  // puts the file into the referenced path
                     } else {
@@ -149,6 +159,44 @@ public class UserInfoActivity extends AppCompatActivity {
             }
         });
 
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
+                    @Override
+                    public void onUserRetrieved(User user) {
+                        user.setName(userName.getText().toString());
+                        user.setEmail(email.getText().toString());
+                        user.setPhoneNumber(phoneNumber.getText().toString());
+                        user.setHomepage(homepage.getText().toString());
+                        FirebaseController.getInstance().addUser(user);
+                        if (user.getProfilePicture() == null) {
+                            Bitmap initialsImageBitmap = user.generateInitialsImage(user.getName().toString());
+                            profilePictureImage.setImageBitmap(initialsImageBitmap);
+                        }
+                        Toast.makeText(UserInfoActivity.this, "Information successfully updated!", Toast.LENGTH_SHORT).show();
+                        editMode = false;
+                        saveButton.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
+        });
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editMode = !editMode;
+                userName.setEnabled(editMode);
+                email.setEnabled(editMode);
+                phoneNumber.setEnabled(editMode);
+                homepage.setEnabled(editMode);
+                if (editMode) {
+                    saveButton.setVisibility(View.VISIBLE);
+                }
+                else {
+                    saveButton.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
         buttonRemoveImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
