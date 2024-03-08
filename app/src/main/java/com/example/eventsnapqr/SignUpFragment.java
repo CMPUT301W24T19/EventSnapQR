@@ -11,6 +11,7 @@ import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -38,6 +39,7 @@ public class SignUpFragment extends Fragment {
             androidId = getArguments().getString("userId");
         }
         firebaseController = new FirebaseController();
+
     }
 
     /**
@@ -57,8 +59,12 @@ public class SignUpFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_sign_up, container, false);
+        if (getActivity() != null) {
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        }
         editTextEmail = v.findViewById(R.id.edit_text_email);
 
         editTextHomepage = v.findViewById(R.id.edit_text_homepage);
