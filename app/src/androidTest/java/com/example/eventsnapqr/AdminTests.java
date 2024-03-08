@@ -32,6 +32,7 @@ import android.provider.Settings;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.Espresso;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.CloseKeyboardAction;
 import androidx.test.espresso.action.ViewActions;
@@ -220,7 +221,7 @@ public class AdminTests {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
+           // Espresso.onView((withId(R.id.user_profile_pictures))).perform(RecyclerViewActions)
 
 
 
