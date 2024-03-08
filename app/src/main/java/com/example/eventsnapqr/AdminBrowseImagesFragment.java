@@ -36,16 +36,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AdminBrowseImagesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class AdminBrowseImagesFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private String mParam1;
-    private String mParam2;
     private FloatingActionButton buttonBackToAdminMain;
     private FloatingActionButton deleteButton;
     private List<Event> posters;
@@ -54,15 +47,6 @@ public class AdminBrowseImagesFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AdminBrowseImagesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static AdminBrowseImagesFragment newInstance(String param1, String param2) {
         AdminBrowseImagesFragment fragment = new AdminBrowseImagesFragment();
         Bundle args = new Bundle();
@@ -154,7 +138,6 @@ public class AdminBrowseImagesFragment extends Fragment {
                             @Override
                             public void onEventRetrieved(Event event) {
                                 event.setPosterUri(null);
-                                FirebaseController.getInstance().deleteEvent(event);;
                                 FirebaseController.getInstance().addEvent(event);
                             }
                         });
