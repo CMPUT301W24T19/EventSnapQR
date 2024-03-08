@@ -1,10 +1,12 @@
 package com.example.eventsnapqr;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -61,9 +63,11 @@ public class BrowseEventFragment extends Fragment {
      *
      * @return the resulting view
      */
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_browse_events, container, false);
+
         eventListView = view.findViewById(R.id.events);
         eventNames = new ArrayList<>();
         eventIds = new ArrayList<>();

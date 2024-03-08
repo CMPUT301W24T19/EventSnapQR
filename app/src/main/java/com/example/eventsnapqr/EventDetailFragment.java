@@ -3,6 +3,7 @@ package com.example.eventsnapqr;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,34 +84,39 @@ public class EventDetailFragment extends Fragment {
                 FirebaseController.getInstance().getUser(androidId, new FirebaseController.OnUserRetrievedListener() {
                     @Override
                     public void onUserRetrieved(User user) {
-                        List<Attendee> attendees;
                         if (user != null) {
                             FirebaseController.getInstance().getEvent(eventId, new FirebaseController.OnEventRetrievedListener() {
                                 @Override
                                 public void onEventRetrieved(Event event) {
                                     if (event != null) {
-                                        List<User> attendeeList = new ArrayList<>();
+                                        String eventId = event.getEventID();
 
-                                        event.getOrganizer().viewEventAttendees(event.getEventID(), new User.AttendeesCallback() {
-                                            @Override
-                                            public void onCallback(List<User> userList) {
-                                                attendeeList.addAll(userList);
-                                            }
+                                        // Get a reference to the attendees collection for the event
+                                        CollectionReference attendeesCollectionRef = FirebaseFirestore.getInstance()
+                                                .collection("events")
+                                                .document(eventId)
+                                                .collection("attendees");
 
-                                            @Override
-                                            public void onAttendeesLoaded(List<String> attendees) {
-                                                // do nothing
-                                            }
+                                        // Query the attendees collection to get the count of documents (attendees)
+                                        attendeesCollectionRef.get()
+                                                .addOnSuccessListener(queryDocumentSnapshots -> {
+                                                    // Get the count of attendees
+                                                    int numberOfAttendees = queryDocumentSnapshots.size();
+                                                    Log.d("Attendees", "Number of attendees: " + numberOfAttendees);
 
-                                        });
-                                        if (event.getMaxAttendees() == null || attendeeList.size() < event.getMaxAttendees()) {
-                                            FirebaseController.getInstance().addAttendeeToEvent(event, user);
-                                            FirebaseController.getInstance().addPromiseToGo(user, event);
-                                            CreateDialog(event.getEventName());
-                                        }
-                                        else {
-                                            Toast.makeText(requireContext(), "Event is full", Toast.LENGTH_SHORT).show();
-                                        }
+                                                    Log.d("ATT LIST", "onEventRetrieved: " + numberOfAttendees);
+                                                    if (event.getMaxAttendees() == null || numberOfAttendees < event.getMaxAttendees()) {
+                                                        FirebaseController.getInstance().addAttendeeToEvent(event, user);
+                                                        FirebaseController.getInstance().addPromiseToGo(user, event);
+                                                        CreateDialog(event.getEventName());
+                                                    } else {
+                                                        Toast.makeText(requireContext(), "Event is full", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    Log.e("Error", "Error getting attendee count", e);
+                                                    // Handle failure
+                                                });
                                     } else {
                                         Toast.makeText(requireContext(), "Failed to retrieve event details", Toast.LENGTH_SHORT).show();
                                     }
@@ -121,8 +129,10 @@ public class EventDetailFragment extends Fragment {
                 });
             }
         });
-        return view;
+
+        return view; // Add this line to fix the missing brace error
     }
+
 
     /**
      * after the sign up button is pressed this dialog notifies the user

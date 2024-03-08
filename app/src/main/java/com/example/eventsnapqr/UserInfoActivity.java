@@ -91,14 +91,12 @@ public class UserInfoActivity extends AppCompatActivity {
             public void onUserRetrieved(User user) {
                 if (user != null) {
                     Log.d("TAG", "True");
-                    if (user.getProfilePicture() != null) {
+                    if (user.getProfilePicture() != null && !user.getProfilePicture().isEmpty()) {
                         Glide.with(getBaseContext())
                                 .load(Uri.parse(user.getProfilePicture()))
-                                .dontAnimate()
                                 .into(profilePictureImage);
                     }
                     else if (user.getProfilePicture() == null || user.getProfilePicture().isEmpty()) {
-                        Log.d("TAG", "nopfp");
                         Bitmap initialsImageBitmap = user.generateInitialsImage(user.getName().toString());
                         profilePictureImage.setImageBitmap(initialsImageBitmap);
                     }

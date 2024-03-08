@@ -2,9 +2,12 @@ package com.example.eventsnapqr;
 
 import static androidx.fragment.app.FragmentManager.TAG;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.provider.Settings;
 import android.util.Log;
@@ -13,9 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,30 +32,19 @@ import java.util.List;
  * event details page. if an organized event is pressed you are brought to "your event fragment"
  */
 public class MyEventsFragment extends Fragment {
-    private ListView attend_eventListView, organize_eventListView;
-    private ArrayAdapter<String> attend_eventAdapter, organize_eventAdapter;
-    private String androidId;
-    private List<String> attend_eventNames, organize_eventNames;
     private FirebaseFirestore db;
+    private ArrayAdapter<String> organize_eventAdapter;
+    private ArrayAdapter<String> attend_eventAdapter;
+    private ArrayList<String> organize_eventNames;
+    private ArrayList<String> attend_eventNames;
+    FloatingActionButton backButton;
 
-    /**
-     * Setup actions to be taken upon view creation and when the views are interacted with
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
-     *
-     * @return resulting view
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_my_events, container, false);
-        attend_eventListView = v.findViewById(R.id.attending_events_list);
-        organize_eventListView = v.findViewById(R.id.organized_events_list);
-        androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        View view = inflater.inflate(R.layout.fragment_my_events, container, false);
+        ListView attend_eventListView = view.findViewById(R.id.attending_events_list);
+        ListView organize_eventListView = view.findViewById(R.id.organized_events_list);
+        String androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         attend_eventNames = new ArrayList<>();
         organize_eventNames = new ArrayList<>();
@@ -57,57 +52,67 @@ public class MyEventsFragment extends Fragment {
         organize_eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, organize_eventNames);
         attend_eventListView.setAdapter(attend_eventAdapter);
         organize_eventListView.setAdapter(organize_eventAdapter);
+        backButton = view.findViewById(R.id.button_back_button);
 
         db = FirebaseFirestore.getInstance();
 
-        v.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requireActivity().finish();
-            }
+        backButton.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+            navController.navigate(R.id.action_myEventActivity_to_BrowseEventFragment);
         });
 
-        fetchEvents("organizedEvents", organize_eventNames, organize_eventAdapter);
-        fetchEvents("promisedEvents", attend_eventNames, attend_eventAdapter);
+        loadOrganizedEvents(androidId);
+        loadAttendingEvents(androidId);
 
-        return v;
+        return view;
     }
 
-    /**
-     * fetch the events that the user is attending and organizing by interacting with the database
-     * @param subcollection name of the subcollection to fetch
-     * @param eventNames list of event names
-     * @param eventAdapter adapter for event strings
-     */
-    private void fetchEvents(String subcollection, List<String> eventNames, ArrayAdapter<String> eventAdapter) {
-        db.collection("users")
-                .document(androidId)
-                .collection(subcollection)
+    private void loadOrganizedEvents(String userId) {
+        db.collection("users").document(userId).collection("organizedEvents")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        eventNames.clear();
-                        for (DocumentSnapshot document : task.getResult()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
                             String eventId = document.getId();
-                            db.collection("events")
-                                    .document(eventId)
-                                    .get()
+                            db.collection("events").document(eventId).get()
                                     .addOnSuccessListener(eventDocument -> {
-                                        if (eventDocument != null && eventDocument.exists()) {
-                                            String eventName = eventDocument.getString("eventName");
-                                            eventNames.add(eventName);
-                                            eventAdapter.notifyDataSetChanged();
-                                        } else {
-                                            Log.d(TAG, "fetchEvents: Event document not found for eventId: " + eventId);
+                                        String eventName = eventDocument.getString("eventName");
+                                        if (eventName != null) {
+                                            organize_eventNames.add(eventName);
+                                            organize_eventAdapter.notifyDataSetChanged();
                                         }
                                     })
-                                    .addOnFailureListener(e -> {
-                                        Log.e("FETCH ERROR", "Error fetching event document", e);
-                                    });
+                                    .addOnFailureListener(e -> Log.e("Error", "Error getting event details: ", e));
                         }
                     } else {
-                        Log.e("FETCH ERROR", "Error fetching subcollection documents", task.getException());
+                        Log.e("Error", "Error getting organized events: ", task.getException());
+                        Toast.makeText(getContext(), "Error loading organized events", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
+    private void loadAttendingEvents(String userId) {
+        db.collection("users").document(userId).collection("promisedEvents")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String eventId = document.getId(); // Assuming the document ID is the event ID
+                            db.collection("events").document(eventId).get()
+                                    .addOnSuccessListener(eventDocument -> {
+                                        String eventName = eventDocument.getString("eventName");
+                                        if (eventName != null) {
+                                            attend_eventNames.add(eventName);
+                                            attend_eventAdapter.notifyDataSetChanged();
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> Log.e("Error", "Error getting event details: ", e));
+                        }
+                    } else {
+                        Log.e("Error", "Error getting attending events: ", task.getException());
+                        Toast.makeText(getContext(), "Error loading attending events", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
 }

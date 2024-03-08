@@ -148,5 +148,6 @@ public class ScanQRActivity extends AppCompatActivity {
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+        finish();
     }
 }
