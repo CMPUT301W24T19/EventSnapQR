@@ -20,9 +20,6 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * fragment to show the details of an event, including the name of the organizer,
  * the description, announcements and max attendees. gives the option for the user to
@@ -179,7 +176,7 @@ public class EventDetailFragment extends Fragment {
     private void displayEventDetails(Event event) {
         eventPosterImage = getView().findViewById(R.id.event_poster);
         Glide.with(requireContext())
-                .load(event.getPosterUri())
+                .load(event.getPosterURI())
                 .placeholder(R.drawable.place_holder_img)
                 .dontAnimate()
                 .into(eventPosterImage);
