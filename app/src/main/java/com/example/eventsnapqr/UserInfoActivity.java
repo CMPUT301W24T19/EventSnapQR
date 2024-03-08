@@ -77,8 +77,8 @@ public class UserInfoActivity extends AppCompatActivity {
             }
         });
 
-        ContentResolver contentResolver = getBaseContext().getContentResolver();
-        androidID = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+        Bundle extra = getIntent().getExtras();
+        androidID = extra.get("androidId").toString();
 
         FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
             @Override

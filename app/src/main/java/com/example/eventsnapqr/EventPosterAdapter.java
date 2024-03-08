@@ -63,7 +63,7 @@ public class EventPosterAdapter extends RecyclerView.Adapter<EventPosterAdapter.
 
         public EventPosterViewHolder(@NonNull View itemView) {
             super(itemView);
-            ivEventPoster = itemView.findViewById(R.id.iv_event_poster);
+            ivEventPoster = itemView.findViewById(R.id.image_pofile_picture);
         }
     }
 }

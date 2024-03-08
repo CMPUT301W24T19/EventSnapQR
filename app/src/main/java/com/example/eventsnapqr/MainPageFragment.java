@@ -127,6 +127,7 @@ public class MainPageFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), UserInfoActivity.class);
+                intent.putExtra("androidId", androidId);
                 startActivity(intent);
             }
         });
