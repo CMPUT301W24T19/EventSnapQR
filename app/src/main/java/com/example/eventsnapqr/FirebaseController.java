@@ -4,10 +4,11 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -15,11 +16,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.net.Authenticator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FirebaseController {
     private static FirebaseController instance;
@@ -68,13 +69,132 @@ public class FirebaseController {
                 }
             } else {
                 Log.d("Error", "Error getting document: " + task.getException());
-                listener.onUserExistenceChecked(false); // Assume user doesn't exist if there's an error
+                listener.onUserExistenceChecked(false);
             }
         });
     }
     public interface Authenticator {
         void onUserExistenceChecked(boolean exists);
         void onAdminExistenceChecked(boolean exists);
+    }
+
+    public void deleteUser(User user) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = user.getDeviceID();
+
+        deleteOrganizedEvents(db, userId, () -> {
+            deleteUserFinalStep(db, userId);
+        });
+    }
+
+    public interface FirestoreOperationCallback {
+        void onCompleted();
+    }
+
+    private void deleteOrganizedEvents(FirebaseFirestore db, String userId, Runnable callback){
+        db.collection("users").document(userId).collection("organizedEvents")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Task<Void>> deleteTasks = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String eventId = document.getId();
+                            Task<Void> deleteTask = fetchAndDeleteEvent(db, eventId);
+                            deleteTasks.add(deleteTask);
+                        }
+
+                        Tasks.whenAllComplete(deleteTasks).addOnCompleteListener(tasks -> {
+                            callback.run();
+                        });
+                    } else {
+                        Log.e("Delete Organized Events", "Error fetching organized events for user: " + userId, task.getException());
+                        callback.run();
+                    }
+                });
+    }
+
+    private void deleteUserFinalStep(FirebaseFirestore db, String userId) {
+        db.collection("users").document(userId).delete()
+                .addOnSuccessListener(aVoid -> Log.d("Delete User", "User successfully deleted: " + userId))
+                .addOnFailureListener(e -> Log.e("Delete User", "Error deleting user: " + userId, e));
+    }
+
+    private Task<Void> fetchAndDeleteEvent(FirebaseFirestore db, String eventId) {
+        TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Event event = documentSnapshot.toObject(Event.class);
+                        if (event != null) {
+                            event.setEventID(documentSnapshot.getId());
+                            deleteEvent(event, () -> {
+                                taskCompletionSource.setResult(null);
+                            });
+                        } else {
+                            taskCompletionSource.setResult(null);
+                        }
+                    } else {
+                        taskCompletionSource.setResult(null);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    taskCompletionSource.setException(e);
+                });
+
+        return taskCompletionSource.getTask();
+    }
+
+
+    public void deleteEvent(Event event, FirestoreOperationCallback completionCallback) {
+        String eventId = event.getEventID();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Task<Void> deleteEventTask = db.collection("events").document(eventId).delete();
+
+        Task<QuerySnapshot> getUsersTask = db.collection("users").get();
+
+        Tasks.whenAll(deleteEventTask, getUsersTask).addOnSuccessListener(aVoid -> {
+            List<Task<Void>> deletionTasks = new ArrayList<>();
+            for (DocumentSnapshot userDoc : getUsersTask.getResult().getDocuments()) {
+                String userId = userDoc.getId();
+                Task<Void> deleteOrganizedEventTask = db.collection("users").document(userId).collection("organizedEvents").document(eventId).delete();
+                Task<Void> deletePromisedEventTask = db.collection("users").document(userId).collection("promisedEvents").document(eventId).delete();
+                deletionTasks.add(deleteOrganizedEventTask);
+                deletionTasks.add(deletePromisedEventTask);
+            }
+
+            Tasks.whenAllSuccess(deletionTasks).addOnSuccessListener(tasks -> {
+                Log.d("Delete Event", "Event and related data successfully deleted: " + eventId);
+                if (completionCallback != null) {
+                    completionCallback.onCompleted();
+                }
+            }).addOnFailureListener(e -> {
+                Log.e("Delete Event", "Error deleting event or related data: " + eventId, e);
+                if (completionCallback != null) {
+                    completionCallback.onCompleted();
+                }
+            });
+        }).addOnFailureListener(e -> {
+            Log.e("Delete Event", "Error initializing deletion process: " + eventId, e);
+            if (completionCallback != null) {
+                completionCallback.onCompleted();
+            }
+        });
+    }
+
+
+    private void removeFromUsersCollections(FirebaseFirestore db, String eventId) {
+        db.collection("users").get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        String userId = documentSnapshot.getId();
+                        db.collection("users").document(userId).collection("organizedEvents").document(eventId).delete();
+                        db.collection("users").document(userId).collection("promisedEvents").document(eventId).delete();
+                        Log.d("Remove Event from User", "Removed event " + eventId + " from user: " + userId);
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("Remove Event from Users", "Error removing event from users", e));
     }
 
     public void addUser(User user) {
@@ -104,33 +224,6 @@ public class FirebaseController {
                     }
                 });
     }
-    public void deleteEvent(Event event) {
-        String eventId = event.getEventID();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Delete the event from the main 'events' collection.
-        db.collection("events").document(eventId).delete()
-                .addOnSuccessListener(aVoid -> Log.d("Delete Event", "Event successfully deleted: " + eventId))
-                .addOnFailureListener(e -> Log.e("Delete Event", "Error deleting event: " + eventId, e));
-
-        // Now, iterate through all users to remove the event from their 'organizedEvents' and 'promisedEvents' subcollections.
-        db.collection("users").get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                        String userId = documentSnapshot.getId();
-
-                        // Attempt to delete from 'organizedEvents'.
-                        db.collection("users").document(userId).collection("organizedEvents").document(eventId).delete();
-
-                        // Attempt to delete from 'promisedEvents'.
-                        db.collection("users").document(userId).collection("promisedEvents").document(eventId).delete();
-
-                        Log.d("Delete Event from User", "Attempted to delete event from user: " + userId);
-                    }
-                })
-                .addOnFailureListener(e -> Log.e("Delete Event from Users", "Error accessing users for event deletion", e));
-    }
-
 
     void parseDocuments(List<DocumentSnapshot> documents) {
         for(DocumentSnapshot doc: documents){

@@ -1,16 +1,9 @@
 package com.example.eventsnapqr;
 
-import static androidx.core.content.ContentProviderCompat.requireContext;
-import static androidx.core.content.ContextCompat.startActivity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
-
-import static java.security.AccessController.getContext;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,9 +25,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class AdminBrowseEventsFragment extends Fragment {
@@ -164,7 +155,8 @@ public class AdminBrowseEventsFragment extends Fragment {
         builder.setTitle("Confirm Deletion")
                 .setMessage("Are you sure you want to delete '" + event.getEventName() + "'?")
                 .setPositiveButton("Yes", (dialog, which) -> { // if yes
-                    FirebaseController.getInstance().deleteEvent(event);
+                    Runnable completionCallback = null;
+                    FirebaseController.getInstance().deleteEvent(event, (FirebaseController.FirestoreOperationCallback) completionCallback);
                     eventAdapter.notifyDataSetChanged();
                 })
                 .setNegativeButton("No", null)

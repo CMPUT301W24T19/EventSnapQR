@@ -63,6 +63,21 @@ public class AdminBrowseProfilesFragment extends Fragment {
     private ProfileAdapter profileAdapter;
     FirebaseController firebaseController = new FirebaseController();
 
+    private void showDeleteConfirmationDialog(final User user) {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Delete User")
+                .setMessage("Are you sure you want to delete this user?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User clicked "Yes", so delete the user
+                        firebaseController.deleteUser(user);
+                    }
+                })
+                .setNegativeButton("No", null) // Nothing happens on click.
+                .show();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -72,11 +87,12 @@ public class AdminBrowseProfilesFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                User user = (User) listView.getItemAtPosition(position);
+                User selectedUser = (User) listView.getItemAtPosition(position);
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                 Bundle bundle = new Bundle();
-                bundle.putString("userId", user.getDeviceID());
+                bundle.putString("userId", selectedUser.getDeviceID());
                 navController.navigate(R.id.adminUserDetailsFragment,bundle);
+                showDeleteConfirmationDialog(selectedUser);
             }
         });
 
