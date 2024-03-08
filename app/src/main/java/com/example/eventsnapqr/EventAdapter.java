@@ -1,3 +1,5 @@
+package com.example.eventsnapqr;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
