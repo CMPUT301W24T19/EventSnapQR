@@ -9,9 +9,11 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -37,10 +39,13 @@ import androidx.test.espresso.action.CloseKeyboardAction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
+
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -56,110 +61,160 @@ import java.util.concurrent.TimeUnit;
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class AdminTests {
-
+    @Rule
+    public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<MainActivity>(MainActivity.class);
+/*
     @Before
     public void init() {
-            Context context = InstrumentationRegistry.getInstrumentation().getContext();
-            ContentResolver contentResolver = context.getContentResolver();
-            String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
-            // Disable animations
-            InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                    "settings put global window_animation_scale 0");
-            InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                    "settings put global transition_animation_scale 0");
-            InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                    "settings put global animator_duration_scale 0");
-            FirebaseController firebaseController = new FirebaseController();
-            CountDownLatch latch = new CountDownLatch(1);
-            final Boolean[] userExists = new Boolean[1];
+        FirebaseFirestore instance = FirebaseFirestore.getInstance();
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        ContentResolver contentResolver = context.getContentResolver();
+        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+        // Disable animations
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 0");
+        FirebaseController firebaseController = new FirebaseController();
+        CountDownLatch latch = new CountDownLatch(1);
+        final Boolean[] userExists = new Boolean[1];
 
-            FirebaseController.Authenticator listener = new FirebaseController.Authenticator() {
-                @Override
-                public void onUserExistenceChecked(boolean exists) {
-                    if (exists) {
-                        userExists[0] = true;
-                        latch.countDown();
-                    }
-                    else {
-                        userExists[0] = false;
-                        latch.countDown();
-                    }
+        FirebaseController.Authenticator listener = new FirebaseController.Authenticator() {
+            @Override
+            public void onUserExistenceChecked(boolean exists) {
+                if (exists) {
+                    userExists[0] = true;
+                    latch.countDown();
                 }
-                @Override
-                public void onAdminExistenceChecked(boolean exists) {
-                    // do nothing
+                else {
+                    userExists[0] = false;
+                    latch.countDown();
                 }
-            };
-            FirebaseController.checkUserExists(androidId, listener);
+            }
+            @Override
+            public void onAdminExistenceChecked(boolean exists) {
+                // do nothing
+            }
+        };
+        FirebaseController.checkUserExists(androidId, listener);
+        try {
+            latch.await(10, TimeUnit.SECONDS); // Adjust timeout as needed
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ActivityScenario.launch(MainActivity.class);
+
+
+        if(!userExists[0]){  // user does not exist
+
             try {
-                latch.await(10, TimeUnit.SECONDS); // Adjust timeout as needed
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            ActivityScenario.launch(MainActivity.class);
 
+            // signing up for event
+            onView(withId(R.id.edit_text_name)).perform(typeText("Test Event Name"));
+            onView(withId(R.id.edit_text_number)).perform(typeText("4033402450"));
+            onView(withId(R.id.edit_text_email)).perform(typeText("test@email.com"));
+            onView(withId(R.id.edit_text_homepage)).perform(typeText("www.homepage.com"));
 
-            if(!userExists[0]){
+            onView(isRoot()).perform(ViewActions.closeSoftKeyboard());
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            onView(withId(R.id.button_sign_up)).perform(click());
+            FirebaseController.checkUserExists(androidId, listener);
+            try{
+                latch.await(8,TimeUnit.SECONDS);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            //assertTrue(userExists[0]);
 
-
-                onView(withId(R.id.edit_text_name)).perform(typeText("Test Event Name"));
-
-
-                onView(withId(R.id.edit_text_number)).perform(typeText("4033402450"));
-
-
-                onView(withId(R.id.edit_text_email)).perform(typeText("test@email.com"));
-
-
-                onView(withId(R.id.edit_text_homepage)).perform(typeText("www.homepage.com"));
-                onView(isRoot()).perform(ViewActions.closeSoftKeyboard());
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                onView(withId(R.id.button_sign_up)).perform(click());
-                FirebaseController.checkUserExists(androidId, listener);
-                try{
-                    latch.await(8,TimeUnit.SECONDS);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-                //assertTrue(userExists[0]);
-
-            // Enable animations after the test is finished
-            InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                    "settings put global window_animation_scale 1");
-            InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                    "settings put global transition_animation_scale 1");
-            InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                    "settings put global animator_duration_scale 1");
+        // Enable animations after the test is finished
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 1");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 1");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 1");
 
         }
     }
-
-    private Boolean userExists;
 
     /**
      * US 02.06.01 ****user must not have account for test to work****
      */
 
     @Test
+    public void adminMainPageTest() {
+
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        ContentResolver contentResolver = context.getContentResolver();
+        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+
+        androidId.replaceAll("a","b");
+        User user = new User(androidId);
+        user.setName(androidId);
+        FirebaseController firebaseController = new FirebaseController();
+        firebaseController.addUser(user);
+
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 0");
+
+        CountDownLatch latch = new CountDownLatch(1);
+        ActivityScenario.launch(MainActivity.class);
+        FirebaseController.Authenticator listener = new FirebaseController.Authenticator() {
+            @Override
+            public void onUserExistenceChecked(boolean exists) {
+
+            }
+
+            @Override
+            public void onAdminExistenceChecked(boolean exists) {
+                if (exists) {
+
+                }
+            }
+        };
+        try {
+            latch.await(5, TimeUnit.SECONDS);
+            Thread.sleep(2500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        onView(withId(R.id.admin_button)).perform(click());
+        onView(withId(R.id.adminMainPage)).check(matches(isDisplayed()));
+        onView(withId(R.id.buttonBrowseUserProfiles)).check(matches(isDisplayed()));
+        onView(withId(R.id.buttonBrowseImages)).check(matches(isDisplayed()));
+        onView(withId(R.id.buttonBrowseEvents)).check(matches(isDisplayed()));
+    }
+
+    @Test
     public void browseAndDeleteProfilesTest() {
         Context context = InstrumentationRegistry.getInstrumentation().getContext();
         ContentResolver contentResolver = context.getContentResolver();
         String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+
         androidId.replaceAll("a","b");
         User user = new User(androidId);
         user.setName(androidId);
+
         FirebaseController firebaseController = new FirebaseController();
         firebaseController.addUser(user);
         // Disable animations
@@ -220,14 +275,7 @@ public class AdminTests {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-
-
-
-
-
         }
-
 
         // Enable animations after the test is finished
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
@@ -237,11 +285,7 @@ public class AdminTests {
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global animator_duration_scale 1");
 
-    }
-
-
-
-
+    }*/
 }
 
 

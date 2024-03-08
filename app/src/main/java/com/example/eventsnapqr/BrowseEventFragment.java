@@ -30,6 +30,7 @@ public class BrowseEventFragment extends Fragment {
     private List<String> eventNames; // list of event names
     private List<String> eventIds; // list of event ids
     private FirebaseFirestore db; // database instance
+    // TODO add search for browse events
 
     /**
      * retrieve any events that are currently in the database.
