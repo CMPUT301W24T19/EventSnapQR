@@ -1,6 +1,8 @@
 package com.example.eventsnapqr;
 
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,15 +19,21 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.Firebase;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -38,7 +46,8 @@ public class AdminBrowseImagesFragment extends Fragment {
     private RecyclerView recyclerView;
     private String mParam1;
     private String mParam2;
-    FloatingActionButton buttonBackToAdminMain;
+    private FloatingActionButton buttonBackToAdminMain;
+    private FloatingActionButton deleteButton;
     private List<Event> posters;
 
     public AdminBrowseImagesFragment() {
@@ -89,8 +98,10 @@ public class AdminBrowseImagesFragment extends Fragment {
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 posters.clear();
                 for (QueryDocumentSnapshot doc: value) {
+                    String eventID = (String) doc.getId();
+                    String eventName = (String) doc.getData().get("eventName");
                     String posterUri = (String) doc.getData().get("posterURI");
-                    Event event = new Event(null, null, null, null, posterUri, null, null, null);
+                    Event event = new Event(null, null, eventName, null, posterUri, null, eventID, null);
                     posters.add(event);
                 }
                 adapter.notifyDataSetChanged();
@@ -107,12 +118,61 @@ public class AdminBrowseImagesFragment extends Fragment {
         adapter.setOnClickListener(new EventPosterAdapter.OnClickListener() {
             @Override
             public void onClick(int position, Event event) {
-                Intent intent = new Intent(getContext(), EventPosterActivity.class);
-                intent.putExtra("uri", event.getPosterUri());
-                startActivity(intent);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Event Poster for " + event.getEventName())
+                        .setPositiveButton("View Poster", (dialog, which) -> {
+                            // Use the position parameter directly
+                            Intent intent = new Intent(getContext(), EventPosterActivity.class);
+                            intent.putExtra("uri", event.getPosterUri());
+                            startActivity(intent);
+                        })
+                        .setNegativeButton("Delete Poster", (dialog, which) -> {
+                            showDeleteConfirmationDialog(event);
+                        })
+                        .setNeutralButton("Cancel", null)
+                        .create()
+                        .show();
             }
         });
 
         return view;
+    }
+    private void showDeleteConfirmationDialog(Event event) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Confirm Deletion")
+                .setMessage("Are you sure you want to delete the poster for '" + event.getEventName() + "'?")
+                .setPositiveButton("Yes", (dialog, which) -> { // if yes
+                    if (event.getPosterUri() != null) {
+                        String[] firebaseStoragePath = Uri.parse(event.getPosterUri()).getPath().split("/");
+                        String storagePath = firebaseStoragePath[firebaseStoragePath.length - 2] + "/" + firebaseStoragePath[firebaseStoragePath.length - 1];
+                        Log.d("TAG", storagePath);
+                        FirebaseStorage.getInstance().getReference().child(storagePath).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Log.d("TAG", "Picture successfully deleted");
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d("TAG", "Picture not deleted");
+                            }
+                        });
+                        FirebaseController.getInstance().getEvent(event.getEventID(), new FirebaseController.OnEventRetrievedListener() {
+                            @Override
+                            public void onEventRetrieved(Event event) {
+                                event.setPosterUri(null);
+                                FirebaseFirestore.getInstance().collection("events").document(event.getEventID()).delete();
+                                FirebaseController.getInstance().addEvent(event);
+                            }
+                        });
+                    }
+                    else {
+                        Toast.makeText(requireContext(), "Event does not have a poster", Toast.LENGTH_SHORT).show();
+                    }
+
+                })
+                .setNegativeButton("No", null)
+                .create()
+                .show();
     }
 }
