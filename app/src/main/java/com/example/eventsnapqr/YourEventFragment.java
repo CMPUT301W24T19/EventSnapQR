@@ -42,7 +42,7 @@ public class YourEventFragment extends Fragment {
         // Required empty public constructor
     }
 
-    @SuppressLint("MissingInflatedId")
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_your_event, container, false);
 
@@ -81,10 +81,10 @@ public class YourEventFragment extends Fragment {
         view.findViewById(R.id.attendee_map_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_2);
-                Bundle bundle = new Bundle();
-                bundle.putString("eventName", eventName);
-                navController.navigate(R.id.action_yourEventFragment_to_mapFragment, bundle);
+                //NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_2);
+                //Bundle bundle = new Bundle();
+                //bundle.putString("eventName", eventName);
+                //navController.navigate(R.id.action_yourEventFragment_to_mapFragment, bundle);
             }
         });
 
@@ -92,8 +92,8 @@ public class YourEventFragment extends Fragment {
     }
 
     public void ToRealTimeAttendanceFragment(){
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_2);
-        navController.navigate(R.id.action_yourEventFragment_to_realTimeAttendanceFragment);
+      //  NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_2);
+      //  navController.navigate(R.id.action_yourEventFragment_to_realTimeAttendanceFragment);
     }
 
     public long TimesStatistics(String attendeeName){
@@ -119,10 +119,10 @@ public class YourEventFragment extends Fragment {
                 .setNegativeButton("View on Map", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Replace this with the database entry
-                        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_2);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("eventName", eventName);
-                        navController.navigate(R.id.action_yourEventFragment_to_mapFragment, bundle);
+                        //NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_2);
+                        //Bundle bundle = new Bundle();
+                        //bundle.putString("eventName", eventName);
+                        //navController.navigate(R.id.action_yourEventFragment_to_mapFragment, bundle);
                     }
                     });
 
