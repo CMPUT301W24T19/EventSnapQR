@@ -49,6 +49,10 @@ import java.util.concurrent.TimeUnit;
 @RunWith(AndroidJUnit4.class)
 public class AttendeeTest {
     private String id;
+
+    /**
+     * Ensures signed in so it does not interfere with tests
+     */
     @Before
     public void init() {
         Context context = InstrumentationRegistry.getInstrumentation().getContext();
@@ -122,7 +126,7 @@ public class AttendeeTest {
         }
     }
     /**
-     * Testing  US 02.07.01, US 02.08.01
+     * Tests for  US 02.07.01, US 02.08.01, US 02.09.01
      */
     @Test
     public void signUpForEventTest(){

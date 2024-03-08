@@ -147,7 +147,6 @@ public class OrganizeEventTest {
        // onView(withId(R.id.events)).check(matches(hasDescendant(withText(id)))).perform(click());
 
     }
-
     /**
      * Test to test that an event is successfully created
      * US 01.01.01

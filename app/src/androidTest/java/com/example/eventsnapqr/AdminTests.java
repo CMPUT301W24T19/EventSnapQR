@@ -54,6 +54,9 @@ import java.util.concurrent.TimeUnit;
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class AdminTests {
+    /**
+     * Ensures signed in so it does not interfere with tests
+     */
     @Before
     public void init() {
             Context context = InstrumentationRegistry.getInstrumentation().getContext();
