@@ -34,6 +34,10 @@ import com.google.firebase.storage.StorageReference;
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 
+/**
+ * activity where the user can view and edit their information. the geolocation and
+ * notification switches have no yet been implemented
+ */
 public class UserInfoActivity extends AppCompatActivity {
     private ImageView buttonBackButton;
     private ImageView buttonAddImage;
@@ -48,6 +52,11 @@ public class UserInfoActivity extends AppCompatActivity {
     private TextView phoneNumber;
     private TextView homepage;
 
+    /**
+     * What should be executed when the fragment is created
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,16 +169,7 @@ public class UserInfoActivity extends AppCompatActivity {
                                 });
                                 user.setProfilePicture(null);
                                 FirebaseController.getInstance().addUser(user);
-                                //Commenting this code, as this puts a default image from firebase if no profile pic, but I now have the initials working
-//                                storageRef.child("defaultPics/profile_pic.webp").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                                    @Override
-//                                    public void onSuccess(Uri uri) {
-//                                        Glide.with(getBaseContext())
-//                                                .load(uri)
-//                                                .into(profilePictureImage);
-//                                    }
-//                                });
-                                //setting profile pic to name initials after successful delete of profile image
+
                                 if (profilePictureURI == null || profilePictureURI.isEmpty()) {
                                     userName.setText(user.getName());
                                     Bitmap initialsImageBitmap = user.generateInitialsImage(userName.getText().toString());

@@ -13,39 +13,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link SignUpFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * fragment in which the user can enter their details for the event
  */
 public class SignUpFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     private Button buttonSignUp;
     private EditText editTextName;
     private EditText editTextEmail;
     private EditText editTextNumber;
     private EditText editTextHomepage;
     private FirebaseController firebaseController;
-
-    public SignUpFragment() {
-        // Required empty public constructor
-    }
-
-    public static SignUpFragment newInstance(String param1, String param2) {
-        SignUpFragment fragment = new SignUpFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
     private String androidId;
+
+    /**
+     * What should be executed when the fragment is created
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +40,20 @@ public class SignUpFragment extends Fragment {
         firebaseController = new FirebaseController();
     }
 
+    /**
+     * Setup actions to be taken upon view creation and when the views are interacted with.
+     * Validate the phone number and the email address, ensure no fields are blank apart from
+     * homepage
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return the final view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -88,10 +87,19 @@ public class SignUpFragment extends Fragment {
         });
         return v;
     }
+
+    /**
+     * direct to the main page upon sign up completion
+     */
     public void goToMainPage(){
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         navController.navigate(R.id.mainPageFragment);
     }
+
+    /**
+     * validate the inputs of each of the fields
+     * @return input validity
+     */
     public Boolean validateInput(){
         if(editTextName.getText().toString().trim().isEmpty()){
             editTextName.setError("Name field cannot be empty");

@@ -4,7 +4,6 @@ package com.example.eventsnapqr;
 import static android.content.ContentValues.TAG;
 import android.util.Log;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -18,7 +17,7 @@ import java.util.List;
  * Represents a user object that has the ability of an
  * organizer and attendee
  */
-public class User implements Attendee, Organizer{
+public class User implements Attendee, Organizer {
 //public class User implements Attendee, Organizer {
     private String name; // name of the user
     private String homepage; // users website
@@ -28,6 +27,10 @@ public class User implements Attendee, Organizer{
     private List<Event> createdEvents = new ArrayList<>(); // Events created by the user as an organizer
     private List<Event> signedUpEvents = new ArrayList<>();
     private String profilePicture;
+
+    /**
+     * empty constructor for firebase usage
+     */
     public User() {
         //empty constructor
     }
@@ -132,10 +135,27 @@ public class User implements Attendee, Organizer{
         return deviceID;
     }
 
+    /**
+     * setter method to change the picture URI of the user
+     * @param profilePicture URI of the new image
+     */
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
     }
 
+    /**
+     * returns the user profile images' URI
+     * @return URI of the image
+     */
+    public String getProfilePicture() {
+        return this.profilePicture;
+    }
+
+    /**
+     * used to generate a unique profile image based on a users name
+     * @param name
+     * @return bitmap of the image
+     */
     public Bitmap generateInitialsImage(String name) {
         // Generating default image from user's name initials
         Bitmap bitmap = Bitmap.createBitmap(550, 550, Bitmap.Config.ARGB_8888);
@@ -161,13 +181,6 @@ public class User implements Attendee, Organizer{
         return bitmap;
     }
 
-    public String getProfilePicture() {
-        return this.profilePicture;
-    }
-
-    public User getUser() {
-        return this;
-    }
     @Override
     public void checkIntoEvent(String qrCode) {
         // Implementation depends on QR code scanning and event check-in logic
@@ -233,26 +246,13 @@ public class User implements Attendee, Organizer{
     }
 
     @Override
-    public void reuseQRCodeForEvent(Event event, String qrCode) {
-
-    }
-
-    @Override
-    public void reuseQRCodeForEvent(Event event, QR qrCode) {
-        // Logic to associate an existing QR code with an event
-        event.setQR(qrCode);
-        // Update the event in the database
-    }
-
-    @Override
     public void viewEventAttendees(String eventId) {
 
     }
 
     @Override
-    public <OnAttendeesRetrievedListener> void viewEventAttendees(String eventId, OnAttendeesRetrievedListener onAttendeesRetrievedListener) {
-
-    }
+    public <OnAttendeesRetrievedListener> void
+    viewEventAttendees(String eventId, OnAttendeesRetrievedListener onAttendeesRetrievedListener) {}
 
     public interface AttendeesCallback { // use this interface to get list of users by calling viewEventAttendees("eventId", new AttendeesCallback()
         void onCallback(List<User> userList);
@@ -276,35 +276,7 @@ public class User implements Attendee, Organizer{
     }
 
     @Override
-    public void sendNotificationsToAttendees(String eventId, String message) {
-
-    }
-
-
-//    @Override for final part************************
-//    public void sendNotificationsToAttendees(String eventId, String message) {
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        // Fetch attendees for the given event
-//        db.collection("events").document(eventId).collection("attendees")
-//                .get()
-//                .addOnSuccessListener(queryDocumentSnapshots -> {
-//                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-//                        String userId = documentSnapshot.getId();
-//                        // Assume there's a method to send notification to a user by userId
-//                        sendNotificationToUser(userId, message);
-//                    }
-//                })
-//                .addOnFailureListener(e -> Log.e(TAG, "Error getting event attendees", e));
-//    }
-
-    @Override
-    public void uploadEventPoster(String eventId, String posterUri) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("events").document(eventId)
-                .update("posterUri", posterUri)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Poster updated successfully for event: " + eventId))
-                .addOnFailureListener(e -> Log.e(TAG, "Error updating poster for event: " + eventId, e));
-    }
+    public void sendNotificationsToAttendees(String eventId, String message) {}
 
     @Override
     public void trackRealTimeAttendance(String eventId) {
@@ -326,58 +298,9 @@ public class User implements Attendee, Organizer{
     }
 
     @Override
-    public void shareQRCodeImage(String qrCode, String platform) {
-        // Assuming you have a URI for the QR code image stored in Firestore Storage
-        String qrCodeImageUri = "path_to_your_qr_code_image_in_firestore_storage";
-        // Logic to share this URI with other platforms or apps goes here.
-        // This can involve creating an intent for sharing with other apps.
-    }
-
-    @Override
-    public void generatePromotionQRCode(String eventId) {
-
-    }
-
-    @Override
-    public void viewCheckInLocations(String eventId) {
-
-    }
-
-    @Override
     public int getCheckInCount(String userId, String eventId) {
         return 0;
     }
-
-
-//    @Override
-//    public void generatePromotionQRCode(String eventId) {
-//        // Placeholder: generate a unique promotion QR code that links to the event description and poster
-//    }
-
-//    @Override final checkpoint*************
-//    public void viewCheckInLocations(String eventId) {
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        db.collection("events").document(eventId).collection("checkIns")
-//                .get()
-//                .addOnSuccessListener(queryDocumentSnapshots -> {
-//                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-//                        // Assuming each check-in document contains a location field
-//                        GeoPoint location = documentSnapshot.getGeoPoint("location");
-//                        if (location != null) {
-//                            // Logic to display this location on a map
-//                            // For example, markLocationOnMap(location.getLatitude(), location.getLongitude());
-//                        }
-//                    }
-//                })
-//                .addOnFailureListener(e -> Log.e(TAG, "Error getting check-in locations", e));
-//    }
-
-
-//    @Override final checkpoint *******************
-//    public int getCheckInCount(String userId, String eventId) {
-//        // Placeholder: return the number of times the specified user has checked into the event
-//        return 0; // Example return value
-//    }
 
     @Override
     public List<User> viewSignedUpAttendees(String eventId) {
@@ -400,18 +323,4 @@ public class User implements Attendee, Organizer{
                 });
         return signedUpAttendees;
     }
-
-    @Override
-    public void limitNumberOfAttendees(String eventId, int limit) {
-
-    }
-
-//    @Override
-//    public void limitNumberOfAttendees(String eventId, int limit) {
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        db.collection("events").document(eventId)
-//                .update("attendeeLimit", limit)
-//                .addOnSuccessListener(aVoid -> Log.d(TAG, "Attendee limit updated successfully for event: " + eventId))
-//                .addOnFailureListener(e -> Log.e(TAG, "Error updating attendee limit for event: " + eventId, e));
-//    }
 }

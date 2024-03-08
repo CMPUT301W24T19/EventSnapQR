@@ -31,29 +31,36 @@ import com.google.firebase.storage.FirebaseStorage;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * fragment for an admin to browse and delete all images in the database
+ */
 public class AdminBrowseImagesFragment extends Fragment {
-
     private RecyclerView recyclerView;
     private FloatingActionButton buttonBackToAdminMain;
-    private FloatingActionButton deleteButton;
     private List<Event> posters;
 
-    public AdminBrowseImagesFragment() {
-        // Required empty public constructor
-    }
-
-    public static AdminBrowseImagesFragment newInstance(String param1, String param2) {
-        AdminBrowseImagesFragment fragment = new AdminBrowseImagesFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    /**
+     * What should be executed when the fragment is created
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Setup actions to be taken upon view creation and when the views are interacted with
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return the final view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -74,7 +81,7 @@ public class AdminBrowseImagesFragment extends Fragment {
                     String eventID = (String) doc.getId();
                     String eventName = (String) doc.getData().get("eventName");
                     String posterUri = (String) doc.getData().get("posterURI");
-                    Event event = new Event(null, null, eventName, null, posterUri, null, eventID, null);
+                    Event event = new Event(null, eventName, null, posterUri, null, eventID, null);
                     posters.add(event);
                 }
                 adapter.notifyDataSetChanged();
@@ -94,8 +101,7 @@ public class AdminBrowseImagesFragment extends Fragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("Event Poster for " + event.getEventName())
                         .setPositiveButton("View", (dialog, which) -> {
-                            // Use the position parameter directly
-                            Intent intent = new Intent(getContext(), EventPosterActivity.class);
+                            Intent intent = new Intent(getContext(), AdminViewImageActivity.class);
                             intent.putExtra("uri", event.getPosterUri());
                             startActivity(intent);
                         })
@@ -110,6 +116,11 @@ public class AdminBrowseImagesFragment extends Fragment {
 
         return view;
     }
+
+    /**
+     * show an alert dialog confirming that the user wants to delete an event
+     * @param event the event to be deleted
+     */
     private void showDeleteConfirmationDialog(Event event) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Confirm Deletion")

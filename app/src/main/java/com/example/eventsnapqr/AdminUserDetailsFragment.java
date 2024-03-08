@@ -10,29 +10,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link AdminUserDetailsFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Page for admin to edit and delete a users profiles
  */
 public class AdminUserDetailsFragment extends Fragment {
-
-    private static final String ARG_USER = "user";
-
     private String userId;
-
-    public AdminUserDetailsFragment() {
-        // Required empty public constructor
-    }
-
-    public static AdminUserDetailsFragment newInstance(User user) {
-        AdminUserDetailsFragment fragment = new AdminUserDetailsFragment();
-        Bundle args = new Bundle();
-
-        fragment.setArguments(args);
-        return fragment;
-    }
     private FirebaseController firebaseController;
     private User userToShow;
+
+    /**
+     * What should be executed when the fragment is created
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -3,15 +3,11 @@ package com.example.eventsnapqr;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import android.provider.MediaStore;
 import android.util.Log;
@@ -22,28 +18,42 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+/**
+ * display the QR code of a given event. gives the capability to share or save the QRcode
+ * as an image.
+ */
 public class QRDialogFragment extends DialogFragment {
     private ImageView imageQR;
     private Button buttonExit;
     private Button buttonSaveQR;
     private Bitmap bitmap;
-    public QRDialogFragment() {
 
-    }
-
+    /**
+     * What should be executed when the fragment is created
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Setup actions to be taken upon view creation and when the views are interacted with
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return the final view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -106,6 +116,10 @@ public class QRDialogFragment extends DialogFragment {
         return view;
     }
 
+    /**
+     * implements and displays the ability to share the QR code
+     * @param bitmap
+     */
     private void shareImage(Bitmap bitmap){
         Uri uri = getImageToShare(bitmap);
         Intent intent = new Intent(Intent.ACTION_SEND);
@@ -115,6 +129,12 @@ public class QRDialogFragment extends DialogFragment {
         intent.setType("image/*");
         startActivity(Intent.createChooser(intent,"Share via"));
     }
+
+    /**
+     * fetch the URI of the QR code to share
+     * @param bitmap bitmap that represents the QR code
+     * @return URI of the resulting image
+     */
     private Uri getImageToShare(Bitmap bitmap){
         File folder = new File(getContext().getCacheDir(),"images");
         Uri uri = null;
@@ -131,6 +151,5 @@ public class QRDialogFragment extends DialogFragment {
             Toast.makeText(getContext()," "+e.getMessage(),Toast.LENGTH_SHORT).show();
         }
         return uri;
-
     }
 }
