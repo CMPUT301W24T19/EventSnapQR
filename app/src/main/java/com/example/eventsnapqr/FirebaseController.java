@@ -357,7 +357,10 @@ public class FirebaseController {
                     String name = document.getString("name");
                     String deviceID = androidID;
                     String profileURI = document.getString("profileURI");
-                    User user = new User(name, deviceID);
+                    String email = document.getString("email");
+                    String homePage = document.getString("homepage");
+                    String phoneNumber = document.getString("phoneNumber");
+                    User user = new User(name, deviceID, homePage, phoneNumber, email);
                     user.setProfilePicture(profileURI);
                     listener.onUserRetrieved(user);
                 } else {

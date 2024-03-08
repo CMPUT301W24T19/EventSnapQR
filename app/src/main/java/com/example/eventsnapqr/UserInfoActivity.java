@@ -11,6 +11,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,12 +51,14 @@ public class UserInfoActivity extends AppCompatActivity {
     private String androidID;
     private ImageView profilePictureImage;
     private String profilePictureURI;
-    private TextView userName;
-    private TextView email;
-    private TextView phoneNumber;
-    private TextView homepage;
+    private EditText userName;
+    private EditText email;
+    private EditText phoneNumber;
+    private EditText homepage;
     private Button saveButton;
-    //private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
+    private boolean editMode = false;
+    private ImageView editButton;
+    private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
 
     /**
      * What should be executed when the fragment is created
@@ -75,7 +78,15 @@ public class UserInfoActivity extends AppCompatActivity {
         phoneNumber = findViewById(R.id.phone_context);
         homepage = findViewById(R.id.homepage_context);
         saveButton = findViewById(R.id.button_save_button);
+        editButton = findViewById(R.id.button_edit_profile_button);
 
+
+        userName.setEnabled(editMode);
+        email.setEnabled(editMode);
+        phoneNumber.setEnabled(editMode);
+        homepage.setEnabled(editMode);
+
+        saveButton.setVisibility(View.INVISIBLE);
         buttonBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,7 +101,6 @@ public class UserInfoActivity extends AppCompatActivity {
             @Override
             public void onUserRetrieved(User user) {
                 if (user != null) {
-                    Log.d("TAG", "True");
                     if (user.getProfilePicture() != null && !user.getProfilePicture().isEmpty()) {
                         Glide.with(getBaseContext())
                                 .load(Uri.parse(user.getProfilePicture()))
@@ -100,10 +110,15 @@ public class UserInfoActivity extends AppCompatActivity {
                         Bitmap initialsImageBitmap = user.generateInitialsImage(user.getName().toString());
                         profilePictureImage.setImageBitmap(initialsImageBitmap);
                     }
+
                     userName.setText(user.getName());
+                    Log.d("TAG", "User name: " + user.getName());
                     email.setText(user.getEmail());
+                    Log.d("TAG", "User email: " + user.getEmail());
                     phoneNumber.setText(user.getPhoneNumber());
+                    Log.d("TAG", "User phone number: " + user.getPhoneNumber());
                     homepage.setText(user.getHomepage());
+                    Log.d("TAG", "User homepage: " + user.getHomepage());
                 }
             }
         });
@@ -114,20 +129,22 @@ public class UserInfoActivity extends AppCompatActivity {
                     // photo picker.
                     if (uri != null) {
                         StorageReference userRef = storageRef.child("users/" + androidID);  // specifies the path on the cloud storage
-                        /*StorageTask<UploadTask.TaskSnapshot> uploadSuccess = */userRef.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+                        userRef.putFile(uri).addOnSuccessListener(taskSnapshot -> {
                             userRef.getDownloadUrl().addOnSuccessListener(uri1 -> {
                                 profilePictureURI = String.valueOf(uri1);
                                 Glide.with(this)
                                         .load(uri1)
                                         .dontAnimate()
                                         .into(profilePictureImage);
+                                FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
+                                    @Override
+                                    public void onUserRetrieved(User user) {
+                                        user.setProfilePicture(profilePictureURI);
+                                        FirebaseController.getInstance().addUser(user);
+                                    }
+                                });
                             });
                         });  // puts the file into the referenced path
-                        /*try {
-                            uploadSuccess.wait();
-                        } catch (InterruptedException e) {
-                            Log.d("TAG", "Error");
-                        }*/
                     } else {
                         Log.d("TAG", "No media selected");
                     }
@@ -141,20 +158,45 @@ public class UserInfoActivity extends AppCompatActivity {
                         .build());
             }
         });
-        /*
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String newUserName = userName.getText().toString();
-                String newEmail = email.getText().toString();
-                String newPhoneNumber = phoneNumber.getText().toString();
-                String newHomePage = homepage.getText().toString();
-                User newUser = new User(newUserName, androidID, newHomePage, newPhoneNumber, newEmail);
-                newUser.setProfilePicture(profilePictureURI);
-                //FirebaseController.getInstance().addUser(newUser);
+                FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
+                    @Override
+                    public void onUserRetrieved(User user) {
+                        user.setName(userName.getText().toString());
+                        user.setEmail(email.getText().toString());
+                        user.setPhoneNumber(phoneNumber.getText().toString());
+                        user.setHomepage(homepage.getText().toString());
+                        FirebaseController.getInstance().addUser(user);
+                        if (user.getProfilePicture() == null) {
+                            Bitmap initialsImageBitmap = user.generateInitialsImage(user.getName().toString());
+                            profilePictureImage.setImageBitmap(initialsImageBitmap);
+                        }
+                        Toast.makeText(UserInfoActivity.this, "Information successfully updated!", Toast.LENGTH_SHORT).show();
+                        editMode = false;
+                        saveButton.setVisibility(View.INVISIBLE);
+                    }
+                });
             }
-        });*/
+        });
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editMode = !editMode;
+                userName.setEnabled(editMode);
+                email.setEnabled(editMode);
+                phoneNumber.setEnabled(editMode);
+                homepage.setEnabled(editMode);
+                if (editMode) {
+                    saveButton.setVisibility(View.VISIBLE);
+                }
+                else {
+                    saveButton.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
         buttonRemoveImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

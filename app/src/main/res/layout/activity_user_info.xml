@@ -49,11 +49,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
+
             <ImageView
-                android:id="@+id/iv_edit_profile"
+                android:id="@+id/button_edit_profile_button"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-
+                android:clickable="true"
                 app:srcCompat="@drawable/pen_icon" />
 
             <ImageView
@@ -95,7 +96,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
 
-            <TextView
+            <EditText
                 android:id="@+id/name_context"
                 android:layout_width="300dp"
                 android:layout_height="50dp"
@@ -118,7 +119,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
 
-            <TextView
+            <EditText
                 android:id="@+id/email_context"
                 android:layout_width="300dp"
                 android:layout_height="50dp"
@@ -140,7 +141,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
 
-            <TextView
+            <EditText
                 android:id="@+id/phone_context"
                 android:layout_width="300dp"
                 android:layout_height="50dp"
@@ -162,7 +163,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
 
-            <TextView
+            <EditText
                 android:id="@+id/homepage_context"
                 android:layout_width="300dp"
                 android:layout_height="50dp"
@@ -182,7 +183,8 @@
                 android:layout_height="50dp"
                 android:layout_weight="0.1"
                 android:paddingRight="5dp"
-                android:text="Geolocation" />
+                android:text="Geolocation"
+                android:layout_gravity="left"/>
 
             <Button
                 android:id="@+id/button_save_button"
@@ -199,7 +201,8 @@
                 android:layout_height="50dp"
                 android:layout_weight="0.1"
                 android:paddingLeft="5dp"
-                android:text="Notification" />
+                android:text="Notification"
+                android:layout_gravity="right"/>
 
         </LinearLayout>
 
