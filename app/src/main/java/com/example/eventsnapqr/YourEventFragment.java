@@ -3,10 +3,12 @@ package com.example.eventsnapqr;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -88,13 +90,46 @@ public class YourEventFragment extends Fragment {
             }
         });
 
+        view.findViewById(R.id.notify_attendee_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Context is required for AlertDialog, use getContext() in a fragment.
+                // For an activity, you can use 'MyEventActivity.this' directly.
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+                // Set up the input
+                final EditText input = new EditText(getContext());
+                // Specify the type of input expected
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                builder.setView(input);
+
+                // Set up the buttons
+                builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String notificationText = input.getText().toString();
+                        // Handle "Yes" button click
+                        // Use 'notificationText' as the text for the notification
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel(); // Close the dialog
+                    }
+                });
+
+                // Set the title and message for the dialog
+                builder.setTitle("Notification");
+                builder.setMessage("Enter notification message:");
+
+                builder.show(); // Show the AlertDialog
+            }
+        });
+
         return view;
     }
 
-    public void ToRealTimeAttendanceFragment(){
-      //  NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_2);
-      //  navController.navigate(R.id.action_yourEventFragment_to_realTimeAttendanceFragment);
-    }
 
     public long TimesStatistics(String attendeeName){
         long times = 0;
