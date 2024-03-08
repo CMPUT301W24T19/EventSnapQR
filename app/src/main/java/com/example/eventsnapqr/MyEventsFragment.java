@@ -2,12 +2,9 @@ package com.example.eventsnapqr;
 
 import static androidx.fragment.app.FragmentManager.TAG;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import android.provider.Settings;
 import android.util.Log;

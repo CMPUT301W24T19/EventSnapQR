@@ -94,6 +94,12 @@ public class EventDetailFragment extends Fragment {
                                             public void onCallback(List<User> userList) {
                                                 attendeeList.addAll(userList);
                                             }
+
+                                            @Override
+                                            public void onAttendeesLoaded(List<String> attendees) {
+                                                // do nothing
+                                            }
+
                                         });
                                         if (event.getMaxAttendees() == null || attendeeList.size() < event.getMaxAttendees()) {
                                             FirebaseController.getInstance().addAttendeeToEvent(event, user);

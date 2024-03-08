@@ -144,14 +144,6 @@ public class AdminBrowseImagesFragment extends Fragment {
                             @Override
                             public void onEventRetrieved(Event event) {
                                 event.setPosterUri(null);
-
-                                FirebaseController.getInstance().deleteEvent(event, new FirebaseController.FirestoreOperationCallback() {
-                                    @Override
-                                    public void onCompleted() {
-                                        Log.d("Event deleted", "deleted");
-                                    }
-                                });;
-                              
                                 FirebaseController.getInstance().addEvent(event);
                             }
                         });
