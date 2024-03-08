@@ -24,12 +24,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * class to interact with the collections in the firestore database
+ */
 public class FirebaseController {
     private static FirebaseController instance;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference eventReference = db.collection("events");
     private CollectionReference userReference = db.collection("users");
-    private CollectionReference adminReference = db.collection("admin");
     FirebaseController() {}
 
     public static synchronized FirebaseController getInstance() {
@@ -38,6 +40,13 @@ public class FirebaseController {
         }
         return instance;
     }
+
+    /**
+     * method that uses a listener to return whether a given androidId has a
+     * matching user in the database
+     * @param androidId ID to check
+     * @param listener interface to help return result
+     */
     public static void checkUserExists(String androidId, final Authenticator listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userRef = db.collection("users").document(androidId);
@@ -75,11 +84,19 @@ public class FirebaseController {
             }
         });
     }
+
+    /**
+     * listener for checkUserExists
+     */
     public interface Authenticator {
         void onUserExistenceChecked(boolean exists);
         void onAdminExistenceChecked(boolean exists);
     }
 
+    /**
+     * initiates the user deletion process
+     * @param user
+     */
     public void deleteUser(User user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String userId = user.getDeviceID();
@@ -89,10 +106,12 @@ public class FirebaseController {
         });
     }
 
-    public interface FirestoreOperationCallback {
-        void onCompleted();
-    }
-
+    /**
+     * deletes all the organized events of a user
+     * @param db instance of database
+     * @param userId given unique user identifier
+     * @param callback used to execute follow up actions
+     */
     private void deleteOrganizedEvents(FirebaseFirestore db, String userId, Runnable callback){
         db.collection("users").document(userId).collection("organizedEvents")
                 .get()
@@ -115,6 +134,11 @@ public class FirebaseController {
                 });
     }
 
+    /**
+     *
+     * @param db
+     * @param userId
+     */
     private void deleteUserFinalStep(FirebaseFirestore db, String userId) {
         db.collection("users").document(userId).delete()
                 .addOnSuccessListener(aVoid -> Log.d("Delete User", "User successfully deleted: " + userId))
@@ -147,7 +171,16 @@ public class FirebaseController {
         return taskCompletionSource.getTask();
     }
 
+    public interface FirestoreOperationCallback {
+        void onCompleted();
+    }
 
+    /**
+     * deletes an event from the firestore database, and ensures data is consistent when this
+     * event is removed.
+     * @param event
+     * @param completionCallback
+     */
     public void deleteEvent(Event event, FirestoreOperationCallback completionCallback) {
         String eventId = event.getEventID();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -185,7 +218,12 @@ public class FirebaseController {
         });
     }
 
-
+    /**
+     * iterates through the users event collections to remove an event, used
+     * when the given event is being deleted
+     * @param db instance of a database
+     * @param eventId event identifier to look for
+     */
     private void removeFromUsersCollections(FirebaseFirestore db, String eventId) {
         db.collection("users").get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -199,6 +237,10 @@ public class FirebaseController {
                 .addOnFailureListener(e -> Log.e("Remove Event from Users", "Error removing event from users", e));
     }
 
+    /**
+     * adds a given user to the firestore database
+     * @param user user object
+     */
     public void addUser(User user) {
         Map<String, Object> userData = new HashMap<>();
         userData.put("name", user.getName());
@@ -226,6 +268,12 @@ public class FirebaseController {
                     }
                 });
     }
+
+    /**
+     * uses an interface to return a list of all the attendees in an event
+     * @param event
+     * @param callback
+     */
     public void getEventAttendees(Event event, User.AttendeesCallback callback) {
         db.collection("events").document(event.getEventID()).collection("attendees").get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -259,6 +307,7 @@ public class FirebaseController {
         void onEventsLoaded(ArrayList<Event> events);
     }
     ArrayList<Event> events = new ArrayList<>();
+
     public void getAllEvents(final OnEventsLoadedListener listener) {
         eventReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -273,10 +322,19 @@ public class FirebaseController {
         });
     }
 
+    /**
+     * used to retrieve the unique id generated by firestore for an event
+     * @return
+     */
     public String getUniqueEventID() {
         DocumentReference addedDocRef = eventReference.document();
         return addedDocRef.getId();
     }
+
+    /**
+     * adds an event and its fields to the firestore database
+     * @param event
+     */
     public void addEvent(Event event) {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("eventName", event.getEventName());
@@ -373,6 +431,9 @@ public class FirebaseController {
         });
     }
 
+    /**
+     * called with get user to return the user object
+     */
     public interface OnUserRetrievedListener {
         void onUserRetrieved(User user);
     }
@@ -540,6 +601,11 @@ public class FirebaseController {
         void onCheckFailed(Exception e);
     }
 
+    /**
+     * increment the number of times an attendee has checked into an event
+     * @param userId given user to increment
+     * @param eventId the event in which the user checked in
+     */
     public void incrementCheckIn(String userId, String eventId) {
         DocumentReference eventRef = db.collection("events").document(eventId)
                 .collection("attendees").document(userId);

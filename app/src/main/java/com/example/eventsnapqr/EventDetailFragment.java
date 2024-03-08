@@ -23,7 +23,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 /**
  * fragment to show the details of an event, including the name of the organizer,
  * the description, announcements and max attendees. gives the option for the user to
- * sign up for the event
+ * sign up for the event.
+ *
+ * currently a user can sign up for an event infinite times,
+ * however, the data is only uploaded to the database once
  */
 public class EventDetailFragment extends Fragment {
     private String eventId;
@@ -45,7 +48,9 @@ public class EventDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             eventId = getArguments().getString("eventId");
+            Log.d("PLEASEWORK", eventId);
             loadEventDetails(eventId);
+
         }
         androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -88,16 +93,13 @@ public class EventDetailFragment extends Fragment {
                                     if (event != null) {
                                         String eventId = event.getEventID();
 
-                                        // Get a reference to the attendees collection for the event
                                         CollectionReference attendeesCollectionRef = FirebaseFirestore.getInstance()
                                                 .collection("events")
                                                 .document(eventId)
                                                 .collection("attendees");
 
-                                        // Query the attendees collection to get the count of documents (attendees)
                                         attendeesCollectionRef.get()
                                                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                                                    // Get the count of attendees
                                                     int numberOfAttendees = queryDocumentSnapshots.size();
                                                     Log.d("Attendees", "Number of attendees: " + numberOfAttendees);
 
@@ -112,7 +114,6 @@ public class EventDetailFragment extends Fragment {
                                                 })
                                                 .addOnFailureListener(e -> {
                                                     Log.e("Error", "Error getting attendee count", e);
-                                                    // Handle failure
                                                 });
                                     } else {
                                         Toast.makeText(requireContext(), "Failed to retrieve event details", Toast.LENGTH_SHORT).show();
@@ -127,7 +128,7 @@ public class EventDetailFragment extends Fragment {
             }
         });
 
-        return view; // Add this line to fix the missing brace error
+        return view;
     }
 
 
@@ -138,7 +139,7 @@ public class EventDetailFragment extends Fragment {
      */
     public void CreateDialog(String eventName) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("You have successfully signed up for " + eventName)
+        builder.setTitle ("You have successfully signed up for " + eventName)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Back to main page

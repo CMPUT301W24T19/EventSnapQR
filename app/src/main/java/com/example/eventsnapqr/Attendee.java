@@ -2,6 +2,9 @@ package com.example.eventsnapqr;
 
 import java.util.List;
 
+/**
+ * interface for user to implement the abilities of an attendee
+ */
 public interface Attendee {
     void checkIntoEvent(String qrCode);
     void uploadProfilePicture(String profilePictureUri);

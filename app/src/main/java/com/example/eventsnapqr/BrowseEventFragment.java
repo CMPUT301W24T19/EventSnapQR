@@ -80,16 +80,16 @@ public class BrowseEventFragment extends Fragment {
         view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requireActivity().onBackPressed();
+                Intent intent = new Intent(requireContext(), MainActivity.class);
+                startActivity(intent);
             }
         });
 
         view.findViewById(R.id.view_on_events_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Toast.makeText(requireContext(), "View on events button clicked", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getContext(), MyEventActivity.class);
-                startActivity(intent);
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                navController.navigate(R.id.action_browseEventFragment_to_myEventFragment);
             }
         });
 

@@ -13,6 +13,13 @@ import android.view.ViewGroup;
  * starting point for organizing an event, which immediately leads to
  */
 public class OrganizeAnEventActivity extends AppCompatActivity {
+
+    /**
+     * What should be executed when the fragment is created
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     *                           a previous saved state, this is the state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
