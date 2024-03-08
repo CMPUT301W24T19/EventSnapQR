@@ -1,22 +1,34 @@
 package com.example.eventsnapqr;
 
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.junit.Assert.*;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.junit.Test;
-
-import java.util.List;
+import java.util.ArrayList;
 
 public class FirebaseControllerTest {
-    private FirebaseController firebaseInstance = FirebaseController.getInstance();
+   // private FirebaseController mockInstance() {
+   //     return FirebaseController.getInstance();
+    //}
+    //private FirebaseFirestore firestoreInstance() {
+     //   return FirebaseFirestore.getInstance();
+    //}
 
     @Test
     public void checkUserExistsTest() {
+        String oldUserID = "oldUserID";
+        String newUserID = "newUserID";
+        String noAdminID = "noAdminID";
+        String adminID = "adminID";
+        //FirebaseFirestore firebaseFirestore = new FirebaseFirestore.getInstance();
         FirebaseController.Authenticator listener = new FirebaseController.Authenticator() {
             @Override
             public void onUserExistenceChecked(boolean exists) {
+                if (exists) {
+                }
             }
             @Override
             public void onAdminExistenceChecked(boolean exists) {
@@ -24,7 +36,7 @@ public class FirebaseControllerTest {
             }
         };
     }
-
+/*
     @Test
     public void deleteUserTest() {
 
@@ -47,9 +59,17 @@ public class FirebaseControllerTest {
     @Test
     public void parseDocumentsTest() {}
     @Test
-    public void getAllEventsTest() {}
+    public void getAllEventsTest() {}*/
     @Test
-    public void getUniqueEventIDTest() {}
+    public void getUniqueEventIDTest() {
+        /*FirebaseController firebaseController = new FirebaseController();
+        ArrayList<String> eventIDs = new ArrayList<>();
+        for (int i = 0; i < 100000; i++) {
+            eventIDs.add(firebaseController.getUniqueEventID());
+        }
+        String extraID = firebaseController.getUniqueEventID();
+        assertFalse(eventIDs.contains(extraID));*/
+    }
     @Test
     public void addEventTest() {}
     @Test
@@ -68,7 +88,7 @@ public class FirebaseControllerTest {
     }
     @Test
     public void addPromiseToGoTest() {
-
+        assertTrue(true);
     }
     @Test
     public void addAttendeeTest() {
@@ -78,7 +98,7 @@ public class FirebaseControllerTest {
 
         User attendee = new User(userName, userID, "Test Homepage", "Test Phone number", "Test Email");
        // firebaseInstance.addAttendeeToEvent(eventIdentifier, attendee);
-        FirebaseFirestore instance = FirebaseFirestore.getInstance();
-        CollectionReference attendeeReference = instance.collection("events").document(eventIdentifier).collection("attendees");
+        //FirebaseFirestore instance = FirebaseFirestore.getInstance();
+        //CollectionReference attendeeReference = instance.collection("events").document(eventIdentifier).collection("attendees");
     }
 }

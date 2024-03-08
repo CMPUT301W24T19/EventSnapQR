@@ -2,19 +2,28 @@ package com.example.eventsnapqr;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +33,10 @@ import java.util.List;
  */
 public class AdminBrowseProfilesFragment extends Fragment {
 
-    private ListView listView;
+    private RecyclerView recyclerView;
     private ProfileAdapter adapter;
     private ArrayList<User> profileList;
     private FloatingActionButton buttonBackToAdminMain;
-    private ArrayList<User> usersDataList;
-    private ProfileAdapter profileAdapter;
-    private FirebaseController firebaseController = new FirebaseController();
 
     public AdminBrowseProfilesFragment() {
         // Required empty public constructor
@@ -56,7 +62,7 @@ public class AdminBrowseProfilesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         profileList = new ArrayList<>();
-        adapter = new ProfileAdapter(requireContext(),profileList);
+        adapter = new ProfileAdapter(profileList);
     }
 
 
@@ -81,29 +87,52 @@ public class AdminBrowseProfilesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin_browse_profiles, container, false);
 
-        listView =  view.findViewById(R.id.rv_profile_thumbnails);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        recyclerView = view.findViewById(R.id.user_profile_pictures);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        recyclerView.setAdapter(adapter);
+        FirebaseFirestore.getInstance().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                User selectedUser = (User) listView.getItemAtPosition(position);
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                Bundle bundle = new Bundle();
-                bundle.putString("userId", selectedUser.getDeviceID());
-                navController.navigate(R.id.adminUserDetailsFragment,bundle);
-                showDeleteConfirmationDialog(selectedUser);
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                profileList.clear();
+                Log.d("TAG", "Snapshot");
+                for (QueryDocumentSnapshot doc: value) {
+                    String deviceID = (String) doc.getId();
+                    String userName = (String) doc.getData().get("name");
+                    String homePage = (String) doc.getData().get("homepage");
+                    String phoneNumber = (String) doc.getData().get("phoneNumber");
+                    String email = (String) doc.getData().get("email");
+                    String profilePicture = (String) doc.getData().get("profileURI");
+                    User user = new User(userName, deviceID, homePage, phoneNumber, email);
+                    user.setProfilePicture(profilePicture);
+                    Log.d("TAG", "Profile: " + userName);
+                    profileList.add(user);
+                }
+                adapter.notifyDataSetChanged();
             }
         });
-
-        FirebaseController.OnAllUsersLoadedListener listener = new FirebaseController.OnAllUsersLoadedListener() {
+        adapter.setOnClickListener(new ProfileAdapter.OnClickListener() {
             @Override
-            public void onUsersLoaded(List<User> users) {
-                usersDataList = new ArrayList<>();
-                usersDataList.addAll(users);
-                profileAdapter = new ProfileAdapter(getContext(),usersDataList);
-                listView.setAdapter(profileAdapter);
+            public void onClick(int position, User user) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("User information")
+                        .setMessage("Name: " + user.getName() + "\n"
+                                + "Home Page: " + user.getHomepage() + "\n"
+                        + "Phone Number: " + user.getPhoneNumber() + "\n"
+                        + "Email: " + user.getEmail() + "\n")
+                        .setPositiveButton("View", (dialog, which) -> {
+                            // Use the position parameter directly
+                            Intent intent = new Intent(getContext(), UserInfoActivity.class);
+                            intent.putExtra("androidId", user.getDeviceID());
+                            startActivity(intent);
+                        })
+                        .setNegativeButton("Delete", (dialog, which) -> {
+                            showDeleteConfirmationDialog(user);
+                        })
+                        .setNeutralButton("Cancel", null)
+                        .create()
+                        .show();
             }
-        };
-        firebaseController.getAllUsers(listener);
+        });
 
         buttonBackToAdminMain = view.findViewById(R.id.button_back_button);
         buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {
@@ -114,12 +143,6 @@ public class AdminBrowseProfilesFragment extends Fragment {
             }
         });
 
-        loadProfiles();
-
         return view;
-    }
-
-    private void loadProfiles() {
-        adapter.notifyDataSetChanged();
     }
 }
