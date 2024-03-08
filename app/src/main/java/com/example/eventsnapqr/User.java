@@ -256,6 +256,8 @@ public class User implements Attendee, Organizer{
 
     public interface AttendeesCallback { // use this interface to get list of users by calling viewEventAttendees("eventId", new AttendeesCallback()
         void onCallback(List<User> userList);
+        void onAttendeesLoaded(List<String> attendees);
+
     }
 
 

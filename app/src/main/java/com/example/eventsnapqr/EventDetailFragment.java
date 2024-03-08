@@ -75,6 +75,12 @@ public class EventDetailFragment extends Fragment {
                                             public void onCallback(List<User> userList) {
                                                 attendeeList.addAll(userList);
                                             }
+
+                                            @Override
+                                            public void onAttendeesLoaded(List<String> attendees) {
+                                                // do nothing
+                                            }
+
                                         });
                                         if (event.getMaxAttendees() == null || attendeeList.size() < event.getMaxAttendees()) {
                                             // Event retrieved successfully, now add user as attendee and promise to go to the event

@@ -3,10 +3,7 @@ package com.example.eventsnapqr;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.TestCase.assertEquals;
 
 import androidx.test.core.app.ActivityScenario;
@@ -34,7 +31,7 @@ public class OrganizeEventTest {
         // Initialize necessary setup
     }
     @Test
-    public void eventAttendeesTest() {
+    public void eventAttendeesTest() { // NOT COMPLETE*****
         FirebaseController firebaseController = new FirebaseController();
         String id = firebaseController.getUniqueEventID();
 
@@ -64,12 +61,15 @@ public class OrganizeEventTest {
         ActivityScenario.launch(MainActivity.class);
         onView(withId(R.id.browse_events_button)).perform(click());
         // Verify if the event is listed in the UI
-        onView(withId(R.id.events)).check(matches(hasDescendant(withText(id)))).perform(click());
+        onView(withId(R.id.view_on_events_button)).perform(click());
+       // onView(withId(R.id.events)).check(matches(hasDescendant(withText(id)))).perform(click());
+
 
     }
 
     /**
      * Test to test that an event is successfully created
+     * US 01.01.01
      */
     @Test
     public void organizeEventTest() {

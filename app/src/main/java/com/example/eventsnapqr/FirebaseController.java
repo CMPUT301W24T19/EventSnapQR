@@ -226,6 +226,18 @@ public class FirebaseController {
                     }
                 });
     }
+    public void getEventAttendees(Event event, User.AttendeesCallback callback) {
+        db.collection("events").document(event.getEventID()).collection("attendees").get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<String> attendees = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot) {
+                        String androidId = document.getString("organizerID");
+                        attendees.add(androidId);
+                    }
+                    callback.onAttendeesLoaded(attendees); // Pass the attendees list to the callback
+                });
+    }
+
 
     void parseDocuments(List<DocumentSnapshot> documents) {
         for(DocumentSnapshot doc: documents){
