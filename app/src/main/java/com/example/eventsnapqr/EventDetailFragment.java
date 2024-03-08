@@ -84,7 +84,7 @@ public class EventDetailFragment extends Fragment {
                                             CreateDialog(event.getEventName());
                                         }
                                         else {
-                                            Toast.makeText(requireContext(), "Failed to retrieve event details", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(requireContext(), "Event is full", Toast.LENGTH_SHORT).show();
                                         }
                                     } else {
                                         Toast.makeText(requireContext(), "Failed to retrieve event details", Toast.LENGTH_SHORT).show();
