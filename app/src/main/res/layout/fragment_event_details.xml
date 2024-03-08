@@ -20,10 +20,9 @@
         android:id="@+id/page_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:text="Event Details"
         android:layout_gravity="center"
-         />
+        />
 
     <ImageView
         android:layout_gravity="center"
@@ -33,79 +32,93 @@
         android:layout_marginTop="20dp"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
-
-    <TextView
-        android:layout_gravity="center"
-        android:id="@+id/organizer_text"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Organizer"
-        app:layout_constraintStart_toStartOf="@+id/event_poster"
-        app:layout_constraintTop_toBottomOf="@+id/event_poster" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-    <TextView
-        android:layout_gravity="center"
-        android:id="@+id/organizer_content"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#BCBCBC"
-        android:padding="8dp"
-       />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:id="@+id/organizer_text"
+            android:layout_height="wrap_content"
+            android:text="Organizer"
+            android:gravity="center_horizontal" />
 
-    <TextView
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:id="@+id/organizer_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal" />
+    </LinearLayout>
 
-        android:layout_gravity="center"
-        android:id="@+id/description_text"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Description"
-         />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-    <TextView
-        android:layout_gravity="center"
-        android:id="@+id/description_content"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#BCBCBC"
-        android:padding="8dp"
-        />
+        <TextView
+            android:id="@+id/description_text"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:gravity="center_horizontal" />
 
-    <TextView
-        android:id="@+id/announce_text"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/description_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Announcements"
-        android:layout_gravity="center"
-         />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/announce_content"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/announce_text"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Announcements"
+            android:gravity="center_horizontal" />
+
+        <TextView
+            android:id="@+id/announce_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="#BCBCBC"
-        android:padding="8dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/max_attendees_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Max Attendees"
-        android:layout_gravity="center"
-        />
+        <TextView
+            android:id="@+id/max_attendees_text"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Max Attendees"
+            android:gravity="center_horizontal" />
 
-    <TextView
-        android:id="@+id/max_attendees_content"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#BCBCBC"
-        android:padding="8dp"
-        android:layout_gravity="center"
-        />
+        <TextView
+            android:id="@+id/max_attendees_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/sign_up_button"
