@@ -366,6 +366,7 @@ public class FirebaseController {
                 });
     }
 
+
     /**
      * add an attendee to the specified events attendee subcollection
      * @param event the event to add the user to
