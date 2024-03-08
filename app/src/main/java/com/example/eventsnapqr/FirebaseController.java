@@ -396,4 +396,36 @@ public class FirebaseController {
                     }
                 });
     }
+
+    /**
+     * check if the user is in the attendees list of a specific event.
+     *
+     * @param eventId   The ID of the event to check.
+     * @param userId    The ID of the user to check.
+     * @param listener  Listener to handle the result of the check.
+     */
+    public void checkUserInAttendees(String eventId, String userId, OnUserInAttendeesListener listener) {
+        DocumentReference eventRef = db.collection("events").document(eventId);
+        eventRef.collection("attendees").document(userId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            listener.onUserInAttendees(true);
+                        } else {
+                            listener.onUserInAttendees(false);
+                        }
+                    } else {
+                        listener.onCheckFailed(task.getException());
+                    }
+                });
+    }
+
+    /**
+     * interface to handle the result of checking if a user is in the attendees list.
+     */
+    public interface OnUserInAttendeesListener {
+        void onUserInAttendees(boolean isInAttendees);
+        void onCheckFailed(Exception e);
+    }
 }
