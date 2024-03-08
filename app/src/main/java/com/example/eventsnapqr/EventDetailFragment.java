@@ -39,6 +39,7 @@ public class EventDetailFragment extends Fragment {
     private TextView eventMaxAttendees;
     private TextView eventAnnouncement;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +48,7 @@ public class EventDetailFragment extends Fragment {
             loadEventDetails(eventId);
         }
         androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
     }
 
     @Override
