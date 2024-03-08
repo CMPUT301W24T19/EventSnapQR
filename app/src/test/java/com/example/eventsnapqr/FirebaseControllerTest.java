@@ -2,7 +2,6 @@ package com.example.eventsnapqr;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 
@@ -10,7 +9,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
-@RunWith(MockitoJUnitRunner.class)
 public class FirebaseControllerTest {
    // private FirebaseController mockInstance() {
    //     return FirebaseController.getInstance();
