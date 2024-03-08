@@ -81,10 +81,8 @@ public class YourEventFragment extends Fragment {
         view.findViewById(R.id.attendee_map_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_2);
-                //Bundle bundle = new Bundle();
-                //bundle.putString("eventName", eventName);
-                //navController.navigate(R.id.action_yourEventFragment_to_mapFragment, bundle);
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                navController.navigate(R.id.action_YourEventFragment_to_MapFragment);
             }
         });
 
