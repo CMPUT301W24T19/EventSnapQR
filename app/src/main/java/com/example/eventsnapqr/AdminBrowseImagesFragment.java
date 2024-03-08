@@ -1,5 +1,6 @@
 package com.example.eventsnapqr;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -95,12 +96,20 @@ public class AdminBrowseImagesFragment extends Fragment {
                 adapter.notifyDataSetChanged();
             }
         });
-
         buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                 navController.navigate(R.id.action_adminBrowseImagesFragment_to_AdminModeMainPageFragment);
+            }
+        });
+
+        adapter.setOnClickListener(new EventPosterAdapter.OnClickListener() {
+            @Override
+            public void onClick(int position, Event event) {
+                Intent intent = new Intent(getContext(), EventPosterActivity.class);
+                intent.putExtra("uri", event.getPosterUri());
+                startActivity(intent);
             }
         });
 
