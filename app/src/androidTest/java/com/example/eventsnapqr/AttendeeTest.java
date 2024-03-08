@@ -6,8 +6,10 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -86,29 +88,34 @@ public class AttendeeTest {
             e.printStackTrace();
         }
         onView(withId(R.id.sign_up_button)).check(matches(isDisplayed())).perform(click());
+        //onView(withText(startsWith("You have successfully signed up for"))).inRoot(isDialog()).check(matches(isDisplayed()));
+
+        onView(withText("OK")).inRoot(isDialog()).perform(click());
         ArrayList<String> allAttendees = new ArrayList<>();
 
         firebaseController.getEvent(id, new FirebaseController.OnEventRetrievedListener() {
             @Override
             public void onEventRetrieved(Event event) {
-                firebaseController.getEventAttendees(event, new User.AttendeesCallback() {
-                    @Override
-                    public void onCallback(List<User> userList) {
-                        // do nothing
-                    }
+                if(event != null){
+                    firebaseController.getEventAttendees(event, new User.AttendeesCallback() {
+                        @Override
+                        public void onCallback(List<User> userList) {
+                            // do nothing
+                        }
 
-                    @Override
-                    public void onAttendeesLoaded(List<String> attendees) {
-                        allAttendees.addAll(attendees);
-                    }
-                });
+                        @Override
+                        public void onAttendeesLoaded(List<String> attendees) {
+                            allAttendees.addAll(attendees);
+                        }
+                    });
+                }
+
             }
         });
         Context context = InstrumentationRegistry.getInstrumentation().getContext();
         ContentResolver contentResolver = context.getContentResolver();
         String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
         while(allAttendees.size()==0){}
-        int counter = 0;
         for(String attendeeId: allAttendees){
             if(androidId.equals(attendeeId)){
                 assertEquals(attendeeId, androidId);
