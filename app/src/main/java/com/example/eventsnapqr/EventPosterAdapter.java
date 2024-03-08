@@ -38,7 +38,7 @@ public class EventPosterAdapter extends RecyclerView.Adapter<EventPosterAdapter.
     public void onBindViewHolder(@NonNull EventPosterViewHolder holder, int position) {
         Event event = eventList.get(position);
         Glide.with(holder.itemView.getContext())
-                .load(event.getPosterUri())
+                .load(event.getPosterURI())
                 .placeholder(R.drawable.place_holder_img)
                 .error(R.drawable.place_holder_img)
                 .into(holder.ivEventPoster);

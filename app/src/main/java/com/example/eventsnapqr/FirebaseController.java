@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class FirebaseController {
     private static FirebaseController instance;
@@ -250,7 +249,7 @@ public class FirebaseController {
             //doc.get("attendees");
             event.setDescription(doc.getString("description"));
             event.setEventName(doc.getString("eventName"));
-            event.setPosterUri(doc.getString("posterURL"));
+            event.setPosterURI(doc.getString("posterURL"));
             event.setAnnouncement(doc.getString("announcement"));
             events.add(event);
             //Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees)
@@ -284,8 +283,8 @@ public class FirebaseController {
         eventData.put("organizerID", event.getOrganizer().getDeviceID());
         eventData.put("description", event.getDescription());
         eventData.put("announcement",event.getAnnouncement());
-        if (event.getPosterUri() != null) {
-            eventData.put("posterURI", event.getPosterUri());
+        if (event.getPosterURI() != null) {
+            eventData.put("posterURI", event.getPosterURI());
         }
         if (event.getMaxAttendees() != null) {
             eventData.put("maxAttendees", event.getMaxAttendees());

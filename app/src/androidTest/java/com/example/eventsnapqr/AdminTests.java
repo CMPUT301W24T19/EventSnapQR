@@ -31,7 +31,10 @@ import static org.junit.Assert.assertTrue;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
@@ -57,6 +60,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
@@ -66,6 +72,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -277,6 +284,7 @@ public class AdminTests {
         onView(withId(R.id.buttonBrowseImages)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonBrowseEvents)).check(matches(isDisplayed()));
         onView(withId(R.id.button_back)).check(matches(isDisplayed()));
+        onView(withId(R.id.button_back)).perform(click());
     }
 
     @Test
@@ -313,6 +321,10 @@ public class AdminTests {
         onView(withId(R.id.adminMainPage)).check(doesNotExist());
         onView(withText("Browse Profiles")).check(matches(isDisplayed()));
         onView(withId(R.id.button_back_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.button_back_button)).perform(click());
+        onView(withId(R.id.adminMainPage)).check(matches(isDisplayed()));
+        onView(withId(R.id.browseProfileFragment)).check(doesNotExist());
+        onView(withId(R.id.buttonBrowseUserProfiles)).perform(click());
         onView(withId(R.id.user_profile_pictures)).check(matches(isDisplayed()));
         onView(withText(testUser.getName())).check(matches(isDisplayed()));
         onView(withId(R.id.userContent)).check(matches(isDisplayed()));
@@ -399,10 +411,42 @@ public class AdminTests {
         String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
 
         User testUser = new User("TestUser", androidId, "testHomePage", "testNumber", "testEmail");
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("test/testPoster");
+        Bitmap testPoster = testUser.generateInitialsImage(testUser.getName().toString());
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        testPoster.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        byte[] testPosterByte = byteArrayOutputStream.toByteArray();
+        Uri[] result = new Uri[1];
+        storageRef.putBytes(testPosterByte).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        result[0] = uri;
+                        Log.d("TAG", "URI registered");
+                        Log.d("TAG", "URI before event: " + result[0].toString());
+                    }
+                });
+            }
+        });
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Log.d("TAG", "Making event");
+        Log.d("TAG", "Event URI: " + result[0].toString());
+        Event testEvent = new Event(testUser, "testEvent", "testDescription", result[0].toString(), null, "eventID", "testAnnouncements");
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseFirestore.collection("users").document(androidId).set(testUser);
         firebaseFirestore.collection("admin").document(androidId).set(testUser);
+        firebaseFirestore.collection("events").document("eventID").set(testEvent);
         // Disable animations
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global window_animation_scale 0");
@@ -412,7 +456,6 @@ public class AdminTests {
                 "settings put global animator_duration_scale 0");
 
         ActivityScenario.launch(MainActivity.class);
-        CountDownLatch latch = new CountDownLatch(1);
         try {
             latch.await(10, TimeUnit.SECONDS);
             Thread.sleep(1000);
@@ -423,19 +466,22 @@ public class AdminTests {
         onView(withId(R.id.admin_button)).perform(click());
         onView(withId(R.id.buttonBrowseImages)).perform(click());
         onView(withId(R.id.adminMainPage)).check(doesNotExist());
-        onView(withId(R.id.button_back_button)).check(matches(isDisplayed()));
-        onView(withId(R.id.user_profile_pictures)).check(matches(isDisplayed()));
-        onView(withText(testUser.getName())).check(matches(isDisplayed()));
-        onView(withId(R.id.user_profile_pictures))
+        onView(withId(R.id.browseImageFragment)).check(matches(isDisplayed()));
+        onView(withId(R.id.rv_event_posters)).check(matches(isDisplayed()));
+        onView(withId(R.id.eventPoster)).check(matches(isDisplayed()));
+        onView(withId(R.id.browseImageFragment)).check(matches(isDisplayed()));
+        onView(withId(R.id.rv_event_posters))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
-        onView(withText("Delete")).perform(click());
-        onView(withText("Delete User")).check(matches(isDisplayed()));
-        onView(withText("Are you sure you want to delete this user?")).check(matches(isDisplayed()));
-        onView(withText("Yes")).check(matches(isDisplayed()));
-        onView(withText("No")).check(matches(isDisplayed()));
-        onView(withText("Yes")).perform(click());
-        onView(withText(testUser.getName())).check(matches(not(isDisplayed())));
-
+        onView(withText("Event Poster for " + testEvent.getEventName())).check(matches(isDisplayed()));
+        onView(withText("View")).check(matches(isDisplayed()));
+        onView(withText("Delete")).check(matches(isDisplayed()));
+        onView(withText("Cancel")).check(matches(isDisplayed()));
+        onView(withText("View")).perform(click());
+        onView(withId(R.id.activityEventPoster)).check(matches(isDisplayed()));
+        onView(withId(R.id.browseImageFragment)).check(doesNotExist());
+        onView(withId(R.id.button_back_button)).perform(click());
+        onView(withId(R.id.activityEventPoster)).check(doesNotExist());
+        onView(withId(R.id.browseImageFragment)).check(matches(isDisplayed()));
 
         // Enable animations after the test is finished
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(

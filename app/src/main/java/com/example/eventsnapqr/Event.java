@@ -11,7 +11,7 @@ public class Event {
     private String eventName; // name of the event
     private User organizer; // user who organized the event
     private String description; // description of the event
-    private String posterUri; // URL for the event poster image
+    private String posterURI; // URL for the event poster image
     private Integer maxAttendees; // optional max attendees
     private String announcement; //announcements related to the Event
     private String eventID; // unique id
@@ -23,15 +23,15 @@ public class Event {
      * @param organizer user who organized the event
      * @param eventName name of the event
      * @param description description of the event
-     * @param posterUri URL for the event poster
+     * @param posterURI URL for the event poster
      * @param maxAttendees maximum number of attendees
      * @param announcement announcements related to the event
      */
-    public Event(User organizer, String eventName, String description, String posterUri, Integer maxAttendees, String eventID, String announcement) {
+    public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees, String eventID, String announcement) {
         this.organizer = organizer;
         this.eventName = eventName;
         this.description = description;
-        this.posterUri = posterUri;
+        this.posterURI = posterURI;
         this.maxAttendees = maxAttendees;
         this.announcement = announcement;
         this.eventID = eventID;
@@ -103,16 +103,16 @@ public class Event {
      * getter method to return the URL of the event poster
      * @return poster URL
      */
-    public String getPosterUri() {
-        return posterUri;
+    public String getPosterURI() {
+        return posterURI;
     }
 
     /**
      * setter method for the poster URL
-     * @param posterUri string
+     * @param posterURI string
      */
-    public void setPosterUri(String posterUri) {
-        this.posterUri = posterUri;
+    public void setPosterURI(String posterURI) {
+        this.posterURI = posterURI;
     }
 
     /**

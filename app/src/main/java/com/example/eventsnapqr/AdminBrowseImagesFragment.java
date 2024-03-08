@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -79,10 +78,13 @@ public class AdminBrowseImagesFragment extends Fragment {
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 //Log.d("TAG", "New snapshot");
                 posters.clear();
+                Log.d("TAG", "Snapshot");
                 for (QueryDocumentSnapshot doc : value) {
                     String eventID = (String) doc.getId();
+                    Log.d("TAG", "Document ID: " + eventID);
                     String eventName = (String) doc.getData().get("eventName");
                     String posterUri = (String) doc.getData().get("posterURI");
+                    Log.d("TAG", "Poster URI: " + posterUri);
                     Event event = new Event(null, eventName, null, posterUri, null, eventID, null);
                     posters.add(event);
                 }
@@ -104,7 +106,7 @@ public class AdminBrowseImagesFragment extends Fragment {
                 builder.setTitle("Event Poster for " + event.getEventName())
                         .setPositiveButton("View", (dialog, which) -> {
                             Intent intent = new Intent(getContext(), AdminViewImageActivity.class);
-                            intent.putExtra("uri", event.getPosterUri());
+                            intent.putExtra("uri", event.getPosterURI());
                             startActivity(intent);
                         })
                         .setNegativeButton("Delete", (dialog, which) -> {
@@ -129,8 +131,8 @@ public class AdminBrowseImagesFragment extends Fragment {
         builder.setTitle("Confirm Deletion")
                 .setMessage("Are you sure you want to delete the poster for '" + event.getEventName() + "'?")
                 .setPositiveButton("Yes", (dialog, which) -> { // if yes
-                    if (event.getPosterUri() != null) {
-                        String[] firebaseStoragePath = Uri.parse(event.getPosterUri()).getPath().split("/");
+                    if (event.getPosterURI() != null) {
+                        String[] firebaseStoragePath = Uri.parse(event.getPosterURI()).getPath().split("/");
                         String storagePath = firebaseStoragePath[firebaseStoragePath.length - 2] + "/" + firebaseStoragePath[firebaseStoragePath.length - 1];
                         FirebaseStorage.getInstance().getReference().child(storagePath).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -146,7 +148,7 @@ public class AdminBrowseImagesFragment extends Fragment {
                         FirebaseController.getInstance().getEvent(event.getEventID(), new FirebaseController.OnEventRetrievedListener() {
                             @Override
                             public void onEventRetrieved(Event event) {
-                                event.setPosterUri(null);
+                                event.setPosterURI(null);
                                 FirebaseController.getInstance().addEvent(event);
                             }
                         });
