@@ -112,41 +112,7 @@ public class OrganizeEventTest {
                     "settings put global animator_duration_scale 1");
         }
     }
-    @Test
-    public void eventAttendeesTest() { // NOT COMPLETE*****
-        FirebaseController firebaseController = new FirebaseController();
-        String id = firebaseController.getUniqueEventID();
-
-        // Launch OrganizeAnEventActivity and create the event
-        ActivityScenario.launch(OrganizeAnEventActivity.class);
-        onView(withId(R.id.editTextEventName)).perform(typeText(id));
-        onView(withId(R.id.editTextEventDesc)).perform(typeText("Event Description"));
-        onView(withId(R.id.button_create)).perform(click());
-        CountDownLatch latch = new CountDownLatch(1);
-        // Load events from Firebase
-        ArrayList<Event> allEvents = new ArrayList<>();
-        firebaseController.getAllEvents(new FirebaseController.OnEventsLoadedListener() {
-            @Override
-            public void onEventsLoaded(ArrayList<Event> events) {
-                allEvents.addAll(events);
-                // Signal that events are loaded
-                latch.countDown();
-            }
-        });
-
-        // Wait for events to load
-        try {
-            latch.await(10, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        ActivityScenario.launch(MainActivity.class);
-        onView(withId(R.id.browse_events_button)).perform(click());
-        // Verify if the event is listed in the UI
-        onView(withId(R.id.view_on_events_button)).perform(click());
-       // onView(withId(R.id.events)).check(matches(hasDescendant(withText(id)))).perform(click());
-
-    }
+    
     /**
      * Test to test that an event is successfully created
      * US 01.01.01
