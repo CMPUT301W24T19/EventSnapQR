@@ -17,6 +17,12 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    configurations {
+        named("androidTestImplementation") {
+            exclude(group = "com.google.protobuf", module = "protobuf-lite")
+        }
+        }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -36,7 +42,31 @@ android {
 }
 
 dependencies {
-    implementation("com.firebaseui:firebase-ui-storage:7.2.0")
+    androidTestImplementation("androidx.fragment:fragment-testing:1.6.2")
+    androidTestImplementation("com.android.support.test:runner:1.0.2")
+    androidTestImplementation("com.android.support.test:rules:1.0.2")
+    androidTestImplementation("com.android.support.test.espresso:espresso-core:3.0.2")
+    androidTestImplementation("com.android.support.test.espresso:espresso-contrib:3.0.2")
+    androidTestImplementation("com.android.support.test.espresso:espresso-intents:3.0.2")
+    androidTestImplementation("com.android.support.test.espresso:espresso-web:3.0.2")
+    androidTestImplementation("com.android.support.test.espresso:espresso-accessibility:3.0.2")
+    androidTestImplementation("com.android.support.test.espresso:espresso-contrib:3.0.2")
+    androidTestImplementation("com.android.support.test.espresso:espresso-idling-resource:3.0.2")
+    androidTestImplementation("com.google.firebase:firebase-storage:20.3.0")
+    androidTestImplementation(platform("com.google.firebase:firebase-bom:32.7.3"))
+    androidTestImplementation("com.google.firebase:firebase-firestore")
+    androidTestImplementation("com.firebaseui:firebase-ui-storage:8.0.2")
+    androidTestImplementation("com.google.firebase:firebase-database:20.3.1")
+
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
+    testImplementation ("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testRuntimeOnly ("org.junit.jupiter:junit-jupiter-engine:5.10.2")
+    testImplementation("junit:junit:4.13.2")
+
+    implementation("com.firebaseui:firebase-ui-storage:8.0.2")
     implementation("com.google.firebase:firebase-storage:20.3.0")
     val camerax_version = "1.3.1"
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
@@ -59,7 +89,6 @@ dependencies {
     implementation("androidx.navigation:navigation-ui:2.7.7")
     implementation ("com.github.bumptech.glide:glide:4.12.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+
 }

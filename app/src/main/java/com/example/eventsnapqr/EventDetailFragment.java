@@ -1,12 +1,8 @@
 package com.example.eventsnapqr;
 
-import static androidx.camera.core.impl.utils.ContextUtil.getBaseContext;
-
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +16,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.Firebase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +69,7 @@ public class EventDetailFragment extends Fragment {
                                 public void onEventRetrieved(Event event) {
                                     if (event != null) {
                                         List<User> attendeeList = new ArrayList<>();
+
                                         event.getOrganizer().viewEventAttendees(event.getEventID(), new User.AttendeesCallback() {
                                             @Override
                                             public void onCallback(List<User> userList) {
@@ -88,7 +84,7 @@ public class EventDetailFragment extends Fragment {
                                             CreateDialog(event.getEventName());
                                         }
                                         else {
-                                            Toast.makeText(requireContext(), "Failed to retrieve event details", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(requireContext(), "Event is full", Toast.LENGTH_SHORT).show();
                                         }
                                     } else {
                                         Toast.makeText(requireContext(), "Failed to retrieve event details", Toast.LENGTH_SHORT).show();

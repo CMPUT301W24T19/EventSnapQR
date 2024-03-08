@@ -3,8 +3,11 @@ package com.example.eventsnapqr;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -23,6 +26,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
@@ -95,9 +99,38 @@ public class QRDialogFragment extends DialogFragment {
                     e.printStackTrace();
                     Toast.makeText(getContext(), "Failed to save QR Code", Toast.LENGTH_SHORT).show();
                 }
+
+                shareImage(bitmap);
             }
         });
         return view;
     }
 
+    private void shareImage(Bitmap bitmap){
+        Uri uri = getImageToShare(bitmap);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM,uri);
+        intent.putExtra(Intent.EXTRA_TEXT,"Sharing event QR code");
+        intent.putExtra(Intent.EXTRA_SUBJECT,"Attached QR code Image");
+        intent.setType("image/*");
+        startActivity(Intent.createChooser(intent,"Share via"));
+    }
+    private Uri getImageToShare(Bitmap bitmap){
+        File folder = new File(getContext().getCacheDir(),"images");
+        Uri uri = null;
+        try{
+            folder.mkdir();
+            File file = new File(folder,"image.jpg");
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG,90,fileOutputStream);
+            fileOutputStream.flush();;
+            fileOutputStream.close();
+            uri = FileProvider.getUriForFile(getContext(),"com.example.eventsnapqr",file);
+        } catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(getContext()," "+e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+        return uri;
+
+    }
 }
