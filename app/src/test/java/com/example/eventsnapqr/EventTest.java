@@ -7,5 +7,5 @@ public class EventTest {
         Event event = new Event();
         return event;
     }
-    
+
 }
