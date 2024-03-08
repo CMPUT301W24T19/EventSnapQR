@@ -110,7 +110,7 @@ public class AdminBrowseEventsFragment extends Fragment {
     }
 
     public void gotoMyEventActivity() {
-        Intent intent = new Intent(getContext(), MyEventActivity.class);
+        Intent intent = new Intent(getContext(), MyEventsFragment.class);
         startActivity(intent);
     }
 

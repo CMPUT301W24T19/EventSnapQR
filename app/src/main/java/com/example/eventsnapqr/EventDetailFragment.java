@@ -51,7 +51,9 @@ public class EventDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             eventId = getArguments().getString("eventId");
+            Log.d("PLEASEWORK", eventId);
             loadEventDetails(eventId);
+
         }
         androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
