@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
-
 public class EventPosterAdapter extends RecyclerView.Adapter<EventPosterAdapter.EventPosterViewHolder> {
     private List<Event> eventList;
+    private OnClickListener onClickListener;
 
     public EventPosterAdapter(List<Event> eventList) {
         this.eventList = eventList;
@@ -26,6 +26,14 @@ public class EventPosterAdapter extends RecyclerView.Adapter<EventPosterAdapter.
         return new EventPosterViewHolder(view);
     }
 
+
+    public void setOnClickListener(OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
+    }
+
+    public interface OnClickListener {
+        void onClick(int position, Event event);
+    }
     @Override
     public void onBindViewHolder(@NonNull EventPosterViewHolder holder, int position) {
         Event event = eventList.get(position);
@@ -35,8 +43,15 @@ public class EventPosterAdapter extends RecyclerView.Adapter<EventPosterAdapter.
                 .error(R.drawable.place_holder_img)
                 .into(holder.ivEventPoster);
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onClickListener != null) {
+                    onClickListener.onClick(position, event);
+                }
+            }
+        });
     }
-
 
     @Override
     public int getItemCount() {
