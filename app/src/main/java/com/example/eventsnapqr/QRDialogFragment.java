@@ -82,10 +82,10 @@ public class QRDialogFragment extends DialogFragment {
         buttonExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(requireContext(), MainActivity.class);
-                startActivity(intent);
+                requireActivity().finish();
             }
         });
+
         buttonSaveQR = view.findViewById(R.id.button_save_qr);
 
         buttonSaveQR.setOnClickListener(new View.OnClickListener() {
@@ -103,11 +103,8 @@ public class QRDialogFragment extends DialogFragment {
                     outputStream.close();
 
                     MediaStore.Images.Media.insertImage(getContext().getContentResolver(),bitmap,"QR Code",null);
-
-                    Toast.makeText(getContext(), "QR Code saved successfully", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getContext(), "Failed to save QR Code", Toast.LENGTH_SHORT).show();
                 }
 
                 shareImage(bitmap);

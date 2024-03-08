@@ -1,6 +1,5 @@
 package com.example.eventsnapqr;
 
-//import org.junit.Rule;
 
 import static android.app.PendingIntent.getActivity;
 import static androidx.test.espresso.Espresso.closeSoftKeyboard;
@@ -39,7 +38,9 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ActivityScenario;
+
 import androidx.test.espresso.UiController;
+ 
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.CloseKeyboardAction;
 import androidx.test.espresso.action.ViewActions;
@@ -70,11 +71,10 @@ import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-//import org.junit.Rule;
-//@RunWith(AndroidJUnit4.class)
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class AdminTests {
+
     @Rule
     public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<MainActivity>(MainActivity.class);
 
@@ -91,6 +91,7 @@ public class AdminTests {
             public void onSuccess(QuerySnapshot querySnapshot) {
                 for (QueryDocumentSnapshot doc: querySnapshot) {
                     firebaseFirestore.collection("users").document(doc.getId()).delete();
+
                 }
             }
         });
@@ -101,6 +102,7 @@ public class AdminTests {
                 for (QueryDocumentSnapshot doc: querySnapshot) {
                     firebaseFirestore.collection("events").document(doc.getId()).delete();
                 }
+
             }
         });
         CountDownLatch latch = new CountDownLatch(1);
@@ -112,6 +114,7 @@ public class AdminTests {
         }
         /*
         FirebaseFirestore instance = FirebaseFirestore.getInstance();
+
         Context context = InstrumentationRegistry.getInstrumentation().getContext();
         ContentResolver contentResolver = context.getContentResolver();
         String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
@@ -182,6 +185,7 @@ public class AdminTests {
             }catch (Exception e){
                 e.printStackTrace();
             }
+
             //assertTrue(userExists[0]);
 
         // Enable animations after the test is finished
@@ -337,8 +341,8 @@ public class AdminTests {
                 "settings put global transition_animation_scale 1");
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global animator_duration_scale 1");
-
     }
+
     @Test
     public void deleteUserTest() {
         Context context = InstrumentationRegistry.getInstrumentation().getContext();
@@ -435,6 +439,7 @@ public class AdminTests {
         onView(withText("No")).check(matches(isDisplayed()));
         onView(withText("Yes")).perform(click());
         onView(withText(testUser.getName())).check(matches(not(isDisplayed())));
+
 
 
         // Enable animations after the test is finished

@@ -28,6 +28,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * fragment used to browse events as an administrator
+ */
 public class AdminBrowseEventsFragment extends Fragment {
     private ListView eventListView;
     private ArrayAdapter<String> eventAdapter;
@@ -37,7 +40,19 @@ public class AdminBrowseEventsFragment extends Fragment {
     private Button searchButton;
     private EditText searchBar;
     private ArrayList<String> viewList = new ArrayList<>();
-    //edit this one
+
+    /**
+     * Setup actions to be taken upon view creation and when the views are interacted with
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.  The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     * @return the final view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin_browse_events, container, false);
@@ -95,7 +110,7 @@ public class AdminBrowseEventsFragment extends Fragment {
     }
 
     public void gotoMyEventActivity() {
-        Intent intent = new Intent(getContext(), MyEventActivity.class);
+        Intent intent = new Intent(getContext(), MyEventsFragment.class);
         startActivity(intent);
     }
 
@@ -133,6 +148,9 @@ public class AdminBrowseEventsFragment extends Fragment {
     }
 
 
+    /**
+     * fetch all the events that are currently in the db to populate the listView
+     */
     private void loadEvents() {
         db.collection("events").get()
                 .addOnCompleteListener(task -> {
@@ -150,6 +168,10 @@ public class AdminBrowseEventsFragment extends Fragment {
                 });
     }
 
+    /**
+     * alert dialog used to confirm if the admin wants to delete the event
+     * @param event the event object that may be deleted
+     */
     private void showDeleteConfirmationDialog(Event event) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Confirm Deletion")

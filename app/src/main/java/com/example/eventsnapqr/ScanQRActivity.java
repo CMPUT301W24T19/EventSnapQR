@@ -31,6 +31,8 @@ import androidx.navigation.Navigation;
  * the following video was a major help and source for setting up
  * this functionality
  * https://www.youtube.com/watch?v=bWEt-_z7BOY&ab_channel=EasyOneCoders
+ * the view event details after scanning an event you have not signed up
+ * for is not currently linked to the event page. planned for project part 4
  */
 public class ScanQRActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CAMERA = 1;
@@ -76,22 +78,25 @@ public class ScanQRActivity extends AppCompatActivity {
      * @param eventId identifier of the given event
      */
     private void notSignedUpDialog(String eventId) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-        builder.setTitle("Not Signed-Up for Event")
-                .setPositiveButton("View Event Details", (dialog, which) -> {
-                    NavController navController = Navigation.findNavController(ScanQRActivity.this, R.id.nav_host_fragment);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("eventId", eventId);
-                    navController.navigate(R.id.eventDetailsFragment, bundle);
-                })
-                .setNegativeButton("Return", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        finish();
-                    }
-                })
-                .create()
-                .show();
+        if (!isFinishing()) { // Check if activity is finishing or destroyed
+            AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
+            builder.setTitle("Not Signed-Up for Event")
+                    .setPositiveButton("View Event Details", (dialog, which) -> {
+                        NavController navController = Navigation.findNavController(ScanQRActivity.this, R.id.nav_host_fragment);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventId", eventId);
+                        navController.navigate(R.id.eventDetailsFragment, bundle);
+                    })
+                    .setNegativeButton("Return", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            finish();
+                        }
+                    })
+                    .create()
+                    .show();
+        }
     }
+
 
     /**
      * display an alert dialog notifying the user they have successfully checked into the event
@@ -101,16 +106,35 @@ public class ScanQRActivity extends AppCompatActivity {
     private void checkIn(String eventID) {
         // increment number of times a user has checked into the event
         FirebaseController.getInstance().incrementCheckIn(userId, eventID);
-        AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-        builder.setMessage("You have successfully checked into " + eventID)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // Finish the activity
-                        finish();
-                    }
-                });
-        builder.create().show();
+
+        // Retrieve event details
+        FirebaseController.getInstance().getEvent(eventID, new FirebaseController.OnEventRetrievedListener() {
+            @Override
+            public void onEventRetrieved(Event event) {
+                if (event != null) {
+                    // Event retrieved successfully, show dialog with event details
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
+                    builder.setTitle("You have checked into " + event.getEventName())
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    finish();
+                                }
+                            });
+                    builder.create().show();
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
+                    builder.setMessage("Failed to retrieve event details.")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    finish();
+                                }
+                            });
+                    builder.create().show();
+                }
+            }
+        });
     }
+
 
     /**
      * handles what to do with the content of the QR code
@@ -129,25 +153,28 @@ public class ScanQRActivity extends AppCompatActivity {
         if (intentResult != null) {
             String contents = intentResult.getContents();
             if (contents != null) {
+                Log.d(TAG, "QR code content: " + contents); // Log the content of the QR code
                 String eventId = contents;
                 FirebaseController.getInstance().checkUserInAttendees(eventId, userId, new FirebaseController.OnUserInAttendeesListener() {
                     @Override
                     public void onUserInAttendees(boolean isInAttendees) {
                         if (isInAttendees) {
+                            Log.d(TAG, "User is in attendees"); // Log if the user is in attendees
                             checkIn(eventId); // if the user has signed up
                         } else {
+                            Log.d(TAG, "User is not in attendees"); // Log if the user is not in attendees
                             notSignedUpDialog(eventId); // if the user is not in the Attendees
                         }
                     }
+
                     @Override
                     public void onCheckFailed(Exception e) {
-                        Log.e(TAG, "User in Event attendees failed");
+                        Log.e(TAG, "User in Event attendees check failed: " + e.getMessage()); // Log if there's an error
                     }
                 });
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-        finish();
     }
 }
