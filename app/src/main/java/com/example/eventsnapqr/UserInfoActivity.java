@@ -99,7 +99,7 @@ public class UserInfoActivity extends AppCompatActivity {
                     }
                     else if (user.getProfilePicture() == null || user.getProfilePicture().isEmpty()) {
                         Log.d("TAG", "nopfp");
-                        Bitmap initialsImageBitmap = user.generateInitialsImage(userName.getText().toString());
+                        Bitmap initialsImageBitmap = user.generateInitialsImage(user.getName().toString());
                         profilePictureImage.setImageBitmap(initialsImageBitmap);
                     }
                     userName.setText(user.getName());
