@@ -16,9 +16,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import android.widget.ImageView;
+
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -26,7 +26,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * fragment for admin to browse all profiles currently in the database
@@ -36,7 +35,10 @@ public class AdminBrowseProfilesFragment extends Fragment {
     private RecyclerView recyclerView;
     private ProfileAdapter adapter;
     private ArrayList<User> profileList;
-    private FloatingActionButton buttonBackToAdminMain;
+    private ImageView buttonBackToAdminMain; // Changed to ImageView
+    private ArrayList<User> usersDataList;
+    private ProfileAdapter profileAdapter;
+    private FirebaseController firebaseController = new FirebaseController();
 
     public AdminBrowseProfilesFragment() {
         // Required empty public constructor
@@ -64,8 +66,6 @@ public class AdminBrowseProfilesFragment extends Fragment {
         profileList = new ArrayList<>();
         adapter = new ProfileAdapter(profileList);
     }
-
-
 
     private void showDeleteConfirmationDialog(final User user) {
         new AlertDialog.Builder(getContext())
@@ -135,7 +135,7 @@ public class AdminBrowseProfilesFragment extends Fragment {
             }
         });
 
-        buttonBackToAdminMain = view.findViewById(R.id.button_back_button);
+        buttonBackToAdminMain = view.findViewById(R.id.button_back_button); // Changed to ImageView
         buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -6,13 +6,11 @@
     android:orientation="vertical"
     android:weightSum="3">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <ImageView
         android:id="@+id/button_back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_gravity="start"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:clickable="true"
         app:srcCompat="@drawable/baseline_arrow_back_24" />
 
@@ -30,7 +28,6 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             tools:ignore="NestedWeights" />
-
     </LinearLayout>
 
     <TextView
@@ -40,7 +37,8 @@
         android:layout_weight="0.2"
         android:gravity="center"
         android:text="Admin Mode"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -75,5 +73,4 @@
             android:background="@color/white"
             android:text="Browse Events" />
     </LinearLayout>
-
 </LinearLayout>

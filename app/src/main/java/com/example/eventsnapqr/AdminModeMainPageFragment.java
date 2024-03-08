@@ -10,14 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import android.widget.ImageView;
 
 /**
- * main navigation page for admin privileges
+ * Main navigation page for admin privileges
  */
 public class AdminModeMainPageFragment extends Fragment {
-    private FloatingActionButton buttonBackToMain;
+    private ImageView buttonBackToMain;
     private Button browseEventsButton;
     private Button browseProfilesButton;
     private Button browseImagesButton;
@@ -81,7 +80,5 @@ public class AdminModeMainPageFragment extends Fragment {
             }
         });
         return view;
-
     }
 }
-

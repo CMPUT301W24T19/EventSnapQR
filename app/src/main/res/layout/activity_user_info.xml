@@ -12,16 +12,20 @@
         android:layout_height="45dp">
         <ImageView
             android:id="@+id/back_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/baseline_arrow_back_24"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:clickable="true"
+            android:src="?attr/actionModeCloseDrawable"
             android:padding="5dp"
-            android:clickable="true" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="User Information"/>
+            android:text="User Information"
+            android:textSize="20sp" />
     </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
