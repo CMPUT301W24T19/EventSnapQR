@@ -1,59 +1,104 @@
 package com.example.eventsnapqr;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.ContentResolver;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import com.google.firebase.firestore.EventListener;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
 public class MyEventActivity extends AppCompatActivity {
-
-    private ListView attendEventListView, organizeEventListView;
-    private ArrayList<Event> attendingList, organizedList;
     private FirebaseFirestore db;
+    private ArrayAdapter<String> organizeEventAdapter, attendEventAdapter;
+    private ArrayList<String> organizeEventNames, attendEventNames;
+    private ListView attendEventListView, organizeEventListView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_my_events);
+        setContentView(R.layout.fragment_my_events); // Ensure you have a corresponding layout
+
         attendEventListView = findViewById(R.id.attending_events_list);
         organizeEventListView = findViewById(R.id.organized_events_list);
-        attendingList = new ArrayList<>();
-        organizedList = new ArrayList<>();
+        String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        attendEventNames = new ArrayList<>();
+        organizeEventNames = new ArrayList<>();
+
+        attendEventAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, attendEventNames);
+        organizeEventAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, organizeEventNames);
 
 
-        EventArrayAdapter attendEventArrayAdapter = new EventArrayAdapter(getBaseContext(), attendingList);
-        EventArrayAdapter organizeEventArrayAdapter = new EventArrayAdapter(getBaseContext(), organizedList);
-        ContentResolver contentResolver = getBaseContext().getContentResolver();
-        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
-        organizeEventListView.setAdapter(organizeEventArrayAdapter);
-        attendEventListView.setAdapter(attendEventArrayAdapter);
+        attendEventListView.setAdapter(attendEventAdapter);
+        organizeEventListView.setAdapter(organizeEventAdapter);
 
-        FirebaseFirestore.getInstance().collection(androidId).document(androidId).collection("organizedEvents").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                for (QueryDocumentSnapshot doc: value) {
-                    
-                }
-            }
-        });
-        // goToMyEventsFragment();
+        db = FirebaseFirestore.getInstance();
 
+        // backButton functionality has to be adjusted for an activity
+        // Back button action here depends on how you want to navigate back
+
+        loadOrganizedEvents(androidId);
+        loadAttendingEvents(androidId);
     }
 
-  public void goToMyEventsFragment() {
-        //NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_2);
-       // navController.navigate(R.id.myEventsFragment);
+    private void loadOrganizedEvents(String userId) {
+        db.collection("users").document(userId).collection("organizedEvents")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        organizeEventNames.clear(); // Clear existing items
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String eventId = document.getId();
+                            db.collection("events").document(eventId).get()
+                                    .addOnSuccessListener(eventDocument -> {
+                                        String eventName = eventDocument.getString("eventName");
+                                        if (eventName != null) {
+                                            organizeEventNames.add(eventName);
+                                            organizeEventAdapter.notifyDataSetChanged();
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> Log.e("Error", "Error getting event details: ", e));
+                        }
+                    } else {
+                        Log.e("Error", "Error getting organized events: ", task.getException());
+                        Toast.makeText(MyEventActivity.this, "Error loading organized events", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
+    private void loadAttendingEvents(String userId) {
+        db.collection("users").document(userId).collection("promisedEvents")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        attendEventNames.clear(); // Clear existing items
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String eventId = document.getId();
+                            db.collection("events").document(eventId).get()
+                                    .addOnSuccessListener(eventDocument -> {
+                                        String eventName = eventDocument.getString("eventName");
+                                        if (eventName != null) {
+                                            attendEventNames.add(eventName);
+                                            attendEventAdapter.notifyDataSetChanged();
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> Log.e("Error", "Error getting event details: ", e));
+                        }
+                    } else {
+                        Log.e("Error", "Error getting attending events: ", task.getException());
+                        Toast.makeText(MyEventActivity.this, "Error loading attending events", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 }
