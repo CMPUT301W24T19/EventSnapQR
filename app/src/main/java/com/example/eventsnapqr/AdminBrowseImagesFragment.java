@@ -4,6 +4,11 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,18 +18,9 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.Firebase;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -33,7 +29,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class AdminBrowseImagesFragment extends Fragment {
@@ -138,6 +133,14 @@ public class AdminBrowseImagesFragment extends Fragment {
                             @Override
                             public void onEventRetrieved(Event event) {
                                 event.setPosterUri(null);
+
+                                FirebaseController.getInstance().deleteEvent(event, new FirebaseController.FirestoreOperationCallback() {
+                                    @Override
+                                    public void onCompleted() {
+                                        Log.d("Event deleted", "deleted");
+                                    }
+                                });;
+                              
                                 FirebaseController.getInstance().addEvent(event);
                             }
                         });
