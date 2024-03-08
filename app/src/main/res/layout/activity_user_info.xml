@@ -174,20 +174,29 @@
 
             <Switch
                 android:id="@+id/switch_geolocation"
-                android:layout_width="80dp"
+                android:layout_width="10dp"
                 android:layout_height="50dp"
-                android:layout_weight="1"
+                android:layout_weight="0.1"
+                android:paddingRight="5dp"
                 android:text="Geolocation" />
-            <View
-                android:layout_width="50dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/button_save_button"
+                android:layout_width="10dp"
+                android:layout_height="50dp"
+                android:layout_weight="0.1"
+                android:paddingHorizontal="20dp"
+                android:text="Save"
+                android:background="@color/white"/>
+
             <Switch
                 android:id="@+id/switch_notification"
-                android:layout_width="80dp"
+                android:layout_width="10dp"
                 android:layout_height="50dp"
-                android:layout_weight="1"
+                android:layout_weight="0.1"
+                android:paddingLeft="5dp"
                 android:text="Notification" />
+
         </LinearLayout>
 
     </LinearLayout>
