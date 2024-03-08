@@ -56,7 +56,7 @@ public class AuthenticationTest {
     }
     private Boolean userExists;
     /**
-     * US 02.06.01
+     * US 02.06.01 ****user must not have account for test to work****
      */
 
     @Test
@@ -101,20 +101,9 @@ public class AuthenticationTest {
 
         ActivityScenario.launch(MainActivity.class);
 
-        if(userExists[0]){
 
-            try {
-                Thread.sleep(2000); // Adjust timeout as needed
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        if(!userExists[0]){
 
-            onView(withId(R.id.admin_button)).perform(click());
-            onView(withId(R.id.buttonBrowseUserProfiles)).perform(click());
-            // handle this case later
-
-        }
-        else{
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
@@ -147,8 +136,9 @@ public class AuthenticationTest {
                 e.printStackTrace();
             }
             assertTrue(userExists[0]);
-        }
 
+        }
+        
 
 
         // Enable animations after the test is finished
