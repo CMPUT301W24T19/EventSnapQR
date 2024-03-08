@@ -31,6 +31,8 @@ import androidx.navigation.Navigation;
  * the following video was a major help and source for setting up
  * this functionality
  * https://www.youtube.com/watch?v=bWEt-_z7BOY&ab_channel=EasyOneCoders
+ * the view event details after scanning an event you have not signed up
+ * for is not currently linked to the event page. planned for project part 4
  */
 public class ScanQRActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CAMERA = 1;
