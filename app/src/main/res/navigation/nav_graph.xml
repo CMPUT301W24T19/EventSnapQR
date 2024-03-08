@@ -145,16 +145,9 @@
             android:id="@+id/action_eventDetailsFragment_to_mainPageFragment"
             app:destination="@id/mainPageFragment" />
     </fragment>
-<<<<<<< HEAD
-
 
     <fragment
         android:id="@+id/myEventActivity2"
-=======
-    <activity
-        android:id="@+id/myEventActivity"
->>>>>>> 05b3495e621175a5ddaec75963cc6b1f4c7052a9
-        android:name="com.example.eventsnapqr.MyEventActivity"
         android:label="MyEventActivity">
     <action
         android:id="@+id/action_myEventActivity_to_BrowseEventFragment"
