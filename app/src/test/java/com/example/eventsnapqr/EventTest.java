@@ -53,7 +53,7 @@ public class EventTest {
     public void setPosterUri(String posterUri){
         Event event = mockEvent();
         String old = event.getPosterURI();
-        event.setPosterURIg("wwww.badevent.com");
+        event.setPosterURI("wwww.badevent.com");
         assertFalse(event.getPosterURI().equals(old));
     }
     @Test
