@@ -7,22 +7,23 @@
     android:layout_height="match_parent"
     android:layout_gravity="center">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <ImageView
         android:id="@+id/button_back_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:clickable="true"
+        android:src="?attr/actionModeCloseDrawable"
+        android:padding="5dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="?attr/actionModeCloseDrawable" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/page_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Event Details"
         android:layout_gravity="center"
-        />
+        android:text="Event Details"
+        android:textSize="20sp" />
 
     <ImageView
         android:layout_gravity="center"
