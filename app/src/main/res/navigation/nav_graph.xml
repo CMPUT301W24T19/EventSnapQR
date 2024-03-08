@@ -92,6 +92,17 @@
             android:id="@+id/action_YourEventFragment_to_MapFragment"
             app:destination="@id/MapFragment"
             />
+        <action
+            android:id="@+id/action_YourEventFragment_to_RealTimeAttendanceFragment"
+            app:destination="@id/RealTimeAttendanceFragment"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/RealTimeAttendanceFragment"
+        android:name="com.example.eventsnapqr.RealTimeAttendanceFragment"
+        android:label="Real-Time Attendance"
+        tools:layout="@layout/fragment_real_time_attendance">
+
     </fragment>
     <fragment
         android:id="@+id/adminModeMainPageFragment"

@@ -74,7 +74,9 @@ public class YourEventFragment extends Fragment {
         view.findViewById(R.id.real_time_attendance_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToRealTimeAttendanceFragment();
+
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                navController.navigate(R.id.action_YourEventFragment_to_RealTimeAttendanceFragment);
             }
         });
 
