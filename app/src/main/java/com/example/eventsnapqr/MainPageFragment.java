@@ -77,7 +77,6 @@ public class MainPageFragment extends Fragment {
     }
 
     private void auth(){
-        Log.d("TAG", "authing");
         ContentResolver contentResolver = getContext().getContentResolver();
         androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
         FirebaseController.Authenticator listener = new FirebaseController.Authenticator() {

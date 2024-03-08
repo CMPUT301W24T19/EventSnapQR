@@ -112,7 +112,8 @@ public class AdminBrowseEventFragment extends Fragment implements FirebaseContro
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // User clicked Yes, delete the event
-                        firebaseController.deleteEvent(event);
+                        Runnable completionCallback = null;
+                        firebaseController.deleteEvent(event, (FirebaseController.FirestoreOperationCallback) completionCallback);
                         eventsDataList.remove(position);
                         eventAdapter.notifyDataSetChanged();
                     }

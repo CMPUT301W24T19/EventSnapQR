@@ -22,11 +22,17 @@
         tools:context=".QRDialogFragment"
         android:orientation="horizontal"
         android:layout_weight="0.3">
+        <Space
+            android:layout_width="56dp"
+            android:layout_height="wrap_content" />
         <Button
             android:id="@+id/button_save_qr"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:text="Save QRCode"/>
+            android:text="Share QRCode"/>
+        <Space
+            android:layout_width="26dp"
+            android:layout_height="wrap_content" />
         <Button
             android:id="@+id/button_exit"
             android:layout_height="wrap_content"
