@@ -16,6 +16,26 @@ public class EventTest {
         return event;
     }
     @Test
+    public void testEventConstructor() {
+        User organizer = new User("organizerId", "Organizer Name");
+        String eventName = "Test Event";
+        String description = "Test Event Description";
+        String posterUri = "https://example.com/poster.jpg";
+        Integer maxAttendees = 100;
+        String eventID = "eventId";
+        String announcement = "Test Announcement";
+
+        Event event = new Event(organizer, eventName, description, posterUri, maxAttendees, eventID, announcement);
+
+        assertEquals(organizer, event.getOrganizer());
+        assertEquals(eventName, event.getEventName());
+        assertEquals(description, event.getDescription());
+        assertEquals(posterUri, event.getPosterUri());
+        assertEquals(maxAttendees, event.getMaxAttendees());
+        assertEquals(eventID, event.getEventID());
+        assertEquals(announcement, event.getAnnouncement());
+    }
+    @Test
     public void setAnnouncement() {
         Event event = mockEvent();
         String oldAnnouncement = event.getAnnouncement();
