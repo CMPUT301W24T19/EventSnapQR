@@ -38,6 +38,7 @@ public class MainPageFragment extends Fragment {
     private Button buttonBrowseEvent;
     private Button buttonScanQR;
     private ImageView buttonViewProfile;
+    private String androidId; //needed for scanId
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -74,9 +75,11 @@ public class MainPageFragment extends Fragment {
         }
 
     }
+
     private void auth(){
+        Log.d("TAG", "authing");
         ContentResolver contentResolver = getContext().getContentResolver();
-        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+        androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
         FirebaseController.Authenticator listener = new FirebaseController.Authenticator() {
             @Override
             public void onUserExistenceChecked(boolean exists) {
@@ -84,7 +87,7 @@ public class MainPageFragment extends Fragment {
             }
             @Override
             public void onAdminExistenceChecked(boolean exists) {
-                if(exists){
+                if(exists && !buttonAdminMainPage.isShown()){
                     buttonAdminMainPage.setVisibility(View.VISIBLE);
                 }else{
                     buttonAdminMainPage.setVisibility(View.GONE);
@@ -98,8 +101,9 @@ public class MainPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_page, container, false);
-        auth();
         buttonAdminMainPage = view.findViewById(R.id.admin_button);
+        buttonAdminMainPage.setVisibility(View.INVISIBLE);
+        auth();
         buttonOrganizeEvent = view.findViewById(R.id.organize_event_button);
         buttonBrowseEvent = view.findViewById(R.id.browse_events_button);
         buttonScanQR = view.findViewById(R.id.scan_qr_button);
@@ -129,6 +133,7 @@ public class MainPageFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), ScanQRActivity.class);
+                intent.putExtra("androidId", androidId);
                 startActivity(intent);
             }
         });

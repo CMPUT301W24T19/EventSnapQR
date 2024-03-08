@@ -13,10 +13,13 @@ import com.google.zxing.integration.android.IntentResult;
 
 import android.Manifest;
 import androidx.core.app.ActivityCompat;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 public class ScanQRActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CAMERA = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +51,11 @@ public class ScanQRActivity extends AppCompatActivity {
         if (intentResult != null) {
             String contents = intentResult.getContents();
             if (contents != null) {
-
+                String eventId = contents;
+                NavController navController = Navigation.findNavController(ScanQRActivity.this, R.id.nav_host_fragment);
+                Bundle bundle = new Bundle();
+                bundle.putString("eventId", eventId);
+                navController.navigate(R.id.eventDetailFragment, bundle);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);

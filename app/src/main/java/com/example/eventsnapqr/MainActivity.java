@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onUserExistenceChecked(boolean exists) {
                 if (exists) {
-                    goToMainPage();
+                    //goToMainPage();
                 }
                 else {
                     signUp();
@@ -69,11 +69,10 @@ public class MainActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putString("userId", androidId);
         navController.navigate(R.id.signUpFragment, bundle);
-    }
+    }/*
     public void goToMainPage(){
+        Log.d("TAG", "Calling MainPageFragment");
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         navController.navigate(R.id.mainPageFragment);
-    }
-
-
+    }*/
 }
