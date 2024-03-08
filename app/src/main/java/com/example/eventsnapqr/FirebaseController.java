@@ -236,6 +236,9 @@ public class FirebaseController {
                         attendees.add(androidId);
                     }
                     callback.onAttendeesLoaded(attendees); // Pass the attendees list to the callback
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure
                 });
     }
 
