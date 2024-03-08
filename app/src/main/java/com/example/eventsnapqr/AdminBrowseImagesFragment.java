@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,17 +33,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * fragment for an admin to browse and delete all images in the database
+ * Fragment for an admin to browse and delete all images in the database
  */
 public class AdminBrowseImagesFragment extends Fragment {
     private RecyclerView recyclerView;
-    private FloatingActionButton buttonBackToAdminMain;
+    private ImageView buttonBackToAdminMain;
     private List<Event> posters;
 
     /**
      * What should be executed when the fragment is created
+     *
      * @param savedInstanceState If the fragment is being re-created from
-     * a previous saved state, this is the state.
+     *                           a previous saved state, this is the state.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,14 +53,14 @@ public class AdminBrowseImagesFragment extends Fragment {
 
     /**
      * Setup actions to be taken upon view creation and when the views are interacted with
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
      *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.  The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
      * @return the final view
      */
     @Override
@@ -77,7 +79,7 @@ public class AdminBrowseImagesFragment extends Fragment {
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 //Log.d("TAG", "New snapshot");
                 posters.clear();
-                for (QueryDocumentSnapshot doc: value) {
+                for (QueryDocumentSnapshot doc : value) {
                     String eventID = (String) doc.getId();
                     String eventName = (String) doc.getData().get("eventName");
                     String posterUri = (String) doc.getData().get("posterURI");
@@ -118,7 +120,8 @@ public class AdminBrowseImagesFragment extends Fragment {
     }
 
     /**
-     * show an alert dialog confirming that the user wants to delete an event
+     * Show an alert dialog confirming that the user wants to delete an event
+     *
      * @param event the event to be deleted
      */
     private void showDeleteConfirmationDialog(Event event) {
@@ -147,8 +150,7 @@ public class AdminBrowseImagesFragment extends Fragment {
                                 FirebaseController.getInstance().addEvent(event);
                             }
                         });
-                    }
-                    else {
+                    } else {
                         Toast.makeText(requireContext(), "Event does not have a poster", Toast.LENGTH_SHORT).show();
                     }
 

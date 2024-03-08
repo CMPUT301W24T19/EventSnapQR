@@ -12,9 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,7 @@ public class AdminBrowseProfilesFragment extends Fragment {
     private ListView listView;
     private ProfileAdapter adapter;
     private ArrayList<User> profileList;
-    private FloatingActionButton buttonBackToAdminMain;
+    private ImageView buttonBackToAdminMain; // Changed to ImageView
     private ArrayList<User> usersDataList;
     private ProfileAdapter profileAdapter;
     private FirebaseController firebaseController = new FirebaseController();
@@ -58,8 +57,6 @@ public class AdminBrowseProfilesFragment extends Fragment {
         profileList = new ArrayList<>();
         adapter = new ProfileAdapter(requireContext(),profileList);
     }
-
-
 
     private void showDeleteConfirmationDialog(final User user) {
         new AlertDialog.Builder(getContext())
@@ -105,7 +102,7 @@ public class AdminBrowseProfilesFragment extends Fragment {
         };
         firebaseController.getAllUsers(listener);
 
-        buttonBackToAdminMain = view.findViewById(R.id.button_back_button);
+        buttonBackToAdminMain = view.findViewById(R.id.button_back_button); // Changed to ImageView
         buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

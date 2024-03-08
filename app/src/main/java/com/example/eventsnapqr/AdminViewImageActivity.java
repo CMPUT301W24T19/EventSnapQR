@@ -7,13 +7,12 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
  * activity to view an image in full when in admin mode
  */
 public class AdminViewImageActivity extends AppCompatActivity {
-    private FloatingActionButton backButton;
+    private ImageView backButton; // Changed to ImageView
     private ImageView eventPoster;
 
     /**
@@ -25,7 +24,7 @@ public class AdminViewImageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_poster);
-        backButton = findViewById(R.id.button_back_button);
+        backButton = findViewById(R.id.button_back_button); // Changed to ImageView
         eventPoster = findViewById(R.id.event_poster);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
