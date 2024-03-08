@@ -70,6 +70,17 @@
         <action
             android:id="@+id/action_browseEventFragment_to_eventDetailFragment"
             app:destination="@id/eventDetailFragment" />
+        <action
+            android:id="@+id/action_browseEventFragment_to_myEventFragment"
+            app:destination="@id/myEventFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/yourEventFragment"
+        android:name="com.example.eventsnapqr.YourEventFragment"
+        android:label="Your Event"
+        tools:layout="@layout/fragment_your_event">
+
     </fragment>
     <fragment
         android:id="@+id/adminModeMainPageFragment"
@@ -147,14 +158,24 @@
     </fragment>
 
     <fragment
-        android:id="@+id/myEventActivity2"
-        android:label="MyEventActivity">
-    <action
-        android:id="@+id/action_myEventActivity_to_BrowseEventFragment"
-        app:destination="@id/browseEventFragment" />
+        android:id="@+id/myEventFragment"
+        android:name="com.example.eventsnapqr.MyEventsFragment"
+        android:label="My Events"
+        tools:layout="@layout/fragment_my_events">
+        <action
+            android:id="@+id/action_myEventsFragment_to_BrowseEventFragment"
+            app:destination="@id/browseEventFragment" />
+        <action
+            android:id="@+id/action_myEventsFragment_to_eventDetailFragment"
+            app:destination="@id/eventDetailFragment" />
+        <action
+            android:id="@+id/action_myEventsFragment_to_yourEventFragment"
+            app:destination="@id/yourEventFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/eventDetailFragment"
         android:name="com.example.eventsnapqr.EventDetailFragment"
-        android:label="EventDetailFragment" />
+        android:label="Event Details"
+        tools:layout="@layout/fragment_event_details" />
 </navigation>
