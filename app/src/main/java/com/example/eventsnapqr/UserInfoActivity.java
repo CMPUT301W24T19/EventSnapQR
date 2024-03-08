@@ -84,12 +84,16 @@ public class UserInfoActivity extends AppCompatActivity {
             @Override
             public void onUserRetrieved(User user) {
                 if (user != null) {
-                    if (user.getProfilePicture() != null) {
+                    if (user.getProfilePicture() != null && !user.getProfilePicture().isEmpty()) {
                         Glide.with(getBaseContext())
                                 .load(Uri.parse(user.getProfilePicture()))
-                                .dontAnimate()
                                 .into(profilePictureImage);
+                    }else {
+                        // Handle case where there is no profile picture
+                        // For example, set a default drawable
+                        profilePictureImage.setImageResource(R.drawable.profile_pic);
                     }
+
                     userName.setText(user.getName());
                     email.setText(user.getEmail());
                     phoneNumber.setText(user.getPhoneNumber());
