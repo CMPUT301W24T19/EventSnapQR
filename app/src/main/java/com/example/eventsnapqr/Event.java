@@ -1,5 +1,7 @@
 package com.example.eventsnapqr;
 
+import java.time.LocalDateTime;
+
 /**
  * represents an event with a name, organizer, description, poster, maxAttendees (optional), and
  * a announcements string.
@@ -13,6 +15,7 @@ public class Event {
     private Integer maxAttendees; // optional max attendees
     private String announcement; //announcements related to the Event
     private String eventID; // unique id
+    private LocalDateTime eventDate;
 
     /**
      * constructor for event requiring a user instance, QR code, event name, a description, a URL

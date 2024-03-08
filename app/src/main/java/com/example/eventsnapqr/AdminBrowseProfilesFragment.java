@@ -112,6 +112,7 @@ public class AdminBrowseProfilesFragment extends Fragment {
                 adapter.notifyDataSetChanged();
             }
         });
+
         adapter.setOnClickListener(new ProfileAdapter.OnClickListener() {
             @Override
             public void onClick(int position, User user) {
