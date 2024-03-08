@@ -74,8 +74,7 @@ public class AdminBrowseProfilesFragment extends Fragment {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // User clicked "Yes", so delete the user
-                        firebaseController.deleteUser(user);
+                        FirebaseController.deleteUser(user);
                     }
                 })
                 .setNegativeButton("No", null) // Nothing happens on click.
