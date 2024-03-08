@@ -154,7 +154,6 @@ public class AdminBrowseImagesFragment extends Fragment {
                             @Override
                             public void onEventRetrieved(Event event) {
                                 event.setPosterUri(null);
-                                FirebaseController.getInstance().deleteEvent(event);;
                                 FirebaseController.getInstance().addEvent(event);
                             }
                         });
