@@ -18,13 +18,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(AndroidJUnit4.class)
-@LargeTest
-
 /**
  *  US 02.08.01 As an attendee, I want to browse event posters/event details of other events.
  *  US 02.04.01 As an attendee, I want to view event details and announcements within the app.
  */
+@RunWith(AndroidJUnit4.class)
+@LargeTest
 
 public class BrowseEventsTest {
     @Rule

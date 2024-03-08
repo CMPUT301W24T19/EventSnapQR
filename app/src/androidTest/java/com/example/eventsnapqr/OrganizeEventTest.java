@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+/**
+ *  Test class for testing organize events
+ */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class OrganizeEventTest {
@@ -112,7 +115,7 @@ public class OrganizeEventTest {
                     "settings put global animator_duration_scale 1");
         }
     }
-    
+
     /**
      * Test to test that an event is successfully created
      * US 01.01.01

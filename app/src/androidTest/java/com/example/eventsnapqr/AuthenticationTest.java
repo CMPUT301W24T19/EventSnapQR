@@ -43,7 +43,9 @@ import org.junit.runners.JUnit4;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
+/**
+ *  Test class for testing Authentication and identity
+ */
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class AuthenticationTest {

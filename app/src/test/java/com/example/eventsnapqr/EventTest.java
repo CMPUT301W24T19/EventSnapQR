@@ -7,7 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+/**
+ *  Test class for testing Events
+ */
 public class EventTest {
 
     private Event mockEvent() {

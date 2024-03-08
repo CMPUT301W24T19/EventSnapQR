@@ -3,7 +3,9 @@ package com.example.eventsnapqr;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
-
+/**
+ *  Test class for testing User
+ */
 public class UserTest {
     private User user;
 

@@ -72,7 +72,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
+/**
+ *  Test class for testing Admin
+ */
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class AdminTests {
