@@ -79,7 +79,8 @@ public class BrowseEventFragment extends Fragment {
         view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requireActivity().onBackPressed();
+                Intent intent = new Intent(requireContext(), MainActivity.class);
+                startActivity(intent);
             }
         });
 

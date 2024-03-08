@@ -21,6 +21,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * fragment to show which events a user is associated with
+ */
 public class MyEventsFragment extends Fragment {
     private FirebaseFirestore db;
     private ArrayAdapter<String> organizeEventAdapter, attendEventAdapter;
@@ -30,6 +33,18 @@ public class MyEventsFragment extends Fragment {
     private List<String> attendEventId;
     private List<String> organizeEventId;
 
+    /**
+     * Setup actions to be taken upon view creation and when the views are interacted with
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.  The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     * @return the final view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -68,6 +83,10 @@ public class MyEventsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * populate each of the list views
+     * @param view
+     */
     private void setListViewListeners(View view) {
         attendEventListView.setOnItemClickListener((parent, view1, position, id) -> {
             String eventId = attendEventId.get(position);
@@ -86,6 +105,10 @@ public class MyEventsFragment extends Fragment {
         });
     }
 
+    /**
+     * fetch all the events that the given user is organizing
+     * @param userId
+     */
     private void loadOrganizedEvents(String userId) {
         db.collection("users").document(userId).collection("organizedEvents")
                 .get()
@@ -114,6 +137,10 @@ public class MyEventsFragment extends Fragment {
                 });
     }
 
+    /**
+     * fetch all the events that the given user is attending
+     * @param userId
+     */
     private void loadAttendingEvents(String userId) {
         db.collection("users").document(userId).collection("promisedEvents")
                 .get()
