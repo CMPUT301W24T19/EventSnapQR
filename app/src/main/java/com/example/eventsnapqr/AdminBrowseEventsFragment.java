@@ -21,12 +21,16 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 //import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -51,6 +55,13 @@ public class AdminBrowseEventsFragment extends Fragment {
         searchBar = view.findViewById(R.id.search_bar);
         eventIds = new ArrayList<>();
         searchButton = view.findViewById(R.id.button_search);
+
+        FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                loadEvents();
+            }
+        });
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

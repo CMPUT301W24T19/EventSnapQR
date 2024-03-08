@@ -170,7 +170,6 @@ public class OrganizeEventFragment extends Fragment {
                     QRGEncoder qrgEncoder = new QRGEncoder(link, null, QRGContents.Type.TEXT, 5);
                     qrgEncoder.setColorBlack(Color.RED);
                     qrgEncoder.setColorWhite(Color.BLUE);
-                    Log.d("TAG", "1");
                     try {
                         qrBitmap = qrgEncoder.getBitmap();
                         Bundle bundle = new Bundle();
