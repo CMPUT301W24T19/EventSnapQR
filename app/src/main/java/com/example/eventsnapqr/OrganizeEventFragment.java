@@ -23,6 +23,9 @@ import androidx.navigation.Navigation;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.ArrayList;
 
@@ -30,21 +33,13 @@ import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 
 public class OrganizeEventFragment extends Fragment {
-
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
     private ImageView backButton;
     private Button addEventButton;
     private EditText editTextEventName;
     private EditText editTextEventDesc;
     private EditText editTextMaxAttendees;
-    private Bitmap qrBitmap;
     private ImageView uploadPosterButton;
     private EditText editAnnouncements;
-
-    private String param1;
-    private String param2;
     private String androidID;
     private FirebaseController firebaseController = new FirebaseController();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
@@ -52,16 +47,12 @@ public class OrganizeEventFragment extends Fragment {
     private String uriString;
 
     public OrganizeEventFragment() {
-        // Required empty public constructor
+
     }
 
 
     public static OrganizeEventFragment newInstance(String param1, String param2) {
         OrganizeEventFragment fragment = new OrganizeEventFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -69,8 +60,9 @@ public class OrganizeEventFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_organize_event, container, false);
+
         androidID = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        Log.d("Device ID", "Android ID: " + androidID);
+
         backButton = view.findViewById(R.id.button_back_button);
         addEventButton = view.findViewById(R.id.button_create);
         editTextEventName = view.findViewById(R.id.editTextEventName);
@@ -117,12 +109,12 @@ public class OrganizeEventFragment extends Fragment {
             editTextEventName.setError("Event name cannot be empty");
             return false;
         }
-/*
+
         if (eventName.length() > 50) {
             editTextEventName.setError("Event name cannot exceed 50 characters");
             return false;
         }
-*/
+
         if (eventDesc.isEmpty()) {
             editTextEventDesc.setError("Event description cannot be empty");
             return false;
@@ -143,43 +135,39 @@ public class OrganizeEventFragment extends Fragment {
         Integer eventMaxAttendees = !maxAttendeesInput.isEmpty() ? Integer.valueOf(maxAttendeesInput) : null;
         String announcement = editAnnouncements.getText().toString();
 
-
         // retrieve user from the database based on the androidID, create a new user and event object
         FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
             @Override
             public void onUserRetrieved(User user) {
-
                 if (user != null) {
-                    // User retrieved successfully, proceed with event creation
                     String eventID = FirebaseController.getInstance().getUniqueEventID();
-                    String link = generateLink(eventID, user.getDeviceID());
-                    Log.d("QR link generated", "QR link: " + link);
-                    QRGEncoder qrgEncoder = new QRGEncoder(link, null, QRGContents.Type.TEXT, 5);
-                    qrgEncoder.setColorBlack(Color.RED);
-                    qrgEncoder.setColorWhite(Color.BLUE);
+                    BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+
                     try {
-                        qrBitmap = qrgEncoder.getBitmap();
+                        Bitmap qrBitmap = barcodeEncoder.encodeBitmap(eventID, BarcodeFormat.QR_CODE, 400, 400);
+                        if (qrBitmap != null) {
+                            Log.d("QR_CODE", "QR Code generated successfully");
+                        } else {
+                            Log.e("QR_CODE", "Failed to generate QR Code: Bitmap is null");
+                        }
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("bitmap", qrBitmap);
-                        QR qrCode = new QR(qrBitmap, link);
+                        QR qrCode = new QR(qrBitmap, eventID);
                         if (imageUri != null) {
                             StorageReference userRef = storageRef.child("eventPosters/" + eventID);  // specifies the path on the cloud storage
                             userRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
                                 userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                     imageUri = uri;
                                     uriString = imageUri.toString();
-                                    // Use the retrieved user to create the event
                                     Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
                                     Log.d("USER NAME", newEvent.getOrganizer().getName());
                                     firebaseController.addEvent(newEvent);
                                     NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                                     navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                                 });
-                            });  // puts the file into the referenced path
-                        }
-                        else {
+                            });
+                        } else {
                             uriString = null;
-                            // Use the retrieved user to create the event
                             Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
                             Log.d("USER NAME", newEvent.getOrganizer().getName());
                             firebaseController.addEvent(newEvent);
@@ -187,52 +175,13 @@ public class OrganizeEventFragment extends Fragment {
                             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                             navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                         }
-                        // Use the retrieved user to create the event
-                        /*if(newEvent != null){
-                            firebaseController = FirebaseController.getInstance();
-                            //ArrayList<Event> allEvents;
-                            firebaseController.getEvents(new FirebaseController.OnEventsLoadedListener(){
-                                @Override
-                                public void onEventsLoaded(ArrayList<Event> events) {
-                                    allEvents = new ArrayList<>();
-                                    allEvents.addAll(events);
-                                    if (!checkEventExists(newEvent, allEvents)) {
-                                        firebaseController.addEvent(newEvent);
-                                        firebaseController.addOrganizedEvent(user, newEvent);
-                                        Log.d("TAG", "Event ID " + newEvent.getEventID());
-                                        Toast.makeText(requireContext(), "Successfully added event", Toast.LENGTH_LONG).show();
-                                    }
-                                    else{
-                                        Toast.makeText(requireContext(), "Error: Event already exists", Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                            });
-
-
-                        }*/
-
-                    } catch (Exception e) {
-                        Log.v("ORGANIZE EVENT ERROR", e.toString());
+                    } catch (WriterException e) {
+                        e.printStackTrace();
+                        Log.e("QR_CODE", "Failed to generate QR Code: " + e.getMessage());
                     }
-                } else {
-                    // Handle case where user is not found
-                    Log.d("User not found", "User with ID " + androidID + " not found");
                 }
             }
         });
-    }
-    boolean checkEventExists(Event event, ArrayList<Event> events){
-        for(Event e : events){
-            if(e.getQrCode().getLink().equals(event.getQrCode().getLink())){
-                return true;
-            }
-        }
-        return false;
-    }
-    public String generateLink(String eventName, String organizerId) {
-        // eventsnapqr://com.example.eventsnapqr/join/event <-- link prefix
-        String prefix = "eventsnapqr://com.example.eventsnapqr/join/event";
-        return prefix + "/" + organizerId + "/" + eventName;
     }
 
 }

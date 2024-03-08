@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -492,4 +493,57 @@ public class FirebaseController {
                     }
                 });
     }
+
+    /**
+     * check if the user is in the attendees list of a specific event.
+     *
+     * @param eventId   The ID of the event to check.
+     * @param userId    The ID of the user to check.
+     * @param listener  Listener to handle the result of the check.
+     */
+    public void checkUserInAttendees(String eventId, String userId, OnUserInAttendeesListener listener) {
+        DocumentReference eventRef = db.collection("events").document(eventId);
+        eventRef.collection("attendees").document(userId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            listener.onUserInAttendees(true);
+                        } else {
+                            listener.onUserInAttendees(false);
+                        }
+                    } else {
+                        listener.onCheckFailed(task.getException());
+                    }
+                });
+    }
+
+    /**
+     * interface to handle the result of checking if a user is in the attendees list.
+     */
+    public interface OnUserInAttendeesListener {
+        void onUserInAttendees(boolean isInAttendees);
+        void onCheckFailed(Exception e);
+    }
+
+    public void incrementCheckIn(String userId, String eventId) {
+        DocumentReference eventRef = db.collection("events").document(eventId)
+                .collection("attendees").document(userId);
+
+        eventRef.update("checkedIn", FieldValue.increment(1))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Increment Check-In",
+                                "Successfully incremented check-in count for user " + userId + " in event " + eventId);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("Increment Check-In", "Failed to increment check-in count: " + e.getMessage());
+                    }
+                });
+    }
+
 }

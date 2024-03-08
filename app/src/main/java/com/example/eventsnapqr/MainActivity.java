@@ -20,26 +20,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         FirebaseController.checkUserExists(androidId, listener);
     }
-    void checkIn(){
-        Intent intent = getIntent();
-        if (intent != null && Intent.ACTION_VIEW.equals(intent.getAction())) {
-            String eventLink = intent.getData().toString();
-            Log.d("event link", "link: " + eventLink);
-            if (eventLink != null) {
-                FirebaseController controller = FirebaseController.getInstance();
-                FirebaseController.OnUserRetrievedListener listener = new FirebaseController.OnUserRetrievedListener() {
-                    @Override
-                    public void onUserRetrieved(User user) {
 
-                    }
-                };
-                controller.getUser(androidId, listener); // eventLink uniquely identifies each event document in database
-            } else {
-                // Do nothing
-            }
-        }
-
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,17 +43,11 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         FirebaseController.checkUserExists(androidId, listener);
-        checkIn();
     }
     public void signUp(){
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         Bundle bundle = new Bundle();
         bundle.putString("userId", androidId);
         navController.navigate(R.id.signUpFragment, bundle);
-    }/*
-    public void goToMainPage(){
-        Log.d("TAG", "Calling MainPageFragment");
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        navController.navigate(R.id.mainPageFragment);
-    }*/
+    }
 }
