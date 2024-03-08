@@ -35,31 +35,16 @@ public class AdminBrowseProfilesFragment extends Fragment {
     private RecyclerView recyclerView;
     private ProfileAdapter adapter;
     private ArrayList<User> profileList;
-    private ImageView buttonBackToAdminMain; // Changed to ImageView
-    private ArrayList<User> usersDataList;
-    private ProfileAdapter profileAdapter;
-    private FirebaseController firebaseController = new FirebaseController();
-
+    private ImageView buttonBackToAdminMain;
     public AdminBrowseProfilesFragment() {
         // Required empty public constructor
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AdminBrowseProfilesFragment.
+     * What should be executed when the fragment is created
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
      */
-    // TODO: Rename and change types and number of parameters
-    public static AdminBrowseProfilesFragment newInstance(String param1, String param2) {
-        AdminBrowseProfilesFragment fragment = new AdminBrowseProfilesFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +52,10 @@ public class AdminBrowseProfilesFragment extends Fragment {
         adapter = new ProfileAdapter(profileList);
     }
 
+    /**
+     * alert dialog to confirm if the admin wants to delete the given user
+     * @param user user object that may be deleted
+     */
     private void showDeleteConfirmationDialog(final User user) {
         new AlertDialog.Builder(getContext())
                 .setTitle("Delete User")
@@ -83,6 +72,18 @@ public class AdminBrowseProfilesFragment extends Fragment {
                 .show();
     }
 
+    /**
+     * Setup actions to be taken upon view creation and when the views are interacted with
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.  The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     * @return the final view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

@@ -103,11 +103,8 @@ public class QRDialogFragment extends DialogFragment {
                     outputStream.close();
 
                     MediaStore.Images.Media.insertImage(getContext().getContentResolver(),bitmap,"QR Code",null);
-
-                    Toast.makeText(getContext(), "QR Code saved successfully", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getContext(), "Failed to save QR Code", Toast.LENGTH_SHORT).show();
                 }
 
                 shareImage(bitmap);
