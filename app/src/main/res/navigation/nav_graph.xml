@@ -68,9 +68,6 @@
             android:id="@+id/action_browseEventFragment_to_mainPageFragment"
             app:destination="@id/mainPageFragment" />
         <action
-            android:id="@+id/action_browseEventFragment_to_myEventActivity2"
-            app:destination="@id/myEventActivity2" />
-        <action
             android:id="@+id/action_browseEventFragment_to_eventDetailFragment"
             app:destination="@id/eventDetailFragment" />
     </fragment>
@@ -139,7 +136,6 @@
             android:id="@+id/action_adminBrowseEventsFragment_to_AdminModeMainPageFragment"
             app:destination="@id/adminModeMainPageFragment" />
     </fragment>
-
     <fragment
         android:id="@+id/eventDetailsFragment"
         android:name="com.example.eventsnapqr.EventDetailFragment"
@@ -149,10 +145,8 @@
             android:id="@+id/action_eventDetailsFragment_to_mainPageFragment"
             app:destination="@id/mainPageFragment" />
     </fragment>
-
-
     <activity
-        android:id="@+id/myEventActivity2"
+        android:id="@+id/myEventActivity"
         android:name="com.example.eventsnapqr.MyEventActivity"
         android:label="MyEventActivity" />
     <fragment
