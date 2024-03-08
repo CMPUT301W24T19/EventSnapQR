@@ -83,6 +83,7 @@ public class AdminBrowseImagesFragment extends Fragment {
                     String eventID = (String) doc.getId();
                     String eventName = (String) doc.getData().get("eventName");
                     String posterUri = (String) doc.getData().get("posterURI");
+                    if (posterUri == null) {continue;}
                     Event event = new Event(null, eventName, null, posterUri, null, eventID, null);
                     posters.add(event);
                 }

@@ -17,6 +17,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
+
 public class MyEventActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private ArrayAdapter<String> organizeEventAdapter, attendEventAdapter;

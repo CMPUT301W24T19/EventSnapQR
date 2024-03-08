@@ -137,6 +137,10 @@ public class MainPageFragment extends Fragment {
         });
         return view;
     }
+
+    /**
+     * populate the imageView in the top right corner
+     */
     private void updateProfilePicture() {
         FirebaseController.getInstance().getUser(androidId, new FirebaseController.OnUserRetrievedListener() {
             @Override

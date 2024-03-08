@@ -59,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
         };
         FirebaseController.checkUserExists(androidId, listener);
     }
+
+    /**
+     * navigate to the the sign up fragment
+     */
     public void signUp(){
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         Bundle bundle = new Bundle();

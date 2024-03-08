@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="Browse Profiles"
+        android:text="Admin Browse Profiles"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="20sp"
 

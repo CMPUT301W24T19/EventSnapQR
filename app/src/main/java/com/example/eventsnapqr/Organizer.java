@@ -2,6 +2,9 @@ package com.example.eventsnapqr;
 
 import java.util.List;
 
+/**
+ * interface for user to implement the abilities of an organizer
+ */
 public interface Organizer {
 
     // US 01.01.01
