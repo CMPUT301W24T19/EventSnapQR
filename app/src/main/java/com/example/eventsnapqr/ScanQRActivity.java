@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.google.firebase.Firebase;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -68,9 +69,7 @@ public class ScanQRActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("Return", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // Back to main page
-                        NavController navController = Navigation.findNavController(ScanQRActivity.this, R.id.nav_host_fragment);
-                        navController.navigate(R.id.mainPageFragment);
+                        finish();
                     }
                 })
                 .create()
@@ -79,19 +78,18 @@ public class ScanQRActivity extends AppCompatActivity {
 
 
     private void checkIn(String eventID) {
+        // increment number of times a user has checked into the event
+        FirebaseController.getInstance().incrementCheckIn(userId, eventID);
         AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
         builder.setMessage("You have successfully checked into " + eventID)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // Back to main page
-                        NavController navController = Navigation.findNavController(ScanQRActivity.this, R.id.nav_host_fragment);
-                        navController.navigate(R.id.mainPageFragment);
+                        // Finish the activity
+                        finish();
                     }
                 });
-
         builder.create().show();
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -104,11 +102,9 @@ public class ScanQRActivity extends AppCompatActivity {
                     @Override
                     public void onUserInAttendees(boolean isInAttendees) {
                         if (isInAttendees) {
-                            // make new fragment that says you have successfully checked into event
-                            // increment
-                            checkIn(eventId);
+                            checkIn(eventId); // if the user has signed up
                         } else {
-                            notSignedUpDialog(eventId); // if th3e user is not in the Attendees
+                            notSignedUpDialog(eventId); // if the user is not in the Attendees
                         }
                     }
 

@@ -11,6 +11,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -428,4 +429,25 @@ public class FirebaseController {
         void onUserInAttendees(boolean isInAttendees);
         void onCheckFailed(Exception e);
     }
+
+    public void incrementCheckIn(String userId, String eventId) {
+        DocumentReference eventRef = db.collection("events").document(eventId)
+                .collection("attendees").document(userId);
+
+        eventRef.update("checkedIn", FieldValue.increment(1))
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Increment Check-In",
+                                "Successfully incremented check-in count for user " + userId + " in event " + eventId);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("Increment Check-In", "Failed to increment check-in count: " + e.getMessage());
+                    }
+                });
+    }
+
 }
