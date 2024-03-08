@@ -6,8 +6,7 @@
     tools:context=".QRDialogFragment"
     android:orientation="vertical"
     android:weightSum="1"
-    android:layout_gravity="center"
-    >
+    android:layout_gravity="center">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -25,20 +24,23 @@
         <Space
             android:layout_width="56dp"
             android:layout_height="wrap_content" />
+
         <Button
-            android:id="@+id/button_save_qr"
-            android:layout_height="wrap_content"
+            android:id="@+id/button_exit"
             android:layout_width="wrap_content"
-            android:text="Share QRCode"/>
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:text="Exit to main" />
         <Space
             android:layout_width="26dp"
             android:layout_height="wrap_content" />
-        <Button
-            android:id="@+id/button_exit"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Exit to main"/>
-    </LinearLayout>
 
+        <Button
+            android:id="@+id/button_save_qr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:text="Share QRCode" />
+    </LinearLayout>
 
 </LinearLayout>
