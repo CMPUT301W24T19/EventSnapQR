@@ -23,6 +23,7 @@ public class MyEventActivity extends AppCompatActivity {
     private ArrayList<String> organizeEventNames, attendEventNames;
     private ListView attendEventListView, organizeEventListView;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +31,6 @@ public class MyEventActivity extends AppCompatActivity {
 
         attendEventListView = findViewById(R.id.attending_events_list);
         organizeEventListView = findViewById(R.id.organized_events_list);
-
         String androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         attendEventNames = new ArrayList<>();
@@ -38,6 +38,7 @@ public class MyEventActivity extends AppCompatActivity {
 
         attendEventAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, attendEventNames);
         organizeEventAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, organizeEventNames);
+
 
         attendEventListView.setAdapter(attendEventAdapter);
         organizeEventListView.setAdapter(organizeEventAdapter);
