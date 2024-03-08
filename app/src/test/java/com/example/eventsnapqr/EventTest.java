@@ -52,9 +52,9 @@ public class EventTest {
     @Test
     public void setPosterUri(String posterUri){
         Event event = mockEvent();
-        String old = event.getPosterUri();
-        event.setPosterUri("wwww.badevent.com");
-        assertFalse(event.getPosterUri().equals(old));
+        String old = event.getPosterURI();
+        event.setPosterURI("wwww.badevent.com");
+        assertFalse(event.getPosterURI().equals(old));
     }
     @Test
     public void getPosterUri(String posterUri){
