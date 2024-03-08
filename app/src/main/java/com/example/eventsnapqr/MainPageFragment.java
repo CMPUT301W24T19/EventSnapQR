@@ -38,6 +38,7 @@ public class MainPageFragment extends Fragment {
     private Button buttonBrowseEvent;
     private Button buttonScanQR;
     private ImageView buttonViewProfile;
+    private String androidId; //needed for scanId
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -74,9 +75,10 @@ public class MainPageFragment extends Fragment {
         }
 
     }
+
     private void auth(){
         ContentResolver contentResolver = getContext().getContentResolver();
-        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+        androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
         FirebaseController.Authenticator listener = new FirebaseController.Authenticator() {
             @Override
             public void onUserExistenceChecked(boolean exists) {
@@ -130,6 +132,7 @@ public class MainPageFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), ScanQRActivity.class);
+                intent.putExtra("androidId", androidId);
                 startActivity(intent);
             }
         });
