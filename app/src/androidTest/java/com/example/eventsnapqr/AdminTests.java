@@ -245,7 +245,7 @@ public class AdminTests {
         onView(withId(R.id.buttonBrowseUserProfiles)).perform(click());
         onView(withId(R.id.browseProfileFragment)).check(matches(isDisplayed()));
         onView(withId(R.id.adminMainPage)).check(doesNotExist());
-        onView(withText("Browse Profiles")).check(matches(isDisplayed()));
+        onView(withText("Admin Browse Profiles")).check(matches(isDisplayed()));
         onView(withId(R.id.button_back_button)).check(matches(isDisplayed()));
         onView(withId(R.id.button_back_button)).perform(click());
         onView(withId(R.id.adminMainPage)).check(matches(isDisplayed()));
