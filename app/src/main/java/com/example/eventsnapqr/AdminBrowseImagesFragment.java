@@ -1,5 +1,6 @@
 package com.example.eventsnapqr;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -73,39 +74,42 @@ public class AdminBrowseImagesFragment extends Fragment {
         recyclerView = view.findViewById(R.id.rv_event_posters);
 
         posters = new ArrayList<>();
+        FirebaseController.getInstance().getAllEvents(new FirebaseController.OnEventsLoadedListener() {
+            @Override
+            public void onEventsLoaded(ArrayList<Event> events) {
+                posters.addAll(events);
+            }
+        });
+
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        EventPosterAdapter adapter = new EventPosterAdapter(posters);
+        recyclerView.setAdapter(adapter);
         FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 posters.clear();
                 for (QueryDocumentSnapshot doc: value) {
-                    String posterUri = (String) doc.getData().get("posterURL");
+                    String posterUri = (String) doc.getData().get("posterURI");
                     Event event = new Event(null, null, null, null, posterUri, null, null, null);
                     posters.add(event);
                 }
-
-                recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-                EventPosterAdapter adapter = new EventPosterAdapter(posters);
-                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
             }
         });
-/*
-        for (int i = 0; i < posters.size(); i++) {
-            Uri uri = Uri.parse(posters.get(i).getPosterUri());
-
-        }
-        /*
-        dummyPosters = new ArrayList<>();
-        for (int i = 1; i <= 30; i++) {
-            String dummyUrl = "https://example.com/poster" + i + ".png";
-            Event event = new Event();
-            event.setPosterUri(dummyUrl);
-            dummyPosters.add(event);
-        }*/
         buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                 navController.navigate(R.id.action_adminBrowseImagesFragment_to_AdminModeMainPageFragment);
+            }
+        });
+
+        adapter.setOnClickListener(new EventPosterAdapter.OnClickListener() {
+            @Override
+            public void onClick(int position, Event event) {
+                Intent intent = new Intent(getContext(), EventPosterActivity.class);
+                intent.putExtra("uri", event.getPosterUri());
+                startActivity(intent);
             }
         });
 
