@@ -48,7 +48,7 @@ public class MyEventsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_my_events, container, false);
         attend_eventListView = v.findViewById(R.id.attending_events_list);
-        organize_eventListView = v.findViewById(R.id.orgnized_events_list);
+        organize_eventListView = v.findViewById(R.id.organized_events_list);
         androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         attend_eventNames = new ArrayList<>();
