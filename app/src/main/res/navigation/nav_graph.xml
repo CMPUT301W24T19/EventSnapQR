@@ -75,12 +75,23 @@
             app:destination="@id/myEventFragment" />
 
     </fragment>
+
+    <fragment
+        android:id="@+id/MapFragment"
+        android:name="com.example.eventsnapqr.MapFragment"
+        android:label="Map Fragment"
+        tools:layout="@layout/fragment_attendee_map">
+
+    </fragment>
     <fragment
         android:id="@+id/yourEventFragment"
         android:name="com.example.eventsnapqr.YourEventFragment"
         android:label="Your Event"
         tools:layout="@layout/fragment_your_event">
-
+        <action
+            android:id="@+id/action_YourEventFragment_to_MapFragment"
+            app:destination="@id/MapFragment"
+            />
     </fragment>
     <fragment
         android:id="@+id/adminModeMainPageFragment"
