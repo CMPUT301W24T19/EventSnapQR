@@ -75,7 +75,6 @@ public class OrganizeEventTest {
 
         ActivityScenario.launch(MainActivity.class);
 
-
         if(!userExists[0]){
 
             try {
@@ -84,15 +83,11 @@ public class OrganizeEventTest {
                 e.printStackTrace();
             }
 
-
             onView(withId(R.id.edit_text_name)).perform(typeText("Test Event Name"));
-
 
             onView(withId(R.id.edit_text_number)).perform(typeText("4033402450"));
 
-
             onView(withId(R.id.edit_text_email)).perform(typeText("test@email.com"));
-
 
             onView(withId(R.id.edit_text_homepage)).perform(typeText("www.homepage.com"));
             onView(isRoot()).perform(ViewActions.closeSoftKeyboard());
@@ -101,7 +96,6 @@ public class OrganizeEventTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
             onView(withId(R.id.button_sign_up)).perform(click());
             FirebaseController.checkUserExists(androidId, listener);
             try{
@@ -109,8 +103,6 @@ public class OrganizeEventTest {
             }catch (Exception e){
                 e.printStackTrace();
             }
-            //assertTrue(userExists[0]);
-
             // Enable animations after the test is finished
             InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                     "settings put global window_animation_scale 1");
@@ -118,7 +110,6 @@ public class OrganizeEventTest {
                     "settings put global transition_animation_scale 1");
             InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                     "settings put global animator_duration_scale 1");
-
         }
     }
     @Test
@@ -155,7 +146,6 @@ public class OrganizeEventTest {
         onView(withId(R.id.view_on_events_button)).perform(click());
        // onView(withId(R.id.events)).check(matches(hasDescendant(withText(id)))).perform(click());
 
-
     }
 
     /**
@@ -188,14 +178,12 @@ public class OrganizeEventTest {
                 }
             }
         });
-
         try {
             latch.await(10, TimeUnit.SECONDS); // Adjust timeout as needed
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-
 }
 
 
