@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_gravity="center">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_back_button"
@@ -20,26 +22,20 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Event Details"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_gravity="center"
+         />
 
     <ImageView
+        android:layout_gravity="center"
         android:id="@+id/event_poster"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
         android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.4"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_back_button"
-        app:layout_constraintWidth_percent="0.9"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
 
     <TextView
+        android:layout_gravity="center"
         android:id="@+id/organizer_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -49,35 +45,32 @@
         app:layout_constraintTop_toBottomOf="@+id/event_poster" />
 
     <TextView
+        android:layout_gravity="center"
         android:id="@+id/organizer_content"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="#BCBCBC"
         android:padding="8dp"
-        app:layout_constraintHeight_percent="0.05"
-        app:layout_constraintStart_toStartOf="@+id/organizer_text"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_text"
-        app:layout_constraintWidth_percent="0.9" />
+       />
 
     <TextView
+
+        android:layout_gravity="center"
         android:id="@+id/description_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Description"
-        app:layout_constraintStart_toStartOf="@+id/event_poster"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_content" />
+         />
 
     <TextView
+        android:layout_gravity="center"
         android:id="@+id/description_content"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="#BCBCBC"
         android:padding="8dp"
-        app:layout_constraintHeight_percent="0.06"
-        app:layout_constraintStart_toStartOf="@+id/description_text"
-        app:layout_constraintTop_toBottomOf="@+id/description_text"
-        app:layout_constraintWidth_percent="0.9" />
+        />
 
     <TextView
         android:id="@+id/announce_text"
@@ -85,19 +78,16 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Announcements"
-        app:layout_constraintStart_toStartOf="@+id/event_poster"
-        app:layout_constraintTop_toBottomOf="@+id/description_content" />
+        android:layout_gravity="center"
+         />
 
     <TextView
         android:id="@+id/announce_content"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:background="#BCBCBC"
-        android:padding="8dp"
-        app:layout_constraintHeight_percent="0.09"
-        app:layout_constraintStart_toStartOf="@+id/announce_text"
-        app:layout_constraintTop_toBottomOf="@+id/announce_text"
-        app:layout_constraintWidth_percent="0.9" />
+        android:padding="8dp" />
 
     <TextView
         android:id="@+id/max_attendees_text"
@@ -105,8 +95,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Max Attendees"
-        app:layout_constraintStart_toStartOf="@+id/event_poster"
-        app:layout_constraintTop_toBottomOf="@+id/announce_content" />
+        android:layout_gravity="center"
+        />
 
     <TextView
         android:id="@+id/max_attendees_content"
@@ -114,10 +104,8 @@
         android:layout_height="0dp"
         android:background="#BCBCBC"
         android:padding="8dp"
-        app:layout_constraintHeight_percent="0.05"
-        app:layout_constraintStart_toStartOf="@+id/max_attendees_text"
-        app:layout_constraintTop_toBottomOf="@+id/max_attendees_text"
-        app:layout_constraintWidth_percent="0.9" />
+        android:layout_gravity="center"
+        />
 
     <Button
         android:id="@+id/sign_up_button"
@@ -125,10 +113,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:background="@color/white"
+        android:layout_marginBottom="20dp"
         android:text="Sign Up"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/max_attendees_content" />
+        android:layout_gravity="center" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

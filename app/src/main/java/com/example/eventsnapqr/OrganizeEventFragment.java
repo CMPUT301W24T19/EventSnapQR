@@ -32,6 +32,11 @@ import java.util.ArrayList;
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 
+/**
+ * fragment where a user can organize an event using an eventName, an optional poster (default image
+ * otherwise), a description and an optional max attendee. the option for reuse QR code is not yet
+ * implemented
+ */
 public class OrganizeEventFragment extends Fragment {
     private ImageView backButton;
     private Button addEventButton;
@@ -46,16 +51,18 @@ public class OrganizeEventFragment extends Fragment {
     private Uri imageUri;
     private String uriString;
 
-    public OrganizeEventFragment() {
-
-    }
-
-
-    public static OrganizeEventFragment newInstance(String param1, String param2) {
-        OrganizeEventFragment fragment = new OrganizeEventFragment();
-        return fragment;
-    }
-
+    /**
+     * Setup actions to be taken upon view creation and when the views are interacted with
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return the final view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -101,6 +108,10 @@ public class OrganizeEventFragment extends Fragment {
         return view;
     }
 
+    /**
+     * validate each input field before creating an event
+     * @return
+     */
     private boolean validateInput() {
         String eventName = editTextEventName.getText().toString().trim();
         String eventDesc = editTextEventDesc.getText().toString().trim();
@@ -122,12 +133,17 @@ public class OrganizeEventFragment extends Fragment {
         return true;
     }
 
+    /**
+     * used to return to the main page
+     */
     private void navigateToMainPageFragment() {
         Intent intent = new Intent(requireContext(), MainActivity.class);
         startActivity(intent);
     }
 
-    private ArrayList<Event> allEvents;
+    /**
+     * add the event to the database and generate a unique QR code for the event
+     */
     private void createEvent() {
         String eventName = editTextEventName.getText().toString(); // get the name of the event
         String eventDesc = editTextEventDesc.getText().toString(); // get the description of the event
@@ -152,14 +168,13 @@ public class OrganizeEventFragment extends Fragment {
                         }
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("bitmap", qrBitmap);
-                        QR qrCode = new QR(qrBitmap, eventID);
                         if (imageUri != null) {
                             StorageReference userRef = storageRef.child("eventPosters/" + eventID);  // specifies the path on the cloud storage
                             userRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
                                 userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                     imageUri = uri;
                                     uriString = imageUri.toString();
-                                    Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
+                                    Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
                                     Log.d("USER NAME", newEvent.getOrganizer().getName());
                                     firebaseController.addEvent(newEvent);
                                     NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
@@ -168,7 +183,7 @@ public class OrganizeEventFragment extends Fragment {
                             });
                         } else {
                             uriString = null;
-                            Event newEvent = new Event(user, qrCode, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
+                            Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
                             Log.d("USER NAME", newEvent.getOrganizer().getName());
                             firebaseController.addEvent(newEvent);
                             firebaseController.addOrganizedEvent(user, newEvent);

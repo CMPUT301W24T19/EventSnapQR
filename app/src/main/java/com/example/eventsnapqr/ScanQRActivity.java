@@ -26,12 +26,21 @@ import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+/**
+ * activity where the QR scanner is implemented using ZXing library
+ * the following video was a major help and source for setting up
+ * this functionality
+ * https://www.youtube.com/watch?v=bWEt-_z7BOY&ab_channel=EasyOneCoders
+ */
 public class ScanQRActivity extends AppCompatActivity {
-
     private static final int PERMISSION_REQUEST_CAMERA = 1;
-
     private String userId;
 
+    /**
+     * What should be executed when the fragment is created
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,8 +57,11 @@ public class ScanQRActivity extends AppCompatActivity {
         }
     }
 
-
+    /**
+     * integrate the qr scanner once permissions are verified
+     */
     private void initQRCodeScanner() {
+        // https://stackoverflow.com/questions/34983201/change-qr-scanner-orientation-with-zxing-in-android-studio
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
         integrator.setOrientationLocked(false);
@@ -58,6 +70,11 @@ public class ScanQRActivity extends AppCompatActivity {
         integrator.initiateScan();
     }
 
+    /**
+     * if the user has not signed up scanned event, give them the option to view the event details
+     * or to return to the main page
+     * @param eventId identifier of the given event
+     */
     private void notSignedUpDialog(String eventId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
         builder.setTitle("Not Signed-Up for Event")
@@ -76,7 +93,11 @@ public class ScanQRActivity extends AppCompatActivity {
                 .show();
     }
 
-
+    /**
+     * display an alert dialog notifying the user they have successfully checked into the event
+     * and return to the main page
+     * @param eventID
+     */
     private void checkIn(String eventID) {
         // increment number of times a user has checked into the event
         FirebaseController.getInstance().incrementCheckIn(userId, eventID);
@@ -91,6 +112,17 @@ public class ScanQRActivity extends AppCompatActivity {
         builder.create().show();
     }
 
+    /**
+     * handles what to do with the content of the QR code
+     * @param requestCode The integer request code originally supplied to
+     *                    startActivityForResult(), allowing you to identify who this
+     *                    result came from.
+     * @param resultCode The integer result code returned by the child activity
+     *                   through its setResult().
+     * @param data An Intent, which can return result data to the caller
+     *               (various data can be attached to Intent "extras").
+     *
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
@@ -107,7 +139,6 @@ public class ScanQRActivity extends AppCompatActivity {
                             notSignedUpDialog(eventId); // if the user is not in the Attendees
                         }
                     }
-
                     @Override
                     public void onCheckFailed(Exception e) {
                         Log.e(TAG, "User in Event attendees failed");

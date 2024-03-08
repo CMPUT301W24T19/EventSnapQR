@@ -227,12 +227,25 @@ public class FirebaseController {
                     }
                 });
     }
+    public void getEventAttendees(Event event, User.AttendeesCallback callback) {
+        db.collection("events").document(event.getEventID()).collection("attendees").get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<String> attendees = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot) {
+                        String androidId = document.getString("organizerID");
+                        attendees.add(androidId);
+                    }
+                    callback.onAttendeesLoaded(attendees); // Pass the attendees list to the callback
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure
+                });
+    }
+
 
     void parseDocuments(List<DocumentSnapshot> documents) {
         for(DocumentSnapshot doc: documents){
             Event event = new Event();
-            QR qr = new QR(doc.getString("QRLink"));
-            event.setQR(qr);
             event.setOrganizer(new User(doc.getString("organizerID")));
             //doc.get("attendees");
             event.setDescription(doc.getString("description"));
@@ -268,7 +281,6 @@ public class FirebaseController {
     public void addEvent(Event event) {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("eventName", event.getEventName());
-        eventData.put("QRLink", event.getQrCode().getLink());
         eventData.put("organizerID", event.getOrganizer().getDeviceID());
         eventData.put("description", event.getDescription());
         eventData.put("announcement",event.getAnnouncement());
@@ -391,7 +403,7 @@ public class FirebaseController {
                         @Override
                         public void onUserRetrieved(User user) {
                             if (user != null) {
-                                Event event = new Event(user, new QR(null, qrLink), eventName, description, posterUri, maxAttendees, eventId, announcement);
+                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, announcement);
                                 listener.onEventRetrieved(event);
                             } else {
                                 Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);

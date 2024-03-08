@@ -12,15 +12,30 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 
+/**
+ * the starting point of the application. if the userId is not in the data base, this
+ * activity will lead to the sign up page, otherwise it will lead to the main page
+ */
 public class MainActivity extends AppCompatActivity {
     private FirebaseController.Authenticator listener;
     private String androidId;
+
+    /**
+     * executed if the activity is restarted
+     */
     @Override
     protected void onResume() {
         super.onResume();
         FirebaseController.checkUserExists(androidId, listener);
     }
 
+    /**
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -1,50 +1,44 @@
 package com.example.eventsnapqr;
 
-import android.net.Uri;
-import android.util.Log;
-
-
-import java.util.List;
-
+/**
+ * represents an event with a name, organizer, description, poster, maxAttendees (optional), and
+ * a announcements string.
+ * maxAttendee (optional)
+ */
 public class Event {
-
     private String eventName; // name of the event
     private User organizer; // user who organized the event
-    private QR qrCode; // qr code for the event
     private String description; // description of the event
     private String posterUri; // URL for the event poster image
     private Integer maxAttendees; // optional max attendees
     private String announcement; //announcements related to the Event
-    private String eventID;
-    private List<User> attendees;
-    private List<User> signedUpAttendees; // list of users who have signed up
-    private List<User> checkedInAttendees; // list of users who are currently checked in
-    private FirebaseController firebaseController; // instance of the firebase controller
-
-    public Event() {
-
-    }
+    private String eventID; // unique id
 
     /**
      * constructor for event requiring a user instance, QR code, event name, a description, a URL
      * to the event poster and a max number of attendees. used when all fields are provided
      * @param organizer user who organized the event
-     * @param qrCode QR generated for the event
      * @param eventName name of the event
      * @param description description of the event
      * @param posterUri URL for the event poster
      * @param maxAttendees maximum number of attendees
      * @param announcement announcements related to the event
      */
-    public Event(User organizer, QR qrCode, String eventName, String description, String posterUri, Integer maxAttendees, String eventID, String announcement) {
+    public Event(User organizer, String eventName, String description, String posterUri, Integer maxAttendees, String eventID, String announcement) {
         this.organizer = organizer;
-        this.qrCode = qrCode;
         this.eventName = eventName;
         this.description = description;
         this.posterUri = posterUri;
         this.maxAttendees = maxAttendees;
         this.announcement = announcement;
         this.eventID = eventID;
+    }
+
+    /**
+     * empty constructor for firebase usage
+     */
+    public Event() {
+        //empty constructor
     }
 
     /**
@@ -57,9 +51,7 @@ public class Event {
      * @return announcement
      */
     public String getAnnouncement(){return announcement;}
-    public void setQR(QR qrCode){
-        this.qrCode = qrCode;
-    }
+
     /**
      * set method to set the description of the event
      * @return eventName string
@@ -94,14 +86,6 @@ public class Event {
      */
     public User getOrganizer() {
         return organizer;
-    }
-
-    /**
-     * getter method for the QR code associated with the event
-     * @return
-     */
-    public QR getQrCode() {
-        return qrCode;
     }
 
     /**
@@ -144,18 +128,18 @@ public class Event {
         this.maxAttendees = maxAttendees;
     }
 
-    public void addAttendee(User attendee) {
-        if (this.maxAttendees != null && this.attendees.size() < this.maxAttendees) {
-            this.attendees.add(attendee);
-        }
-        else {
-            throw new IllegalArgumentException();
-        }
-    }
+    /**
+     * retrieve the unique ID of the event
+     * @return eventID
+     */
     public String getEventID() {
         return this.eventID;
     }
 
+    /**
+     * get the unique ID of the event
+     * @param eventID the new eventID
+     */
     public void setEventID(String eventID) {
         this.eventID = eventID;
     }
