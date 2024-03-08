@@ -21,7 +21,6 @@ public class MyEventActivity extends AppCompatActivity {
     private ListView attendEventListView, organizeEventListView;
     private ArrayList<Event> attendingList, organizedList;
     private FirebaseFirestore db;
-    private EventArrayAdapter attendEventArrayAdapter, organizeEventArrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,16 +31,19 @@ public class MyEventActivity extends AppCompatActivity {
         attendingList = new ArrayList<>();
         organizedList = new ArrayList<>();
 
-        attendEventArrayAdapter = new EventArrayAdapter(getBaseContext(), attendingList);
-        organizeEventArrayAdapter = new EventArrayAdapter(getBaseContext(), organizedList);
+
+        EventArrayAdapter attendEventArrayAdapter = new EventArrayAdapter(getBaseContext(), attendingList);
+        EventArrayAdapter organizeEventArrayAdapter = new EventArrayAdapter(getBaseContext(), organizedList);
         ContentResolver contentResolver = getBaseContext().getContentResolver();
         String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+        organizeEventListView.setAdapter(organizeEventArrayAdapter);
+        attendEventListView.setAdapter(attendEventArrayAdapter);
 
         FirebaseFirestore.getInstance().collection(androidId).document(androidId).collection("organizedEvents").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 for (QueryDocumentSnapshot doc: value) {
-
+                    
                 }
             }
         });

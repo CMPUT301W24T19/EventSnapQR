@@ -19,6 +19,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
@@ -94,6 +97,7 @@ public class MainPageFragment extends Fragment {
         buttonBrowseEvent = view.findViewById(R.id.browse_events_button);
         buttonScanQR = view.findViewById(R.id.scan_qr_button);
         buttonViewProfile = view.findViewById(R.id.view_user_button);
+        updateProfilePicture();
         buttonAdminMainPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,9 +131,26 @@ public class MainPageFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), UserInfoActivity.class);
+                intent.putExtra("androidId", androidId);
                 startActivity(intent);
             }
         });
         return view;
     }
+    private void updateProfilePicture() {
+        FirebaseController.getInstance().getUser(androidId, new FirebaseController.OnUserRetrievedListener() {
+            @Override
+            public void onUserRetrieved(User user) {
+                if (user != null && user.getProfilePicture() != null && !user.getProfilePicture().isEmpty()) {
+                    Glide.with(getContext())
+                            .load(user.getProfilePicture())
+                            .circleCrop()
+                            .into(buttonViewProfile);
+                } else {
+                    // Optionally, set a default image if there's no profile picture
+                    buttonViewProfile.setImageResource(R.drawable.profile_pic); // Adjust with your default drawable
+                }
+            }
+        });
+}
 }

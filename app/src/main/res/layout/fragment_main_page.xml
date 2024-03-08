@@ -14,10 +14,10 @@
         <LinearLayout
             android:id="@+id/user_layout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="39dp"
             android:layout_weight="0.2"
-            android:orientation="horizontal"
             android:gravity="start"
+            android:orientation="horizontal"
             android:paddingStart="16dp"
             android:paddingTop="16dp">
 
@@ -27,22 +27,25 @@
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:text="ADMIN"
-                android:visibility="gone"
-                android:textSize="12sp"/>
+                android:textSize="12sp"
+                android:visibility="gone" />
+
             <View
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 tools:ignore="NestedWeights" />
+
             <ImageView
                 android:id="@+id/view_user_button"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/profile_pic"
-                android:padding="5dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center_vertical"
                 android:clickable="true"
                 android:focusable="true"
-                android:layout_gravity="center_vertical" />
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/profile_pic" />
 
         </LinearLayout>
 

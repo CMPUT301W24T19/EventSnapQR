@@ -77,19 +77,23 @@ public class UserInfoActivity extends AppCompatActivity {
             }
         });
 
-        ContentResolver contentResolver = getBaseContext().getContentResolver();
-        androidID = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+        Bundle extra = getIntent().getExtras();
+        androidID = extra.get("androidId").toString();
 
         FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
             @Override
             public void onUserRetrieved(User user) {
                 if (user != null) {
-                    if (user.getProfilePicture() != null) {
+                    if (user.getProfilePicture() != null && !user.getProfilePicture().isEmpty()) {
                         Glide.with(getBaseContext())
                                 .load(Uri.parse(user.getProfilePicture()))
-                                .dontAnimate()
                                 .into(profilePictureImage);
+                    }else {
+                        // Handle case where there is no profile picture
+                        // For example, set a default drawable
+                        profilePictureImage.setImageResource(R.drawable.profile_pic);
                     }
+
                     userName.setText(user.getName());
                     email.setText(user.getEmail());
                     phoneNumber.setText(user.getPhoneNumber());
