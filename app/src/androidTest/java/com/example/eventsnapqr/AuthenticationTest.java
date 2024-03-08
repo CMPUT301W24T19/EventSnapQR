@@ -44,12 +44,9 @@ import org.junit.runners.JUnit4;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-//import org.junit.Rule;
-//@RunWith(AndroidJUnit4.class)
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class AuthenticationTest {
-
     @Before
     public void init(){
         ViewActions.closeSoftKeyboard();
@@ -58,7 +55,6 @@ public class AuthenticationTest {
     /**
      * US 02.06.01 ****user must not have account for test to work****
      */
-
     @Test
     public void identityTest(){
         Context context = InstrumentationRegistry.getInstrumentation().getContext();
@@ -74,7 +70,6 @@ public class AuthenticationTest {
         FirebaseController firebaseController = new FirebaseController();
         CountDownLatch latch = new CountDownLatch(1);
         final Boolean[] userExists = new Boolean[1];
-
         FirebaseController.Authenticator listener = new FirebaseController.Authenticator() {
             @Override
             public void onUserExistenceChecked(boolean exists) {
@@ -98,10 +93,7 @@ public class AuthenticationTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         ActivityScenario.launch(MainActivity.class);
-
-
         if(!userExists[0]){
 
             try {
@@ -109,17 +101,9 @@ public class AuthenticationTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-
             onView(withId(R.id.edit_text_name)).perform(typeText("Test Event Name"));
-
-
             onView(withId(R.id.edit_text_number)).perform(typeText("4033402450"));
-
-
             onView(withId(R.id.edit_text_email)).perform(typeText("test@email.com"));
-
-
             onView(withId(R.id.edit_text_homepage)).perform(typeText("www.homepage.com"));
             onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard());
             try {
@@ -127,7 +111,6 @@ public class AuthenticationTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
             onView(withId(R.id.button_sign_up)).perform(click());
             FirebaseController.checkUserExists(androidId, listener);
             try{
@@ -136,11 +119,7 @@ public class AuthenticationTest {
                 e.printStackTrace();
             }
             assertTrue(userExists[0]);
-
         }
-        
-
-
         // Enable animations after the test is finished
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global window_animation_scale 1");
@@ -148,19 +127,5 @@ public class AuthenticationTest {
                 "settings put global transition_animation_scale 1");
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global animator_duration_scale 1");
-
     }
-
-
-
-
-
-
-
-    @Rule
-    public ActivityTestRule<MainActivity> mainActivityActivityTestRule =
-            new ActivityTestRule<>(MainActivity.class, true, true);
-
-
-
 }

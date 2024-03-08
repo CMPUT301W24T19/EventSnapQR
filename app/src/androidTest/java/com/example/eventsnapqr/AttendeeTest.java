@@ -64,7 +64,6 @@ public class AttendeeTest {
         FirebaseController firebaseController = new FirebaseController();
         CountDownLatch latch = new CountDownLatch(1);
         final Boolean[] userExists = new Boolean[1];
-
         FirebaseController.Authenticator listener = new FirebaseController.Authenticator() {
             @Override
             public void onUserExistenceChecked(boolean exists) {
@@ -88,10 +87,7 @@ public class AttendeeTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         ActivityScenario.launch(MainActivity.class);
-
-
         if(!userExists[0]){
 
             try {
@@ -99,17 +95,9 @@ public class AttendeeTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-
             onView(withId(R.id.edit_text_name)).perform(typeText("Test Event Name"));
-
-
             onView(withId(R.id.edit_text_number)).perform(typeText("4033402450"));
-
-
             onView(withId(R.id.edit_text_email)).perform(typeText("test@email.com"));
-
-
             onView(withId(R.id.edit_text_homepage)).perform(typeText("www.homepage.com"));
             onView(isRoot()).perform(ViewActions.closeSoftKeyboard());
             try {
@@ -117,7 +105,6 @@ public class AttendeeTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
             onView(withId(R.id.button_sign_up)).perform(click());
             FirebaseController.checkUserExists(androidId, listener);
             try{
@@ -125,8 +112,6 @@ public class AttendeeTest {
             }catch (Exception e){
                 e.printStackTrace();
             }
-            //assertTrue(userExists[0]);
-
             // Enable animations after the test is finished
             InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                     "settings put global window_animation_scale 1");
@@ -134,7 +119,6 @@ public class AttendeeTest {
                     "settings put global transition_animation_scale 1");
             InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                     "settings put global animator_duration_scale 1");
-
         }
     }
     /**
@@ -151,16 +135,13 @@ public class AttendeeTest {
                 "settings put global animator_duration_scale 0");
         FirebaseController firebaseController = new FirebaseController();
         id = firebaseController.getUniqueEventID();
-
         // Launch OrganizeAnEventActivity and create the event
         ActivityScenario activityScenario = ActivityScenario.launch(OrganizeAnEventActivity.class);
         onView(withId(R.id.editTextEventName)).perform(typeText(id));
         onView(withId(R.id.editTextEventDesc)).perform(typeText("Event description"));
         onView(withId(R.id.button_create)).perform(click());
-
         // Use CountDownLatch to wait for Firebase operation to complete
         CountDownLatch latch = new CountDownLatch(1);
-
         // Launch MainActivity and browse events
         ActivityScenario.launch(MainActivity.class);
         onView(withId(R.id.browse_events_button)).perform(click());
@@ -181,19 +162,15 @@ public class AttendeeTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         onView(withId(R.id.sign_up_button)).check(matches(isDisplayed())).perform(click());
-        //onView(withText(startsWith("You have successfully signed up for"))).inRoot(isDialog()).check(matches(isDisplayed()));
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         onView(withText("OK")).inRoot(isDialog()).perform(click());
         activityScenario.close();
         ArrayList<String> allAttendees = new ArrayList<>();
-
         firebaseController.getEvent(id, new FirebaseController.OnEventRetrievedListener() {
             @Override
             public void onEventRetrieved(Event event) {
@@ -229,7 +206,6 @@ public class AttendeeTest {
                 assertEquals(attendeeId, androidId);
             }
         }
-
         // Enable animations after the test is finished
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global window_animation_scale 1");
@@ -237,8 +213,6 @@ public class AttendeeTest {
                 "settings put global transition_animation_scale 1");
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global animator_duration_scale 1");
-
     }
-
 }
 
