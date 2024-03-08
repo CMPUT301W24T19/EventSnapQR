@@ -14,33 +14,32 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * skeleton fragment to view the realtime attendance (checked-in) to an event.
+ * none of the functionality is implemented
+ */
 public class RealTimeAttendanceFragment extends Fragment {
-
-    private FirebaseController firebaseController;
-
     private ListView attendeeListView;
     private ArrayAdapter<String> eventAdapter;
     private List<String> eventNames;
-    private FirebaseFirestore db;
+
+    /**
+     * Setup actions to be taken upon view creation and when the views are interacted with
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return the final view
+     */
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_real_time_attendance, container, false);
-
-        /*
-         * Replace this with the database entry
-         * */
         attendeeListView = view.findViewById(R.id.events);
         eventNames = new ArrayList<>();
-        eventNames.add("Attendee 1");
-        eventNames.add("Attendee 2");
-        eventNames.add("Attendee 3");
-        eventNames.add("Attendee 4");
-        eventNames.add("Attendee 5");
-        eventNames.add("Attendee 6");
-        eventNames.add("Attendee 7");
-        eventNames.add("Attendee 8");
-        eventNames.add("Attendee 9");
         eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, eventNames);
-
         attendeeListView.setAdapter(eventAdapter);
 
         view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
@@ -52,5 +51,4 @@ public class RealTimeAttendanceFragment extends Fragment {
 
         return view;
     }
-
 }

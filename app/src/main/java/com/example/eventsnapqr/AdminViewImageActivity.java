@@ -9,9 +9,18 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class EventPosterActivity extends AppCompatActivity {
-    FloatingActionButton backButton;
-    ImageView eventPoster;
+/**
+ * activity to view an image in full when in admin mode
+ */
+public class AdminViewImageActivity extends AppCompatActivity {
+    private FloatingActionButton backButton;
+    private ImageView eventPoster;
+
+    /**
+     * What should be executed when the fragment is created
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

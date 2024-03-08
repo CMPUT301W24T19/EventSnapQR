@@ -20,27 +20,43 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * fragment for a user to browse all the events they are currently signed up to attend, and
+ * the events they have organized. if an attending event is pressed, you are brought to the
+ * event details page. if an organized event is pressed you are brought to "your event fragment"
+ */
 public class MyEventsFragment extends Fragment {
-
-    private ListView attend_eventListView, orgnize_eventListView;
-    private ArrayAdapter<String> attend_eventAdapter, orgnize_eventAdapter;
+    private ListView attend_eventListView, organize_eventListView;
+    private ArrayAdapter<String> attend_eventAdapter, organize_eventAdapter;
     private String androidId;
-    private List<String> attend_eventNames, orgnize_eventNames;
+    private List<String> attend_eventNames, organize_eventNames;
     private FirebaseFirestore db;
 
+    /**
+     * Setup actions to be taken upon view creation and when the views are interacted with
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return resulting view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_my_events, container, false);
         attend_eventListView = v.findViewById(R.id.attending_events_list);
-        orgnize_eventListView = v.findViewById(R.id.organized_events_list);
+        organize_eventListView = v.findViewById(R.id.orgnized_events_list);
         androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         attend_eventNames = new ArrayList<>();
-        orgnize_eventNames = new ArrayList<>();
+        organize_eventNames = new ArrayList<>();
         attend_eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, attend_eventNames);
-        orgnize_eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, orgnize_eventNames);
+        organize_eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, organize_eventNames);
         attend_eventListView.setAdapter(attend_eventAdapter);
-        orgnize_eventListView.setAdapter(orgnize_eventAdapter);
+        organize_eventListView.setAdapter(organize_eventAdapter);
 
         db = FirebaseFirestore.getInstance();
 
@@ -50,28 +66,20 @@ public class MyEventsFragment extends Fragment {
                 requireActivity().finish();
             }
         });
-/*
-        orgnize_eventListView.setOnItemClickListener((parent, view, position, id) -> {
-            String eventName = eventNames.get(position);
-            goToYourEventActivity(eventName);
-        });
 
-        attend_eventListView.setOnItemClickListener((parent, view1, position, id) -> {
-            String eventName = eventNames.get(position);
-            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_2);
-            Bundle bundle = new Bundle();
-            bundle.putString("eventName", eventName);
-            navController.navigate(R.id.action_myEventsFragment_to_eventDetailFragmentFromGraph2, bundle);
-        });
-*/
-
-        fetchEvents("organizedEvents", orgnize_eventListView, orgnize_eventNames, orgnize_eventAdapter);
-        fetchEvents("promisedEvents", attend_eventListView, attend_eventNames, attend_eventAdapter);
+        fetchEvents("organizedEvents", organize_eventNames, organize_eventAdapter);
+        fetchEvents("promisedEvents", attend_eventNames, attend_eventAdapter);
 
         return v;
     }
 
-    private void fetchEvents(String subcollection, ListView listView, List<String> eventNames, ArrayAdapter<String> eventAdapter) {
+    /**
+     * fetch the events that the user is attending and organizing by interacting with the database
+     * @param subcollection name of the subcollection to fetch
+     * @param eventNames list of event names
+     * @param eventAdapter adapter for event strings
+     */
+    private void fetchEvents(String subcollection, List<String> eventNames, ArrayAdapter<String> eventAdapter) {
         db.collection("users")
                 .document(androidId)
                 .collection(subcollection)
@@ -102,7 +110,4 @@ public class MyEventsFragment extends Fragment {
                     }
                 });
     }
-
-
-
 }

@@ -23,60 +23,34 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link MainPageFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * the main page of EventSnapQR. Allows the user to go to scanQR to check-in, go to organize
+ * new event to setup an event, go to browse events. in the top right is a link to the users
+ * profile, and if the user has admin privileges there is an admin button in the top left to
+ * enter admin mode
  */
 public class MainPageFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     private Button buttonOrganizeEvent;
     private Button buttonAdminMainPage;
     private Button buttonBrowseEvent;
     private Button buttonScanQR;
     private ImageView buttonViewProfile;
-    private String androidId; //needed for scanId
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public MainPageFragment() {
-        // Required empty public constructor
-    }
+    private String androidId;
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MainPageFragment.
+     * What should be executed when the fragment is created
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
      */
-    // TODO: Rename and change types and number of parameters
-    public static MainPageFragment newInstance(String param1, String param2) {
-        MainPageFragment fragment = new MainPageFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
     }
 
-    private void auth(){
+    /**
+     * authenticate the current user to verify if they have admin privileges. this method
+     * determines if the admin button is visible or not
+     */
+    private void authenticateUser(){
         ContentResolver contentResolver = getContext().getContentResolver();
         androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
         FirebaseController.Authenticator listener = new FirebaseController.Authenticator() {
@@ -96,13 +70,26 @@ public class MainPageFragment extends Fragment {
         FirebaseController.checkUserExists(androidId, listener);
 
     }
+
+    /**
+     * handles button presses throughout the fragment
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_page, container, false);
         buttonAdminMainPage = view.findViewById(R.id.admin_button);
         buttonAdminMainPage.setVisibility(View.INVISIBLE);
-        auth();
+        authenticateUser();
         buttonOrganizeEvent = view.findViewById(R.id.organize_event_button);
         buttonBrowseEvent = view.findViewById(R.id.browse_events_button);
         buttonScanQR = view.findViewById(R.id.scan_qr_button);

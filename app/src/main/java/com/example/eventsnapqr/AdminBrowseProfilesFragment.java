@@ -20,17 +20,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link AdminBrowseProfilesFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * fragment for admin to browse all profiles currently in the database
  */
 public class AdminBrowseProfilesFragment extends Fragment {
 
     private ListView listView;
     private ProfileAdapter adapter;
     private ArrayList<User> profileList;
-    private List<User> dummyUsers;
-    FloatingActionButton buttonBackToAdminMain;
+    private FloatingActionButton buttonBackToAdminMain;
+    private ArrayList<User> usersDataList;
+    private ProfileAdapter profileAdapter;
+    private FirebaseController firebaseController = new FirebaseController();
 
     public AdminBrowseProfilesFragment() {
         // Required empty public constructor
@@ -59,9 +59,7 @@ public class AdminBrowseProfilesFragment extends Fragment {
         adapter = new ProfileAdapter(requireContext(),profileList);
     }
 
-    private ArrayList<User> usersDataList;
-    private ProfileAdapter profileAdapter;
-    FirebaseController firebaseController = new FirebaseController();
+
 
     private void showDeleteConfirmationDialog(final User user) {
         new AlertDialog.Builder(getContext())
