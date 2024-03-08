@@ -23,22 +23,19 @@ public class RealTimeAttendanceFragment extends Fragment {
     private ArrayAdapter<String> eventAdapter;
     private List<String> eventNames;
 
-    /**
-     * Setup actions to be taken upon view creation and when the views are interacted with
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
-     *
-     * @return the final view
-     */
+    // Sample check-in counts, assuming attendees 1 to 5
+    private int[] checkInCounts = {1, 2, 3, 4, 5};
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_real_time_attendance, container, false);
         attendeeListView = view.findViewById(R.id.events);
         eventNames = new ArrayList<>();
+
+        // Adding face attendees with check-in counts
+        for (int i = 1; i <= 5; i++) {
+            eventNames.add("Attendee " + i + " - Checked in: " + checkInCounts[i - 1] + " times");
+        }
+
         eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, eventNames);
         attendeeListView.setAdapter(eventAdapter);
 
