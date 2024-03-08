@@ -65,6 +65,7 @@ public class OrganizeEventTest {
         onView(withId(R.id.browse_events_button)).perform(click());
         // Verify if the event is listed in the UI
         onView(withId(R.id.events)).check(matches(hasDescendant(withText(id)))).perform(click());
+
     }
 
     /**
@@ -73,15 +74,14 @@ public class OrganizeEventTest {
     @Test
     public void organizeEventTest() {
         FirebaseController firebaseController = new FirebaseController();
-       // String id = firebaseController.getUniqueEventID();
+        String id = firebaseController.getUniqueEventID();
 
         // Launch OrganizeAnEventActivity and create the event
         ActivityScenario.launch(OrganizeAnEventActivity.class);
-        onView(withId(R.id.editTextEventName)).perform(typeText("Please workith"));
+        onView(withId(R.id.editTextEventName)).perform(typeText(id));
         onView(withId(R.id.editTextEventDesc)).perform(typeText("Event description"));
 
         onView(withId(R.id.button_create)).perform(click());
-
         // Use CountDownLatch to wait for Firebase operation to complete
         CountDownLatch latch = new CountDownLatch(1);
         firebaseController.getAllEvents(new FirebaseController.OnEventsLoadedListener() {
@@ -89,8 +89,8 @@ public class OrganizeEventTest {
             public void onEventsLoaded(ArrayList<Event> events) {
                 // Verify the event after it's loaded
                 for (Event event : events) {
-                    if (event.getEventName().equals("Please workith")) {
-                        assertEquals(event.getEventName(), "Please workith");
+                    if (event.getEventName().equals(id)) {
+                        assertEquals(event.getEventName(), id);
                         latch.countDown(); // Signal that events are loaded
                         break;
                     }
