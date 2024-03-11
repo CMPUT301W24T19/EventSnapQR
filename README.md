@@ -7,7 +7,6 @@ EventSnapQR is an event planning application developed for Android. It features 
 | alfartos | joseph8071      |
 | maurius  | Mjcs99          |
 | tareqmoh | tareqansari     |
-| yg17     | WilliamGuo2002  |
 | bstahlke | bstahl9         |
 | nevin2   | n3vin2          |
 
