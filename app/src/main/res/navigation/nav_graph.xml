@@ -85,9 +85,9 @@
     </fragment>
     <fragment
         android:id="@+id/yourEventFragment"
-        android:name="com.example.eventsnapqr.YourEventFragment"
+        android:name="com.example.eventsnapqr.ManageEventFragment"
         android:label="Your Event"
-        tools:layout="@layout/fragment_your_event">
+        tools:layout="@layout/fragment_manage_event">
         <action
             android:id="@+id/action_YourEventFragment_to_MapFragment"
             app:destination="@id/MapFragment"
