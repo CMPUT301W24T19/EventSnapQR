@@ -92,9 +92,14 @@ public class QRDialogFragment extends DialogFragment {
 
         buttonExit = view.findViewById(R.id.button_exit);
         buttonExit.setOnClickListener(new View.OnClickListener() {
+            String destination = bundle.getString("destination");
             @Override
             public void onClick(View v) {
-                requireActivity().finish();
+                if (destination.equals("manage")) {
+                    requireActivity().onBackPressed();
+                } else if (destination.equals("main")) {
+                    requireActivity().finish();
+                }
             }
         });
 

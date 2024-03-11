@@ -96,6 +96,9 @@
             android:id="@+id/action_YourEventFragment_to_RealTimeAttendanceFragment"
             app:destination="@id/RealTimeAttendanceFragment"
             />
+        <action
+            android:id="@+id/action_ManageEventFragment_to_qRDialogFragment"
+            app:destination="@id/qRDialogFragment"/>
     </fragment>
     <fragment
         android:id="@+id/RealTimeAttendanceFragment"
@@ -150,13 +153,7 @@
             android:id="@+id/action_adminBrowseImagesFragment_to_AdminModeMainPageFragment"
             app:destination="@id/adminModeMainPageFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/scanCameraFragment"
-        android:name="com.example.eventsnapqr.ScanCameraFragment"
-        android:label="Scan QR Activity"
-        tools:layout="@layout/fragment_scan_camera">
 
-    </fragment>
     <fragment
         android:id="@+id/adminBrowseEventsFragment"
         android:name="com.example.eventsnapqr.AdminBrowseEventsFragment"

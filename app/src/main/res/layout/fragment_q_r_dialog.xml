@@ -8,8 +8,6 @@
     android:weightSum="1"
     android:layout_gravity="center">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#FFFFFF"
-            android:text="Exit to main" />
+            android:text="Return" />
         <Space
             android:layout_width="26dp"
             android:layout_height="wrap_content" />
