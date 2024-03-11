@@ -1,6 +1,7 @@
 package com.example.eventsnapqr;
 
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -21,6 +22,10 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.StorageReference;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,14 +102,26 @@ public class ManageEventFragment extends Fragment {
         fetchAttendeeData();
 
         view.findViewById(R.id.button_back_button).setOnClickListener(v -> requireActivity().onBackPressed());
+
         view.findViewById(R.id.real_time_attendance_button).setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
             navController.navigate(R.id.action_YourEventFragment_to_RealTimeAttendanceFragment);
         });
+
         view.findViewById(R.id.attendee_map_button).setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
             navController.navigate(R.id.action_YourEventFragment_to_MapFragment);
         });
+
+        view.findViewById(R.id.qr_code_button).setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putString("eventId", eventId);
+            bundle.putString("destination", "manage");
+            // navigate to QR dialog fragment here
+            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+            navController.navigate(R.id.action_ManageEventFragment_to_qRDialogFragment, bundle);
+        });
+
         view.findViewById(R.id.notify_attendee_button).setOnClickListener(v -> showNotificationDialog());
 
         attendeeListView.setOnItemClickListener((parent, view1, position, id) -> CreateDialog(position));
