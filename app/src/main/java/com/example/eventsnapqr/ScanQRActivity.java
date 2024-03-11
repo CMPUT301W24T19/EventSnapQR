@@ -87,10 +87,17 @@ public class ScanQRActivity extends AppCompatActivity {
                         NavController navController = Navigation.findNavController(ScanQRActivity.this, R.id.nav_host_fragment);
                         Bundle bundle = new Bundle();
                         bundle.putString("eventId", eventId);
-                        navController.navigate(R.id.eventDetailsFragment, bundle);
+                        // navController.navigate(R.id.eventDetailsFragment, bundle);
                     })
                     .setNegativeButton("Return", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
+                            finish();
+                        }
+                    })
+                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            // finish activity if dialog is dismissed without button press
                             finish();
                         }
                     })
@@ -114,9 +121,16 @@ public class ScanQRActivity extends AppCompatActivity {
                     public void onEventRetrieved(Event event) {
                         if (event != null) {
                             AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-                            builder.setTitle("You have checked into " + event.getEventName() + " for the " + count + getSuffix(count) + " time")
+                            builder.setTitle("You have checked into " + event.getEventName() + " for the " + count + getSuffix(count) + " time!")
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
+                                            finish();
+                                        }
+                                    })
+                                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                        @Override
+                                        public void onDismiss(DialogInterface dialog) {
+                                            // Finish activity if dialog is dismissed without button press
                                             finish();
                                         }
                                     });
@@ -126,6 +140,13 @@ public class ScanQRActivity extends AppCompatActivity {
                             builder.setMessage("Failed to retrieve event details.")
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
+                                            finish();
+                                        }
+                                    })
+                                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                        @Override
+                                        public void onDismiss(DialogInterface dialog) {
+                                            // finish activity if dialog is dismissed without button press
                                             finish();
                                         }
                                     });
@@ -143,12 +164,18 @@ public class ScanQRActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int id) {
                                 finish();
                             }
+                        })
+                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                // Finish activity if dialog is dismissed without user interaction
+                                finish();
+                            }
                         });
                 builder.create().show();
             }
         });
     }
-
 
     /**
      * returns the correct suffix for the given integer
@@ -207,9 +234,14 @@ public class ScanQRActivity extends AppCompatActivity {
                         Log.e(TAG, "User in Event attendees check failed: " + e.getMessage()); // Log if there's an error
                     }
                 });
+            } else {
+                // case when no QR code was scanned before camera closed
+                Log.d(TAG, "No QR code scanned before camera closed");
+                finish(); // finish the activity if no QR code was scanned before camera closed
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
 }
