@@ -157,46 +157,33 @@ public class OrganizeEventFragment extends Fragment {
             public void onUserRetrieved(User user) {
                 if (user != null) {
                     String eventID = FirebaseController.getInstance().getUniqueEventID();
-                    BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("eventId", eventID);
 
-                    try {
-                        Bitmap qrBitmap = barcodeEncoder.encodeBitmap(eventID, BarcodeFormat.QR_CODE, 400, 400);
-                        if (qrBitmap != null) {
-                            Log.d("QR_CODE", "QR Code generated successfully");
-                        } else {
-                            Log.e("QR_CODE", "Failed to generate QR Code: Bitmap is null");
-                        }
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelable("bitmap", qrBitmap);
-                        if (imageUri != null) {
-                            StorageReference userRef = storageRef.child("eventPosters/" + eventID);  // specifies the path on the cloud storage
-                            userRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
-                                userRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                    imageUri = uri;
-                                    uriString = imageUri.toString();
-                                    Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
-                                    Log.d("USER NAME", newEvent.getOrganizer().getName());
-                                    firebaseController.addEvent(newEvent);
-                                    NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                                    navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
-                                });
+                    if (imageUri != null) {
+                        StorageReference userRef = storageRef.child("eventPosters/" + eventID); // specifies the path on the cloud storage
+                        userRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
+                            userRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                imageUri = uri;
+                                uriString = imageUri.toString();
+                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
+                                Log.d("USER NAME", newEvent.getOrganizer().getName());
+                                firebaseController.addEvent(newEvent);
+                                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                                navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                             });
-                        } else {
-                            uriString = null;
-                            Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
-                            Log.d("USER NAME", newEvent.getOrganizer().getName());
-                            firebaseController.addEvent(newEvent);
-                            firebaseController.addOrganizedEvent(user, newEvent);
-                            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                            navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
-                        }
-                    } catch (WriterException e) {
-                        e.printStackTrace();
-                        Log.e("QR_CODE", "Failed to generate QR Code: " + e.getMessage());
+                        });
+                    } else {
+                        uriString = null;
+                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
+                        Log.d("USER NAME", newEvent.getOrganizer().getName());
+                        firebaseController.addEvent(newEvent);
+                        firebaseController.addOrganizedEvent(user, newEvent);
+                        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                        navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                     }
                 }
             }
         });
     }
-
 }

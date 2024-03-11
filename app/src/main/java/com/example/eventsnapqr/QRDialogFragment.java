@@ -18,6 +18,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -30,7 +34,8 @@ public class QRDialogFragment extends DialogFragment {
     private ImageView imageQR;
     private Button buttonExit;
     private Button buttonSaveQR;
-    private Bitmap bitmap;
+    private Bitmap qrBitmap;
+    private String eventId;
 
     /**
      * What should be executed when the fragment is created
@@ -62,20 +67,27 @@ public class QRDialogFragment extends DialogFragment {
 
         // Retrieve data from the bundle
         Bundle bundle = getArguments();
-        if (bundle != null) {
-            bitmap = bundle.getParcelable("bitmap");
-            if (bitmap != null) {
-                // Setting the QR code bitmap to ImageView
-                imageQR = view.findViewById(R.id.imageview_qr);
-                imageQR.setImageBitmap(bitmap);
+        eventId = bundle.getString("eventId");
+        BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
 
-                // Log to ensure bitmap is received correctly
-                Log.d("QRDialogFragment", "Bitmap received successfully");
+        try {
+            qrBitmap = barcodeEncoder.encodeBitmap(eventId, BarcodeFormat.QR_CODE, 400, 400);
+            if (qrBitmap != null) {
+                Log.d("QR_CODE", "QR Code generated successfully");
             } else {
-                Log.e("QRDialogFragment", "Bitmap is null");
+                Log.e("QR_CODE", "Failed to generate QR Code: Bitmap is null");
             }
+        } catch (WriterException e) {
+            e.printStackTrace();
+            Log.e("QR_CODE", "Failed to generate QR Code: " + e.getMessage());
+        }
+
+        if (qrBitmap != null) {
+            imageQR = view.findViewById(R.id.imageview_qr);
+            imageQR.setImageBitmap(qrBitmap);
+            Log.d("QRDialogFragment", "Bitmap received successfully");
         } else {
-            Log.e("QRDialogFragment", "Bundle is null");
+            Log.e("QRDialogFragment", "Bitmap is null");
         }
 
         buttonExit = view.findViewById(R.id.button_exit);
@@ -99,15 +111,15 @@ public class QRDialogFragment extends DialogFragment {
                     } catch (FileNotFoundException ex) {
                         throw new RuntimeException(ex);
                     }
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                    qrBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
                     outputStream.close();
 
-                    MediaStore.Images.Media.insertImage(getContext().getContentResolver(),bitmap,"QR Code",null);
+                    MediaStore.Images.Media.insertImage(getContext().getContentResolver(),qrBitmap,"QR Code",null);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                shareImage(bitmap);
+                shareImage(qrBitmap);
             }
         });
         return view;
