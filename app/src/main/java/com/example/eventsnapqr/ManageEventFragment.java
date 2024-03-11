@@ -114,9 +114,8 @@ public class ManageEventFragment extends Fragment {
         });
 
         view.findViewById(R.id.qr_code_button).setOnClickListener(v -> {
-            String eventID = FirebaseController.getInstance().getUniqueEventID();
             Bundle bundle = new Bundle();
-            bundle.putString("eventId", eventID);
+            bundle.putString("eventId", eventId);
             bundle.putString("destination", "manage");
             // navigate to QR dialog fragment here
             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);

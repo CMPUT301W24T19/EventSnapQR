@@ -68,6 +68,7 @@ public class QRDialogFragment extends DialogFragment {
         // Retrieve data from the bundle
         Bundle bundle = getArguments();
         eventId = bundle.getString("eventId");
+        Log.d("EVENT ID QR DIALOG: ", eventId);
         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
 
         try {

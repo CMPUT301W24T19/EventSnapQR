@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * class to interact with the collections in the firestore database
@@ -601,12 +602,20 @@ public class FirebaseController {
         void onCheckFailed(Exception e);
     }
 
+    public interface CheckInListener {
+        void onCheckInComplete(int count);
+        void onCheckInFailure(Exception e);
+    }
+
+
     /**
-     * increment the number of times an attendee has checked into an event
+     * increment the number of times an attendee has checked into an event,
+     * and return the result
      * @param userId given user to increment
      * @param eventId the event in which the user checked in
+     * @param listener acts as a listener to return the integer result
      */
-    public void incrementCheckIn(String userId, String eventId) {
+    public void incrementCheckIn(String userId, String eventId, CheckInListener listener) {
         DocumentReference eventRef = db.collection("events").document(eventId)
                 .collection("attendees").document(userId);
 
@@ -614,16 +623,32 @@ public class FirebaseController {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d("Increment Check-In",
-                                "Successfully incremented check-in count for user " + userId + " in event " + eventId);
+                        eventRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                Integer updatedCount = documentSnapshot.getLong("checkedIn").intValue(); // Convert Long to Integer and then to int
+                                if (updatedCount != null) {
+                                    listener.onCheckInComplete(updatedCount);
+                                } else {
+                                    listener.onCheckInFailure(new RuntimeException("Failed to retrieve updated count"));
+                                }
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                listener.onCheckInFailure(e);
+                            }
+                        });
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.e("Increment Check-In", "Failed to increment check-in count: " + e.getMessage());
+                        listener.onCheckInFailure(e);
                     }
                 });
     }
 
 }
+
+

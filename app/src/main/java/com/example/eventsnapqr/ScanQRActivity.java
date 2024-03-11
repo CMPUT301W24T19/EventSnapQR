@@ -26,6 +26,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * activity where the QR scanner is implemented using ZXing library
  * the following video was a major help and source for setting up
@@ -101,40 +103,73 @@ public class ScanQRActivity extends AppCompatActivity {
     /**
      * display an alert dialog notifying the user they have successfully checked into the event
      * and return to the main page
-     * @param eventID
+     * @param eventId the unique identifier of the given event
      */
-    private void checkIn(String eventID) {
-        // increment number of times a user has checked into the event
-        FirebaseController.getInstance().incrementCheckIn(userId, eventID);
-
-        // Retrieve event details
-        FirebaseController.getInstance().getEvent(eventID, new FirebaseController.OnEventRetrievedListener() {
+    private void checkIn(String eventId) {
+        FirebaseController.getInstance().incrementCheckIn(userId, eventId, new FirebaseController.CheckInListener() {
             @Override
-            public void onEventRetrieved(Event event) {
-                if (event != null) {
-                    // Event retrieved successfully, show dialog with event details
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-                    builder.setTitle("You have checked into " + event.getEventName())
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    finish();
-                                }
-                            });
-                    builder.create().show();
-                } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-                    builder.setMessage("Failed to retrieve event details.")
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    finish();
-                                }
-                            });
-                    builder.create().show();
-                }
+            public void onCheckInComplete(int count) {
+                FirebaseController.getInstance().getEvent(eventId, new FirebaseController.OnEventRetrievedListener() {
+                    @Override
+                    public void onEventRetrieved(Event event) {
+                        if (event != null) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
+                            builder.setTitle("You have checked into " + event.getEventName() + " for the " + count + getSuffix(count) + " time")
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            finish();
+                                        }
+                                    });
+                            builder.create().show();
+                        } else {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
+                            builder.setMessage("Failed to retrieve event details.")
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            finish();
+                                        }
+                                    });
+                            builder.create().show();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onCheckInFailure(Exception e) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
+                builder.setMessage("Failed to increment check-in count.")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                finish();
+                            }
+                        });
+                builder.create().show();
             }
         });
     }
 
+
+    /**
+     * returns the correct suffix for the given integer
+     * @param n the number in which to retrieve the suffix
+     */
+    public String getSuffix(Integer n) {
+        if (n >= 11 && n <= 13) {
+            return "th";
+        } else {
+            switch (n % 10) {
+                case 1:
+                    return "st";
+                case 2:
+                    return "nd";
+                case 3:
+                    return "rd";
+                default:
+                    return "th";
+            }
+        }
+    }
 
     /**
      * handles what to do with the content of the QR code
