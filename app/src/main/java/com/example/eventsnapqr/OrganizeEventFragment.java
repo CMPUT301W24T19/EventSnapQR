@@ -2,7 +2,6 @@ package com.example.eventsnapqr;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -21,16 +20,15 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
-import java.util.ArrayList;
-
-import androidmads.library.qrgenearator.QRGContents;
-import androidmads.library.qrgenearator.QRGEncoder;
+import java.io.ByteArrayOutputStream;
 
 /**
  * fragment where a user can organize an event using an eventName, an optional poster (default image
@@ -49,7 +47,8 @@ public class OrganizeEventFragment extends Fragment {
     private FirebaseController firebaseController = new FirebaseController();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
     private Uri imageUri;
-    private String uriString;
+    private String posterUriString;
+    private String qrUriString;
 
     /**
      * Setup actions to be taken upon view creation and when the views are interacted with
@@ -168,28 +167,45 @@ public class OrganizeEventFragment extends Fragment {
                         }
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("bitmap", qrBitmap);
-                        if (imageUri != null) {
-                            StorageReference userRef = storageRef.child("eventPosters/" + eventID);  // specifies the path on the cloud storage
-                            userRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
-                                userRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                    imageUri = uri;
-                                    uriString = imageUri.toString();
-                                    Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
+
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        qrBitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
+                        byte[] qrBytes = outputStream.toByteArray();
+                        UploadTask uploadQR = storageRef.child("eventQR/" + eventID).putBytes(qrBytes);
+                        while (uploadQR.isInProgress()) {}
+                        storageRef.child("eventQR/" + eventID).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                qrUriString = uri.toString();
+                                if (imageUri != null) {
+                                    StorageReference userRef = storageRef.child("eventPosters/" + eventID);  // specifies the path on the cloud storage
+                                    UploadTask posterUpload = userRef.putFile(imageUri);
+                                    while (posterUpload.isInProgress()) {}
+                                    Log.d("TAG", "True1");
+                                    userRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            posterUriString = uri.toString();
+                                            Log.d("TAG", "QR URI: " + qrUriString);
+                                            Event newEvent = new Event(user, eventName, eventDesc, posterUriString, eventMaxAttendees, eventID, announcement, qrUriString);
+                                            Log.d("USER NAME", newEvent.getOrganizer().getName());
+                                            firebaseController.addEvent(newEvent);
+                                            firebaseController.addOrganizedEvent(user, newEvent);
+                                            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                                            navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                                        }
+                                    });
+                                } else {
+                                    posterUriString = null;
+                                    Event newEvent = new Event(user, eventName, eventDesc, posterUriString, eventMaxAttendees, eventID, announcement, qrUriString);
                                     Log.d("USER NAME", newEvent.getOrganizer().getName());
                                     firebaseController.addEvent(newEvent);
+                                    firebaseController.addOrganizedEvent(user, newEvent);
                                     NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                                     navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
-                                });
-                            });
-                        } else {
-                            uriString = null;
-                            Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
-                            Log.d("USER NAME", newEvent.getOrganizer().getName());
-                            firebaseController.addEvent(newEvent);
-                            firebaseController.addOrganizedEvent(user, newEvent);
-                            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                            navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
-                        }
+                                }
+                            }
+                        });
                     } catch (WriterException e) {
                         e.printStackTrace();
                         Log.e("QR_CODE", "Failed to generate QR Code: " + e.getMessage());

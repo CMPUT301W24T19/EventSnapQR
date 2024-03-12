@@ -32,7 +32,7 @@ public class EventTest {
         assertEquals(organizer, event.getOrganizer());
         assertEquals(eventName, event.getEventName());
         assertEquals(description, event.getDescription());
-        assertEquals(posterUri, event.getPosterUri());
+        assertEquals(posterUri, event.getPosterURI());
         assertEquals(maxAttendees, event.getMaxAttendees());
         assertEquals(eventID, event.getEventID());
         assertEquals(announcement, event.getAnnouncement());
@@ -59,7 +59,7 @@ public class EventTest {
     @Test
     public void getPosterUri(String posterUri){
         Event event = mockEvent();
-        assertEquals(event.getPosterUri(),"www.goodevent.com");
+        assertEquals(event.getPosterURI(),"www.goodevent.com");
     }
     @Test
     public void setDescription(){

@@ -210,8 +210,69 @@ public class AdminTests {
         onView(withId(R.id.button_back)).perform(click());
     }
 
+    @Test
+    public void checkUserInfo() {
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        ContentResolver contentResolver = context.getContentResolver();
+        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
 
-    
+        User testUser = new User("TestUser", androidId, "testHomePage", "testNumber", "testEmail");
+
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        firebaseFirestore.collection("users").document(androidId).set(testUser);
+        firebaseFirestore.collection("admin").document(androidId).set(testUser);
+        // Disable animations
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 0");
+
+        ActivityScenario.launch(MainActivity.class);
+        CountDownLatch latch = new CountDownLatch(1);
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        onView(withId(R.id.admin_button)).perform(click());
+        onView(withId(R.id.buttonBrowseUserProfiles)).perform(click());
+        onView(withId(R.id.browseProfileFragment)).check(matches(isDisplayed()));
+        onView(withId(R.id.adminMainPage)).check(doesNotExist());
+        onView(withText("Admin Browse Profiles")).check(matches(isDisplayed()));
+        onView(withId(R.id.button_back_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.button_back_button)).perform(click());
+        onView(withId(R.id.adminMainPage)).check(matches(isDisplayed()));
+        onView(withId(R.id.browseProfileFragment)).check(doesNotExist());
+        onView(withId(R.id.buttonBrowseUserProfiles)).perform(click());
+        onView(withId(R.id.user_profile_pictures)).check(matches(isDisplayed()));
+        onView(withText(testUser.getName())).check(matches(isDisplayed()));
+        onView(withId(R.id.userContent)).check(matches(isDisplayed()));
+        onView(withId(R.id.user_profile_pictures))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        onView(withText("User information")).check(matches(isDisplayed()));
+        onView(withText("Name: " + testUser.getName() + "\n" +
+                        "Home Page: " + testUser.getHomepage() + "\n" +
+                        "Phone Number: " + testUser.getPhoneNumber() + "\n" +
+                        "Email: " + testUser.getEmail() + "\n")).check(matches(isDisplayed()));
+        onView(withText("View")).check(matches(isDisplayed()));
+        onView(withText("Delete")).check(matches(isDisplayed()));
+        onView(withText("Cancel")).check(matches(isDisplayed()));
+        onView(withText("View")).perform(click());
+        onView(withId(R.id.userInfoActivity)).check(matches(isDisplayed()));
+
+
+        // Enable animations after the test is finished
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 1");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 1");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 1");
+    }
 
 
 
@@ -307,7 +368,7 @@ public class AdminTests {
         }
         Log.d("TAG", "Making event");
         Log.d("TAG", "Event URI: " + result[0].toString());
-        Event testEvent = new Event(testUser, "testEvent", "testDescription", result[0].toString(), null, "eventID", "testAnnouncements");
+        Event testEvent = new Event(testUser, "testEvent", "testDescription", result[0].toString(), null, "eventID", "testAnnouncements", null);
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseFirestore.collection("users").document(androidId).set(testUser);

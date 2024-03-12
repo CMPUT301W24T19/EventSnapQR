@@ -85,7 +85,7 @@ public class AdminBrowseImagesFragment extends Fragment {
                     String eventName = (String) doc.getData().get("eventName");
                     String posterUri = (String) doc.getData().get("posterURI");
                     if (posterUri == null) {continue;}
-                    Event event = new Event(null, eventName, null, posterUri, null, eventID, null);
+                    Event event = new Event(null, eventName, null, posterUri, null, eventID, null, null);
                     posters.add(event);
                 }
                 adapter.notifyDataSetChanged();
@@ -132,19 +132,7 @@ public class AdminBrowseImagesFragment extends Fragment {
                 .setMessage("Are you sure you want to delete the poster for '" + event.getEventName() + "'?")
                 .setPositiveButton("Yes", (dialog, which) -> { // if yes
                     if (event.getPosterURI() != null) {
-                        String[] firebaseStoragePath = Uri.parse(event.getPosterURI()).getPath().split("/");
-                        String storagePath = firebaseStoragePath[firebaseStoragePath.length - 2] + "/" + firebaseStoragePath[firebaseStoragePath.length - 1];
-                        FirebaseStorage.getInstance().getReference().child(storagePath).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
-                                Log.d("TAG", "Picture successfully deleted");
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.d("TAG", "Picture not deleted");
-                            }
-                        });
+                        FirebaseController.getInstance().deleteImage(event.getPosterURI());
                         FirebaseController.getInstance().getEvent(event.getEventID(), new FirebaseController.OnEventRetrievedListener() {
                             @Override
                             public void onEventRetrieved(Event event) {
