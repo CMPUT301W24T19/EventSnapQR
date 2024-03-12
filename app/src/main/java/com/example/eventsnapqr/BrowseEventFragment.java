@@ -12,6 +12,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -80,8 +82,7 @@ public class BrowseEventFragment extends Fragment {
         view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(requireContext(), MainActivity.class);
-                startActivity(intent);
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
             }
         });
 
