@@ -214,5 +214,4 @@ public class OrganizeEventFragment extends Fragment {
             }
         });
     }
-
 }
