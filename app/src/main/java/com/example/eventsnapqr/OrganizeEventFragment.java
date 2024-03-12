@@ -38,6 +38,7 @@ import java.io.ByteArrayOutputStream;
 public class OrganizeEventFragment extends Fragment {
     private ImageView backButton;
     private Button addEventButton;
+    private Button reuseQRButton;
     private EditText editTextEventName;
     private EditText editTextEventDesc;
     private EditText editTextMaxAttendees;
@@ -71,6 +72,7 @@ public class OrganizeEventFragment extends Fragment {
 
         backButton = view.findViewById(R.id.button_back_button);
         addEventButton = view.findViewById(R.id.button_create);
+        reuseQRButton = view.findViewById(R.id.button_reuse_qr);
         editTextEventName = view.findViewById(R.id.editTextEventName);
         editTextEventDesc = view.findViewById(R.id.editTextEventDesc);
         editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
@@ -102,6 +104,12 @@ public class OrganizeEventFragment extends Fragment {
                 pickMedia.launch(new PickVisualMediaRequest.Builder()
                         .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                         .build());
+            }
+        });
+        reuseQRButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ;
             }
         });
         return view;
@@ -136,8 +144,7 @@ public class OrganizeEventFragment extends Fragment {
      * used to return to the main page
      */
     private void navigateToMainPageFragment() {
-        Intent intent = new Intent(requireContext(), MainActivity.class);
-        startActivity(intent);
+        getActivity().finish();
     }
 
     /**
