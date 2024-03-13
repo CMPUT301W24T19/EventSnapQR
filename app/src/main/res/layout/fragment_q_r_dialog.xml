@@ -27,7 +27,6 @@
             android:id="@+id/button_exit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
             android:text="Return" />
         <Space
             android:layout_width="26dp"
@@ -37,7 +36,6 @@
             android:id="@+id/button_save_qr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/white"
             android:text="Share QRCode" />
     </LinearLayout>
 

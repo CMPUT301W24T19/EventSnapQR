@@ -25,15 +25,13 @@ public class Event {
      * @param description description of the event
      * @param posterURI URL for the event poster
      * @param maxAttendees maximum number of attendees
-     * @param announcement announcements related to the event
      */
-    public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees, String eventID, String announcement) {
+    public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees, String eventID) {
         this.organizer = organizer;
         this.eventName = eventName;
         this.description = description;
         this.posterURI = posterURI;
         this.maxAttendees = maxAttendees;
-        this.announcement = announcement;
         this.eventID = eventID;
     }
 

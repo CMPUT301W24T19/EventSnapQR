@@ -193,8 +193,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="0.1"
                 android:paddingHorizontal="20dp"
-                android:text="Save"
-                android:background="@color/white"/>
+                android:text="Save" />
 
             <Switch
                 android:id="@+id/switch_notification"
