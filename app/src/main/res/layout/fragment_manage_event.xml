@@ -94,23 +94,21 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:layout_weight="0.35"
-                android:background="@color/white"
                 android:text="Map"
                 app:layout_constraintEnd_toStartOf="@+id/qr_code_button"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/organized_events_list" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/organized_events_list" />
 
             <Button
                 android:id="@+id/qr_code_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_weight="0.35"
-            android:background="@color/white"
-            android:text="QR Code"
-            app:layout_constraintEnd_toStartOf="@+id/real_time_attendance_button"
-            app:layout_constraintStart_toEndOf="@+id/attendee_map_button"
-            app:layout_constraintTop_toBottomOf="@+id/organized_events_list" />
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:layout_weight="0.35"
+                android:text="QR Code"
+                app:layout_constraintEnd_toStartOf="@+id/real_time_attendance_button"
+                app:layout_constraintStart_toEndOf="@+id/attendee_map_button"
+                app:layout_constraintTop_toBottomOf="@+id/organized_events_list" />
 
             <Button
                 android:id="@+id/notify_attendee_button"
@@ -118,7 +116,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:layout_weight="0.35"
-                android:background="@color/white"
                 android:text="Notify"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/real_time_attendance_button"
@@ -127,10 +124,10 @@
 
         <Button
             android:id="@+id/real_time_attendance_button"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:text="Real-Time Attendance"
+            android:text="Attendance"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"

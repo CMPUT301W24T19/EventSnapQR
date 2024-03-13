@@ -1,5 +1,7 @@
 package com.example.eventsnapqr;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -29,6 +31,13 @@ import com.google.zxing.WriterException;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.io.ByteArrayOutputStream;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.Calendar;
 
 /**
  * fragment where a user can organize an event using an eventName, an optional poster (default image
@@ -44,6 +53,15 @@ public class OrganizeEventFragment extends Fragment {
     private EditText editTextMaxAttendees;
     private ImageView uploadPosterButton;
     private EditText editAnnouncements;
+    private ExtendedFloatingActionButton createEventButton;
+    private TextInputEditText editTextEventName;
+    private TextInputEditText editTextEventDesc;
+    private TextInputEditText editTextMaxAttendees;
+    private TextInputEditText editTextStartDate;
+    private TextInputEditText editTextStartTime;
+    private TextInputEditText editTextEndDate;
+    private TextInputEditText editTextEndTime;
+    private Button uploadPosterButton;
     private String androidID;
     private FirebaseController firebaseController = new FirebaseController();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
@@ -71,13 +89,25 @@ public class OrganizeEventFragment extends Fragment {
         androidID = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         backButton = view.findViewById(R.id.button_back_button);
-        addEventButton = view.findViewById(R.id.button_create);
-        reuseQRButton = view.findViewById(R.id.button_reuse_qr);
+        reuseQRButton = view.findViewById(R.id.buttonReuseQR);
+        createEventButton = view.findViewById(R.id.extendedFabCreateEvent);
         editTextEventName = view.findViewById(R.id.editTextEventName);
         editTextEventDesc = view.findViewById(R.id.editTextEventDesc);
         editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
-        uploadPosterButton = view.findViewById(R.id.upload_poster_button);
-        editAnnouncements = view.findViewById(R.id.editAnnouncements);
+        uploadPosterButton = view.findViewById(R.id.buttonUploadPoster);
+
+        // set up date and time picker dialogs
+        editTextStartDate = view.findViewById(R.id.editTextStartDate);
+        editTextStartDate.setOnClickListener(v -> showDatePickerDialog(editTextStartDate));
+
+        editTextStartTime = view.findViewById(R.id.editTextStartTime);
+        editTextStartTime.setOnClickListener(v -> showTimePickerDialog(editTextStartTime));
+
+        editTextEndDate = view.findViewById(R.id.editTextEndDate);
+        editTextEndDate.setOnClickListener(v -> showDatePickerDialog(editTextEndDate));
+
+        editTextEndTime = view.findViewById(R.id.editTextEndTime);
+        editTextEndTime.setOnClickListener(v -> showTimePickerDialog(editTextEndTime));
 
         ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
@@ -92,7 +122,7 @@ public class OrganizeEventFragment extends Fragment {
                 });
 
         backButton.setOnClickListener(v -> navigateToMainPageFragment());
-        addEventButton.setOnClickListener(v -> {
+        createEventButton.setOnClickListener(v -> {
             if (validateInput()) {
                 createEvent();
             }
@@ -155,7 +185,6 @@ public class OrganizeEventFragment extends Fragment {
         String eventDesc = editTextEventDesc.getText().toString(); // get the description of the event
         String maxAttendeesInput = editTextMaxAttendees.getText().toString();
         Integer eventMaxAttendees = !maxAttendeesInput.isEmpty() ? Integer.valueOf(maxAttendeesInput) : null;
-        String announcement = editAnnouncements.getText().toString();
 
         // retrieve user from the database based on the androidID, create a new user and event object
         FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
@@ -163,7 +192,8 @@ public class OrganizeEventFragment extends Fragment {
             public void onUserRetrieved(User user) {
                 if (user != null) {
                     String eventID = FirebaseController.getInstance().getUniqueEventID();
-                    BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("eventId", eventID);
 
                     try {
                         Bitmap qrBitmap = barcodeEncoder.encodeBitmap(eventID, BarcodeFormat.QR_CODE, 400, 400);
@@ -174,36 +204,17 @@ public class OrganizeEventFragment extends Fragment {
                         }
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("bitmap", qrBitmap);
-
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        qrBitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
-                        byte[] qrBytes = outputStream.toByteArray();
-                        UploadTask uploadQR = storageRef.child("eventQR/" + eventID).putBytes(qrBytes);
-                        while (uploadQR.isInProgress()) {}
-                        storageRef.child("eventQR/" + eventID).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                qrUriString = uri.toString();
-                                if (imageUri != null) {
-                                    StorageReference userRef = storageRef.child("eventPosters/" + eventID);  // specifies the path on the cloud storage
-                                    UploadTask posterUpload = userRef.putFile(imageUri);
-                                    while (posterUpload.isInProgress()) {}
-                                    Log.d("TAG", "True1");
-                                    userRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            posterUriString = uri.toString();
-                                            Log.d("TAG", "QR URI: " + qrUriString);
-                                            Event newEvent = new Event(user, eventName, eventDesc, posterUriString, eventMaxAttendees, eventID, announcement, qrUriString);
-                                            Log.d("USER NAME", newEvent.getOrganizer().getName());
-                                            firebaseController.addEvent(newEvent);
-                                            firebaseController.addOrganizedEvent(user, newEvent);
-                                            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                                            navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
-                                        }
-                                    });
-                                } else {
-                                    posterUriString = null;
+                        if (imageUri != null) {
+                            StorageReference userRef = storageRef.child("eventPosters/" + eventID);  // specifies the path on the cloud storage
+                            UploadTask posterUpload = userRef.putFile(imageUri);
+                            while (posterUpload.isInProgress()) {
+                            }
+                            Log.d("TAG", "True1");
+                            userRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    posterUriString = uri.toString();
+                                    Log.d("TAG", "QR URI: " + qrUriString);
                                     Event newEvent = new Event(user, eventName, eventDesc, posterUriString, eventMaxAttendees, eventID, announcement, qrUriString);
                                     Log.d("USER NAME", newEvent.getOrganizer().getName());
                                     firebaseController.addEvent(newEvent);
@@ -211,8 +222,16 @@ public class OrganizeEventFragment extends Fragment {
                                     NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                                     navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                                 }
-                            }
-                        });
+                            });
+                        } else {
+                            posterUriString = null;
+                            Event newEvent = new Event(user, eventName, eventDesc, posterUriString, eventMaxAttendees, eventID, announcement, qrUriString);
+                            Log.d("USER NAME", newEvent.getOrganizer().getName());
+                            firebaseController.addEvent(newEvent);
+                            firebaseController.addOrganizedEvent(user, newEvent);
+                            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                            navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                        }
                     } catch (WriterException e) {
                         e.printStackTrace();
                         Log.e("QR_CODE", "Failed to generate QR Code: " + e.getMessage());
@@ -221,5 +240,33 @@ public class OrganizeEventFragment extends Fragment {
             }
         });
     }
+    private void showDatePickerDialog(TextInputEditText editText) {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                requireContext(),
+                (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
+                    String selectedDate = selectedDayOfMonth + "/" + (selectedMonth + 1) + "/" + selectedYear;
+                    editText.setText(selectedDate);
+                },
+                year, month, dayOfMonth);
+        datePickerDialog.show();
+    }
+    private void showTimePickerDialog(TextInputEditText editText) {
+        Calendar calendar = Calendar.getInstance();
+        int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+                requireContext(),
+                (view, selectedHourOfDay, selectedMinute) -> {
+                    String selectedTime = selectedHourOfDay + ":" + selectedMinute;
+                    editText.setText(selectedTime);
+                },
+                hourOfDay, minute, false);
+        timePickerDialog.show();
+    }
 }

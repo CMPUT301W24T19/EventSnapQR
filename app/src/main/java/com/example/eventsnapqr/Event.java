@@ -26,7 +26,6 @@ public class Event {
      * @param description description of the event
      * @param posterURI URL for the event poster
      * @param maxAttendees maximum number of attendees
-     * @param announcement announcements related to the event
      */
     public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees, String eventID, String announcement, String qrURI) {
         this.organizer = organizer;
@@ -34,7 +33,6 @@ public class Event {
         this.description = description;
         this.posterURI = posterURI;
         this.maxAttendees = maxAttendees;
-        this.announcement = announcement;
         this.eventID = eventID;
         this.qrURI = qrURI;
     }
