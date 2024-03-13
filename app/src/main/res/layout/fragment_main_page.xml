@@ -26,7 +26,6 @@
                 android:id="@+id/admin_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
                 android:text="ADMIN"
                 android:textSize="12sp"
                 android:visibility="gone" />
@@ -76,23 +75,20 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:text="Scan QR"
-                android:layout_marginBottom="8dp"
-                android:background="@color/white"/>
+                android:layout_marginBottom="8dp"/>
 
             <Button
                 android:id="@+id/organize_event_button"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:text="Organize New Event"
-                android:layout_marginBottom="8dp"
-                android:background="@color/white" />
+                android:layout_marginBottom="8dp" />
 
             <Button
                 android:id="@+id/browse_events_button"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Browse Events"
-                android:background="@color/white" />
+                android:text="Browse Events" />
         </LinearLayout>
 
     </LinearLayout>

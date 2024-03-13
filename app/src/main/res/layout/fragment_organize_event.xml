@@ -1,162 +1,208 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layout_gravity="bottom">
+    android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="45dp">
+    <ImageView
+        android:id="@+id/button_back_button"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/baseline_arrow_back_24"
+        android:padding="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
-        <ImageView
-            android:id="@+id/button_back_button"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:src="@drawable/baseline_arrow_back_24"
-            android:padding="5dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Organize Event"
-            android:textSize="20sp"/>
-    </RelativeLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:layout_weight="1">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:text="Event name:"/>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-        <EditText
-            android:id="@+id/editTextEventName"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#4A4A4A"
-            android:maxLength="50" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:layout_weight="1">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Upload poster:"/>
-        <ImageView
-            android:id="@+id/upload_poster_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            app:srcCompat="@android:drawable/ic_menu_upload"
-            android:padding="5dp"
-            android:clickable="true"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:weightSum="1"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Description:" />
-        <EditText
-            android:id="@+id/editTextEventDesc"
-            style="@android:style/Widget.EditText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="#4A4A4A"
-            android:backgroundTintMode="add"
-            android:gravity="start" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Announcements:" />
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-        <EditText
-            android:id="@+id/editAnnouncements"
-            style="@android:style/Widget.EditText"
-            android:layout_width="300dp"
-            android:layout_height="120dp"
-            android:backgroundTint="#4A4A4A"
-            android:backgroundTintMode="add"
-            android:inputType="textMultiLine"
-            android:scrollbars="vertical"
-            android:scrollbarStyle="insideOverlay"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Max attendees:"/>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-        <EditText
-            android:id="@+id/editTextMaxAttendees"
-            android:inputType="number"
-            android:layout_width="300dp"
-            android:layout_height="40dp"
-            android:backgroundTint="#4A4A4A"
-            android:hint="Optional"
-            android:backgroundTintMode="add"/>
-    </LinearLayout>
-
-    <LinearLayout
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/textInputEventName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp">
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Event Name"
+        app:endIconMode="clear_text"
+        app:counterEnabled="true"
+        app:counterMaxLength="50"
+        app:helperTextTextColor="@color/red"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/button_create"
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_weight="1"
-            android:text="Create Event"
-            android:layout_marginEnd="5dp"
-            android:background="@color/white"/>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextEventName"
+            android:maxLength="50"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/button_reuse_qr"
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_weight="1"
-            android:text="Reuse QR Code"
-            android:layout_marginStart="5dp"
-            android:background="@color/white"/>
-    </LinearLayout>
-</LinearLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/inputTextEventDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Description"
+        app:endIconMode="clear_text"
+        app:counterEnabled="true"
+        app:counterMaxLength="100"
+        app:helperTextTextColor="@color/red"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textInputEventName">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextEventDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/inputTextStartDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="8dp"
+        android:hint="Start Date"
+        app:endIconMode="clear_text"
+        app:helperTextTextColor="@color/red"
+        app:layout_constraintEnd_toStartOf="@+id/inputTextStartTime"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/inputTextEventDesc">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextStartDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/inputTextStartTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Start Time"
+        app:endIconMode="clear_text"
+        app:helperTextTextColor="@color/red"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/inputTextStartDate"
+        app:layout_constraintTop_toBottomOf="@id/inputTextEventDesc">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextStartTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/inputTextEndDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:hint="End Date"
+        app:endIconMode="clear_text"
+        app:helperTextTextColor="@color/red"
+        app:layout_constraintEnd_toStartOf="@+id/inputTextEndTime"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/inputTextStartDate">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextEndDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/inputTextEndTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:hint="End Time"
+        app:endIconMode="clear_text"
+        app:helperTextTextColor="@color/red"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/inputTextEndDate"
+        app:layout_constraintTop_toBottomOf="@id/inputTextStartTime">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextEndTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"/>/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/inputTextMaxAttendees"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:hint="Max Attendees"
+        app:endIconMode="clear_text"
+        app:helperText="*Optional"
+        app:layout_constraintEnd_toEndOf="@+id/inputTextEndDate"
+        app:layout_constraintStart_toStartOf="@+id/inputTextEndDate"
+        app:layout_constraintTop_toBottomOf="@id/inputTextEndDate">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextMaxAttendees"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/buttonUploadPoster"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload Poster"
+        app:layout_constraintBottom_toTopOf="@id/buttonReuseQR"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"/>
+
+    <Button
+        android:id="@+id/buttonReuseQR"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reuse QR"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/extendedFabCreateEvent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Event"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.95" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

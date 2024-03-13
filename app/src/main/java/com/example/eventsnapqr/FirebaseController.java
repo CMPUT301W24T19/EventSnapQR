@@ -467,7 +467,7 @@ public class FirebaseController {
                         @Override
                         public void onUserRetrieved(User user) {
                             if (user != null) {
-                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, announcement);
+                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId);
                                 listener.onEventRetrieved(event);
                             } else {
                                 Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);

@@ -1,8 +1,8 @@
 package com.example.eventsnapqr;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -21,16 +20,13 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
 
-import java.util.ArrayList;
-
-import androidmads.library.qrgenearator.QRGContents;
-import androidmads.library.qrgenearator.QRGEncoder;
+import java.util.Calendar;
 
 /**
  * fragment where a user can organize an event using an eventName, an optional poster (default image
@@ -39,12 +35,15 @@ import androidmads.library.qrgenearator.QRGEncoder;
  */
 public class OrganizeEventFragment extends Fragment {
     private ImageView backButton;
-    private Button addEventButton;
-    private EditText editTextEventName;
-    private EditText editTextEventDesc;
-    private EditText editTextMaxAttendees;
-    private ImageView uploadPosterButton;
-    private EditText editAnnouncements;
+    private ExtendedFloatingActionButton createEventButton;
+    private TextInputEditText editTextEventName;
+    private TextInputEditText editTextEventDesc;
+    private TextInputEditText editTextMaxAttendees;
+    private TextInputEditText editTextStartDate;
+    private TextInputEditText editTextStartTime;
+    private TextInputEditText editTextEndDate;
+    private TextInputEditText editTextEndTime;
+    private Button uploadPosterButton;
     private String androidID;
     private FirebaseController firebaseController = new FirebaseController();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
@@ -71,12 +70,24 @@ public class OrganizeEventFragment extends Fragment {
         androidID = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         backButton = view.findViewById(R.id.button_back_button);
-        addEventButton = view.findViewById(R.id.button_create);
+        createEventButton = view.findViewById(R.id.extendedFabCreateEvent);
         editTextEventName = view.findViewById(R.id.editTextEventName);
         editTextEventDesc = view.findViewById(R.id.editTextEventDesc);
         editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
-        uploadPosterButton = view.findViewById(R.id.upload_poster_button);
-        editAnnouncements = view.findViewById(R.id.editAnnouncements);
+        uploadPosterButton = view.findViewById(R.id.buttonUploadPoster);
+
+        // set up date and time picker dialogs
+        editTextStartDate = view.findViewById(R.id.editTextStartDate);
+        editTextStartDate.setOnClickListener(v -> showDatePickerDialog(editTextStartDate));
+
+        editTextStartTime = view.findViewById(R.id.editTextStartTime);
+        editTextStartTime.setOnClickListener(v -> showTimePickerDialog(editTextStartTime));
+
+        editTextEndDate = view.findViewById(R.id.editTextEndDate);
+        editTextEndDate.setOnClickListener(v -> showDatePickerDialog(editTextEndDate));
+
+        editTextEndTime = view.findViewById(R.id.editTextEndTime);
+        editTextEndTime.setOnClickListener(v -> showTimePickerDialog(editTextEndTime));
 
         ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
@@ -91,7 +102,7 @@ public class OrganizeEventFragment extends Fragment {
                 });
 
         backButton.setOnClickListener(v -> navigateToMainPageFragment());
-        addEventButton.setOnClickListener(v -> {
+        createEventButton.setOnClickListener(v -> {
             if (validateInput()) {
                 createEvent();
             }
@@ -149,7 +160,6 @@ public class OrganizeEventFragment extends Fragment {
         String eventDesc = editTextEventDesc.getText().toString(); // get the description of the event
         String maxAttendeesInput = editTextMaxAttendees.getText().toString();
         Integer eventMaxAttendees = !maxAttendeesInput.isEmpty() ? Integer.valueOf(maxAttendeesInput) : null;
-        String announcement = editAnnouncements.getText().toString();
 
         // retrieve user from the database based on the androidID, create a new user and event object
         FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
@@ -166,7 +176,7 @@ public class OrganizeEventFragment extends Fragment {
                             userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                 imageUri = uri;
                                 uriString = imageUri.toString();
-                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
+                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID);
                                 Log.d("USER NAME", newEvent.getOrganizer().getName());
                                 firebaseController.addEvent(newEvent);
                                 bundle.putString("destination", "main");
@@ -176,7 +186,7 @@ public class OrganizeEventFragment extends Fragment {
                         });
                     } else {
                         uriString = null;
-                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, announcement);
+                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID);
                         Log.d("USER NAME", newEvent.getOrganizer().getName());
                         firebaseController.addEvent(newEvent);
                         firebaseController.addOrganizedEvent(user, newEvent);
@@ -186,5 +196,36 @@ public class OrganizeEventFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private void showDatePickerDialog(TextInputEditText editText) {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                requireContext(),
+                (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
+                    String selectedDate = selectedDayOfMonth + "/" + (selectedMonth + 1) + "/" + selectedYear;
+                    editText.setText(selectedDate);
+                },
+                year, month, dayOfMonth);
+        datePickerDialog.show();
+    }
+
+    private void showTimePickerDialog(TextInputEditText editText) {
+        Calendar calendar = Calendar.getInstance();
+        int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+                requireContext(),
+                (view, selectedHourOfDay, selectedMinute) -> {
+                    String selectedTime = selectedHourOfDay + ":" + selectedMinute;
+                    editText.setText(selectedTime);
+                },
+                hourOfDay, minute, false);
+        timePickerDialog.show();
     }
 }
