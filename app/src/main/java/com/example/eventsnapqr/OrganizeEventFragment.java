@@ -148,8 +148,7 @@ public class OrganizeEventFragment extends Fragment {
      * used to return to the main page
      */
     private void navigateToMainPageFragment() {
-        Intent intent = new Intent(requireContext(), MainActivity.class);
-        startActivity(intent);
+        getActivity().finish();
     }
 
     /**

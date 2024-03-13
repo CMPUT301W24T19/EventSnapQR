@@ -464,7 +464,6 @@ public class FirebaseController {
                     String qrLink = document.getString("QRLink");  // what is this?
                     String description = document.getString("description");
                     String posterUri = document.getString("posterURI");
-                    String qrUri = document.getString("qrURI");
                     String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
                     String announcement = document.getString("announcement");
