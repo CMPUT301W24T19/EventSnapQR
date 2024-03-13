@@ -193,10 +193,6 @@ public class FirebaseController {
             deleteImage(event.getPosterURI());
         }
 
-        if (event.getQRURI() != null) {
-            deleteImage(event.getQRURI());
-        }
-
         Task<Void> deleteEventTask = db.collection("events").document(eventId).delete();
 
         Task<QuerySnapshot> getUsersTask = db.collection("users").get();
@@ -353,7 +349,6 @@ public class FirebaseController {
         eventData.put("organizerID", event.getOrganizer().getDeviceID());
         eventData.put("description", event.getDescription());
         eventData.put("announcement",event.getAnnouncement());
-        eventData.put("qrURI",event.getQRURI());
         if (event.getPosterURI() != null) {
             eventData.put("posterURI", event.getPosterURI());
         }
@@ -480,7 +475,7 @@ public class FirebaseController {
                         @Override
                         public void onUserRetrieved(User user) {
                             if (user != null) {
-                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, announcement, qrUri);
+                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, announcement);
                                 listener.onEventRetrieved(event);
                             } else {
                                 Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);

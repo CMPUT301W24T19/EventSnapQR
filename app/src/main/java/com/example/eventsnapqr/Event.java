@@ -12,7 +12,6 @@ public class Event {
     private User organizer; // user who organized the event
     private String description; // description of the event
     private String posterURI; // URL for the event poster image
-    private String qrURI;
     private Integer maxAttendees; // optional max attendees
     private String announcement; //announcements related to the Event
     private String eventID; // unique id
@@ -27,14 +26,13 @@ public class Event {
      * @param posterURI URL for the event poster
      * @param maxAttendees maximum number of attendees
      */
-    public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees, String eventID, String announcement, String qrURI) {
+    public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees, String eventID, String announcement) {
         this.organizer = organizer;
         this.eventName = eventName;
         this.description = description;
         this.posterURI = posterURI;
         this.maxAttendees = maxAttendees;
         this.eventID = eventID;
-        this.qrURI = qrURI;
     }
 
     /**
@@ -147,10 +145,4 @@ public class Event {
         this.eventID = eventID;
     }
 
-    public String getQRURI() {
-        return this.qrURI;
-    }
-    public String setQRURI() {
-        return this.qrURI;
-    }
 }
