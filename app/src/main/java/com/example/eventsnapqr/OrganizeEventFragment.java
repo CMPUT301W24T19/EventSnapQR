@@ -25,8 +25,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.type.DateTime;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * fragment where a user can organize an event using an eventName, an optional poster (default image
@@ -158,6 +164,21 @@ public class OrganizeEventFragment extends Fragment {
         String eventName = editTextEventName.getText().toString(); // get the name of the event
         String eventDesc = editTextEventDesc.getText().toString(); // get the description of the event
         String maxAttendeesInput = editTextMaxAttendees.getText().toString();
+
+        String eventStartDate = editTextStartDate.getText().toString();
+        String eventStartTime = editTextStartTime.getText().toString();
+        String eventEndDate = editTextEndDate.getText().toString();
+        String eventEndTime = editTextEndTime.getText().toString();
+
+        Date startDateTime;
+        Date endDateTime;
+        DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm");
+        try {
+            startDateTime = dateFormat.parse(eventStartDate + " " +eventStartTime);
+            endDateTime = dateFormat.parse(eventEndDate + " " + eventEndTime);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
         Integer eventMaxAttendees = !maxAttendeesInput.isEmpty() ? Integer.valueOf(maxAttendeesInput) : null;
 
         // retrieve user from the database based on the androidID, create a new user and event object
@@ -175,7 +196,7 @@ public class OrganizeEventFragment extends Fragment {
                             userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                 imageUri = uri;
                                 uriString = imageUri.toString();
-                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, null);
+                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime);
                                 Log.d("USER NAME", newEvent.getOrganizer().getName());
                                 firebaseController.addEvent(newEvent);
                                 bundle.putString("destination", "main");
@@ -185,7 +206,7 @@ public class OrganizeEventFragment extends Fragment {
                         });
                     } else {
                         uriString = null;
-                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, null);
+                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime);
                         Log.d("USER NAME", newEvent.getOrganizer().getName());
                         firebaseController.addEvent(newEvent);
                         firebaseController.addOrganizedEvent(user, newEvent);

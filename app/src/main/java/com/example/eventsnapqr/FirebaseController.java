@@ -23,6 +23,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -348,7 +349,9 @@ public class FirebaseController {
         eventData.put("eventName", event.getEventName());
         eventData.put("organizerID", event.getOrganizer().getDeviceID());
         eventData.put("description", event.getDescription());
-        eventData.put("announcement",event.getAnnouncement());
+        eventData.put("announcement", event.getAnnouncement());
+        eventData.put("startDateTime", event.getEventStartDateTime());
+        eventData.put("endDateTime", event.getEventStartDateTime());
         if (event.getPosterURI() != null) {
             eventData.put("posterURI", event.getPosterURI());
         }
@@ -464,6 +467,8 @@ public class FirebaseController {
                     String qrLink = document.getString("QRLink");  // what is this?
                     String description = document.getString("description");
                     String posterUri = document.getString("posterURI");
+                    Date startDateTime = document.getDate("startDateTime");
+                    Date endDateTime = document.getDate("endDateTime");
                     String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
                     String announcement = document.getString("announcement");
@@ -474,7 +479,7 @@ public class FirebaseController {
                         @Override
                         public void onUserRetrieved(User user) {
                             if (user != null) {
-                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, announcement);
+                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime);
                                 listener.onEventRetrieved(event);
                             } else {
                                 Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);
