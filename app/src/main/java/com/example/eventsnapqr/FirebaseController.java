@@ -1,5 +1,6 @@
 package com.example.eventsnapqr;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -18,8 +19,11 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -186,6 +190,10 @@ public class FirebaseController {
         String eventId = event.getEventID();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        if (event.getPosterURI() != null) {
+            deleteImage(event.getPosterURI());
+        }
+
         Task<Void> deleteEventTask = db.collection("events").document(eventId).delete();
 
         Task<QuerySnapshot> getUsersTask = db.collection("users").get();
@@ -341,7 +349,9 @@ public class FirebaseController {
         eventData.put("eventName", event.getEventName());
         eventData.put("organizerID", event.getOrganizer().getDeviceID());
         eventData.put("description", event.getDescription());
-        eventData.put("announcement",event.getAnnouncement());
+        eventData.put("announcement", event.getAnnouncement());
+        eventData.put("startDateTime", event.getEventStartDateTime());
+        eventData.put("endDateTime", event.getEventStartDateTime());
         if (event.getPosterURI() != null) {
             eventData.put("posterURI", event.getPosterURI());
         }
@@ -454,9 +464,11 @@ public class FirebaseController {
                     Log.d("Event found", "Event found: " + eventIdentifier);
                     String eventName = document.getString("eventName");
                     String organizerID = document.getString("organizerID");
-                    String qrLink = document.getString("QRLink");
+                    String qrLink = document.getString("QRLink");  // what is this?
                     String description = document.getString("description");
                     String posterUri = document.getString("posterURI");
+                    Date startDateTime = document.getDate("startDateTime");
+                    Date endDateTime = document.getDate("endDateTime");
                     String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
                     String announcement = document.getString("announcement");
@@ -467,7 +479,7 @@ public class FirebaseController {
                         @Override
                         public void onUserRetrieved(User user) {
                             if (user != null) {
-                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId);
+                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime);
                                 listener.onEventRetrieved(event);
                             } else {
                                 Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);
@@ -649,6 +661,21 @@ public class FirebaseController {
                 });
     }
 
+    public void deleteImage(String uri) {
+        String[] firebaseImagePath = Uri.parse(uri).getPath().split("/");
+        String imagePath = firebaseImagePath[firebaseImagePath.length - 2] + "/" + firebaseImagePath[firebaseImagePath.length - 1];
+        FirebaseStorage.getInstance().getReference().child(imagePath).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Log.d("TAG", "Picture successfully deleted");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("TAG", "Picture not deleted");
+            }
+        });
+    }
 }
 
 

@@ -23,6 +23,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -65,7 +66,13 @@ public class AdminBrowseEventsFragment extends Fragment {
         FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                loadEvents();
+                eventIds.clear();
+                eventNames.clear();
+                for (QueryDocumentSnapshot doc: value) {
+                    eventIds.add(doc.getId());
+                    eventNames.add(doc.getString("eventName"));
+                }
+                eventAdapter.notifyDataSetChanged();
             }
         });
         searchButton.setOnClickListener(new View.OnClickListener() {
@@ -92,7 +99,6 @@ public class AdminBrowseEventsFragment extends Fragment {
         eventAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, eventNames);
         eventListView.setAdapter(eventAdapter);
         db = FirebaseFirestore.getInstance();
-        loadEvents();
 
         view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,27 +151,6 @@ public class AdminBrowseEventsFragment extends Fragment {
                 }
             }
         });
-    }
-
-
-    /**
-     * fetch all the events that are currently in the db to populate the listView
-     */
-    private void loadEvents() {
-        db.collection("events").get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        eventNames.clear();
-                        for (DocumentSnapshot document : task.getResult()) {
-                            eventIds.add(document.getId());
-                            eventNames.add(document.getString("eventName"));
-                        }
-                        eventAdapter.notifyDataSetChanged();
-                    }
-                    else {
-                        Toast.makeText(requireContext(), "Error loading events", Toast.LENGTH_SHORT).show();
-                    } // error handling?
-                });
     }
 
     /**

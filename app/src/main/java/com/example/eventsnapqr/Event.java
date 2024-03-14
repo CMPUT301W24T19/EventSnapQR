@@ -1,6 +1,7 @@
 package com.example.eventsnapqr;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * represents an event with a name, organizer, description, poster, maxAttendees (optional), and
@@ -15,7 +16,8 @@ public class Event {
     private Integer maxAttendees; // optional max attendees
     private String announcement; //announcements related to the Event
     private String eventID; // unique id
-    private LocalDateTime eventDate;
+    private Date eventStartDateTime;
+    private Date eventEndDateTime;
 
     /**
      * constructor for event requiring a user instance, QR code, event name, a description, a URL
@@ -26,13 +28,15 @@ public class Event {
      * @param posterURI URL for the event poster
      * @param maxAttendees maximum number of attendees
      */
-    public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees, String eventID) {
+    public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees, String eventID, Date eventStartDateTime, Date eventEndDateTime) {
         this.organizer = organizer;
         this.eventName = eventName;
         this.description = description;
         this.posterURI = posterURI;
         this.maxAttendees = maxAttendees;
         this.eventID = eventID;
+        this.eventStartDateTime = eventStartDateTime;
+        this.eventEndDateTime = eventEndDateTime;
     }
 
     /**
@@ -144,4 +148,11 @@ public class Event {
     public void setEventID(String eventID) {
         this.eventID = eventID;
     }
+    public Date getEventStartDateTime() {
+        return this.eventStartDateTime;
+    }
+    public Date getEventEndDateTime() {
+        return this.eventEndDateTime;
+    }
+
 }

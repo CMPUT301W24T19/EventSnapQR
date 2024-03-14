@@ -210,9 +210,6 @@ public class AdminTests {
         onView(withId(R.id.button_back)).perform(click());
     }
 
-
-
-
     @Test
     public void checkUserInfo() {
         Context context = InstrumentationRegistry.getInstrumentation().getContext();
@@ -371,7 +368,7 @@ public class AdminTests {
         }
         Log.d("TAG", "Making event");
         Log.d("TAG", "Event URI: " + result[0].toString());
-        Event testEvent = new Event(testUser, "testEvent", "testDescription", result[0].toString(), null, "eventID", "testAnnouncements");
+        Event testEvent = new Event(testUser, "testEvent", "testDescription", result[0].toString(), null, "eventID", "testAnnouncements", null);
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseFirestore.collection("users").document(androidId).set(testUser);
