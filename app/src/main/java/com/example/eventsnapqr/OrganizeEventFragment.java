@@ -2,7 +2,6 @@ package com.example.eventsnapqr;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -21,16 +20,13 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.type.DateTime;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -78,7 +74,7 @@ public class OrganizeEventFragment extends Fragment {
         backButton = view.findViewById(R.id.button_back_button);
         createEventButton = view.findViewById(R.id.extendedFabCreateEvent);
         editTextEventName = view.findViewById(R.id.editTextEventName);
-        editTextEventDesc = view.findViewById(R.id.editTextEventDesc);
+        editTextEventDesc = view.findViewById(R.id.edit_text_number);
         editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
         uploadPosterButton = view.findViewById(R.id.buttonUploadPoster);
 
