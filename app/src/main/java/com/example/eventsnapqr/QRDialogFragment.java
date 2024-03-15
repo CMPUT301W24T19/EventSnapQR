@@ -96,10 +96,12 @@ public class QRDialogFragment extends DialogFragment {
             String destination = bundle.getString("destination");
             @Override
             public void onClick(View v) {
-                if (destination.equals("manage")) {
-                    requireActivity().onBackPressed();
-                } else if (destination.equals("main")) {
-                    requireActivity().finish();
+                if(destination != null){
+                    if (destination.equals("manage")) {
+                        requireActivity().onBackPressed();
+                    } else if (destination.equals("main")) {
+                        requireActivity().finish();
+                    }
                 }
             }
         });
