@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -535,7 +536,22 @@ public class FirebaseController {
      */
     public void addPromiseToGo(User user, Event event) {
         DocumentReference userRef = userReference.document(user.getDeviceID());
-
+        DocumentReference eventRef = eventReference.document(event.getEventID());
+        // added add user to events promised attendees list aswell
+        eventRef.collection("promisedAttendees").document(user.getDeviceID()).set(new HashMap<>()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Added user to event promised attendees",
+                                "User added to promised attendees subcollection for event: " + user.getDeviceID());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Failed to add to users promised events",
+                                "Failed to add event to event promised users subcollection for event: " + event.getEventID());
+                    }
+                });
         userRef.collection("promisedEvents").document(event.getEventID()).set(new HashMap<>())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -552,8 +568,74 @@ public class FirebaseController {
                     }
                 });
     }
-
-
+    public void addMilestone(Event event, String milestone) {
+        DocumentReference eventRef = eventReference.document(event.getEventID());
+        final CollectionReference collectionReference = eventRef.collection("milestones");
+        final Map<String, Object> milestoneData = new HashMap<>();
+        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                        // The "milestones" collection exists, so add a new document to it
+                        collectionReference.document(milestone).set(milestoneData)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("Added milestone", "Milestone added: " + milestone);
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d("Failed to add milestone", "Failed to add milestone: " + milestone);
+                                    }
+                                });
+                    } else {
+                        // The "milestones" collection doesn't exist, so create it and add a new document
+                        collectionReference.document(milestone).set(milestoneData)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("Added milestone", "Milestone added: " + milestone);
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d("Failed to add milestone", "Failed to add milestone: " + milestone);
+                                    }
+                                });
+                    }
+                } else {
+                    Log.d("Query failed", "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+    public interface MilestonesListener {
+        void onMilestonesLoaded(List<String> milestones);
+    }
+    public void getMilestones(String eventId, MilestonesListener listener) {
+        DocumentReference eventRef = eventReference.document(eventId);
+        CollectionReference milestonesRef = eventRef.collection("milestones");
+        milestonesRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    List<String> milestonesList = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        String milestone = document.getId();
+                        milestonesList.add(milestone);
+                    }
+                    listener.onMilestonesLoaded(milestonesList);
+                } else {
+                    Log.d("Get milestones failed", "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
     /**
      * add an attendee to the specified events attendee subcollection
      * @param event the event to add the user to

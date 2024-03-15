@@ -44,6 +44,7 @@ public class ManageEventFragment extends Fragment {
     private List<Integer> attendeeCheckedIn;
     private FirebaseFirestore db;
     private String eventId;
+    private TextView textViewMilestoneContent;
 
     /**
      * What should be executed when the fragment is created
@@ -98,9 +99,9 @@ public class ManageEventFragment extends Fragment {
         attendeeCheckedIn = new ArrayList<>();
         eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, attendeeNames);
         attendeeListView.setAdapter(eventAdapter);
-
+        textViewMilestoneContent = view.findViewById(R.id.milestone_alert_content);
         fetchAttendeeData();
-
+        fetchMilestones();
         view.findViewById(R.id.button_back_button).setOnClickListener(v -> requireActivity().onBackPressed());
 
         view.findViewById(R.id.real_time_attendance_button).setOnClickListener(v -> {
@@ -127,6 +128,19 @@ public class ManageEventFragment extends Fragment {
         attendeeListView.setOnItemClickListener((parent, view1, position, id) -> CreateDialog(position));
 
         return view;
+    }
+    private void fetchMilestones(){
+        firebaseController.getMilestones(eventId, new FirebaseController.MilestonesListener() {
+            @Override
+            public void onMilestonesLoaded(List<String> milestones) {
+                processMilestones(milestones);
+            }
+        });
+    }
+    private void processMilestones(List<String> milestones){
+        textViewMilestoneContent.setText(milestones.get(0));
+        // not done, i just put .get(0) so it will show the initial milestone, the plan here is to make
+        // textviewmilestone content a listview, thats why List<String> milestones is passed here
     }
 
     /**

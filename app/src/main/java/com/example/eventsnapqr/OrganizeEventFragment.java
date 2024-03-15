@@ -3,6 +3,7 @@ package com.example.eventsnapqr;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -27,6 +28,10 @@ import com.google.firebase.storage.StorageReference;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -206,6 +211,12 @@ public class OrganizeEventFragment extends Fragment {
                         Log.d("USER NAME", newEvent.getOrganizer().getName());
                         firebaseController.addEvent(newEvent);
                         firebaseController.addOrganizedEvent(user, newEvent);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + " created at: "+Instant.now());
+                        }
+                        else{
+                            firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + "has been created");
+                        }
                         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                         navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                     }
