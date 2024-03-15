@@ -1,6 +1,5 @@
 package com.example.eventsnapqr;
 
-import static androidx.camera.core.impl.utils.ContextUtil.getBaseContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -18,7 +17,6 @@ import static junit.framework.TestCase.assertEquals;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 
@@ -28,14 +26,10 @@ import android.provider.Settings;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -144,7 +138,7 @@ public class AttendeeTest {
         // Launch OrganizeAnEventActivity and create the event
         ActivityScenario activityScenario = ActivityScenario.launch(OrganizeAnEventActivity.class);
         onView(withId(R.id.editTextEventName)).perform(typeText(id));
-        onView(withId(R.id.editTextEventDesc)).perform(typeText("Event description"));
+        onView(withId(R.id.edit_text_number)).perform(typeText("Event description"));
         onView(withId(R.id.button_create)).perform(click());
         // Use CountDownLatch to wait for Firebase operation to complete
         CountDownLatch latch = new CountDownLatch(1);

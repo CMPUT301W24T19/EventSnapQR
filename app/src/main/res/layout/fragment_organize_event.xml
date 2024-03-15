@@ -17,7 +17,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:id="@+id/textInputEventName"
+        android:id="@+id/textInputName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -41,7 +41,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:id="@+id/inputTextEventDesc"
+        android:id="@+id/textInputNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -54,10 +54,10 @@
         app:helperTextTextColor="@color/red"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textInputEventName">
+        app:layout_constraintTop_toBottomOf="@id/textInputName">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextEventDesc"
+            android:id="@+id/edit_text_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -75,7 +75,7 @@
         app:helperTextTextColor="@color/red"
         app:layout_constraintEnd_toStartOf="@+id/inputTextStartTime"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/inputTextEventDesc">
+        app:layout_constraintTop_toBottomOf="@id/textInputNumber">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextStartDate"
@@ -98,7 +98,7 @@
         app:helperTextTextColor="@color/red"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/inputTextStartDate"
-        app:layout_constraintTop_toBottomOf="@id/inputTextEventDesc">
+        app:layout_constraintTop_toBottomOf="@id/textInputNumber">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextStartTime"
@@ -198,6 +198,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Create Event"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.95"
