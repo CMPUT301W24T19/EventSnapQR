@@ -128,7 +128,7 @@ public class OrganizeEventTest {
         // Launch OrganizeAnEventActivity and create the event
         ActivityScenario.launch(OrganizeAnEventActivity.class);
         onView(withId(R.id.editTextEventName)).perform(typeText(id));
-        onView(withId(R.id.editTextEventDesc)).perform(typeText("Event description"));
+        onView(withId(R.id.edit_text_number)).perform(typeText("Event description"));
 
         onView(withId(R.id.button_create)).perform(click());
         // Use CountDownLatch to wait for Firebase operation to complete
