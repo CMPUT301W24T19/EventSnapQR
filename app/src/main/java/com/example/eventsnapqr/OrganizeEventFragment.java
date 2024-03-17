@@ -1,7 +1,12 @@
 package com.example.eventsnapqr;
 
+import static android.graphics.ImageDecoder.decodeBitmap;
+
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
@@ -24,7 +30,22 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.zxing.Binarizer;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.ChecksumException;
+import com.google.zxing.FormatException;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.RGBLuminanceSource;
+import com.google.zxing.Result;
+import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.qrcode.QRCodeReader;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -51,11 +72,13 @@ public class OrganizeEventFragment extends Fragment {
     private TextInputEditText editTextEndDate;
     private TextInputEditText editTextEndTime;
     private Button uploadPosterButton;
+    private Button reuseQRButton;
     private String androidID;
     private FirebaseController firebaseController = new FirebaseController();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
     private Uri imageUri;
     private String uriString;
+    private String reusingQR;
 
     /**
      * Setup actions to be taken upon view creation and when the views are interacted with
@@ -82,6 +105,7 @@ public class OrganizeEventFragment extends Fragment {
         editTextEventDesc = view.findViewById(R.id.edit_text_number);
         editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
         uploadPosterButton = view.findViewById(R.id.buttonUploadPoster);
+        reuseQRButton = view.findViewById(R.id.buttonReuseQR);
 
         // set up date and time picker dialogs
         editTextStartDate = view.findViewById(R.id.editTextStartDate);
@@ -96,7 +120,7 @@ public class OrganizeEventFragment extends Fragment {
         editTextEndTime = view.findViewById(R.id.editTextEndTime);
         editTextEndTime.setOnClickListener(v -> showTimePickerDialog(editTextEndTime));
 
-        ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
+        ActivityResultLauncher<PickVisualMediaRequest> choosePoster =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
                     // Callback is invoked after the user selects a media item or closes the
                     // photo picker.
@@ -105,6 +129,56 @@ public class OrganizeEventFragment extends Fragment {
                         imageUri = uri;
                     } else {
                         Log.d("TAG", "No media selected");
+                    }
+                });
+
+        /**
+         * Credits: https://stackoverflow.com/questions/55427308/scaning-qrcode-from-image-not-from-camera-using-zxing
+         */
+        ActivityResultLauncher<PickVisualMediaRequest> reuseQR =
+                registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                    // Callback is invoked after the user selects a media item or closes the
+                    // photo picker.
+                    if (uri != null) {
+                        Log.d("TAG", "Selected URI: " + uri);
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                            ImageDecoder.Source qrBitMapDecoder = ImageDecoder.createSource(getActivity().getContentResolver(), uri);
+                            Bitmap qrBitmap;
+                            try {
+                                qrBitmap = decodeBitmap(qrBitMapDecoder);
+                                qrBitmap = qrBitmap.copy(Bitmap.Config.ARGB_8888, true);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            int[] pixels = new int[qrBitmap.getWidth() * qrBitmap.getHeight()];
+                            qrBitmap.getPixels(pixels, 0, qrBitmap.getWidth(), 0, 0, qrBitmap.getWidth(), qrBitmap.getHeight());
+                            LuminanceSource luminanceSource = new RGBLuminanceSource(qrBitmap.getWidth(), qrBitmap.getHeight(), pixels);
+                            QRCodeReader reader = new QRCodeReader();
+                            HybridBinarizer binarizer = new HybridBinarizer(luminanceSource);
+                            Result decode;
+                            try {
+                                decode = reader.decode(new BinaryBitmap(binarizer));
+                            } catch (NotFoundException e) {
+                                throw new RuntimeException(e);
+                            } catch (ChecksumException e) {
+                                throw new RuntimeException(e);
+                            } catch (FormatException e) {
+                                throw new RuntimeException(e);
+                            }
+                            FirebaseController.getInstance().getEvent(decode.getText(), new FirebaseController.OnEventRetrievedListener() {
+                                @Override
+                                public void onEventRetrieved(Event event) {
+                                    Log.d("TAG", "EVENT: " + event);
+                                    if (event == null) {
+                                        Log.d("TAG", "QR code applied");
+                                        reusingQR = decode.getText();
+                                    }
+                                    else {
+                                        Log.d("TAG", "There is an event using this QR code");
+                                    }
+                                }
+                            });
+                        }
                     }
                 });
 
@@ -118,7 +192,16 @@ public class OrganizeEventFragment extends Fragment {
         uploadPosterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pickMedia.launch(new PickVisualMediaRequest.Builder()
+                choosePoster.launch(new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build());
+            }
+        });
+
+        reuseQRButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reuseQR.launch(new PickVisualMediaRequest.Builder()
                         .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                         .build());
             }
@@ -187,7 +270,13 @@ public class OrganizeEventFragment extends Fragment {
             @Override
             public void onUserRetrieved(User user) {
                 if (user != null) {
-                    String eventID = FirebaseController.getInstance().getUniqueEventID();
+                    String eventID;
+                    if (reusingQR == null) {
+                        eventID = FirebaseController.getInstance().getUniqueEventID();
+                    }
+                    else {
+                        eventID = reusingQR;
+                    }
                     Bundle bundle = new Bundle();
                     bundle.putString("eventId", eventID);
 
@@ -210,6 +299,7 @@ public class OrganizeEventFragment extends Fragment {
                         Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime);
                         Log.d("USER NAME", newEvent.getOrganizer().getName());
                         firebaseController.addEvent(newEvent);
+                        bundle.putString("destination", "main");
                         firebaseController.addOrganizedEvent(user, newEvent);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + " created at: "+Instant.now());
