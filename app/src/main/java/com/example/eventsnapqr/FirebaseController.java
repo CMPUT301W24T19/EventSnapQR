@@ -538,11 +538,40 @@ public class FirebaseController {
         DocumentReference userRef = userReference.document(user.getDeviceID());
         DocumentReference eventRef = eventReference.document(event.getEventID());
         // added add user to events promised attendees list aswell
+
+
+
         eventRef.collection("promisedAttendees").document(user.getDeviceID()).set(new HashMap<>()).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d("Added user to event promised attendees",
                                 "User added to promised attendees subcollection for event: " + user.getDeviceID());
+                        eventRef.collection("promisedAttendees").get()
+                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        int count = queryDocumentSnapshots.size();
+                                        if(count == 1){
+                                            addMilestone(event, "First attendee has signed up to your event: " + user.getName());
+                                        }
+                                        if(count == 5){
+                                            addMilestone(event, "5 users have promised to attend your event!");
+                                        }
+                                        if(count == 10){
+                                            addMilestone(event, "10 users have promised to attend your event!");
+                                        }
+                                        if(count == 20){
+                                            addMilestone(event, "20 users have promised to attend your event!");
+                                        }
+                                        Log.d("Count of promised attendees", "Number of promised attendees for event: " + count);
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d("Error getting promised attendees count", "Error fetching promised attendees for event");
+                                    }
+                                });
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -723,6 +752,16 @@ public class FirebaseController {
                                 Integer updatedCount = documentSnapshot.getLong("checkedIn").intValue(); // Convert Long to Integer and then to int
                                 if (updatedCount != null) {
                                     listener.onCheckInComplete(updatedCount);
+                                    if(updatedCount == 2){
+                                        FirebaseController fb = new FirebaseController();
+                                        fb.getEvent(eventId, new OnEventRetrievedListener() {
+                                            @Override
+                                            public void onEventRetrieved(Event event) {
+                                                addMilestone(event, "User with ID: " + userId + " has checked into your event more than once!");
+                                            }
+                                        });
+                                    }
+
                                 } else {
                                     listener.onCheckInFailure(new RuntimeException("Failed to retrieve updated count"));
                                 }
