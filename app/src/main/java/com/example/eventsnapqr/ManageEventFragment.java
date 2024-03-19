@@ -38,13 +38,13 @@ import java.util.List;
  */
 public class ManageEventFragment extends Fragment {
     private FirebaseController firebaseController;
-    private ListView attendeeListView;
-    private ArrayAdapter<String> eventAdapter;
-    private List<String> attendeeNames;
+    private ListView attendeeListView, milestoneListView;
+    private ArrayAdapter<String> eventAdapter, milestoneAdapter;
+    private List<String> attendeeNames, milestoneList;
     private List<Integer> attendeeCheckedIn;
     private FirebaseFirestore db;
     private String eventId;
-    private TextView textViewMilestoneContent;
+
 
     /**
      * What should be executed when the fragment is created
@@ -59,7 +59,10 @@ public class ManageEventFragment extends Fragment {
         }
         firebaseController = new FirebaseController();
         attendeeNames = new ArrayList<>();
+        milestoneList = new ArrayList<>();
         eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, attendeeNames);
+        milestoneAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, milestoneList);
+
     }
 
     /**
@@ -99,7 +102,9 @@ public class ManageEventFragment extends Fragment {
         attendeeCheckedIn = new ArrayList<>();
         eventAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, attendeeNames);
         attendeeListView.setAdapter(eventAdapter);
-        textViewMilestoneContent = view.findViewById(R.id.milestone_alert_content);
+        milestoneListView = view.findViewById(R.id.milestone_list);
+        milestoneAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, milestoneList);
+        milestoneListView.setAdapter(milestoneAdapter);
         fetchAttendeeData();
         fetchMilestones();
         view.findViewById(R.id.button_back_button).setOnClickListener(v -> requireActivity().onBackPressed());
@@ -138,9 +143,9 @@ public class ManageEventFragment extends Fragment {
         });
     }
     private void processMilestones(List<String> milestones){
-        textViewMilestoneContent.setText(milestones.get(0));
-        // not done, i just put .get(0) so it will show the initial milestone, the plan here is to make
-        // textviewmilestone content a listview, thats why List<String> milestones is passed here
+        milestoneList.clear();
+        milestoneList.addAll(milestones);
+        milestoneAdapter.notifyDataSetChanged();
     }
 
     /**

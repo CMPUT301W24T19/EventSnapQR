@@ -26,51 +26,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/milestone_alert_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Milestone Alert"
-        app:layout_constraintBottom_toTopOf="@+id/milestone_alert_content"
-        app:layout_constraintStart_toStartOf="@+id/milestone_alert_content" />
 
-    <TextView
-        android:id="@+id/milestone_alert_content"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="50dp"
-        android:text=""
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.25"
-        app:layout_constraintHorizontal_bias="0.512"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/page_name"
-        app:layout_constraintWidth_percent="0.9" />
 
-    <TextView
-        android:id="@+id/checked_in_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="42dp"
-        android:layout_marginTop="13dp"
-        android:layout_marginEnd="301dp"
-        android:text="Attendees"
+
+
+
+    <ListView
+        android:id="@+id/milestone_list"
+        android:layout_width="339dp"
+        android:layout_height="166dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginBottom="7dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/milestone_alert_content" />
+        app:layout_constraintTop_toBottomOf="@+id/page_name" />
 
     <ListView
         android:id="@+id/attendee_list"
-        android:layout_width="365dp"
-        android:layout_height="295dp"
+        android:layout_width="340dp"
+        android:layout_height="247dp"
         android:layout_marginStart="18dp"
-        android:layout_marginTop="1dp"
         android:layout_marginEnd="28dp"
         android:layout_marginBottom="7dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.68"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checked_in_text" />
+        app:layout_constraintTop_toBottomOf="@+id/milestone_list"
+        app:layout_constraintVertical_bias="0.484" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
