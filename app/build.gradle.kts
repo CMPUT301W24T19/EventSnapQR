@@ -42,6 +42,7 @@ android {
 }
 
 dependencies {
+    implementation("de.hdodenhof:circleimageview:3.1.0")
     androidTestImplementation("androidx.fragment:fragment-testing:1.6.2")
     androidTestImplementation("com.android.support.test:runner:1.0.2")
     androidTestImplementation("com.android.support.test:rules:1.0.2")
