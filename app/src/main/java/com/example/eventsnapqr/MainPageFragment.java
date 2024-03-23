@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -18,10 +19,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ViewFlipper;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
@@ -38,6 +46,7 @@ public class MainPageFragment extends Fragment {
     private Button buttonScanQR;
     private ImageView buttonViewProfile;
     private String androidId;
+    private ViewFlipper viewFlipper;
 
     /**
      * What should be executed when the fragment is created
@@ -73,7 +82,30 @@ public class MainPageFragment extends Fragment {
         FirebaseController.checkUserExists(androidId, listener);
 
     }
+    public interface ImageUriCallback {
+        void onImageUrisLoaded(List<String> imageUris);
+    }
+    public void getImageUris(ImageUriCallback callback) {
+        FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.w("TAG", "Listen failed.", error);
+                    return;
+                }
 
+                List<String> imageUris = new ArrayList<>();
+                for (QueryDocumentSnapshot doc : value) {
+                    String posterUri = (String) doc.getData().get("posterURI");
+                    if (posterUri != null) {
+                        imageUris.add(posterUri);
+                    }
+                }
+
+                callback.onImageUrisLoaded(imageUris);
+            }
+        });
+    }
     /**
      * handles button presses throughout the fragment
      * @param inflater The LayoutInflater object that can be used to inflate
@@ -98,6 +130,65 @@ public class MainPageFragment extends Fragment {
         buttonScanQR = view.findViewById(R.id.scan_qr_button);
         buttonViewProfile = view.findViewById(R.id.view_user_button);
         updateProfilePicture();
+
+        getImageUris(new ImageUriCallback() {
+            @Override
+            public void onImageUrisLoaded(List<String> imageUris) {
+                viewFlipper = view.findViewById(R.id.viewFlipper);
+                viewFlipper.removeAllViews();
+
+                for (String uriString : imageUris) {
+                    ImageView imageView = new ImageView(getContext());
+                    imageView.setLayoutParams(new ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT));
+                    imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+                    // Load the image from URI
+                    Glide.with(getContext())
+                            .load(uriString)
+                            .into(imageView);
+
+                    viewFlipper.addView(imageView);
+                }
+
+                if (!viewFlipper.isFlipping() && imageUris.size() > 1) {
+                    viewFlipper.startFlipping();
+
+                }
+                else{
+                    //viewFlipper.stopFlipping();
+                }
+
+            }
+        });
+
+
+
+
+/**
+        viewFlipper.removeAllViews();  // clear existing views
+
+        for (String uriString : imageUris) {
+            ImageView imageView = new ImageView(this);
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+            // load the image from URI
+            Glide.with(this)
+                    .load(uriString)
+                    .into(imageView);
+
+            viewFlipper.addView(imageView);
+        }
+
+        // start flipping if not already started
+        if (!viewFlipper.isFlipping()) {
+            viewFlipper.startFlipping();
+        }
+**/
         buttonAdminMainPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
