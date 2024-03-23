@@ -163,32 +163,6 @@ public class MainPageFragment extends Fragment {
             }
         });
 
-
-
-
-/**
-        viewFlipper.removeAllViews();  // clear existing views
-
-        for (String uriString : imageUris) {
-            ImageView imageView = new ImageView(this);
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-            // load the image from URI
-            Glide.with(this)
-                    .load(uriString)
-                    .into(imageView);
-
-            viewFlipper.addView(imageView);
-        }
-
-        // start flipping if not already started
-        if (!viewFlipper.isFlipping()) {
-            viewFlipper.startFlipping();
-        }
-**/
         buttonAdminMainPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

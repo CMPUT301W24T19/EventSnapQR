@@ -43,18 +43,11 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Call requestWindowFeature() before super.onCreate() and setContentView()
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         super.onCreate(savedInstanceState);
-
-        // Hide the status bar.
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         setContentView(R.layout.activity_main);
-
-        // If you are using an ActionBar, hide it.
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
