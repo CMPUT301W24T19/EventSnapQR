@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                     //goToMainPage();
                 }
                 else {
-                    signUp();
+                    // signUp();
                 }
             }
             @Override
@@ -75,10 +75,10 @@ public class MainActivity extends AppCompatActivity {
     /**
      * navigate to the the sign up fragment
      */
-    public void signUp(){
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        Bundle bundle = new Bundle();
-        bundle.putString("userId", androidId);
-        navController.navigate(R.id.signUpFragment, bundle);
-    }
+//    public void signUp(){
+//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+//        Bundle bundle = new Bundle();
+//        bundle.putString("userId", androidId);
+//        navController.navigate(R.id.signUpFragment, bundle);
+//    }
 }
