@@ -22,6 +22,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="36dp"
+        android:textColorHint="#E4E4E4"
+        app:boxBackgroundColor="#00FFFFFF"
+        app:boxStrokeColor="@color/black"
+        app:boxStrokeWidth="6dp"
+        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
         android:layout_marginEnd="32dp"
         android:hint="Event Name"
         app:endIconMode="clear_text"
@@ -34,9 +39,10 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextEventName"
-            android:maxLength="50"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:maxLength="50"
+            android:textColor="#FFFFFF" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -48,6 +54,11 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:hint="Description"
+        android:textColorHint="#E4E4E4"
+        app:boxBackgroundColor="#00FFFFFF"
+        app:boxStrokeColor="@color/black"
+        app:boxStrokeWidth="6dp"
+        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
         app:endIconMode="clear_text"
         app:counterEnabled="true"
         app:counterMaxLength="100"
@@ -59,7 +70,8 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_text_number"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -70,6 +82,11 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="6dp"
         android:layout_marginEnd="8dp"
+        android:textColorHint="#E4E4E4"
+        app:boxBackgroundColor="#00FFFFFF"
+        app:boxStrokeColor="@color/black"
+        app:boxStrokeWidth="6dp"
+        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
         android:hint="Start Date"
         app:endIconMode="clear_text"
         app:helperTextTextColor="@color/red"
@@ -81,7 +98,8 @@
             android:id="@+id/editTextStartDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusable="false"/>
+            android:focusable="false"
+            android:textColor="#FFFFFF" />
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -93,6 +111,11 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="6dp"
         android:layout_marginEnd="32dp"
+        android:textColorHint="#E4E4E4"
+        app:boxBackgroundColor="#00FFFFFF"
+        app:boxStrokeColor="@color/black"
+        app:boxStrokeWidth="6dp"
+        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
         android:hint="Start Time"
         app:endIconMode="clear_text"
         app:helperTextTextColor="@color/red"
@@ -104,7 +127,8 @@
             android:id="@+id/editTextStartTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusable="false"/>
+            android:focusable="false"
+            android:textColor="#FFFFFF" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -115,14 +139,21 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
+        android:textColorHint="#E4E4E4"
+        app:boxBackgroundColor="#00FFFFFF"
+        app:boxStrokeColor="@color/black"
+        app:boxStrokeWidth="6dp"
+        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
         android:hint="End Date"
         app:endIconMode="clear_text"
+        android:textColor="#FFFFFF"
         app:helperTextTextColor="@color/red"
         app:layout_constraintEnd_toStartOf="@+id/inputTextEndTime"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/inputTextStartDate">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:textColor="#FFFFFF"
             android:id="@+id/editTextEndDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -131,6 +162,7 @@
 
 
     <com.google.android.material.textfield.TextInputLayout
+        android:textColor="#FFFFFF"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:id="@+id/inputTextEndTime"
         android:layout_width="0dp"
@@ -138,6 +170,11 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
+        android:textColorHint="#E4E4E4"
+        app:boxBackgroundColor="#00FFFFFF"
+        app:boxStrokeColor="@color/black"
+        app:boxStrokeWidth="6dp"
+        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
         android:hint="End Time"
         app:endIconMode="clear_text"
         app:helperTextTextColor="@color/red"
@@ -146,22 +183,30 @@
         app:layout_constraintTop_toBottomOf="@id/inputTextStartTime">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:textColor="#FFFFFF"
             android:id="@+id/editTextEndTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="false"/>/>
     </com.google.android.material.textfield.TextInputLayout>
 
+
     <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:id="@+id/inputTextMaxAttendees"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:hint="Max Attendees"
+        android:textColorHint="#E4E4E4"
+        app:boxBackgroundColor="#00FFFFFF"
+        app:boxStrokeColor="@color/black"
+        app:boxStrokeWidth="6dp"
+        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
         app:endIconMode="clear_text"
         app:helperText="*Optional"
+
         app:layout_constraintEnd_toEndOf="@+id/inputTextEndDate"
         app:layout_constraintStart_toStartOf="@+id/inputTextEndDate"
         app:layout_constraintTop_toBottomOf="@id/inputTextEndDate">
@@ -170,10 +215,13 @@
             android:id="@+id/editTextMaxAttendees"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number" />
+            android:inputType="number"
+            android:textColor="#FFFFFF" />
+
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+
+<Button
         android:id="@+id/buttonUploadPoster"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -198,6 +246,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Create Event"
+
         android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
