@@ -1,4 +1,5 @@
 package com.example.eventsnapqr;
+import android.Manifest;
 
 import static java.security.AccessController.getContext;
 
@@ -10,9 +11,12 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +42,7 @@ import com.google.firebase.storage.UploadTask;
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 
+
 /**
  * activity where the user can view and edit their information. the geolocation and
  * notification switches have no yet been implemented
@@ -59,6 +64,18 @@ public class UserInfoActivity extends AppCompatActivity {
     private boolean editMode = false;
     private ImageView editButton;
     private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
+    private Switch locationSwitch;
+
+    private final int PERMISSION_REQUEST_CODE = 100;
+    String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == PERMISSION_REQUEST_CODE){
+            PermissionClient.getInstance(UserInfoActivity.this).permissionResult(UserInfoActivity.this ,permissions, grantResults,requestCode);
+        }
+    }
 
     /**
      * What should be executed when the fragment is created
@@ -67,8 +84,14 @@ public class UserInfoActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_user_info);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         buttonBackButton = findViewById(R.id.back_button);
         buttonAddImage = findViewById(R.id.upload_profile_button);
         buttonRemoveImage = findViewById(R.id.delete_profile_button);
@@ -79,7 +102,20 @@ public class UserInfoActivity extends AppCompatActivity {
         homepage = findViewById(R.id.homepage_context);
         saveButton = findViewById(R.id.button_save_button);
         editButton = findViewById(R.id.button_edit_profile_button);
+        locationSwitch = findViewById(R.id.switch_geolocation);
 
+
+        locationSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(permissions)){
+                    PermissionClient.getInstance(UserInfoActivity.this).askPermissions(UserInfoActivity.this,permissions, PERMISSION_REQUEST_CODE);
+                }
+                else{
+                    Toast.makeText(UserInfoActivity.this, "Permission already granted", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         userName.setEnabled(editMode);
         email.setEnabled(editMode);
