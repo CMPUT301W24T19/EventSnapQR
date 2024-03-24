@@ -61,19 +61,15 @@ public class PermissionClient {
         return allPermissionsGranted;
     }
     private void permissionRationale(Activity activity, int requestCode, String[] permissions, String deniedPermission){
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(activity, deniedPermission)){
-                showMessageOKCancel("Please allow access to the permissions", new DialogInterface.OnClickListener(){
+        if (ActivityCompat.shouldShowRequestPermissionRationale(activity, deniedPermission)) {
+            showMessageOKCancel("Please allow access to the permissions", new DialogInterface.OnClickListener() {
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                            askPermissions(activity,permissions,requestCode);
-                        }
-                    }
-                });
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    askPermissions(activity, permissions, requestCode);
+                }
+            });
 
-            }
         }
     }
 
