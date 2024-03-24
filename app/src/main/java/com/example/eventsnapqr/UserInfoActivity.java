@@ -65,9 +65,11 @@ public class UserInfoActivity extends AppCompatActivity {
     private ImageView editButton;
     private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
     private Switch locationSwitch;
+    private Switch notificationSwitch;
 
     private final int PERMISSION_REQUEST_CODE = 100;
-    String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
+    String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
+    String[] notificationPermissions = {Manifest.permission.ACCESS_NOTIFICATION_POLICY, Manifest.permission.POST_NOTIFICATIONS};
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
 
@@ -103,16 +105,39 @@ public class UserInfoActivity extends AppCompatActivity {
         saveButton = findViewById(R.id.button_save_button);
         editButton = findViewById(R.id.button_edit_profile_button);
         locationSwitch = findViewById(R.id.switch_geolocation);
-
-
-        locationSwitch.setOnClickListener(new View.OnClickListener() {
+        notificationSwitch = findViewById(R.id.switch_notification);
+        if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(notificationPermissions)){
+            notificationSwitch.setChecked(false);
+        }
+        else{
+            notificationSwitch.setChecked(true);
+        }
+        notificationSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(permissions)){
-                    PermissionClient.getInstance(UserInfoActivity.this).askPermissions(UserInfoActivity.this,permissions, PERMISSION_REQUEST_CODE);
+                if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(notificationPermissions)){
+                    PermissionClient.getInstance(UserInfoActivity.this).askPermissions(UserInfoActivity.this,notificationPermissions, PERMISSION_REQUEST_CODE);
                 }
                 else{
                     Toast.makeText(UserInfoActivity.this, "Permission already granted", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(locationPermissions)){
+            locationSwitch.setChecked(false);
+        }
+        else{
+            locationSwitch.setChecked(true);
+        }
+        locationSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(locationPermissions)){
+                    PermissionClient.getInstance(UserInfoActivity.this).askPermissions(UserInfoActivity.this,locationPermissions, PERMISSION_REQUEST_CODE);
+                }
+                else{
+                    Toast.makeText(UserInfoActivity.this, "Permission already granted", Toast.LENGTH_LONG).show();
+                    locationSwitch.setChecked(true);
                 }
             }
         });
