@@ -42,6 +42,9 @@ android {
 }
 
 dependencies {
+    implementation("com.google.android.gms:play-services-location:20.0.0")
+    implementation("androidx.work:work-runtime:2.9.0")
+    implementation("androidx.concurrent:concurrent-listenablefuture:1.0.0-beta01")
     implementation("de.hdodenhof:circleimageview:3.1.0")
     implementation("androidx.cardview:cardview:1.0.0")
     androidTestImplementation("androidx.fragment:fragment-testing:1.6.2")

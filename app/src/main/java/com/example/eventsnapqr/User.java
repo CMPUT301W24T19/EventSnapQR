@@ -170,7 +170,13 @@ public class User implements Attendee, Organizer {
             String initials;
             if (names.length == 1) {
                 // If user only has first name, displaying first 2 letters on profile
-                initials = names[0].substring(0, 2).toUpperCase();
+                if(names[0].length() == 1){
+                    // just use 1 letter if length of name is 1
+                    initials = names[0].substring(0, 1).toUpperCase();
+                }else{
+                    initials = names[0].substring(0, 2).toUpperCase();
+                }
+
             } else {
                 // If 2(First,last,middle) or more names gives displaying initials of first and last name on profile pic
                 initials = names[0].substring(0, 1).toUpperCase() + names[names.length - 1].substring(0, 1).toUpperCase();
