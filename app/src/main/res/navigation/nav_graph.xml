@@ -25,7 +25,6 @@
         android:name="com.example.eventsnapqr.AdminUserDetailsFragment"
         android:label="Sign Up"
         tools:layout="@layout/fragment_admin_user_details">
-
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
@@ -59,22 +58,7 @@
             android:id="@+id/action_qRDialogFragment_to_mainPageFragment"
             app:destination="@id/mainPageFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/browseEventFragment"
-        android:name="com.example.eventsnapqr.BrowseEventFragment"
-        android:label="Browse Event"
-        tools:layout="@layout/fragment_browse_events">
-        <action
-            android:id="@+id/action_browseEventFragment_to_mainPageFragment"
-            app:destination="@id/mainPageFragment" />
-        <action
-            android:id="@+id/action_browseEventFragment_to_eventDetailFragment"
-            app:destination="@id/eventDetailFragment" />
-        <action
-            android:id="@+id/action_browseEventFragment_to_myEventFragment"
-            app:destination="@id/myEventFragment" />
 
-    </fragment>
 
     <fragment
         android:id="@+id/MapFragment"
@@ -84,16 +68,16 @@
 
     </fragment>
     <fragment
-        android:id="@+id/yourEventFragment"
+        android:id="@+id/manageEventFragment"
         android:name="com.example.eventsnapqr.ManageEventFragment"
-        android:label="Your Event"
+        android:label="Manage Event"
         tools:layout="@layout/fragment_manage_event">
         <action
-            android:id="@+id/action_YourEventFragment_to_MapFragment"
+            android:id="@+id/action_ManageEventFragment_to_MapFragment"
             app:destination="@id/MapFragment"
             />
         <action
-            android:id="@+id/action_YourEventFragment_to_RealTimeAttendanceFragment"
+            android:id="@+id/action_ManageEventFragment_to_RealTimeAttendanceFragment"
             app:destination="@id/RealTimeAttendanceFragment"
             />
         <action
@@ -177,19 +161,33 @@
     </fragment>
 
     <fragment
-        android:id="@+id/myEventFragment"
-        android:name="com.example.eventsnapqr.MyEventsFragment"
-        android:label="My Events"
-        tools:layout="@layout/fragment_my_events">
+        android:id="@+id/ListAllEventsFragment"
+        android:name="com.example.eventsnapqr.ListAllEventsFragment"
+        android:label="List All Events"
+        tools:layout="@layout/fragment_browse_events" >
         <action
-            android:id="@+id/action_myEventsFragment_to_BrowseEventFragment"
-            app:destination="@id/browseEventFragment" />
+            android:id="@+id/action_allEvents_to_eventDetails"
+            app:destination="@id/eventDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ListAttendingEventsFragment"
+        android:name="com.example.eventsnapqr.ListAttendingEventsFragment"
+        android:label="List Attending Events"
+        tools:layout="@layout/fragment_browse_events" >
         <action
-            android:id="@+id/action_myEventsFragment_to_eventDetailFragment"
-            app:destination="@id/eventDetailFragment" />
+            android:id="@+id/action_attendingEvents_to_eventDetails"
+            app:destination="@id/eventDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ListOrganizedEventsFragment"
+        android:name="com.example.eventsnapqr.ListOrganizedEventsFragment"
+        android:label="List Organized Events"
+        tools:layout="@layout/fragment_browse_events" >
         <action
-            android:id="@+id/action_myEventsFragment_to_yourEventFragment"
-            app:destination="@id/yourEventFragment" />
+            android:id="@+id/action_organizedEvents_to_manageEvent"
+            app:destination="@id/manageEventFragment" />
     </fragment>
 
     <fragment
