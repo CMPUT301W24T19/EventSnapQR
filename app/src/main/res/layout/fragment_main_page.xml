@@ -57,8 +57,67 @@
     </androidx.cardview.widget.CardView>
 
 
+        <LinearLayout
+            android:id="@+id/user_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="0.4"
+            android:background="@drawable/main_page_toolbar_backgorund"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="20dp"
+            android:paddingEnd="50dp">
 
-    <LinearLayout
+            <Button
+                android:id="@+id/admin_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="ADMIN"
+                android:textSize="12sp"
+                android:visibility="visible" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                app:cardCornerRadius="200dp"
+                app:cardElevation="5dp"
+                app:cardPreventCornerOverlap="false">
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/view_user_button"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:src="@drawable/profile_pic" />
+
+                    <View
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center"
+                        android:background="#70000000" />
+
+                </FrameLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -105,68 +164,7 @@
                 android:text="Browse Events" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/user_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/main_page_toolbar_backgorund"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-        android:paddingStart="20dp"
-        android:paddingEnd="50dp">
 
-        <Button
-            android:id="@+id/admin_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:text="ADMIN"
-        android:textSize="12sp"
-        android:visibility="visible" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            app:cardCornerRadius="200dp"
-            app:cardElevation="5dp"
-            app:cardPreventCornerOverlap="false">
-
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/view_user_button"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_gravity="center"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:src="@drawable/profile_pic" />
-
-                <View
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_gravity="center"
-                    android:background="#70000000" />
-
-            </FrameLayout>
-        </androidx.cardview.widget.CardView>
     </LinearLayout>
-
-
-
-
-</LinearLayout>
 
 </RelativeLayout>
