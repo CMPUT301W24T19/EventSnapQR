@@ -32,6 +32,9 @@ import com.bumptech.glide.Glide;
 //import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -56,18 +59,20 @@ public class UserInfoActivity extends AppCompatActivity {
     private String androidID;
     private ImageView profilePictureImage;
     private String profilePictureURI;
-    private EditText userName;
-    private EditText email;
-    private EditText phoneNumber;
-    private EditText homepage;
-    private Button saveButton;
+    private TextInputEditText userName;
+    private TextInputEditText email;
+    private TextInputEditText phoneNumber;
+    private TextInputEditText homepage;
+    private ExtendedFloatingActionButton saveButton;
     private boolean editMode = false;
     private ImageView editButton;
     private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
-    private Switch locationSwitch;
+    private MaterialCheckBox locationSwitch;
+    private MaterialCheckBox notificationSwitch;
 
     private final int PERMISSION_REQUEST_CODE = 100;
-    String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
+    String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
+    String[] notificationPermissions = {Manifest.permission.ACCESS_NOTIFICATION_POLICY, Manifest.permission.POST_NOTIFICATIONS};
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
 
@@ -96,23 +101,46 @@ public class UserInfoActivity extends AppCompatActivity {
         buttonAddImage = findViewById(R.id.upload_profile_button);
         buttonRemoveImage = findViewById(R.id.delete_profile_button);
         profilePictureImage = findViewById(R.id.iv_profile_pic);
-        userName = findViewById(R.id.name_context);
-        email = findViewById(R.id.email_context);
-        phoneNumber = findViewById(R.id.phone_context);
-        homepage = findViewById(R.id.homepage_context);
-        saveButton = findViewById(R.id.button_save_button);
+        userName = findViewById(R.id.editTextName);
+        email = findViewById(R.id.editTextEmail);
+        phoneNumber = findViewById(R.id.editTextNumber);
+        homepage = findViewById(R.id.editTextHomepage);
+        saveButton = findViewById(R.id.saveButton);
         editButton = findViewById(R.id.button_edit_profile_button);
-        locationSwitch = findViewById(R.id.switch_geolocation);
-
-
-        locationSwitch.setOnClickListener(new View.OnClickListener() {
+        locationSwitch = findViewById(R.id.checkboxLocation);
+        notificationSwitch = findViewById(R.id.checkboxNotifications);
+        if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(notificationPermissions)){
+            notificationSwitch.setChecked(false);
+        }
+        else{
+            notificationSwitch.setChecked(true);
+        }
+        notificationSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(permissions)){
-                    PermissionClient.getInstance(UserInfoActivity.this).askPermissions(UserInfoActivity.this,permissions, PERMISSION_REQUEST_CODE);
+                if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(notificationPermissions)){
+                    PermissionClient.getInstance(UserInfoActivity.this).askPermissions(UserInfoActivity.this,notificationPermissions, PERMISSION_REQUEST_CODE);
                 }
                 else{
                     Toast.makeText(UserInfoActivity.this, "Permission already granted", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(locationPermissions)){
+            locationSwitch.setChecked(false);
+        }
+        else{
+            locationSwitch.setChecked(true);
+        }
+        locationSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(locationPermissions)){
+                    PermissionClient.getInstance(UserInfoActivity.this).askPermissions(UserInfoActivity.this,locationPermissions, PERMISSION_REQUEST_CODE);
+                }
+                else{
+                    Toast.makeText(UserInfoActivity.this, "Permission already granted", Toast.LENGTH_LONG).show();
+                    locationSwitch.setChecked(true);
                 }
             }
         });
