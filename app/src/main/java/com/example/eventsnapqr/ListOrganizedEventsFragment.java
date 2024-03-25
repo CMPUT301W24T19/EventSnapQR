@@ -97,10 +97,8 @@ public class ListOrganizedEventsFragment extends Fragment {
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
             String eventId = organizedEventIds.get(position);
-            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-            Bundle bundle = new Bundle();
-            bundle.putString("eventId", eventId);
-            navController.navigate(R.id.action_organizedEvents_to_manageEvent, bundle);
+            BrowseEventsActivity activity = (BrowseEventsActivity) requireActivity();
+            activity.switchToFullscreenManage(eventId);
         });
 
         return view;

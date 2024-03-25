@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Back button -->
     <ImageView
         android:id="@+id/button_back_button"
         android:layout_width="45dp"
@@ -12,7 +11,6 @@
         android:src="?attr/actionModeCloseDrawable"
         android:padding="5dp" />
 
-    <!-- Page title -->
     <TextView
         android:id="@+id/page_name"
         android:layout_width="wrap_content"
@@ -25,7 +23,6 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="16dp" />
 
-    <!-- ViewPager2 for hosting fragments -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
@@ -33,7 +30,6 @@
         android:layout_above="@id/tabLayout"
         android:layout_below="@id/page_name" />
 
-    <!-- TabLayout aligned at the bottom -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
@@ -57,7 +53,6 @@
 
     </com.google.android.material.tabs.TabLayout>
 
-    <!-- NavHostFragment -->
     <fragment
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -70,5 +65,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:navGraph="@navigation/nav_graph"
         />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/fullscreenViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:visibility="gone" />
 
 </RelativeLayout>
