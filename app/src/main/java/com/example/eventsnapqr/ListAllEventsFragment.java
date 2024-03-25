@@ -81,10 +81,19 @@ public class ListAllEventsFragment extends Fragment {
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
             String eventId = eventIds.get(position);
-            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+
+            // Create a new fragment and set its arguments
+            EventDetailFragment detailsFragment = new EventDetailFragment();
             Bundle bundle = new Bundle();
             bundle.putString("eventId", eventId);
-            navController.navigate(R.id.action_allEvents_to_eventDetails, bundle);
+            detailsFragment.setArguments(bundle);
+
+            // Perform the fragment transaction to replace the current fragment with the new one
+            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.browse_switch, detailsFragment); // 'container' should be the ID of your fragment container
+            transaction.addToBackStack(null); // Add transaction to the back stack (optional)
+            transaction.commit();
         });
 
         return view;

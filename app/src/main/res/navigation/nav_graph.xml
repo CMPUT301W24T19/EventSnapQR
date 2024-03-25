@@ -11,7 +11,6 @@
         app:layout="@layout/fragment_main_page"
         tools:layout="@layout/fragment_main_page">
 
-
         <action
             android:id="@+id/action_mainPageFragment_to_adminModeMainPageFragment"
             app:destination="@id/adminModeMainPageFragment" />
