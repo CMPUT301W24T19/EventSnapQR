@@ -1,6 +1,7 @@
 package com.example.eventsnapqr;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.InputType;
@@ -107,7 +108,16 @@ public class ManageEventFragment extends Fragment {
         milestoneListView.setAdapter(milestoneAdapter);
         fetchAttendeeData();
         fetchMilestones();
-        view.findViewById(R.id.button_back_button).setOnClickListener(v -> requireActivity().onBackPressed());
+        view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = requireActivity().getIntent();
+                intent.putExtra("position", 2); // ensure the right tab is opened upon returning
+                requireActivity().finish();
+                startActivity(intent);
+            }
+        });
+
 
         view.findViewById(R.id.real_time_attendance_button).setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);

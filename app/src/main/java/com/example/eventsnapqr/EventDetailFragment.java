@@ -1,6 +1,7 @@
 package com.example.eventsnapqr;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -37,6 +38,7 @@ public class EventDetailFragment extends Fragment {
     private TextView eventOrganizer;
     private TextView eventMaxAttendees;
     private TextView eventAnnouncement;
+    private Integer position;
 
     /**
      * What should be executed when the fragment is created
@@ -48,10 +50,11 @@ public class EventDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             eventId = getArguments().getString("eventId");
-            Log.d("PLEASEWORK", eventId);
+            position = getArguments().getInt("position");
             loadEventDetails(eventId);
 
         }
+        Log.d("position in detail", "position: " + position);
         androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
     }
@@ -79,7 +82,14 @@ public class EventDetailFragment extends Fragment {
         view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requireActivity().onBackPressed();
+                if (position == -1) {
+                    requireActivity().onBackPressed();
+                } else {
+                    Intent intent = requireActivity().getIntent();
+                    intent.putExtra("position", position); // ensure the right tab is opened upon returning
+                    requireActivity().finish();
+                    startActivity(intent);
+                }
             }
         });
 
