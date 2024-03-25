@@ -193,7 +193,7 @@ public class FirebaseController {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         if (event.getPosterURI() != null) {
-            deleteImage(event.getPosterURI());
+            deleteImage(event.getPosterURI(), event);
         }
 
         Task<Void> deleteEventTask = db.collection("events").document(eventId).set(event);
@@ -785,13 +785,52 @@ public class FirebaseController {
                 });
     }
 
-    public void deleteImage(String uri) {
+    public void deleteImage(String uri, Object object) {
         String[] firebaseImagePath = Uri.parse(uri).getPath().split("/");
         String imagePath = firebaseImagePath[firebaseImagePath.length - 2] + "/" + firebaseImagePath[firebaseImagePath.length - 1];
         FirebaseStorage.getInstance().getReference().child(imagePath).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onSuccess(Void unused) {
+            public void onSuccess(Void unused) { // after deleting from storage, delete from event and uri documents
                 Log.d("TAG", "Picture successfully deleted");
+                if (object instanceof Event) {
+                    Event event = (Event) object;
+                    String eventId = event.getEventID();
+                    if (eventId != null) {
+                        FirebaseFirestore.getInstance().collection("events").document(eventId)
+                                .update("posterURI", null)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("TAG", "Event poster URI set to null");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.e("TAG", "Failed to update event poster URI", e);
+                                    }
+                                });
+                    }
+                } else if (object instanceof User) {
+                    User user = (User) object;
+                    String userId = user.getDeviceID();
+                    if (userId != null) {
+                        FirebaseFirestore.getInstance().collection("users").document(userId)
+                                .update("profileURI", null)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("TAG", "User profile URI set to null");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.e("TAG", "Failed to update user profile URI", e);
+                                    }
+                                });
+                    }
+                }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

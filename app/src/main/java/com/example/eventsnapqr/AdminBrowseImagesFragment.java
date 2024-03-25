@@ -37,7 +37,7 @@ import java.util.List;
 public class AdminBrowseImagesFragment extends Fragment {
     private RecyclerView recyclerView;
     private ImageView buttonBackToAdminMain;
-    private List<Event> posters;
+    private List<Object> posters;
 
     /**
      * What should be executed when the fragment is created
@@ -71,28 +71,44 @@ public class AdminBrowseImagesFragment extends Fragment {
 
         posters = new ArrayList<>();
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        EventPosterAdapter adapter = new EventPosterAdapter(posters);
+        ImageAdapter adapter = new ImageAdapter(posters); // Change the adapter type
         recyclerView.setAdapter(adapter);
+
+        // fetch both events and users from Firestore and populate the posters list
         FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                //Log.d("TAG", "New snapshot");
                 posters.clear();
-                Log.d("TAG", "Snapshot");
                 for (QueryDocumentSnapshot doc : value) {
-                    String eventID = (String) doc.getId();
-                    Log.d("TAG", "Document ID: " + eventID);
                     String eventName = (String) doc.getData().get("eventName");
                     String posterUri = (String) doc.getData().get("posterURI");
-                    if (posterUri == null) {continue;}
-                    Event event = new Event(null, eventName, null, posterUri, null, eventID, null, null, true);
-                    if (event.isActive()) {
+                    String eventID = (String) doc.getId();
+                    if (posterUri != null) {
+                        Event event = new Event(null, eventName, null, posterUri, null, eventID, null, null, true);
                         posters.add(event);
                     }
                 }
                 adapter.notifyDataSetChanged();
             }
         });
+
+        FirebaseFirestore.getInstance().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                for (QueryDocumentSnapshot doc : value) {
+                    String profileUri = doc.getString("profileURI");
+                    String userName = doc.getString("name");
+                    String deviceId = doc.getString("deviceID");
+                    if (profileUri != null) {
+                        User user = new User(userName, deviceId);
+                        user.setProfilePicture(profileUri);
+                        posters.add(user);
+                    }
+                }
+                adapter.notifyDataSetChanged();
+            }
+        });
+
         buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,22 +117,44 @@ public class AdminBrowseImagesFragment extends Fragment {
             }
         });
 
-        adapter.setOnClickListener(new EventPosterAdapter.OnClickListener() {
+        adapter.setOnClickListener(new ImageAdapter.OnClickListener() {
             @Override
-            public void onClick(int position, Event event) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("Event Poster for " + event.getEventName())
-                        .setPositiveButton("View", (dialog, which) -> {
-                            Intent intent = new Intent(getContext(), AdminViewImageActivity.class);
-                            intent.putExtra("uri", event.getPosterURI());
-                            startActivity(intent);
-                        })
-                        .setNegativeButton("Delete", (dialog, which) -> {
-                            showDeleteConfirmationDialog(event);
-                        })
-                        .setNeutralButton("Cancel", null)
-                        .create()
-                        .show();
+            public void onClick(int position, Object item) {
+                if (item instanceof Event) {
+                    Event event = (Event) item;
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("Image Details")
+                            .setMessage("Type: " + "Event Poster" + "\n"
+                                    + "Event Name: " + event.getEventName() + "\n")
+                            .setPositiveButton("View Poster", (dialog, which) -> {
+                                Intent intent = new Intent(getContext(), AdminViewImageActivity.class);
+                                intent.putExtra("uri", event.getPosterURI());
+                                startActivity(intent);
+                            })
+                            .setNegativeButton("Delete", (dialog, which) -> {
+                                showDeleteConfirmationDialog(event);
+                            })
+                            .setNeutralButton("Cancel", null)
+                            .create()
+                            .show();
+                } else if (item instanceof User) {
+                    User user = (User) item;
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("Image Details  ")
+                            .setMessage("Type: " + "Profile Picture" + "\n"
+                                    + "User name: " + user.getName() + "\n")
+                            .setPositiveButton("View Poster", (dialog, which) -> {
+                                Intent intent = new Intent(getContext(), AdminViewImageActivity.class);
+                                intent.putExtra("uri", user.getProfilePicture());
+                                startActivity(intent);
+                            })
+                            .setNegativeButton("Delete", (dialog, which) -> {
+                                showDeleteConfirmationDialog(user);
+                            })
+                            .setNeutralButton("Cancel", null)
+                            .create()
+                            .show();
+                }
             }
         });
 
@@ -124,28 +162,44 @@ public class AdminBrowseImagesFragment extends Fragment {
     }
 
     /**
-     * Show an alert dialog confirming that the user wants to delete an event
-     *
-     * @param event the event to be deleted
+     * Show an alert dialog confirming that the user wants to delete an event poster or user profile image
+     * @param item the event or user whose poster/profile image is to be deleted
      */
-    private void showDeleteConfirmationDialog(Event event) {
+    private void showDeleteConfirmationDialog(Object item) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Confirm Deletion")
-                .setMessage("Are you sure you want to delete the poster for '" + event.getEventName() + "'?")
-                .setPositiveButton("Yes", (dialog, which) -> { // if yes
-                    if (event.getPosterURI() != null) {
-                        FirebaseController.getInstance().deleteImage(event.getPosterURI());
-                        FirebaseController.getInstance().getEvent(event.getEventID(), new FirebaseController.OnEventRetrievedListener() {
-                            @Override
-                            public void onEventRetrieved(Event event) {
-                                event.setPosterURI(null);
-                                FirebaseController.getInstance().addEvent(event);
-                            }
-                        });
-                    } else {
-                        Toast.makeText(requireContext(), "Event does not have a poster", Toast.LENGTH_SHORT).show();
-                    }
+        String itemName;
+        String itemType;
+        String itemID;
 
+        if (item instanceof Event) {
+            Event event = (Event) item;
+            itemName = event.getEventName();
+            itemType = "event poster";
+            itemID = event.getEventID();
+
+        } else if (item instanceof User) {
+            User user = (User) item;
+            itemName = user.getName();
+            itemType = "profile picture";
+            itemID = user.getDeviceID();
+        }
+
+        builder.setTitle("Confirm Deletion")
+                .setMessage("Are you sure you want to delete the " + itemType + " for '" + itemName + "'?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    if (item instanceof Event) {
+                        Event event = (Event) item;
+                        if (itemID != null) {
+                            FirebaseController.getInstance().deleteImage(event.getPosterURI(), event);
+                            posters.remove(event);
+                        }
+                    } else if (item instanceof User) {
+                        User user = (User) item;
+                        if (itemID != null) {
+                            FirebaseController.getInstance().deleteImage(user.getProfilePicture(), user);
+                            posters.remove(user);
+                        }
+                    }
                 })
                 .setNegativeButton("No", null)
                 .create()
