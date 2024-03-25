@@ -28,7 +28,7 @@ public class BrowseEventsActivity extends AppCompatActivity {
             position = 0;
         }
 
-        // Hide the action bar
+        // hide the action bar
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
