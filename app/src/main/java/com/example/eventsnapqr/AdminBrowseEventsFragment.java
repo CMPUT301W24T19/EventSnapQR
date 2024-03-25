@@ -69,8 +69,10 @@ public class AdminBrowseEventsFragment extends Fragment {
                 eventIds.clear();
                 eventNames.clear();
                 for (QueryDocumentSnapshot doc: value) {
-                    eventIds.add(doc.getId());
-                    eventNames.add(doc.getString("eventName"));
+                    if (doc.getBoolean("acive")) {
+                        eventIds.add(doc.getId());
+                        eventNames.add(doc.getString("eventName"));
+                    }
                 }
                 eventAdapter.notifyDataSetChanged();
             }

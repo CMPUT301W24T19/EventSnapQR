@@ -18,6 +18,7 @@ public class Event {
     private String eventID; // unique id
     private Date eventStartDateTime;
     private Date eventEndDateTime;
+    private boolean active;
 
     /**
      * constructor for event requiring a user instance, QR code, event name, a description, a URL
@@ -28,7 +29,7 @@ public class Event {
      * @param posterURI URL for the event poster
      * @param maxAttendees maximum number of attendees
      */
-    public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees, String eventID, Date eventStartDateTime, Date eventEndDateTime) {
+    public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees, String eventID, Date eventStartDateTime, Date eventEndDateTime, boolean active) {
         this.organizer = organizer;
         this.eventName = eventName;
         this.description = description;
@@ -37,6 +38,7 @@ public class Event {
         this.eventID = eventID;
         this.eventStartDateTime = eventStartDateTime;
         this.eventEndDateTime = eventEndDateTime;
+        this.active = active;
     }
 
     /**
@@ -154,5 +156,10 @@ public class Event {
     public Date getEventEndDateTime() {
         return this.eventEndDateTime;
     }
-
+    public boolean isActive() {
+        return this.active;
+    }
+    public void setActivity(boolean active) {
+        this.active = active;
+    }
 }
