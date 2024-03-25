@@ -189,13 +189,14 @@ public class FirebaseController {
      */
     public void deleteEvent(Event event, FirestoreOperationCallback completionCallback) {
         String eventId = event.getEventID();
+        event.setActivity(false);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         if (event.getPosterURI() != null) {
             deleteImage(event.getPosterURI());
         }
 
-        Task<Void> deleteEventTask = db.collection("events").document(eventId).delete();
+        Task<Void> deleteEventTask = db.collection("events").document(eventId).set(event);
 
         Task<QuerySnapshot> getUsersTask = db.collection("users").get();
 
@@ -353,6 +354,7 @@ public class FirebaseController {
         eventData.put("announcement", event.getAnnouncement());
         eventData.put("startDateTime", event.getEventStartDateTime());
         eventData.put("endDateTime", event.getEventStartDateTime());
+        eventData.put("active", event.isActive());
         if (event.getPosterURI() != null) {
             eventData.put("posterURI", event.getPosterURI());
         }
@@ -472,6 +474,7 @@ public class FirebaseController {
                     Date endDateTime = document.getDate("endDateTime");
                     String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
+                    boolean active = document.getBoolean("active");
                     String announcement = document.getString("announcement");
 
 
@@ -480,7 +483,7 @@ public class FirebaseController {
                         @Override
                         public void onUserRetrieved(User user) {
                             if (user != null) {
-                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime);
+                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, active);
                                 listener.onEventRetrieved(event);
                             } else {
                                 Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);
