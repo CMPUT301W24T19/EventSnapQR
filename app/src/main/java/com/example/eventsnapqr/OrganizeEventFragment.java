@@ -219,9 +219,13 @@ public class OrganizeEventFragment extends Fragment {
     private boolean validateInput() {
         String eventName = editTextEventName.getText().toString().trim();
         String eventDesc = editTextEventDesc.getText().toString().trim();
+        String eventStartTime = editTextStartTime.getText().toString().trim();
+        String eventStartDate = editTextStartDate.getText().toString().trim();
+        String eventEndTime = editTextEndTime.getText().toString().trim();
+        String eventEndDate = editTextEndDate.getText().toString().trim();
 
         if (eventName.isEmpty()) {
-            editTextEventName.setError("Event name cannot be empty");
+            editTextEventName.setError("Event Name Required");
             return false;
         }
 
@@ -231,9 +235,30 @@ public class OrganizeEventFragment extends Fragment {
         }
 
         if (eventDesc.isEmpty()) {
-            editTextEventDesc.setError("Event description cannot be empty");
+            editTextEventDesc.setError("Event Description Required");
             return false;
         }
+
+        if (eventStartDate.isEmpty()) {
+            editTextStartDate.setError("Start Date Required");
+            return false;
+        }
+
+        if (eventStartTime.isEmpty()) {
+            editTextStartTime.setError("Start Time Required");
+            return false;
+        }
+
+        if (eventEndDate.isEmpty()) {
+            editTextEndDate.setError("End Date Required");
+            return false;
+        }
+
+        if (eventEndTime.isEmpty()) {
+            editTextEndTime.setError("End Time Required");
+            return false;
+        }
+
         return true;
     }
 

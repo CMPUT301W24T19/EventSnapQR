@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -26,7 +27,7 @@ import java.util.List;
  * fragment for attendees to browse any events that are are currently posted. comes from the main
  * page fragment and can lead to either an events detail page or a users current events page.
  */
-public class BrowseEventFragment extends Fragment {
+public class ListAllEventsFragment extends Fragment {
     private ListView eventListView; // list of events
     private ArrayAdapter<String> eventAdapter;
     private List<String> eventNames; // list of event names
@@ -81,29 +82,13 @@ public class BrowseEventFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         loadEvents();
 
-        view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().getOnBackPressedDispatcher().onBackPressed();
-            }
-        });
-
-        view.findViewById(R.id.view_on_events_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                navController.navigate(R.id.action_browseEventFragment_to_myEventFragment);
-            }
-        });
-
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
             String eventId = eventIds.get(position);
-            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-            Bundle bundle = new Bundle();
-            bundle.putString("eventId", eventId);
-            navController.navigate(R.id.action_browseEventFragment_to_eventDetailFragment, bundle);
+            BrowseEventsActivity activity = (BrowseEventsActivity) requireActivity();
+            activity.switchToFullscreenDetails(eventId);
         });
 
         return view;
     }
 }
+

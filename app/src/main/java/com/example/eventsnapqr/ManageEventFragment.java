@@ -111,12 +111,12 @@ public class ManageEventFragment extends Fragment {
 
         view.findViewById(R.id.real_time_attendance_button).setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-            navController.navigate(R.id.action_YourEventFragment_to_RealTimeAttendanceFragment);
+            navController.navigate(R.id.action_ManageEventFragment_to_RealTimeAttendanceFragment);
         });
 
         view.findViewById(R.id.attendee_map_button).setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-            navController.navigate(R.id.action_YourEventFragment_to_MapFragment);
+            navController.navigate(R.id.action_ManageEventFragment_to_MapFragment);
         });
 
         view.findViewById(R.id.qr_code_button).setOnClickListener(v -> {
