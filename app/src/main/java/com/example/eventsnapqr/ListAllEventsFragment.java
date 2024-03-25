@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -83,19 +84,8 @@ public class ListAllEventsFragment extends Fragment {
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
             String eventId = eventIds.get(position);
-
-            // Create a new fragment and set its arguments
-            EventDetailFragment detailsFragment = new EventDetailFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString("eventId", eventId);
-            detailsFragment.setArguments(bundle);
-
-            // Perform the fragment transaction to replace the current fragment with the new one
-            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.browse_switch, detailsFragment); // 'container' should be the ID of your fragment container
-            transaction.addToBackStack(null); // Add transaction to the back stack (optional)
-            transaction.commit();
+            BrowseEventsActivity activity = (BrowseEventsActivity) requireActivity();
+            activity.switchToFullscreenDetails(eventId);
         });
 
         return view;

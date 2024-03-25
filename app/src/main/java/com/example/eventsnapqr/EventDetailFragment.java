@@ -146,8 +146,7 @@ public class EventDetailFragment extends Fragment {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Back to main page
-                        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                        navController.navigate(R.id.mainPageFragment);
+                        requireActivity().finish();
                     }
                 });
 
