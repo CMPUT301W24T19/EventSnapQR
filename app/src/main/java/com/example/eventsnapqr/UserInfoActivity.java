@@ -32,6 +32,9 @@ import com.bumptech.glide.Glide;
 //import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -56,16 +59,16 @@ public class UserInfoActivity extends AppCompatActivity {
     private String androidID;
     private ImageView profilePictureImage;
     private String profilePictureURI;
-    private EditText userName;
-    private EditText email;
-    private EditText phoneNumber;
-    private EditText homepage;
-    private Button saveButton;
+    private TextInputEditText userName;
+    private TextInputEditText email;
+    private TextInputEditText phoneNumber;
+    private TextInputEditText homepage;
+    private ExtendedFloatingActionButton saveButton;
     private boolean editMode = false;
     private ImageView editButton;
     private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
-    private Switch locationSwitch;
-    private Switch notificationSwitch;
+    private MaterialCheckBox locationSwitch;
+    private MaterialCheckBox notificationSwitch;
 
     private final int PERMISSION_REQUEST_CODE = 100;
     String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
@@ -98,14 +101,14 @@ public class UserInfoActivity extends AppCompatActivity {
         buttonAddImage = findViewById(R.id.upload_profile_button);
         buttonRemoveImage = findViewById(R.id.delete_profile_button);
         profilePictureImage = findViewById(R.id.iv_profile_pic);
-        userName = findViewById(R.id.name_context);
-        email = findViewById(R.id.email_context);
-        phoneNumber = findViewById(R.id.phone_context);
-        homepage = findViewById(R.id.homepage_context);
-        saveButton = findViewById(R.id.button_save_button);
+        userName = findViewById(R.id.editTextName);
+        email = findViewById(R.id.editTextEmail);
+        phoneNumber = findViewById(R.id.editTextNumber);
+        homepage = findViewById(R.id.editTextHomepage);
+        saveButton = findViewById(R.id.saveButton);
         editButton = findViewById(R.id.button_edit_profile_button);
-        locationSwitch = findViewById(R.id.switch_geolocation);
-        notificationSwitch = findViewById(R.id.switch_notification);
+        locationSwitch = findViewById(R.id.checkboxLocation);
+        notificationSwitch = findViewById(R.id.checkboxNotifications);
         if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(notificationPermissions)){
             notificationSwitch.setChecked(false);
         }
