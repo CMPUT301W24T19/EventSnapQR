@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                     //goToMainPage();
                 }
                 else {
-                    // signUp();
+                    FirebaseController.getInstance().addUser(new User(androidId));
                 }
             }
             @Override
