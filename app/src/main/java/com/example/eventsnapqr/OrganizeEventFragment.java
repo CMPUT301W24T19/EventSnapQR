@@ -158,26 +158,29 @@ public class OrganizeEventFragment extends Fragment {
                             Result decode;
                             try {
                                 decode = reader.decode(new BinaryBitmap(binarizer));
-                            } catch (NotFoundException e) {
-                                throw new RuntimeException(e);
-                            } catch (ChecksumException e) {
-                                throw new RuntimeException(e);
-                            } catch (FormatException e) {
-                                throw new RuntimeException(e);
+                            } catch (Exception e) {
+                                decode = null;
                             }
-                            FirebaseController.getInstance().getEvent(decode.getText(), new FirebaseController.OnEventRetrievedListener() {
-                                @Override
-                                public void onEventRetrieved(Event event) {
-                                    Log.d("TAG", "EVENT: " + event);
-                                    if (event == null) {
-                                        Log.d("TAG", "QR code applied");
-                                        reusingQR = decode.getText();
+                            if (decode == null) {
+                                Toast.makeText(getContext(), "Invalid QR code", Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                Result finalDecode = decode;
+                                FirebaseController.getInstance().getEvent(decode.getText(), new FirebaseController.OnEventRetrievedListener() {
+                                    @Override
+                                    public void onEventRetrieved(Event event) {
+                                        Log.d("TAG", "EVENT: " + event);
+                                        if (event == null) {
+                                            Log.d("TAG", "QR code applied");
+                                            reusingQR = finalDecode.getText();
+                                            Toast.makeText(getContext(), "QR code successfully applied", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Log.d("TAG", "There is an event using this QR code");
+                                            Toast.makeText(getContext(), "QR code currently in use", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                    else {
-                                        Log.d("TAG", "There is an event using this QR code");
-                                    }
-                                }
-                            });
+                                });
+                            }
                         }
                     }
                 });
@@ -290,7 +293,7 @@ public class OrganizeEventFragment extends Fragment {
                             userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                 imageUri = uri;
                                 uriString = imageUri.toString();
-                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime);
+                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, true);
                                 Log.d("USER NAME", newEvent.getOrganizer().getName());
                                 firebaseController.addEvent(newEvent);
                                 bundle.putString("destination", "main");
@@ -300,8 +303,9 @@ public class OrganizeEventFragment extends Fragment {
                         });
                     } else {
                         uriString = null;
-                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime);
+                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, true);
                         Log.d("USER NAME", " "+newEvent.getOrganizer().getName());
+
                         firebaseController.addEvent(newEvent);
                         bundle.putString("destination", "main");
                         firebaseController.addOrganizedEvent(user, newEvent);

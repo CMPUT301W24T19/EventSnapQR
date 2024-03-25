@@ -57,11 +57,9 @@ public class MainActivity extends AppCompatActivity {
         listener = new FirebaseController.Authenticator() {
             @Override
             public void onUserExistenceChecked(boolean exists) {
-                if (exists) {
-                    //goToMainPage();
-                }
-                else {
-                    FirebaseController.getInstance().addUser(new User(androidId));
+                if (!exists) {
+                    User newUser = new User("user_" + androidId, androidId);
+                    FirebaseController.getInstance().addUser(newUser);
                 }
             }
             @Override

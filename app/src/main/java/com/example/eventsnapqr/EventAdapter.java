@@ -11,7 +11,7 @@ import com.example.eventsnapqr.Event;
 import com.example.eventsnapqr.R;
 
 import java.util.ArrayList;
-
+/*
 class EventAdapter extends ArrayAdapter<Event> {
 
     private LayoutInflater inflater;
@@ -57,4 +57,4 @@ class EventAdapter extends ArrayAdapter<Event> {
         TextView qrLinkTextView;
         // Add more views if needed
     }
-}
+}*/
