@@ -117,6 +117,7 @@ public class AdminBrowseImagesFragment extends Fragment {
             }
         });
 
+        // Set the click listener for both event posters and user profile images
         adapter.setOnClickListener(new ImageAdapter.OnClickListener() {
             @Override
             public void onClick(int position, Object item) {
@@ -182,6 +183,8 @@ public class AdminBrowseImagesFragment extends Fragment {
             itemName = user.getName();
             itemType = "profile picture";
             itemID = user.getDeviceID();
+        } else {
+            return;
         }
 
         builder.setTitle("Confirm Deletion")
