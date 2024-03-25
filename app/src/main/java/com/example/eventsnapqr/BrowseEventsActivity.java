@@ -14,11 +14,19 @@ public class BrowseEventsActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
     private ViewPager2 fullscreenViewPager;
     private TabLayout tabLayout;
+    private Integer position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_events);
+
+        Bundle args = getIntent().getExtras();
+        if (args != null) {
+            position = args.getInt("position");
+        } else {
+            position = 0;
+        }
 
         // Hide the action bar
         if (getSupportActionBar() != null) {
@@ -29,10 +37,8 @@ public class BrowseEventsActivity extends AppCompatActivity {
         fullscreenViewPager = findViewById(R.id.fullscreenViewPager);
         tabLayout = findViewById(R.id.tabLayout);
 
-        // Set up the adapter for the main ViewPager2
-        viewPager.setAdapter(new BrowseEventsAdapter(this));
 
-        // Set up TabLayout with ViewPager2
+        viewPager.setAdapter(new BrowseEventsAdapter(this));
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) -> {
                     switch (position) {
@@ -47,6 +53,21 @@ public class BrowseEventsActivity extends AppCompatActivity {
                             break;
                     }
                 }).attach();
+        viewPager.setCurrentItem(position);
+
+        // update tab position for back button functionality
+        tabLayout.getTabAt(position).select();
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                position = tab.getPosition();
+            }
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
 
         fullscreenViewPager.setVisibility(View.GONE);
         ImageView backButton = findViewById(R.id.button_back_button);
@@ -62,6 +83,7 @@ public class BrowseEventsActivity extends AppCompatActivity {
         EventDetailFragment detailsFragment = new EventDetailFragment();
         Bundle bundle = new Bundle();
         bundle.putString("eventId", eventId);
+        bundle.putInt("position", position);
         detailsFragment.setArguments(bundle);
         FullscreenPagerAdapter adapter = new FullscreenPagerAdapter(getSupportFragmentManager(), getLifecycle());
         adapter.addFragment(detailsFragment);
