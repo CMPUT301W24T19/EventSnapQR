@@ -43,8 +43,10 @@ public class BrowseEventFragment extends Fragment {
                     if (task.isSuccessful()) {
                         eventNames.clear();
                         for (DocumentSnapshot document : task.getResult()) {
-                            eventIds.add(document.getId());
-                            eventNames.add(document.getString("eventName"));
+                            if (Boolean.TRUE.equals(document.getBoolean("active"))) {
+                                eventIds.add(document.getId());
+                                eventNames.add(document.getString("eventName"));
+                            }
                         }
                         eventAdapter.notifyDataSetChanged();
                     }
