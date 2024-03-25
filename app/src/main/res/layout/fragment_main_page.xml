@@ -8,37 +8,80 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+
+
         android:orientation="vertical"
         android:weightSum="3"
         tools:context=".MainPageFragment">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="5dp">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ViewFlipper
+                    android:id="@+id/viewFlipper"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                android:autoStart="true"
+                android:flipInterval="5000"
+                android:inAnimation="@android:anim/slide_in_left"
+                android:outAnimation="@android:anim/slide_out_right">
+
+            </ViewFlipper>
+
+                <TextView
+                    android:id="@+id/main_page_textview_carousel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                android:background="#A0000000"
+                android:padding="8dp"
+                android:gravity="left"
+                android:layout_gravity="bottom"
+                android:text="Events happening this week.."
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:textSize="15dp"
+                android:textColor="#FFFFFF"
+                android:shadowColor="#34757E"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="10" />
+
+
+            </FrameLayout>
+    </androidx.cardview.widget.CardView>
+
 
         <LinearLayout
             android:id="@+id/user_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
-            android:gravity="start"
+            android:layout_gravity="bottom"
+            android:layout_weight="0.4"
+            android:background="@drawable/main_page_toolbar_backgorund"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-
             android:paddingStart="20dp"
-            android:paddingTop="16dp"
             android:paddingEnd="50dp">
 
             <Button
                 android:id="@+id/admin_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:text="ADMIN"
                 android:textSize="12sp"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
             <View
                 android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                tools:ignore="NestedWeights"
-                android:fitsSystemWindows="true" />
-
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
@@ -68,60 +111,21 @@
                         android:layout_width="80dp"
                         android:layout_height="80dp"
                         android:layout_gravity="center"
-                        android:background="#70000000"/>
+                        android:background="#70000000" />
 
                 </FrameLayout>
             </androidx.cardview.widget.CardView>
-
-
-
         </LinearLayout>
-        <TextView
-            android:id="@+id/main_page_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/user_layout"
-            android:layout_marginTop="16dp"
-            android:layout_weight="0.2"
-            android:gravity="center"
-            android:text="EventSnapQR"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#FFFFFF" />
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="250dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="5dp">
-        <ViewFlipper
-            android:id="@+id/viewFlipper"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:flipInterval="5000"
-            android:autoStart="true"
-            android:inAnimation="@android:anim/slide_in_left"
-            android:outAnimation="@android:anim/slide_out_right"
-            >
-        </ViewFlipper>
-        </androidx.cardview.widget.CardView>
-
-
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:weightSum="3">
-
-            <Button
-                android:id="@+id/scan_qr_button"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Scan QR" />
 
             <Button
                 android:id="@+id/organize_event_button"
@@ -130,12 +134,36 @@
                 android:layout_marginBottom="8dp"
                 android:text="Organize New Event" />
 
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/scan_qr_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:text="Scan QR" />
+
             <Button
                 android:id="@+id/browse_events_button"
-                android:layout_width="200dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
                 android:text="Browse Events" />
         </LinearLayout>
+
 
     </LinearLayout>
 
