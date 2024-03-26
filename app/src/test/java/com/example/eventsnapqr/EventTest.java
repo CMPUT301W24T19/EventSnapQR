@@ -25,9 +25,6 @@ public class EventTest {
         return event;
     }
 
-
-
-
     @Test
     public void testEventConstructor() {
         User organizer = new User("organizerId", "Organizer Name");

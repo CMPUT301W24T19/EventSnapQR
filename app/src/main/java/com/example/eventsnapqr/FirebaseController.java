@@ -1,7 +1,9 @@
 package com.example.eventsnapqr;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -193,7 +195,7 @@ public class FirebaseController {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         if (event.getPosterURI() != null) {
-            deleteImage(event.getPosterURI(), event);
+            deleteImage(event.getPosterURI(), event, null);
         }
 
         Task<Void> deleteEventTask = db.collection("events").document(eventId).set(event);
@@ -795,7 +797,7 @@ public class FirebaseController {
                 });
     }
 
-    public void deleteImage(String uri, Object object) {
+    public void deleteImage(String uri, Object object, Context context) {
         String[] firebaseImagePath = Uri.parse(uri).getPath().split("/");
         String imagePath = firebaseImagePath[firebaseImagePath.length - 2] + "/" + firebaseImagePath[firebaseImagePath.length - 1];
         FirebaseStorage.getInstance().getReference().child(imagePath).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -812,12 +814,14 @@ public class FirebaseController {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Log.d("TAG", "Event poster URI set to null");
+                                        Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
                                         Log.e("TAG", "Failed to update event poster URI", e);
+                                        Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                     }
@@ -831,12 +835,14 @@ public class FirebaseController {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Log.d("TAG", "User profile URI set to null");
+                                        Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
                                         Log.e("TAG", "Failed to update user profile URI", e);
+                                        Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                     }
@@ -846,6 +852,7 @@ public class FirebaseController {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.d("TAG", "Picture not deleted");
+                Toast.makeText(context, "Failed to delete image", Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -28,6 +28,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -129,16 +131,17 @@ public class ManageEventFragment extends Fragment {
         fetchAttendeeData();
         fetchMilestones();
 
-         choosePoster = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-                    // Callback is invoked after the user selects a media item or closes the
-                    // photo picker.
-                    if (uri != null) {
-                        Log.d("TAG", "Selected URI: " + uri);
-                        imageUri = uri;
-                    } else {
-                        Log.d("TAG", "No media selected");
-                    }
-                });
+        choosePoster = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+            // Callback is invoked after the user selects a media item or closes the photo picker.
+            if (uri != null) {
+                Log.d("TAG", "Selected URI: " + uri);
+                imageUri = uri;
+                // Handle the selected URI here
+                uploadPoster(uri);
+            } else {
+                Log.d("TAG", "No media selected");
+            }
+        });
 
         view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -223,6 +226,9 @@ public class ManageEventFragment extends Fragment {
         builder.create().show();
     }
 
+    /**
+     * displays dialog for an organizer to make an announcement
+     */
     private void showNotificationDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
@@ -266,25 +272,44 @@ public class ManageEventFragment extends Fragment {
         builder.show();
     }
 
-    private void uploadPoster() {
-        choosePoster.launch(new PickVisualMediaRequest.Builder()
-                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                .build());
-        if (imageUri != null) {
-            uriString = imageUri.toString();
+    /**
+     * uploads selected image to the database
+     * @param uri uri of the selected image
+     */
+    private void uploadPoster(Uri uri) {
+        Log.d("ManageEventFragment", "Current Poster URI before update: " + currentEvent.getPosterURI());
+        if (uri != null) {
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("posters/" + currentEvent.getEventID() + ".jpg");
+            storageRef.putFile(uri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        storageRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
+                            uriString = downloadUri.toString();
+                            DocumentReference eventRef = db.collection("events").document(currentEvent.getEventID());
+                            eventRef.update("posterURI", uriString)
+                                    .addOnSuccessListener(aVoid -> {
+                                        currentEvent.setPosterURI(uriString);
+                                        Toast.makeText(requireContext(), "Poster Updated", Toast.LENGTH_SHORT).show();
+                                        Log.d("ManageEventFragment", "Current Poster URI after update: " + currentEvent.getPosterURI());
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.d("ManageEventFragment", "Error updating posterURI: " + e.getMessage());
+                                    });
+                        }).addOnFailureListener(e -> {
+                            Log.d("ManageEventFragment", "Error getting download URL: " + e.getMessage());
+                        });
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d("ManageEventFragment", "Error uploading image: " + e.getMessage());
+                    });
         } else {
             Toast.makeText(requireContext(), "No image was selected", Toast.LENGTH_SHORT).show();
         }
-        DocumentReference eventRef = db.collection("events").document(currentEvent.getEventID());
-        eventRef.update("posterURI", uriString)
-                .addOnSuccessListener(aVoid -> {
-                    currentEvent.setPosterURI(uriString); // Update locally
-                })
-                .addOnFailureListener(e -> {
-                    Log.d("ManageEventFragment", "Error updating posterURI: " + e.getMessage());
-                });
     }
 
+    /**
+     * displays and handles the options when clicking the vertical 3 dots
+     * @param view
+     */
     public void showPopupMenu(View view) {
         PopupMenu popupMenu = new PopupMenu(requireContext(), view);
         popupMenu.getMenuInflater().inflate(R.menu.menu_manage_event, popupMenu.getMenu());
@@ -300,10 +325,13 @@ public class ManageEventFragment extends Fragment {
                 navController.navigate(R.id.action_ManageEventFragment_to_qRDialogFragment, qrBundle);
                 return true;
             } else if (itemId == R.id.upload_poster) { // modify the associated poster
-                uploadPoster();
+                choosePoster.launch(new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build());
                 return true;
-            } else if (itemId == R.id.remove_poster) { // remove the associated poste
-                FirebaseController.getInstance().deleteImage(currentEvent.getPosterURI(), currentEvent);
+            } else if (itemId == R.id.remove_poster) { // remove the associated poster
+                FirebaseController.getInstance().deleteImage(currentEvent.getPosterURI(), currentEvent, getContext());
+                Toast.makeText(requireContext(), "Poster Updated", Toast.LENGTH_SHORT).show();
                 return true;
             } else if (itemId == R.id.make_announcement) {
                 showNotificationDialog();
