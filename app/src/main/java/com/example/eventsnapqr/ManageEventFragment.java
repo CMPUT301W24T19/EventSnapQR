@@ -245,18 +245,13 @@ public class ManageEventFragment extends Fragment {
                 String announcement = editTextAnnouncement.getText().toString();
                 boolean enableNotifications = switchEnableNotifications.isChecked();
 
-                // Get reference to the 'announcements' subcollection under the event document
                 CollectionReference announcementsRef = db.collection("events").document(currentEvent.getEventID()).collection("announcements");
-
-                // Add the announcement as a document with its own ID
                 announcementsRef.document(announcement)
                         .set(new HashMap<>())
                         .addOnSuccessListener(documentReference -> {
-                            // Successfully added announcement to subcollection
                             Toast.makeText(requireContext(), "Announcement sent successfully", Toast.LENGTH_SHORT).show();
                         })
                         .addOnFailureListener(e -> {
-                            // Handle failure to add announcement to subcollection
                             Log.d("ManageEventFragment", "Error adding announcement to subcollection: " + e.getMessage());
                             Toast.makeText(requireContext(), "Failed to send announcement", Toast.LENGTH_SHORT).show();
                         });
@@ -314,15 +309,13 @@ public class ManageEventFragment extends Fragment {
         PopupMenu popupMenu = new PopupMenu(requireContext(), view);
         popupMenu.getMenuInflater().inflate(R.menu.menu_manage_event, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
-            int itemId = item.getItemId(); // Get the selected item ID
+            int itemId = item.getItemId();
 
             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
 
             if (itemId == R.id.view_qr) { // view qr code again
-                Bundle qrBundle = new Bundle();
-                qrBundle.putString("eventId", eventId);
-                qrBundle.putString("destination", "manage");
-                navController.navigate(R.id.action_ManageEventFragment_to_qRDialogFragment, qrBundle);
+                BrowseEventsActivity activity = (BrowseEventsActivity) requireActivity();
+                activity.switchToFullscreenQR(eventId);
                 return true;
             } else if (itemId == R.id.upload_poster) { // modify the associated poster
                 choosePoster.launch(new PickVisualMediaRequest.Builder()

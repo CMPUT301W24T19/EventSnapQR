@@ -1,4 +1,5 @@
 package com.example.eventsnapqr;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -11,7 +12,7 @@ import java.util.List;
 public class FullscreenPagerAdapter extends FragmentStateAdapter {
     private final List<Fragment> fragments = new ArrayList<>();
 
-    public FullscreenPagerAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
+    public FullscreenPagerAdapter(FragmentManager fragmentManager, Lifecycle lifecycle) {
         super(fragmentManager, lifecycle);
     }
 

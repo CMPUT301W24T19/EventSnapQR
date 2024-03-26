@@ -98,7 +98,8 @@ public class QRDialogFragment extends DialogFragment {
             public void onClick(View v) {
                 if(destination != null){
                     if (destination.equals("manage")) {
-                        requireActivity().onBackPressed();
+                        BrowseEventsActivity activity = (BrowseEventsActivity) requireActivity();
+                        activity.switchToFullscreenManage(eventId);
                     } else if (destination.equals("main")) {
                         requireActivity().finish();
                     }
@@ -106,9 +107,7 @@ public class QRDialogFragment extends DialogFragment {
             }
         });
 
-        buttonSaveQR = view.findViewById(R.id.button_save_qr);
-
-        buttonSaveQR.setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.button_save_qr).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
