@@ -1,7 +1,9 @@
 package com.example.eventsnapqr;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -193,7 +195,7 @@ public class FirebaseController {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         if (event.getPosterURI() != null) {
-            deleteImage(event.getPosterURI(), event);
+            deleteImage(event.getPosterURI(), event, null);
         }
 
         Task<Void> deleteEventTask = db.collection("events").document(eventId).set(event);
@@ -309,7 +311,6 @@ public class FirebaseController {
             event.setDescription(doc.getString("description"));
             event.setEventName(doc.getString("eventName"));
             event.setPosterURI(doc.getString("posterURL"));
-            event.setAnnouncement(doc.getString("announcement"));
             events.add(event);
             //Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees)
         }
@@ -344,17 +345,17 @@ public class FirebaseController {
 
     /**
      * adds an event and its fields to the firestore database
-     * @param event
+     * @param event The event to add
      */
     public void addEvent(Event event) {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("eventName", event.getEventName());
         eventData.put("organizerID", event.getOrganizer().getDeviceID());
         eventData.put("description", event.getDescription());
-        eventData.put("announcement", event.getAnnouncement());
         eventData.put("startDateTime", event.getEventStartDateTime());
-        eventData.put("endDateTime", event.getEventStartDateTime());
+        eventData.put("endDateTime", event.getEventEndDateTime());
         eventData.put("active", event.isActive());
+
         if (event.getPosterURI() != null) {
             eventData.put("posterURI", event.getPosterURI());
         }
@@ -362,8 +363,6 @@ public class FirebaseController {
             eventData.put("maxAttendees", event.getMaxAttendees());
         }
 
-        // format document id
-        //String documentId = event.getEventName() + "-" + event.getOrganizer().getDeviceID();
         if (eventReference != null) {
             eventReference.document(event.getEventID()).set(eventData)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -380,6 +379,7 @@ public class FirebaseController {
                     });
         }
     }
+
     ArrayList<User> users = new ArrayList<>();
     public void getAllUsers(OnAllUsersLoadedListener listener){
         userReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -467,7 +467,6 @@ public class FirebaseController {
                     Log.d("Event found", "Event found: " + eventIdentifier);
                     String eventName = document.getString("eventName");
                     String organizerID = document.getString("organizerID");
-                    String qrLink = document.getString("QRLink");  // what is this?
                     String description = document.getString("description");
                     String posterUri = document.getString("posterURI");
                     Date startDateTime = document.getDate("startDateTime");
@@ -475,22 +474,37 @@ public class FirebaseController {
                     String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
                     boolean active = document.getBoolean("active");
-                    String announcement = document.getString("announcement");
 
+                    // Fetch announcements from subcollection
+                    db.collection("events").document(eventIdentifier).collection("announcements")
+                            .get()
+                            .addOnCompleteListener(subCollectionTask -> {
+                                if (subCollectionTask.isSuccessful()) {
+                                    List<String> announcements = new ArrayList<>();
+                                    for (QueryDocumentSnapshot announcementDoc : subCollectionTask.getResult()) {
+                                        // Extract announcement ID and add to list
+                                        announcements.add(announcementDoc.getId());
+                                    }
 
-                    // retrieve the user who organized the event
-                    getUser(organizerID, new OnUserRetrievedListener() {
-                        @Override
-                        public void onUserRetrieved(User user) {
-                            if (user != null) {
-                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, active);
-                                listener.onEventRetrieved(event);
-                            } else {
-                                Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);
-                                listener.onEventRetrieved(null);
-                            }
-                        }
-                    });
+                                    // Retrieve the user who organized the event
+                                    getUser(organizerID, new OnUserRetrievedListener() {
+                                        @Override
+                                        public void onUserRetrieved(User user) {
+                                            if (user != null) {
+                                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, active);
+                                                event.setAnnouncements(announcements); // Set the announcements list
+                                                listener.onEventRetrieved(event);
+                                            } else {
+                                                Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);
+                                                listener.onEventRetrieved(null);
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    Log.d("Error", "Error getting announcements subcollection: " + subCollectionTask.getException());
+                                    listener.onEventRetrieved(null);
+                                }
+                            });
                 } else {
                     Log.d("Event not found", "Event not found: " + eventIdentifier);
                     listener.onEventRetrieved(null);
@@ -501,6 +515,7 @@ public class FirebaseController {
             }
         });
     }
+
 
     /**
      * interface to handle event retrieval.
@@ -541,9 +556,6 @@ public class FirebaseController {
         DocumentReference userRef = userReference.document(user.getDeviceID());
         DocumentReference eventRef = eventReference.document(event.getEventID());
         // added add user to events promised attendees list aswell
-
-
-
         eventRef.collection("promisedAttendees").document(user.getDeviceID()).set(new HashMap<>()).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -785,7 +797,7 @@ public class FirebaseController {
                 });
     }
 
-    public void deleteImage(String uri, Object object) {
+    public void deleteImage(String uri, Object object, Context context) {
         String[] firebaseImagePath = Uri.parse(uri).getPath().split("/");
         String imagePath = firebaseImagePath[firebaseImagePath.length - 2] + "/" + firebaseImagePath[firebaseImagePath.length - 1];
         FirebaseStorage.getInstance().getReference().child(imagePath).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -802,12 +814,14 @@ public class FirebaseController {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Log.d("TAG", "Event poster URI set to null");
+                                        Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
                                         Log.e("TAG", "Failed to update event poster URI", e);
+                                        Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                     }
@@ -821,12 +835,14 @@ public class FirebaseController {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Log.d("TAG", "User profile URI set to null");
+                                        Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
                                         Log.e("TAG", "Failed to update user profile URI", e);
+                                        Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                     }
@@ -836,6 +852,7 @@ public class FirebaseController {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.d("TAG", "Picture not deleted");
+                Toast.makeText(context, "Failed to delete image", Toast.LENGTH_SHORT).show();
             }
         });
     }

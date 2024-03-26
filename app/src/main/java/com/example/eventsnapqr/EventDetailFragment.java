@@ -21,6 +21,8 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.List;
+
 /**
  * fragment to show the details of an event, including the name of the organizer,
  * the description, announcements and max attendees. gives the option for the user to
@@ -218,6 +220,16 @@ public class EventDetailFragment extends Fragment {
         eventMaxAttendees.setText(event.getMaxAttendees() != null ? event.getMaxAttendees().toString() : "N/A");
 
         eventAnnouncement = getView().findViewById(R.id.announce_content);
-        eventAnnouncement.setText(event.getAnnouncement());
+        StringBuilder announcementText = new StringBuilder();
+        List<String> announcements = event.getAnnouncements();
+        if (announcements != null && !announcements.isEmpty()) {
+            for (String announcement : announcements) {
+                announcementText.append("\u2022 ").append(announcement).append("\n"); // Prefix each announcement with a bullet point
+            }
+        } else {
+            announcementText.append("No announcements available");
+        }
+        eventAnnouncement.setText(announcementText.toString());
     }
+
 }

@@ -1,7 +1,8 @@
 package com.example.eventsnapqr;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * represents an event with a name, organizer, description, poster, maxAttendees (optional), and
@@ -14,7 +15,7 @@ public class Event {
     private String description; // description of the event
     private String posterURI; // URL for the event poster image
     private Integer maxAttendees; // optional max attendees
-    private String announcement; //announcements related to the Event
+    private List<String> announcements; //announcements related to the Event
     private String eventID; // unique id
     private Date eventStartDateTime;
     private Date eventEndDateTime;
@@ -39,6 +40,7 @@ public class Event {
         this.eventStartDateTime = eventStartDateTime;
         this.eventEndDateTime = eventEndDateTime;
         this.active = active;
+        this.announcements = new ArrayList<>();
     }
 
     /**
@@ -49,15 +51,30 @@ public class Event {
     }
 
     /**
-     * set method to set the Announcements of the event
-     * @param  announcement String
+     * Add an announcement to the list of announcements for the event
+     * @param announcement The announcement to add
      */
-    public void setAnnouncement(String announcement){this.announcement = announcement;}
+    public void addAnnouncement(String announcement) {
+        if (this.announcements == null) {
+            this.announcements = new ArrayList<>();
+        }
+        this.announcements.add(announcement);
+    }
+
+
+    /**
+     * setter method to set the current list of announcements
+     * @param announcements list of announcements
+     */
+    public void setAnnouncements(List<String> announcements) {
+        this.announcements = announcements;
+    }
+
     /**
      * getter method to return the description of the event as a string
      * @return announcement
      */
-    public String getAnnouncement(){return announcement;}
+    public List<String> getAnnouncements(){return announcements;}
 
     /**
      * set method to set the description of the event
@@ -150,15 +167,35 @@ public class Event {
     public void setEventID(String eventID) {
         this.eventID = eventID;
     }
+
+    /**
+     * get the starting date and time of the event
+     * @return
+     */
     public Date getEventStartDateTime() {
         return this.eventStartDateTime;
     }
+
+    /**
+     * get the ending data and time of an event
+     * @return
+     */
     public Date getEventEndDateTime() {
         return this.eventEndDateTime;
     }
+
+    /**
+     * check if the event is currently within its start and end date
+     * @return
+     */
     public boolean isActive() {
         return this.active;
     }
+
+    /**
+     * set the event to active
+     * @param active
+     */
     public void setActivity(boolean active) {
         this.active = active;
     }

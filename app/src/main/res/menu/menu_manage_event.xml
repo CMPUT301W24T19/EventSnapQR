@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/view_qr"
+        android:title="View QR" />
+    <item
+        android:id="@+id/upload_poster"
+        android:title="Upload Poster" />
+    <item
+        android:id="@+id/remove_poster"
+        android:title="Remove Poster" />
+    <item
+        android:id="@+id/make_announcement"
+        android:title="Make Announcement" />
+    <item
+        android:id="@+id/view_map"
+        android:title="View Map" />
+</menu>
