@@ -16,8 +16,8 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            app:cardCornerRadius="10dp"
+            android:layout_height="35dp"
+            app:cardCornerRadius="2dp"
             app:cardElevation="5dp">
 
             <FrameLayout
@@ -60,14 +60,14 @@
         <LinearLayout
             android:id="@+id/user_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:layout_gravity="bottom"
             android:layout_weight="0.4"
             android:background="@drawable/main_page_toolbar_backgorund"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingStart="20dp"
-            android:paddingEnd="50dp">
+            android:paddingEnd="30dp">
 
             <Button
                 android:id="@+id/admin_button"
