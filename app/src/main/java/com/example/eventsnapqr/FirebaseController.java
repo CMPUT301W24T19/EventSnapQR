@@ -196,11 +196,11 @@ public class FirebaseController {
             deleteImage(event.getPosterURI());
         }
 
-        Task<Void> deleteEventTask = db.collection("events").document(eventId).set(event);
+        Task<QuerySnapshot> getMilestones = db.collection("events").document(eventId).collection("milestones").get();
 
         Task<QuerySnapshot> getUsersTask = db.collection("users").get();
 
-        Tasks.whenAll(deleteEventTask, getUsersTask).addOnSuccessListener(aVoid -> {
+        Tasks.whenAll(getMilestones, getUsersTask).addOnSuccessListener(aVoid -> {
             List<Task<Void>> deletionTasks = new ArrayList<>();
             for (DocumentSnapshot userDoc : getUsersTask.getResult().getDocuments()) {
                 String userId = userDoc.getId();
@@ -208,6 +208,10 @@ public class FirebaseController {
                 Task<Void> deletePromisedEventTask = db.collection("users").document(userId).collection("promisedEvents").document(eventId).delete();
                 deletionTasks.add(deleteOrganizedEventTask);
                 deletionTasks.add(deletePromisedEventTask);
+            }
+            for (DocumentSnapshot milestoneDoc : getMilestones.getResult().getDocuments()) {
+                Task<Void> deleteMileStoneTask = db.collection("events").document(eventId).collection("milestones").document(milestoneDoc.getId()).delete();
+                deletionTasks.add(deleteMileStoneTask);
             }
 
             Tasks.whenAllSuccess(deletionTasks).addOnSuccessListener(tasks -> {
@@ -227,6 +231,7 @@ public class FirebaseController {
                 completionCallback.onCompleted();
             }
         });
+        this.addEvent(event);
     }
 
     /**
@@ -419,7 +424,6 @@ public class FirebaseController {
      */
     public void getUser(String androidID, OnUserRetrievedListener listener) {
         DocumentReference userRef = db.collection("users").document(androidID);
-
         userRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
@@ -459,7 +463,6 @@ public class FirebaseController {
      */
     public void getEvent(String eventIdentifier, OnEventRetrievedListener listener) {
         DocumentReference eventRef = db.collection("events").document(eventIdentifier);
-
         eventRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();

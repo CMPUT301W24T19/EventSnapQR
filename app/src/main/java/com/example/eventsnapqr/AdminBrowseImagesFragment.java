@@ -81,11 +81,11 @@ public class AdminBrowseImagesFragment extends Fragment {
                 Log.d("TAG", "Snapshot");
                 for (QueryDocumentSnapshot doc : value) {
                     String eventID = (String) doc.getId();
-                    Log.d("TAG", "Document ID: " + eventID);
                     String eventName = (String) doc.getData().get("eventName");
                     String posterUri = (String) doc.getData().get("posterURI");
+                    boolean eventActivity = (boolean) doc.getBoolean("active");
                     if (posterUri == null) {continue;}
-                    Event event = new Event(null, eventName, null, posterUri, null, eventID, null, null, true);
+                    Event event = new Event(null, eventName, null, posterUri, null, eventID, null, null, eventActivity);
                     if (event.isActive()) {
                         posters.add(event);
                     }
