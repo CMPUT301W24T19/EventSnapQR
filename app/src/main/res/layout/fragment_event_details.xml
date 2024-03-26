@@ -143,4 +143,16 @@
         android:layout_marginBottom="20dp"
         android:text="Sign Up" />
 
+    <TextView
+        android:id="@+id/sign_up_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:paddingTop="20dp"
+        android:text="You have already signed up for this event."
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
+
 </LinearLayout>

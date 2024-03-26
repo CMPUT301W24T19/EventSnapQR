@@ -839,6 +839,27 @@ public class FirebaseController {
             }
         });
     }
+
+    public void isUserSignedUp(String userId, String eventId, OnSignUpCheckListener listener) {
+        FirebaseFirestore.getInstance()
+                .collection("events")
+                .document(eventId)
+                .collection("attendees")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    boolean isSignedUp = documentSnapshot.exists();
+                    listener.onSignUpCheck(isSignedUp);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseController", "Error checking user signup", e);
+                    listener.onSignUpCheck(false); // Assume not signed up in case of failure
+                });
+    }
+
+    public interface OnSignUpCheckListener {
+        void onSignUpCheck(boolean isSignedUp);
+    }
 }
 
 

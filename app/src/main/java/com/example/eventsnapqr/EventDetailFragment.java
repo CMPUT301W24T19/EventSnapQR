@@ -79,6 +79,18 @@ public class EventDetailFragment extends Fragment {
         getActivity().getWindow().getDecorView().setSystemUiVisibility(
                         View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         );
+
+        FirebaseController.getInstance().isUserSignedUp(androidId, eventId, new FirebaseController.OnSignUpCheckListener() {
+            @Override
+            public void onSignUpCheck(boolean isSignedUp) {
+                if (isSignedUp) {
+                    view.findViewById(R.id.sign_up_button).setVisibility(View.GONE);
+                    TextView signUpMessage = view.findViewById(R.id.sign_up_message);
+                    signUpMessage.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
         view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
