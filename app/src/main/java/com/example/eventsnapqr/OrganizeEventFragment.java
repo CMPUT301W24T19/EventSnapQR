@@ -4,8 +4,10 @@ import static android.graphics.ImageDecoder.decodeBitmap;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.Manifest;
 import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Build;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -49,6 +52,8 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -62,6 +67,7 @@ import java.util.Date;
  * implemented
  */
 public class OrganizeEventFragment extends Fragment {
+    private FusedLocationProviderClient fusedLocationClient;
     private ImageView backButton;
     private ExtendedFloatingActionButton createEventButton;
     private TextInputEditText editTextEventName;
@@ -79,6 +85,10 @@ public class OrganizeEventFragment extends Fragment {
     private Uri imageUri;
     private String uriString;
     private String reusingQR;
+
+    private double latitude = 0.0;
+    private double longitude = 0.0;
+
 
     /**
      * Setup actions to be taken upon view creation and when the views are interacted with
@@ -119,6 +129,8 @@ public class OrganizeEventFragment extends Fragment {
 
         editTextEndTime = view.findViewById(R.id.editTextEndTime);
         editTextEndTime.setOnClickListener(v -> showTimePickerDialog(editTextEndTime));
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+        requestLocation();
 
         ActivityResultLauncher<PickVisualMediaRequest> choosePoster =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
@@ -211,6 +223,21 @@ public class OrganizeEventFragment extends Fragment {
         });
         return view;
     }
+    private void requestLocation() {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
+            return;
+        }
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(requireActivity(), location -> {
+                    if (location != null) {
+                        // Logic to handle location object
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+                    }
+                });
+    }
+
 
     /**
      * validate each input field before creating an event
@@ -318,7 +345,7 @@ public class OrganizeEventFragment extends Fragment {
                             userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                 imageUri = uri;
                                 uriString = imageUri.toString();
-                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, true);
+                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, true, latitude, longitude);
                                 Log.d("USER NAME", newEvent.getOrganizer().getName());
                                 firebaseController.addEvent(newEvent);
                                 bundle.putString("destination", "main");
@@ -328,7 +355,9 @@ public class OrganizeEventFragment extends Fragment {
                         });
                     } else {
                         uriString = null;
-                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, true);
+                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, true, latitude, longitude);
+                        newEvent.setLatitude(latitude);
+                        newEvent.setLongitude(longitude);
                         Log.d("USER NAME", " "+newEvent.getOrganizer().getName());
 
                         firebaseController.addEvent(newEvent);

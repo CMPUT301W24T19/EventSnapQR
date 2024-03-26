@@ -19,6 +19,9 @@ public class Event {
     private String eventID; // unique id
     private Date eventStartDateTime;
     private Date eventEndDateTime;
+    private double latitude;
+    private double longitude;
+
     private boolean active;
 
     /**
@@ -30,7 +33,7 @@ public class Event {
      * @param posterURI URL for the event poster
      * @param maxAttendees maximum number of attendees
      */
-    public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees, String eventID, Date eventStartDateTime, Date eventEndDateTime, boolean active) {
+    public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees, String eventID, Date eventStartDateTime, Date eventEndDateTime, boolean active, double latitude, double longitude) {
         this.organizer = organizer;
         this.eventName = eventName;
         this.description = description;
@@ -41,7 +44,10 @@ public class Event {
         this.eventEndDateTime = eventEndDateTime;
         this.active = active;
         this.announcements = new ArrayList<>();
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
+
 
     /**
      * empty constructor for firebase usage
@@ -199,4 +205,20 @@ public class Event {
     public void setActivity(boolean active) {
         this.active = active;
     }
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
 }
