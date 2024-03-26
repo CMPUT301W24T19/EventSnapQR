@@ -1,6 +1,7 @@
 package com.example.eventsnapqr;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -20,6 +21,8 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.List;
+
 /**
  * fragment to show the details of an event, including the name of the organizer,
  * the description, announcements and max attendees. gives the option for the user to
@@ -37,6 +40,7 @@ public class EventDetailFragment extends Fragment {
     private TextView eventOrganizer;
     private TextView eventMaxAttendees;
     private TextView eventAnnouncement;
+    private Integer position;
 
     /**
      * What should be executed when the fragment is created
@@ -48,10 +52,11 @@ public class EventDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             eventId = getArguments().getString("eventId");
-            Log.d("PLEASEWORK", eventId);
+            position = getArguments().getInt("position");
             loadEventDetails(eventId);
 
         }
+        Log.d("position in detail", "position: " + position);
         androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
     }
@@ -73,10 +78,32 @@ public class EventDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_details, container, false);
+        getActivity().getWindow().getDecorView().setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        );
+
+        FirebaseController.getInstance().isUserSignedUp(androidId, eventId, new FirebaseController.OnSignUpCheckListener() {
+            @Override
+            public void onSignUpCheck(boolean isSignedUp) {
+                if (isSignedUp) {
+                    view.findViewById(R.id.sign_up_button).setVisibility(View.GONE);
+                    TextView signUpMessage = view.findViewById(R.id.sign_up_message);
+                    signUpMessage.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
         view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requireActivity().onBackPressed();
+                if (position == -1) {
+                    requireActivity().onBackPressed();
+                } else {
+                    Intent intent = requireActivity().getIntent();
+                    intent.putExtra("position", position); // ensure the right tab is opened upon returning
+                    requireActivity().finish();
+                    startActivity(intent);
+                }
             }
         });
 
@@ -143,8 +170,7 @@ public class EventDetailFragment extends Fragment {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Back to main page
-                        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                        navController.navigate(R.id.mainPageFragment);
+                        requireActivity().finish();
                     }
                 });
 
@@ -194,6 +220,16 @@ public class EventDetailFragment extends Fragment {
         eventMaxAttendees.setText(event.getMaxAttendees() != null ? event.getMaxAttendees().toString() : "N/A");
 
         eventAnnouncement = getView().findViewById(R.id.announce_content);
-        eventAnnouncement.setText(event.getAnnouncement());
+        StringBuilder announcementText = new StringBuilder();
+        List<String> announcements = event.getAnnouncements();
+        if (announcements != null && !announcements.isEmpty()) {
+            for (String announcement : announcements) {
+                announcementText.append("\u2022 ").append(announcement).append("\n"); // Prefix each announcement with a bullet point
+            }
+        } else {
+            announcementText.append("No announcements available");
+        }
+        eventAnnouncement.setText(announcementText.toString());
     }
+
 }

@@ -12,14 +12,11 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
-
-
-
-
 
     <application
         android:allowBackup="true"
@@ -33,8 +30,11 @@
         <activity
             android:name=".AdminViewImageActivity"
             android:exported="false" /> <!-- <activity -->
-        <!-- android:name=".BrowseEventActivity" -->
-        <!-- android:exported="false" /> -->
+
+        <activity
+            android:name=".BrowseEventsActivity"
+            android:exported="false" />
+
         <activity
             android:name=".ScanQRActivity"
             android:exported="true"></activity>

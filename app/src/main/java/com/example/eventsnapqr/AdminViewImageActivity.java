@@ -3,6 +3,7 @@ package com.example.eventsnapqr;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -24,6 +25,12 @@ public class AdminViewImageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_poster);
+
+        // hide the action bar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+
         backButton = findViewById(R.id.button_back_button); // Changed to ImageView
         eventPoster = findViewById(R.id.event_poster);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -33,13 +40,20 @@ public class AdminViewImageActivity extends AppCompatActivity {
             }
         });
 
+
+
         Bundle extra = getIntent().getExtras();
         if (extra != null) {
-            Glide.with(eventPoster)
-                    .load(extra.get("uri"))
-                    .placeholder(R.drawable.place_holder_img)
-                    .dontAnimate()
-                    .into(eventPoster);
+            Object uriObject = extra.get("uri");
+            if (uriObject != null) {
+                String uriString = uriObject.toString();
+                Glide.with(eventPoster)
+                        .load(uriString)
+                        .placeholder(R.drawable.place_holder_img)
+                        .dontAnimate()
+                        .into(eventPoster);
+            }
         }
+
     }
 }

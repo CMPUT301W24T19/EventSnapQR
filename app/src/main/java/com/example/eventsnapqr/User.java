@@ -165,23 +165,26 @@ public class User implements Attendee, Organizer {
         paint.setColor(Color.WHITE);
         paint.setTextSize(340);
         paint.setTextAlign(Paint.Align.CENTER);
-        String[] names = name.split("\\s+");
-        if (names.length > 0) {
-            String initials;
-            if (names.length == 1) {
-                // If user only has first name, displaying first 2 letters on profile
-                if(names[0].length() == 1){
-                    // just use 1 letter if length of name is 1
-                    initials = names[0].substring(0, 1).toUpperCase();
-                }else{
-                    initials = names[0].substring(0, 2).toUpperCase();
-                }
+        if (name != null) {
+            String[] names = name.split("\\s+");
 
-            } else {
-                // If 2(First,last,middle) or more names gives displaying initials of first and last name on profile pic
-                initials = names[0].substring(0, 1).toUpperCase() + names[names.length - 1].substring(0, 1).toUpperCase();
+            if (names.length > 0) {
+                String initials;
+                if (names.length == 1) {
+                    // If user only has first name, displaying first 2 letters on profile
+                    if(names[0].length() == 1){
+                        // just use 1 letter if length of name is 1
+                        initials = names[0].substring(0, 1).toUpperCase();
+                    }else{
+                        initials = names[0].substring(0, 2).toUpperCase();
+                    }
+
+                } else {
+                    // If 2(First,last,middle) or more names gives displaying initials of first and last name on profile pic
+                    initials = names[0].substring(0, 1).toUpperCase() + names[names.length - 1].substring(0, 1).toUpperCase();
+                }
+                canvas.drawText(initials, 260, 360, paint);
             }
-            canvas.drawText(initials, 260, 360, paint);
         }
 
         return bitmap;

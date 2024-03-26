@@ -1,6 +1,7 @@
 package com.example.eventsnapqr;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -134,18 +135,29 @@ public class MainPageFragment extends Fragment {
         getImageUris(new ImageUriCallback() {
             @Override
             public void onImageUrisLoaded(List<String> imageUris) {
+                Context context = getContext(); // get the context once and reuse it
+                if (context == null) {
+                    // context is not available --> handle
+                    return;
+                }
+
                 viewFlipper = view.findViewById(R.id.viewFlipper);
+                if (viewFlipper == null) {
+                    // viewFlipper not found --> handle
+                    return;
+                }
+
                 viewFlipper.removeAllViews();
 
                 for (String uriString : imageUris) {
-                    ImageView imageView = new ImageView(getContext());
+                    ImageView imageView = new ImageView(context);
                     imageView.setLayoutParams(new ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.MATCH_PARENT));
                     imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-                    // Load the image from URI
-                    Glide.with(getContext())
+                    // load the image from URI using the obtained context
+                    Glide.with(context)
                             .load(uriString)
                             .into(imageView);
 
@@ -154,12 +166,7 @@ public class MainPageFragment extends Fragment {
 
                 if (!viewFlipper.isFlipping() && imageUris.size() > 1) {
                     viewFlipper.startFlipping();
-
                 }
-                else{
-                    //viewFlipper.stopFlipping();
-                }
-
             }
         });
 
@@ -180,8 +187,8 @@ public class MainPageFragment extends Fragment {
         buttonBrowseEvent.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                navController.navigate(R.id.action_mainPageFragment_to_browseEventFragment);
+                Intent intent = new Intent(getActivity(), BrowseEventsActivity.class);
+                startActivity(intent);
             }
         }));
         buttonScanQR.setOnClickListener(new View.OnClickListener() {

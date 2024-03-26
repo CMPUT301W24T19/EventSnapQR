@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center">
+    android:layout_gravity="center"
+    android:background="@drawable/gradient_background">
 
     <ImageView
         android:id="@+id/button_back_button"
@@ -141,5 +142,17 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="20dp"
         android:text="Sign Up" />
+
+    <TextView
+        android:id="@+id/sign_up_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:paddingTop="20dp"
+        android:text="You have already signed up for this event."
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
 
 </LinearLayout>

@@ -26,99 +26,67 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/menu_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/baseline_more_vert_24"
+        android:padding="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp" />
 
 
-
-
+    <TextView
+        android:id="@+id/milestones_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Milestones"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/page_name"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="18dp"/>
 
     <ListView
         android:id="@+id/milestone_list"
         android:layout_width="339dp"
         android:layout_height="166dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="18dp"
         android:layout_marginEnd="28dp"
         android:layout_marginBottom="7dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/page_name" />
+        app:layout_constraintTop_toBottomOf="@id/milestones_label" />
+
+    <TextView
+        android:id="@+id/attendees_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Attendees"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/milestone_list"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="18dp"/>
 
     <ListView
         android:id="@+id/attendee_list"
         android:layout_width="340dp"
-        android:layout_height="247dp"
+        android:layout_height="360dp"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="18dp"
         android:layout_marginEnd="28dp"
         android:layout_marginBottom="7dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        android:background="@drawable/listview_outline"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.68"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/milestone_list"
-        app:layout_constraintVertical_bias="0.484" />
+        app:layout_constraintTop_toBottomOf="@id/attendees_label" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/attendee_map_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:layout_weight="0.35"
-                android:text="Map"
-                app:layout_constraintEnd_toStartOf="@+id/qr_code_button"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/organized_events_list" />
-
-            <Button
-                android:id="@+id/qr_code_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:layout_weight="0.35"
-                android:text="QR Code"
-                app:layout_constraintEnd_toStartOf="@+id/real_time_attendance_button"
-                app:layout_constraintStart_toEndOf="@+id/attendee_map_button"
-                app:layout_constraintTop_toBottomOf="@+id/organized_events_list" />
-
-            <Button
-                android:id="@+id/notify_attendee_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:layout_weight="0.35"
-                android:text="Notify"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/real_time_attendance_button"
-                app:layout_constraintTop_toBottomOf="@+id/organized_events_list" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/real_time_attendance_button"
-
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Attendance"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/organized_events_list"
-            app:layout_constraintVertical_bias="0.811" />
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -122,7 +122,7 @@ public class AdminBrowseEventsFragment extends Fragment {
     }
 
     public void gotoMyEventActivity() {
-        Intent intent = new Intent(getContext(), MyEventsFragment.class);
+        Intent intent = new Intent(getContext(), ManageEventFragment.class);
         startActivity(intent);
     }
 
@@ -145,6 +145,7 @@ public class AdminBrowseEventsFragment extends Fragment {
                                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                                 Bundle bundle = new Bundle();
                                 bundle.putString("eventId", eventId);
+                                bundle.putInt("position", -1); // denotes this page is coming from a different source (the admin page)
                                 navController.navigate(R.id.action_adminBrowseEventsFragment_to_eventDetailFragment, bundle);
 
                             })
