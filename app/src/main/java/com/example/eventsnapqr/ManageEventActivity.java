@@ -283,7 +283,6 @@ public class ManageEventActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String announcement = editTextAnnouncement.getText().toString();
-                boolean enableNotifications = switchEnableNotifications.isChecked();
 
                 CollectionReference announcementsRef = db.collection("events").document(currentEvent.getEventID()).collection("announcements");
                 Map<String, Object> announcementData = new HashMap<>();
