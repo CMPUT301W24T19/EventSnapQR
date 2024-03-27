@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/your_event_constrained_layout"
     android:layout_width="match_parent"
+    android:background="@drawable/gradient_background"
     android:layout_height="match_parent">
 
     <ImageView
@@ -61,6 +62,7 @@
         android:layout_marginBottom="7dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/listview_outline"
         app:layout_constraintTop_toBottomOf="@id/milestones_label" />
 
     <TextView
@@ -77,7 +79,7 @@
     <ListView
         android:id="@+id/attendee_list"
         android:layout_width="340dp"
-        android:layout_height="360dp"
+        android:layout_height="340dp"
         android:layout_marginTop="8dp"
         android:layout_marginStart="18dp"
         android:layout_marginEnd="28dp"
@@ -86,6 +88,41 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/attendees_label" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/make_announcements_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Announcement"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"/>
+
+    <TextView
+        android:id="@+id/total_attendees_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total Attendees: "
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toTopOf="@id/total_checked_in_label"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/total_checked_in_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total Checked-In: "
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"/>
+
 
 
 
