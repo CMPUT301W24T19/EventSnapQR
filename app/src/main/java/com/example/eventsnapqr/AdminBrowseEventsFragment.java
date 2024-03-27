@@ -70,10 +70,7 @@ public class AdminBrowseEventsFragment extends Fragment {
                 eventIds.clear();
                 eventNames.clear();
                 for (QueryDocumentSnapshot doc: value) {
-                    Log.d("TAG", "True");
-                    Log.d("TAG", "ID: " + doc.getId());
                     if (doc.getBoolean("active")) {
-                        //Log.d("TAG", "True");
                         eventIds.add(doc.getId());
                         eventNames.add(doc.getString("eventName"));
                     }

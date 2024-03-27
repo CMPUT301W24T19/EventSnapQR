@@ -188,12 +188,12 @@ public class OrganizeEventFragment extends Fragment {
                                             Toast.makeText(getContext(), "QR code currently in use", Toast.LENGTH_SHORT).show();
                                         }
                                         else {
-                                            if (event.getOrganizer().getDeviceID() != androidID) {
-                                                Toast.makeText(getContext(), "This is not your QR code, you cannot use it", Toast.LENGTH_SHORT).show();
+                                            if (!event.getOrganizer().getDeviceID().equals(androidID)) {
+                                                Log.d("TAG", "Organizer: " + event.getOrganizer().getDeviceID() + " Android ID: " + androidID);
+                                                Toast.makeText(getContext(), "This is not your QR co    de, you cannot use it", Toast.LENGTH_SHORT).show();
                                             }
                                             else {
                                                 Log.d("TAG", "QR code applied");
-                                                Log.d("TAG", "True3");
                                                 reusingQR = finalDecode.getText();
                                                 Toast.makeText(getContext(), "QR code successfully applied", Toast.LENGTH_SHORT).show();
                                             }
@@ -357,6 +357,12 @@ public class OrganizeEventFragment extends Fragment {
                                 Log.d("USER NAME", newEvent.getOrganizer().getName());
                                 firebaseController.addEvent(newEvent);
                                 bundle.putString("destination", "main");
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                    firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + " created at: "+Instant.now());
+                                }
+                                else{
+                                    firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + "has been created");
+                                }
                                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                                 navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
                             });
