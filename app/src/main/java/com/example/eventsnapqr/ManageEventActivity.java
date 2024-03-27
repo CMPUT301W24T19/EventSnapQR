@@ -333,8 +333,13 @@ public class ManageEventActivity extends AppCompatActivity {
                         .build());
                 return true;
             } else if (itemId == R.id.remove_poster) { // remove the associated poster
-                FirebaseController.getInstance().deleteImage(currentEvent.getPosterURI(), currentEvent, ManageEventActivity.this);
-                Toast.makeText(ManageEventActivity.this, "Poster Updated", Toast.LENGTH_SHORT).show();
+                if (currentEvent.getPosterURI() == null) {
+                    Toast.makeText(ManageEventActivity.this, "No Poster to Remove", Toast.LENGTH_SHORT).show();
+                } else {
+                    FirebaseController.getInstance().deleteImage(currentEvent.getPosterURI(), currentEvent, ManageEventActivity.this);
+                    Toast.makeText(ManageEventActivity.this, "Poster Updated", Toast.LENGTH_SHORT).show();
+                }
+
                 return true;
             } else if (itemId == R.id.view_map) { // view map
                 Bundle bundle = new Bundle();
