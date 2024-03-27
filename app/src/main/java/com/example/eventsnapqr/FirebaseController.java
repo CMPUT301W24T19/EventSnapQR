@@ -506,8 +506,11 @@ public class FirebaseController {
                                         @Override
                                         public void onSeen(boolean seen) {
                                             if(!seen){
-                                                String announcementMessage = dc.getDocument().getString("message");
-                                                makeNotification(context, announcementMessage, event);
+                                                if(!event.getOrganizer().getDeviceID().equals(Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID))){
+                                                    String announcementMessage = dc.getDocument().getString("message");
+                                                    makeNotification(context, announcementMessage, event);
+                                                }
+
                                             }
                                         }
                                     });
