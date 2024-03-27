@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.firebase.Firebase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,6 +29,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -70,10 +72,24 @@ public class AdminBrowseEventsFragment extends Fragment {
                 eventIds.clear();
                 eventNames.clear();
                 for (QueryDocumentSnapshot doc: value) {
-                    if (doc.getBoolean("active")) {
-                        eventIds.add(doc.getId());
-                        eventNames.add(doc.getString("eventName"));
-                    }
+                    FirebaseController.getInstance().getEvent(doc.getId(), new FirebaseController.OnEventRetrievedListener() {
+                        @Override
+                        public void onEventRetrieved(Event event) {
+                            Log.d("TAG", "Event date: " + event.getEventEndDateTime());
+                            if (event.isActive()) {
+                                Date currentDate = new Date();
+                                if (currentDate.compareTo(event.getEventEndDateTime()) > 0) {
+                                    Log.d("TAG", "True");
+                                    Runnable completionCallback = null;
+                                    FirebaseController.getInstance().deleteEvent(event, (FirebaseController.FirestoreOperationCallback) completionCallback);
+                                }
+                                else {
+                                    eventIds.add(event.getEventID());
+                                    eventNames.add(event.getEventName());
+                                }
+                            }
+                        }
+                    });
                 }
                 eventAdapter.notifyDataSetChanged();
             }
