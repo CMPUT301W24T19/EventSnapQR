@@ -98,8 +98,7 @@ public class QRDialogFragment extends DialogFragment {
             public void onClick(View v) {
                 if(destination != null){
                     if (destination.equals("manage")) {
-                        BrowseEventsActivity activity = (BrowseEventsActivity) requireActivity();
-                        activity.switchToFullscreenManage(eventId);
+                        requireActivity().onBackPressed();
                     } else if (destination.equals("main")) {
                         requireActivity().finish();
                     }

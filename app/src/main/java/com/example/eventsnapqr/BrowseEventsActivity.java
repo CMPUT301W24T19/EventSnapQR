@@ -90,27 +90,4 @@ public class BrowseEventsActivity extends AppCompatActivity {
         fullscreenViewPager.setAdapter(adapter);
         fullscreenViewPager.setVisibility(View.VISIBLE);
     }
-
-    public void switchToFullscreenManage(String eventId) {
-        ManageEventFragment manageFragment = new ManageEventFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("eventId", eventId);
-        manageFragment.setArguments(bundle);
-        FullscreenPagerAdapter adapter = new FullscreenPagerAdapter(getSupportFragmentManager(), getLifecycle());
-        adapter.addFragment(manageFragment);
-        fullscreenViewPager.setAdapter(adapter);
-        fullscreenViewPager.setVisibility(View.VISIBLE);
-    }
-
-    public void switchToFullscreenQR(String eventId) {
-        QRDialogFragment qrFragment = new QRDialogFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("eventId", eventId);
-        bundle.putString("destination", "manage");
-        qrFragment.setArguments(bundle);
-        FullscreenPagerAdapter adapter = new FullscreenPagerAdapter(getSupportFragmentManager(), getLifecycle());
-        adapter.addFragment(qrFragment);
-        fullscreenViewPager.setAdapter(adapter);
-        fullscreenViewPager.setVisibility(View.VISIBLE);
-    }
 }

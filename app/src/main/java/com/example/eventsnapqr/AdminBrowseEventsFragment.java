@@ -118,7 +118,7 @@ public class AdminBrowseEventsFragment extends Fragment {
     }
 
     public void gotoMyEventActivity() {
-        Intent intent = new Intent(getContext(), ManageEventFragment.class);
+        Intent intent = new Intent(getContext(), ManageEventActivity.class);
         startActivity(intent);
     }
 
