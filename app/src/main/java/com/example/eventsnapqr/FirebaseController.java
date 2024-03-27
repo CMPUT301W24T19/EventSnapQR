@@ -2,14 +2,17 @@ package com.example.eventsnapqr;
 
 import com.google.firebase.firestore.DocumentChange;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -483,6 +486,7 @@ public class FirebaseController {
 
         announcementsRef.orderBy("timestamp", Query.Direction.DESCENDING).limit(1)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @SuppressLint("HardwareIds")
                     @Override
                     public void onEvent(@Nullable QuerySnapshot snapshots,
                                         @Nullable FirebaseFirestoreException e) {
@@ -494,8 +498,15 @@ public class FirebaseController {
                         for (DocumentChange dc : snapshots.getDocumentChanges()) {
                             switch (dc.getType()) {
                                 case ADDED:
-                                    String announcementMessage = dc.getDocument().getString("message");
-                                    makeNotification(context, announcementMessage, event.getEventName());
+                                    String announcementID = dc.getDocument().getId();
+                                    FirebaseController firebaseController = FirebaseController.getInstance();
+                                    ContentResolver contentResolver = context.getContentResolver();
+                                    markSeenNotification(announcementID, Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID));
+                                    if(notSeenNotification){
+                                        String announcementMessage = dc.getDocument().getString("message");
+                                        makeNotification(context, announcementMessage, event.getEventName());
+                                        notSeenNotification = false;
+                                    }
                                     break;
                                 case MODIFIED:
                                 case REMOVED:
@@ -504,6 +515,31 @@ public class FirebaseController {
                         }
                     }
                 });
+    }
+    private Boolean notSeenNotification = false;
+    private void markSeenNotification(String announcementID, String userID) {
+        CollectionReference notificationsRef = db.collection("users").document(userID).collection("notifications");
+
+        // check if the notification document exists
+        notificationsRef.document(announcementID).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    // the document exists
+                    Log.d("markSeenNotification", "User already seen notification.");
+                } else {
+                    // the document does not exist, add it to the collection
+                    Map<String, Object> notificationData = new HashMap<>();
+                    notificationData.put("seen", true);
+                    notSeenNotification = true;
+                    notificationsRef.document(announcementID).set(notificationData)
+                            .addOnSuccessListener(aVoid -> Log.d("markSeenNotification", "Document added successfully."))
+                            .addOnFailureListener(e -> Log.e("markSeenNotification", "Error adding document", e));
+                }
+            } else {
+                Log.e("markSeenNotification", "Failed to check document existence: ", task.getException());
+            }
+        });
     }
 
     /**

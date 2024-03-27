@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onEventsLoaded(ArrayList<Event> events) {
                 for(Event event: events){
-                    firebaseController.isAttendee(androidId, event,attendeeCheckCallback);
+                    firebaseController.isAttendee(androidId, event, attendeeCheckCallback);
                 }
             }
         });
