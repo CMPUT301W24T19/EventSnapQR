@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -166,8 +167,13 @@ public class AdminBrowseEventsFragment extends Fragment {
                 .setMessage("Are you sure you want to delete '" + event.getEventName() + "'?")
                 .setPositiveButton("Yes", (dialog, which) -> { // if yes
                     Runnable completionCallback = null;
-                    FirebaseController.getInstance().deleteEvent(event, (FirebaseController.FirestoreOperationCallback) completionCallback);
-                    eventAdapter.notifyDataSetChanged();
+                    try {
+                        FirebaseController.getInstance().deleteEvent(event, (FirebaseController.FirestoreOperationCallback) completionCallback);
+                        eventAdapter.notifyDataSetChanged();
+                    }
+                    catch (Exception e) {
+                        Log.d("TAG", e.toString());
+                    }
                 })
                 .setNegativeButton("No", null)
                 .create()
