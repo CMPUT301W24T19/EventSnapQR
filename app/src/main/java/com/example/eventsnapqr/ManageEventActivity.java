@@ -94,7 +94,7 @@ public class ManageEventActivity extends AppCompatActivity {
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPopupMenu();
+                showPopupMenu(v);
             }
         });
 
@@ -313,32 +313,40 @@ public class ManageEventActivity extends AppCompatActivity {
     /**
      * Displays and handles the options when clicking the vertical 3 dots.
      */
-    public void showPopupMenu() {
-        PopupMenu popupMenu = new PopupMenu(ManageEventActivity.this, findViewById(R.id.menu_button)); // Assuming menu_button is the ID of the View you want to anchor the PopupMenu to
+    public void showPopupMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(ManageEventActivity.this, view); // Use the provided view as the anchor
         popupMenu.getMenuInflater().inflate(R.menu.menu_manage_event, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
 
-            NavController navController = Navigation.findNavController(ManageEventActivity.this, R.id.nav_host_fragment);
-
-            if (itemId == R.id.view_qr) { // View QR code again
+            if (itemId == R.id.view_qr) { // view QR code again
                 Bundle bundle = new Bundle();
                 bundle.putString("eventId", eventId);
+                bundle.putString("destination", "manage");
                 QRDialogFragment qrDialogFragment = new QRDialogFragment();
                 qrDialogFragment.setArguments(bundle);
-                navController.navigate(R.id.qRDialogFragment, bundle);
+                qrDialogFragment.show(getSupportFragmentManager(), "qr_dialog_fragment");
                 return true;
-            } else if (itemId == R.id.upload_poster) { // Modify the associated poster
+            } else if (itemId == R.id.upload_poster) { // modify the associated poster
                 choosePoster.launch(new PickVisualMediaRequest.Builder()
                         .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                         .build());
                 return true;
-            } else if (itemId == R.id.remove_poster) { // Remove the associated poster
+            } else if (itemId == R.id.remove_poster) { // remove the associated poster
                 FirebaseController.getInstance().deleteImage(currentEvent.getPosterURI(), currentEvent, ManageEventActivity.this);
                 Toast.makeText(ManageEventActivity.this, "Poster Updated", Toast.LENGTH_SHORT).show();
                 return true;
-            } else if (itemId == R.id.view_map) { // View map
+            } else if (itemId == R.id.view_map) { // view map
+                Bundle bundle = new Bundle();
+                bundle.putString("eventId", eventId);
+                MapFragment mapFrag = new MapFragment();
+                mapFrag.setArguments(bundle);
 
+                // Replace the current fragment with the MapFragment
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.nav_host_fragment, mapFrag)
+                        .addToBackStack(null)
+                        .commit();
                 return true;
             } else {
                 return false;
@@ -346,4 +354,5 @@ public class ManageEventActivity extends AppCompatActivity {
         });
         popupMenu.show();
     }
+
 }
