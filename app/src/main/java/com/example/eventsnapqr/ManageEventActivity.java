@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ManageEventActivity extends AppCompatActivity {
     private FirebaseController firebaseController;
@@ -181,35 +182,52 @@ public class ManageEventActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         CollectionReference attendeesRef = db.collection("events").document(eventId).collection("attendees");
 
-        AtomicBoolean userFound = new AtomicBoolean(false); // Initialize as false
         checkedInCount = 0;
         attendeeCount = 0;
+        AtomicInteger retrievalCounter = new AtomicInteger(0);
 
         attendeesRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            int totalAttendees = queryDocumentSnapshots.size();
+
             for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                 String attendeeId = documentSnapshot.getId();
                 attendeeCount++;
+
+                Long longValue = documentSnapshot.getLong("checkedIn");
+                Integer numCheckIns = longValue != null ? longValue.intValue() : 0;
+
                 DocumentReference checkedInRef = attendeesRef.document(attendeeId).collection("checkedIn").document("check");
                 checkedInRef.get().addOnSuccessListener(checkedInDocumentSnapshot -> {
-                    if (checkedInDocumentSnapshot.exists()) {
-                        checkedInCount++; // Increment count if checkedIn subcollection exists
+                    Log.d("NUMCHECKINS", numCheckIns.toString());
+                    if (numCheckIns > 0) {
+                        checkedInCount++;
                     }
 
                     firebaseController.getUser(attendeeId, user -> {
                         if (user != null) {
-                            userFound.set(true);
                             attendeeNames.add(user.getName());
-                            attendeeCheckedIn.add(checkedInCount); // Add checked in count
+                            attendeeCheckedIn.add(numCheckIns); // Add checked in count
                             eventAdapter.notifyDataSetChanged();
+
+                            // Increment retrieval counter and check if all retrievals are done
+                            if (retrievalCounter.incrementAndGet() == totalAttendees) {
+                                updateTexts();
+                            }
                         }
                     });
+                }).addOnFailureListener(e -> {
+                    // Handle failure
+                    retrievalCounter.incrementAndGet(); // Increment even on failure to keep track
+                    if (retrievalCounter.get() == totalAttendees) {
+                        updateTexts();
+                    }
                 });
             }
-            updateTexts();
         }).addOnFailureListener(e -> {
             Log.d("FetchAttendeeData", "Error fetching attendee data: " + e.getMessage());
         });
     }
+
 
     private void updateTexts() {
         totalAttendeesTextView.setText("Total Attendees: " + attendeeCount);
@@ -224,14 +242,15 @@ public class ManageEventActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String attendeeName = attendeeNames.get(position);
         Integer timesCheckedIn = attendeeCheckedIn.get(position);
-        builder.setMessage(attendeeName + " has checked in your event " + timesCheckedIn + " times.")
+        String timesString = timesCheckedIn == 1 ? "time" : "times";
+
+        builder.setMessage(attendeeName + " has checked in to your event " + timesCheckedIn + " " + timesString + ".")
                 .setPositiveButton("OK", (dialog, id) -> {
                     // Handle OK button click if needed
                 })
                 .setNegativeButton("View on Map", (dialog, id) -> {
                     // Handle View on Map button click if needed
                 });
-
         builder.create().show();
     }
 
