@@ -21,6 +21,7 @@ public class BrowseEventsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_events);
 
+
         Bundle args = getIntent().getExtras();
         if (args != null) {
             position = args.getInt("position");
@@ -77,13 +78,19 @@ public class BrowseEventsActivity extends AppCompatActivity {
                 finish();
             }
         });
+        String eventId = getIntent().getStringExtra("eventID"); // for when user enters activity from notification click
+        if(eventId != null){
+            switchToFullscreenDetails(eventId);
+        }
     }
 
     public void switchToFullscreenDetails(String eventId) {
         EventDetailFragment detailsFragment = new EventDetailFragment();
         Bundle bundle = new Bundle();
         bundle.putString("eventId", eventId);
-        bundle.putInt("position", position);
+        if(position != null){ // for when user enters activity from notification click
+            bundle.putInt("position", position);
+        }
         detailsFragment.setArguments(bundle);
         FullscreenPagerAdapter adapter = new FullscreenPagerAdapter(getSupportFragmentManager(), getLifecycle());
         adapter.addFragment(detailsFragment);
