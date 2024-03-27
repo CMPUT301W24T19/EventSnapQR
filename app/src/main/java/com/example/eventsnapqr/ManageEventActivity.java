@@ -2,9 +2,17 @@ package com.example.eventsnapqr;
 
 import static androidx.core.content.ContentProviderCompat.requireContext;
 
+import static java.security.AccessController.getContext;
+
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -24,6 +32,7 @@ import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -37,8 +46,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ManageEventActivity extends AppCompatActivity {
@@ -255,15 +266,13 @@ public class ManageEventActivity extends AppCompatActivity {
                 boolean enableNotifications = switchEnableNotifications.isChecked();
 
                 CollectionReference announcementsRef = db.collection("events").document(currentEvent.getEventID()).collection("announcements");
-                announcementsRef.document(announcement)
-                        .set(new HashMap<>())
-                        .addOnSuccessListener(documentReference -> {
-                            Toast.makeText(ManageEventActivity.this, "Announcement sent successfully", Toast.LENGTH_SHORT).show();
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.d("ManageEventFragment", "Error adding announcement to subcollection: " + e.getMessage());
-                            Toast.makeText(ManageEventActivity.this, "Failed to send announcement", Toast.LENGTH_SHORT).show();
-                        });
+                Map<String, Object> announcementData = new HashMap<>();
+                announcementData.put("message", announcement);
+                announcementData.put("timestamp", new Date());
+
+                announcementsRef.add(announcementData)
+                        .addOnSuccessListener(documentReference -> Toast.makeText(getApplicationContext(), "Announcement sent successfully", Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Failed to send announcement", Toast.LENGTH_SHORT).show());
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -275,6 +284,7 @@ public class ManageEventActivity extends AppCompatActivity {
 
         builder.show();
     }
+
 
     /**
      * uploads selected image to the database

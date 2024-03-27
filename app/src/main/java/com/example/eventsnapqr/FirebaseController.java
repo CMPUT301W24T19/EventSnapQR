@@ -1,11 +1,21 @@
 package com.example.eventsnapqr;
 
+import com.google.firebase.firestore.DocumentChange;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -18,19 +28,21 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * class to interact with the collections in the firestore database
@@ -308,7 +320,9 @@ public class FirebaseController {
 
     void parseDocuments(List<DocumentSnapshot> documents) {
         for(DocumentSnapshot doc: documents){
+
             Event event = new Event();
+            event.setEventID(doc.getId());
             event.setOrganizer(new User(doc.getString("organizerID")));
             //doc.get("attendees");
             event.setDescription(doc.getString("description"));
@@ -414,6 +428,82 @@ public class FirebaseController {
     }
     public interface OnAllUsersLoadedListener{
         void onUsersLoaded(List<User> users);
+    }
+    private void makeNotification(Context context, String announcement, String eventName) {
+        Intent intent = new Intent(context, NotificationsActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("notification", announcement);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_MUTABLE);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "CHANNEL_ID_NOTIFICATION");
+        builder.setContentTitle("Notification from " + eventName)
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentText(announcement)
+                .setSmallIcon(R.drawable.baseline_notifications_24).setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel notificationChannel = notificationManager.getNotificationChannel("CHANNEL_ID_NOTIFICATION");
+            if(notificationChannel == null){
+                notificationChannel = new NotificationChannel("CHANNEL_ID_NOTIFICATION", eventName + " notification",NotificationManager.IMPORTANCE_HIGH);
+                notificationChannel.setLightColor(Color.GREEN);
+                notificationChannel.enableVibration(true);
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+        }
+        notificationManager.notify(0, builder.build());
+    }
+    public void isAttendee(String androidId, Event event, AttendeeCheckCallback callback){
+        db.collection("events").document(event.getEventID()).collection("attendees").get()
+                .addOnSuccessListener(querySnapshot -> {
+                    boolean found = false;
+                    for (DocumentSnapshot document : querySnapshot) {
+                        if(document.getId().equals(androidId)){
+                            found = true;
+                            break;
+                        }
+                    }
+                    callback.onChecked(found, event);
+                })
+                .addOnFailureListener(e -> {
+                    callback.onChecked(false, null);
+                });
+    }
+    public interface AttendeeCheckCallback {
+        void onChecked(boolean isAttendee, Event event);
+    }
+
+    public void listenForAnnouncements(Context context, Event event) {
+        if (event == null || event.getEventID() == null) {
+            Log.e("FirebaseController", "Event or Event ID is null");
+            return;
+        }
+
+        CollectionReference announcementsRef = db.collection("events").document(event.getEventID()).collection("announcements");
+
+        announcementsRef.orderBy("timestamp", Query.Direction.DESCENDING).limit(1)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w("ListenFailed", e);
+                            return;
+                        }
+
+                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                            switch (dc.getType()) {
+                                case ADDED:
+                                    String announcementMessage = dc.getDocument().getString("message");
+                                    makeNotification(context, announcementMessage, event.getEventName());
+                                    break;
+                                case MODIFIED:
+                                case REMOVED:
+                                    break;
+                            }
+                        }
+                    }
+                });
     }
 
     /**
