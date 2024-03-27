@@ -157,6 +157,7 @@ public class ManageEventActivity extends AppCompatActivity {
         });
 
         attendeeListView.setOnItemClickListener((parent, view1, position, id) -> attendeeDialog(position));
+        updateTexts();
     }
 
 
