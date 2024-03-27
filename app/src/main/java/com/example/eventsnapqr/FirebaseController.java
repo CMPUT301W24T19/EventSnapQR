@@ -432,13 +432,13 @@ public class FirebaseController {
     public interface OnAllUsersLoadedListener{
         void onUsersLoaded(List<User> users);
     }
-    private void makeNotification(Context context, String announcement, String eventName) {
-        Intent intent = new Intent(context, NotificationsActivity.class);
+    private void makeNotification(Context context, String announcement, Event event) {
+        Intent intent = new Intent(context, BrowseEventsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra("notification", announcement);
+        intent.putExtra("eventID", event.getEventID());
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_MUTABLE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "CHANNEL_ID_NOTIFICATION");
-        builder.setContentTitle("Notification from " + eventName)
+        builder.setContentTitle("Notification from " + event.getEventName())
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentText(announcement)
@@ -448,7 +448,7 @@ public class FirebaseController {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationChannel notificationChannel = notificationManager.getNotificationChannel("CHANNEL_ID_NOTIFICATION");
             if(notificationChannel == null){
-                notificationChannel = new NotificationChannel("CHANNEL_ID_NOTIFICATION", eventName + " notification",NotificationManager.IMPORTANCE_HIGH);
+                notificationChannel = new NotificationChannel("CHANNEL_ID_NOTIFICATION", event.getEventName() + " notification",NotificationManager.IMPORTANCE_HIGH);
                 notificationChannel.setLightColor(Color.GREEN);
                 notificationChannel.enableVibration(true);
                 notificationManager.createNotificationChannel(notificationChannel);
@@ -507,7 +507,7 @@ public class FirebaseController {
                                         public void onSeen(boolean seen) {
                                             if(!seen){
                                                 String announcementMessage = dc.getDocument().getString("message");
-                                                makeNotification(context, announcementMessage, event.getEventName());
+                                                makeNotification(context, announcementMessage, event);
                                             }
                                         }
                                     });
