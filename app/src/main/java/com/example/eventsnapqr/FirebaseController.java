@@ -475,7 +475,9 @@ public class FirebaseController {
     public interface AttendeeCheckCallback {
         void onChecked(boolean isAttendee, Event event);
     }
-
+    public interface NotificationSeenCallback {
+        void onSeen(boolean seen);
+    }
     public void listenForAnnouncements(Context context, Event event) {
         if (event == null || event.getEventID() == null) {
             Log.e("FirebaseController", "Event or Event ID is null");
@@ -499,14 +501,16 @@ public class FirebaseController {
                             switch (dc.getType()) {
                                 case ADDED:
                                     String announcementID = dc.getDocument().getId();
-                                    FirebaseController firebaseController = FirebaseController.getInstance();
                                     ContentResolver contentResolver = context.getContentResolver();
-                                    markSeenNotification(announcementID, Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID));
-                                    if(notSeenNotification){
-                                        String announcementMessage = dc.getDocument().getString("message");
-                                        makeNotification(context, announcementMessage, event.getEventName());
-                                        notSeenNotification = false;
-                                    }
+                                    markSeenNotification(announcementID, Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID), new NotificationSeenCallback() {
+                                        @Override
+                                        public void onSeen(boolean seen) {
+                                            if(!seen){
+                                                String announcementMessage = dc.getDocument().getString("message");
+                                                makeNotification(context, announcementMessage, event.getEventName());
+                                            }
+                                        }
+                                    });
                                     break;
                                 case MODIFIED:
                                 case REMOVED:
@@ -516,8 +520,8 @@ public class FirebaseController {
                     }
                 });
     }
-    private Boolean notSeenNotification = false;
-    private void markSeenNotification(String announcementID, String userID) {
+
+    private void markSeenNotification(String announcementID, String userID, NotificationSeenCallback notificationSeenCallback) {
         CollectionReference notificationsRef = db.collection("users").document(userID).collection("notifications");
 
         // check if the notification document exists
@@ -526,12 +530,13 @@ public class FirebaseController {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     // the document exists
+                    notificationSeenCallback.onSeen(true);
                     Log.d("markSeenNotification", "User already seen notification.");
                 } else {
                     // the document does not exist, add it to the collection
                     Map<String, Object> notificationData = new HashMap<>();
                     notificationData.put("seen", true);
-                    notSeenNotification = true;
+                    notificationSeenCallback.onSeen(false);
                     notificationsRef.document(announcementID).set(notificationData)
                             .addOnSuccessListener(aVoid -> Log.d("markSeenNotification", "Document added successfully."))
                             .addOnFailureListener(e -> Log.e("markSeenNotification", "Error adding document", e));
