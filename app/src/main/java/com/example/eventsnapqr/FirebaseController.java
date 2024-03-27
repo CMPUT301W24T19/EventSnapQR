@@ -1,11 +1,24 @@
 package com.example.eventsnapqr;
 
+import com.google.firebase.firestore.DocumentChange;
+
+import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -18,19 +31,21 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * class to interact with the collections in the firestore database
@@ -313,7 +328,9 @@ public class FirebaseController {
 
     void parseDocuments(List<DocumentSnapshot> documents) {
         for(DocumentSnapshot doc: documents){
+
             Event event = new Event();
+            event.setEventID(doc.getId());
             event.setOrganizer(new User(doc.getString("organizerID")));
             //doc.get("attendees");
             event.setDescription(doc.getString("description"));
@@ -419,6 +436,120 @@ public class FirebaseController {
     }
     public interface OnAllUsersLoadedListener{
         void onUsersLoaded(List<User> users);
+    }
+    private void makeNotification(Context context, String announcement, Event event) {
+        Intent intent = new Intent(context, BrowseEventsActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("eventID", event.getEventID());
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_MUTABLE);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "CHANNEL_ID_NOTIFICATION");
+        builder.setContentTitle("Notification from " + event.getEventName())
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentText(announcement)
+                .setSmallIcon(R.drawable.baseline_notifications_24).setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel notificationChannel = notificationManager.getNotificationChannel("CHANNEL_ID_NOTIFICATION");
+            if(notificationChannel == null){
+                notificationChannel = new NotificationChannel("CHANNEL_ID_NOTIFICATION", event.getEventName() + " notification",NotificationManager.IMPORTANCE_HIGH);
+                notificationChannel.setLightColor(Color.GREEN);
+                notificationChannel.enableVibration(true);
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+        }
+        notificationManager.notify(0, builder.build());
+    }
+    public void isAttendee(String androidId, Event event, AttendeeCheckCallback callback){
+        db.collection("events").document(event.getEventID()).collection("attendees").get()
+                .addOnSuccessListener(querySnapshot -> {
+                    boolean found = false;
+                    for (DocumentSnapshot document : querySnapshot) {
+                        if(document.getId().equals(androidId)){
+                            found = true;
+                            break;
+                        }
+                    }
+                    callback.onChecked(found, event);
+                })
+                .addOnFailureListener(e -> {
+                    callback.onChecked(false, null);
+                });
+    }
+    public interface AttendeeCheckCallback {
+        void onChecked(boolean isAttendee, Event event);
+    }
+    public interface NotificationSeenCallback {
+        void onSeen(boolean seen);
+    }
+    public void listenForAnnouncements(Context context, Event event) {
+        if (event == null || event.getEventID() == null) {
+            Log.e("FirebaseController", "Event or Event ID is null");
+            return;
+        }
+
+        CollectionReference announcementsRef = db.collection("events").document(event.getEventID()).collection("announcements");
+
+        announcementsRef.orderBy("timestamp", Query.Direction.DESCENDING).limit(1)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @SuppressLint("HardwareIds")
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w("ListenFailed", e);
+                            return;
+                        }
+
+                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                            switch (dc.getType()) {
+                                case ADDED:
+                                    String announcementID = dc.getDocument().getId();
+                                    ContentResolver contentResolver = context.getContentResolver();
+                                    markSeenNotification(announcementID, Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID), new NotificationSeenCallback() {
+                                        @Override
+                                        public void onSeen(boolean seen) {
+                                            if(!seen){
+                                                String announcementMessage = dc.getDocument().getString("message");
+                                                makeNotification(context, announcementMessage, event);
+                                            }
+                                        }
+                                    });
+                                    break;
+                                case MODIFIED:
+                                case REMOVED:
+                                    break;
+                            }
+                        }
+                    }
+                });
+    }
+
+    private void markSeenNotification(String announcementID, String userID, NotificationSeenCallback notificationSeenCallback) {
+        CollectionReference notificationsRef = db.collection("users").document(userID).collection("notifications");
+
+        // check if the notification document exists
+        notificationsRef.document(announcementID).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    // the document exists
+                    notificationSeenCallback.onSeen(true);
+                    Log.d("markSeenNotification", "User already seen notification.");
+                } else {
+                    // the document does not exist, add it to the collection
+                    Map<String, Object> notificationData = new HashMap<>();
+                    notificationData.put("seen", true);
+                    notificationSeenCallback.onSeen(false);
+                    notificationsRef.document(announcementID).set(notificationData)
+                            .addOnSuccessListener(aVoid -> Log.d("markSeenNotification", "Document added successfully."))
+                            .addOnFailureListener(e -> Log.e("markSeenNotification", "Error adding document", e));
+                }
+            } else {
+                Log.e("markSeenNotification", "Failed to check document existence: ", task.getException());
+            }
+        });
     }
 
     /**

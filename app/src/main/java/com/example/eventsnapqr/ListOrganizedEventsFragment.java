@@ -96,9 +96,11 @@ public class ListOrganizedEventsFragment extends Fragment {
         loadOrganizedEvents(userId);
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
+            // launch new activity here
             String eventId = organizedEventIds.get(position);
-            BrowseEventsActivity activity = (BrowseEventsActivity) requireActivity();
-            activity.switchToFullscreenManage(eventId);
+            Intent intent = new Intent(requireContext(), ManageEventActivity.class);
+            intent.putExtra("eventId", eventId);
+            startActivity(intent);
         });
 
         return view;

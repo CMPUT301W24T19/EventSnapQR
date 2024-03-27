@@ -72,7 +72,8 @@ public class UserInfoActivity extends AppCompatActivity {
 
     private final int PERMISSION_REQUEST_CODE = 100;
     String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
-    String[] notificationPermissions = {Manifest.permission.ACCESS_NOTIFICATION_POLICY, Manifest.permission.POST_NOTIFICATIONS};
+    //String[] notificationPermissions = {Manifest.permission.ACCESS_NOTIFICATION_POLICY, Manifest.permission.POST_NOTIFICATIONS}; // might not need NOTIFCATION_POLICY
+    String[] notificationPermissions = {Manifest.permission.POST_NOTIFICATIONS};
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
 

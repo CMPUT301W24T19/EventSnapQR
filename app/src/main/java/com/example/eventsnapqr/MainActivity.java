@@ -17,6 +17,9 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * the starting point of the application. if the userId is not in the data base, this
  * activity will lead to the sign up page, otherwise it will lead to the main page
@@ -32,6 +35,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         FirebaseController.checkUserExists(androidId, listener);
+        FirebaseController firebaseController = new FirebaseController();
+        FirebaseController.AttendeeCheckCallback attendeeCheckCallback = new FirebaseController.AttendeeCheckCallback() {
+            @Override
+            public void onChecked(boolean isAttendee, Event event) {
+                if(isAttendee){
+                    firebaseController.listenForAnnouncements(getApplicationContext(), event);
+                }
+            }
+        };
+        firebaseController.getAllEvents(new FirebaseController.OnEventsLoadedListener() {
+            @Override
+            public void onEventsLoaded(ArrayList<Event> events) {
+                for(Event event: events){
+                    firebaseController.isAttendee(androidId, event, attendeeCheckCallback);
+                }
+            }
+        });
     }
 
     /**

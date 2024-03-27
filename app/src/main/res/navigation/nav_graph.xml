@@ -66,30 +66,7 @@
         tools:layout="@layout/fragment_attendee_map">
 
     </fragment>
-    <fragment
-        android:id="@+id/manageEventFragment"
-        android:name="com.example.eventsnapqr.ManageEventFragment"
-        android:label="Manage Event"
-        tools:layout="@layout/fragment_manage_event">
-        <action
-            android:id="@+id/action_ManageEventFragment_to_MapFragment"
-            app:destination="@id/MapFragment"
-            />
-        <action
-            android:id="@+id/action_ManageEventFragment_to_RealTimeAttendanceFragment"
-            app:destination="@id/RealTimeAttendanceFragment"
-            />
-        <action
-            android:id="@+id/action_ManageEventFragment_to_qRDialogFragment"
-            app:destination="@id/qRDialogFragment"/>
-    </fragment>
-    <fragment
-        android:id="@+id/RealTimeAttendanceFragment"
-        android:name="com.example.eventsnapqr.RealTimeAttendanceFragment"
-        android:label="Real-Time Attendance"
-        tools:layout="@layout/fragment_real_time_attendance">
 
-    </fragment>
     <fragment
         android:id="@+id/adminModeMainPageFragment"
         android:name="com.example.eventsnapqr.AdminModeMainPageFragment"
@@ -149,6 +126,7 @@
             android:id="@+id/action_adminBrowseEventsFragment_to_AdminModeMainPageFragment"
             app:destination="@id/adminModeMainPageFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/eventDetailsFragment"
         android:name="com.example.eventsnapqr.EventDetailFragment"
@@ -184,9 +162,6 @@
         android:name="com.example.eventsnapqr.ListOrganizedEventsFragment"
         android:label="List Organized Events"
         tools:layout="@layout/fragment_browse_events" >
-        <action
-            android:id="@+id/action_organizedEvents_to_manageEvent"
-            app:destination="@id/manageEventFragment" />
     </fragment>
 
     <fragment
