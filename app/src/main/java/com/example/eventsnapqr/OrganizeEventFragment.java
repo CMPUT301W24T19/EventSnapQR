@@ -7,8 +7,11 @@ import android.app.TimePickerDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.LevelListDrawable;
 import android.Manifest;
 import android.graphics.ImageDecoder;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,6 +34,7 @@ import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.zxing.Binarizer;
@@ -55,6 +59,7 @@ import java.text.SimpleDateFormat;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
+
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
@@ -77,7 +82,9 @@ public class OrganizeEventFragment extends Fragment {
     private TextInputEditText editTextStartTime;
     private TextInputEditText editTextEndDate;
     private TextInputEditText editTextEndTime;
-    private Button uploadPosterButton;
+    private TextInputEditText uploadPosterButton;
+    private TextInputEditText locationButton;
+    private TextInputLayout posterBox;
     private Button reuseQRButton;
     private String androidID;
     private FirebaseController firebaseController = new FirebaseController();
@@ -114,8 +121,11 @@ public class OrganizeEventFragment extends Fragment {
         editTextEventName = view.findViewById(R.id.editTextEventName);
         editTextEventDesc = view.findViewById(R.id.edit_text_number);
         editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
-        uploadPosterButton = view.findViewById(R.id.buttonUploadPoster);
         reuseQRButton = view.findViewById(R.id.buttonReuseQR);
+        uploadPosterButton = view.findViewById(R.id.editTextPoster);
+        posterBox = view.findViewById(R.id.posterInput);
+
+        locationButton = view.findViewById(R.id.editTextLocation);
 
         // set up date and time picker dialogs
         editTextStartDate = view.findViewById(R.id.editTextStartDate);
@@ -134,15 +144,30 @@ public class OrganizeEventFragment extends Fragment {
 
         ActivityResultLauncher<PickVisualMediaRequest> choosePoster =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-                    // Callback is invoked after the user selects a media item or closes the
-                    // photo picker.
                     if (uri != null) {
-                        Log.d("TAG", "Selected URI: " + uri);
-                        imageUri = uri;
+                        try {
+                            InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
+                            Bitmap originalBitmap = BitmapFactory.decodeStream(inputStream);
+                            int targetWidth = 500;
+                            int targetHeight = 500;
+                            Bitmap resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidth, targetHeight, true);
+                            Drawable drawable = new BitmapDrawable(getResources(), resizedBitmap);
+                            drawable.setBounds(0, 0, uploadPosterButton.getWidth(), uploadPosterButton.getHeight());
+                            uploadPosterButton.setBackground(drawable);
+                            posterBox.setStartIconDrawable(null);
+                            posterBox.setHint(null);
+
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
                     } else {
                         Log.d("TAG", "No media selected");
                     }
                 });
+
+
+
+
 
         /**
          * Credits: https://stackoverflow.com/questions/55427308/scaning-qrcode-from-image-not-from-camera-using-zxing

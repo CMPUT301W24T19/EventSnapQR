@@ -15,244 +15,325 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:id="@+id/textInputName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="36dp"
-        android:textColorHint="#E4E4E4"
-        app:boxBackgroundColor="#00FFFFFF"
-        app:boxStrokeColor="@color/black"
-        app:boxStrokeWidth="6dp"
-        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-        android:layout_marginEnd="32dp"
-        android:hint="Event Name"
-        app:endIconMode="clear_text"
-        app:counterEnabled="true"
-        app:counterMaxLength="50"
-        app:helperTextTextColor="@color/red"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextEventName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLength="50"
-            android:textColor="#FFFFFF" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:id="@+id/textInputNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="32dp"
-        android:hint="Description"
-        android:textColorHint="#E4E4E4"
-        app:boxBackgroundColor="#00FFFFFF"
-        app:boxStrokeColor="@color/black"
-        app:boxStrokeWidth="6dp"
-        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-        app:endIconMode="clear_text"
-        app:counterEnabled="true"
-        app:counterMaxLength="100"
-        app:helperTextTextColor="@color/red"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textInputName">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#FFFFFF" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:id="@+id/inputTextStartDate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="8dp"
-        android:textColorHint="#E4E4E4"
-        app:boxBackgroundColor="#00FFFFFF"
-        app:boxStrokeColor="@color/black"
-        app:boxStrokeWidth="6dp"
-        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-        android:hint="Start Date"
-        app:endIconMode="clear_text"
-        app:helperTextTextColor="@color/red"
-        app:layout_constraintEnd_toStartOf="@+id/inputTextStartTime"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textInputNumber">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextStartDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:textColor="#FFFFFF" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:id="@+id/inputTextStartTime"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="32dp"
-        android:textColorHint="#E4E4E4"
-        app:boxBackgroundColor="#00FFFFFF"
-        app:boxStrokeColor="@color/black"
-        app:boxStrokeWidth="6dp"
-        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-        android:hint="Start Time"
-        app:endIconMode="clear_text"
-        app:helperTextTextColor="@color/red"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/inputTextStartDate"
-        app:layout_constraintTop_toBottomOf="@id/textInputNumber">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextStartTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:textColor="#FFFFFF" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:id="@+id/inputTextEndDate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:textColorHint="#E4E4E4"
-        app:boxBackgroundColor="#00FFFFFF"
-        app:boxStrokeColor="@color/black"
-        app:boxStrokeWidth="6dp"
-        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-        android:hint="End Date"
-        app:endIconMode="clear_text"
-        android:textColor="#FFFFFF"
-        app:helperTextTextColor="@color/red"
-        app:layout_constraintEnd_toStartOf="@+id/inputTextEndTime"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/inputTextStartDate">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:textColor="#FFFFFF"
-            android:id="@+id/editTextEndDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false"/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:textColor="#FFFFFF"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:id="@+id/inputTextEndTime"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="32dp"
-        android:textColorHint="#E4E4E4"
-        app:boxBackgroundColor="#00FFFFFF"
-        app:boxStrokeColor="@color/black"
-        app:boxStrokeWidth="6dp"
-        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-        android:hint="End Time"
-        app:endIconMode="clear_text"
-        app:helperTextTextColor="@color/red"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/inputTextEndDate"
-        app:layout_constraintTop_toBottomOf="@id/inputTextStartTime">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:textColor="#FFFFFF"
-            android:id="@+id/editTextEndTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false"/>/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/inputTextMaxAttendees"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:hint="Max Attendees"
-        android:textColorHint="#E4E4E4"
-        app:boxBackgroundColor="#00FFFFFF"
-        app:boxStrokeColor="@color/black"
-        app:boxStrokeWidth="6dp"
-        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-        app:endIconMode="clear_text"
-        app:helperText="*Optional"
-
-        app:layout_constraintEnd_toEndOf="@+id/inputTextEndDate"
-        app:layout_constraintStart_toStartOf="@+id/inputTextEndDate"
-        app:layout_constraintTop_toBottomOf="@id/inputTextEndDate">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextMaxAttendees"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:textColor="#FFFFFF" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-
-<Button
-        android:id="@+id/buttonUploadPoster"
+    <TextView
+        android:id="@+id/page_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Upload Poster"
-        app:layout_constraintBottom_toTopOf="@id/buttonReuseQR"
+        android:text="New Event"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@id/button_back_button"
+        app:layout_constraintTop_toTopOf="@id/button_back_button"
+        app:layout_constraintBottom_toBottomOf="@id/button_back_button"
+        android:layout_marginStart="8dp" />
+
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/button_back_button"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="16dp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/buttonReuseQR">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:id="@+id/posterInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_marginStart="32dp"
+                android:hint="Upload Poster"
+                android:textColorHint="#E4E4E4"
+                app:boxBackgroundColor="#00FFFFFF"
+                app:boxStrokeColor="@color/black"
+                app:boxStrokeWidth="2dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/textInputNumber"
+                app:layout_constraintTop_toTopOf="parent"
+                android:clickable="true"
+                android:focusable="true"
+                app:endIconMode="custom"
+                app:startIconDrawable="@android:drawable/ic_menu_upload"
+                app:startIconContentDescription="Upload Poster"
+                app:startIconTint="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextPoster"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:maxLength="50"
+                    android:textColor="#FFFFFF"
+                    android:focusable="false"
+                    android:cursorVisible="false"
+                    android:gravity="center"
+                    android:inputType="none"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:id="@+id/textInputName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="32dp"
+                app:boxBackgroundColor="#00FFFFFF"
+                app:boxStrokeColor="@color/black"
+                app:boxStrokeWidth="2dp"
+                android:hint="Event Name"
+                android:textColorHint="#E4E4E4"
+                app:endIconMode="clear_text"
+                app:helperTextTextColor="@color/red"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/textInputNumber"
+                app:layout_constraintTop_toBottomOf="@id/posterInput">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextEventName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLength="50"
+                    android:textColor="#FFFFFF" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:id="@+id/textInputNumber"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="32dp"
+                android:hint="Description"
+                android:textColorHint="#E4E4E4"
+                app:boxBackgroundColor="#00FFFFFF"
+                app:boxStrokeColor="@color/black"
+                app:boxStrokeWidth="2dp"
+                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
+                app:endIconMode="clear_text"
+                app:helperTextTextColor="@color/red"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textInputName">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_text_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:textColor="#FFFFFF"
+                    android:gravity="top|start"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:id="@+id/inputTextStartDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="8dp"
+                android:textColorHint="#E4E4E4"
+                app:boxBackgroundColor="#00FFFFFF"
+                app:boxStrokeColor="@color/black"
+                app:boxStrokeWidth="2dp"
+                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
+                android:hint="Start Date"
+                app:endIconMode="clear_text"
+                app:helperTextTextColor="@color/red"
+                app:layout_constraintEnd_toStartOf="@+id/inputTextStartTime"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textInputNumber">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextStartDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:cursorVisible="false"
+                    android:textColor="#FFFFFF" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:id="@+id/inputTextStartTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="32dp"
+                android:textColorHint="#E4E4E4"
+                app:boxBackgroundColor="#00FFFFFF"
+                app:boxStrokeColor="@color/black"
+                app:boxStrokeWidth="2dp"
+                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
+                android:hint="Start Time"
+                app:endIconMode="clear_text"
+                app:helperTextTextColor="@color/red"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/inputTextStartDate"
+                app:layout_constraintTop_toBottomOf="@id/textInputNumber">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextStartTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:textColor="#FFFFFF" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:id="@+id/inputTextEndDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="8dp"
+                android:textColorHint="#E4E4E4"
+                app:boxBackgroundColor="#00FFFFFF"
+                app:boxStrokeColor="@color/black"
+                app:boxStrokeWidth="2dp"
+                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
+                android:hint="End Date"
+                app:endIconMode="clear_text"
+                android:textColor="#FFFFFF"
+                app:helperTextTextColor="@color/red"
+                app:layout_constraintEnd_toStartOf="@+id/inputTextEndTime"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/inputTextStartDate">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:textColor="#FFFFFF"
+                    android:id="@+id/editTextEndDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:cursorVisible="false" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:textColor="#FFFFFF"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:id="@+id/inputTextEndTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="32dp"
+                android:textColorHint="#E4E4E4"
+                app:boxBackgroundColor="#00FFFFFF"
+                app:boxStrokeColor="@color/black"
+                app:boxStrokeWidth="2dp"
+                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
+                android:hint="End Time"
+                app:endIconMode="clear_text"
+                app:helperTextTextColor="@color/red"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/inputTextEndDate"
+                app:layout_constraintTop_toBottomOf="@id/inputTextStartTime">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:textColor="#FFFFFF"
+                    android:id="@+id/editTextEndTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:cursorVisible="false"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inputTextLocation"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="8dp"
+                android:textColorHint="#E4E4E4"
+                app:boxBackgroundColor="#00FFFFFF"
+                app:boxStrokeColor="@color/black"
+                app:boxStrokeWidth="2dp"
+                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
+                app:endIconMode="clear_text"
+                app:helperTextTextColor="@color/red"
+                android:hint="Location"
+                app:layout_constraintEnd_toStartOf="@+id/inputTextMaxAttendees"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/inputTextEndTime">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:inputType="none"
+                    android:textColor="#FFFFFF" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inputTextMaxAttendees"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="32dp"
+                android:hint="Max Attendees"
+                android:textColorHint="#E4E4E4"
+                app:boxBackgroundColor="#00FFFFFF"
+                app:boxStrokeColor="@color/black"
+                app:boxStrokeWidth="2dp"
+                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/inputTextLocation"
+                app:layout_constraintTop_toTopOf="@id/inputTextLocation">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextMaxAttendees"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textColor="#FFFFFF" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/buttonReuseQR"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:text="Reuse QR"
+        android:layout_marginRight="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginBottom="16dp"
-        android:layout_marginStart="16dp"/>
+        android:layout_marginStart="32dp"/>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/extendedFabCreateEvent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Create Event"
-
         android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.95" />
+        app:layout_constraintVertical_bias="0.98" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

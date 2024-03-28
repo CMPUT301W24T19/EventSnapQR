@@ -1,5 +1,6 @@
 package com.example.eventsnapqr;
 
+import static android.app.PendingIntent.getActivity;
 import static androidx.core.content.ContentProviderCompat.requireContext;
 
 import static java.security.AccessController.getContext;
@@ -62,7 +63,7 @@ public class ManageEventActivity extends AppCompatActivity {
     private FirebaseController firebaseController;
     private ListView attendeeListView, milestoneListView;
     private ArrayAdapter<String> eventAdapter, milestoneAdapter;
-    private List<String> attendeeNames, milestoneList;
+    private List<String> attendeeNames, milestoneList, attendeeIds;
     private List<Integer> attendeeCheckedIn;
     private FirebaseFirestore db;
     private String eventId;
@@ -88,6 +89,7 @@ public class ManageEventActivity extends AppCompatActivity {
 
         firebaseController = new FirebaseController();
         attendeeNames = new ArrayList<>();
+        attendeeIds = new ArrayList<>();
         milestoneList = new ArrayList<>();
         eventAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, attendeeNames);
         milestoneAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, milestoneList);
@@ -249,6 +251,7 @@ public class ManageEventActivity extends AppCompatActivity {
                     firebaseController.getUser(attendeeId, user -> {
                         if (user != null) {
                             attendeeNames.add(user.getName());
+                            attendeeIds.add(user.getDeviceID());
                             attendeeCheckedIn.add(numCheckIns); // Add checked in count
                             eventAdapter.notifyDataSetChanged();
 
@@ -287,15 +290,38 @@ public class ManageEventActivity extends AppCompatActivity {
         Integer timesCheckedIn = attendeeCheckedIn.get(position);
         String timesString = timesCheckedIn == 1 ? "time" : "times";
 
-        builder.setMessage(attendeeName + " has checked in to your event " + timesCheckedIn + " " + timesString + ".")
-                .setPositiveButton("OK", (dialog, id) -> {
-                    // Handle OK button click if needed
+        builder.setMessage(attendeeName + " has checked-in " + timesCheckedIn + " " + timesString + ".")
+                .setPositiveButton("View Profile", (dialog, id) -> {
+                    // lead to fragment_view_user_profile
                 })
-                .setNegativeButton("View on Map", (dialog, id) -> {
-                    // Handle View on Map button click if needed
+                .setNegativeButton("Remove Attendee", (dialog, id) -> {
+                    showDeleteConfirmationDialog(attendeeIds.get(position));
                 });
         builder.create().show();
     }
+
+    /**
+     * alert dialog used to confirm if the admin wants to delete the event
+     * @param attendeeId the user object that may be removed from the event
+     */
+    private void showDeleteConfirmationDialog(String attendeeId) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(ManageEventActivity.this);
+        builder.setTitle("Confirm Removal")
+                .setMessage("Are you sure you want to remove '" + attendeeId + "' from your event?")
+                .setPositiveButton("Yes", (dialog, which) -> { // if yes
+                    Runnable completionCallback = null;
+                    try {
+                        // delete the attendee from the event
+                    }
+                    catch (Exception e) {
+                        Log.d("TAG", e.toString());
+                    }
+                })
+                .setNegativeButton("No", null)
+                .create()
+                .show();
+    }
+
 
     /**
      * displays dialog for an organizer to make an announcement
