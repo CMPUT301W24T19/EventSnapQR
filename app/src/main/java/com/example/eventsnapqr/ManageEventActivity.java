@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -30,9 +31,13 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -166,6 +171,32 @@ public class ManageEventActivity extends AppCompatActivity {
                 showNotificationDialog();
             }
         });
+
+        eventAdapter = new ArrayAdapter<String>(this, R.layout.list_attendees_layout, R.id.attendee_name, attendeeNames) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView attendeeNameTextView = view.findViewById(R.id.attendee_name);
+                ImageView checkMarkImageView = view.findViewById(R.id.checkedIn_image);
+
+                // Set attendee name
+                attendeeNameTextView.setText(attendeeNames.get(position));
+
+                // Show checkmark icon if attendee has checked in more than once
+                if (attendeeCheckedIn.get(position) >= 1) {
+                    checkMarkImageView.setVisibility(View.VISIBLE);
+                } else {
+                    checkMarkImageView.setVisibility(View.GONE);
+                }
+
+                return view;
+            }
+        };
+
+
+        // Set the adapter for the attendeeListView
+        attendeeListView.setAdapter(eventAdapter);
 
         attendeeListView.setOnItemClickListener((parent, view1, position, id) -> attendeeDialog(position));
         updateTexts();
@@ -371,16 +402,7 @@ public class ManageEventActivity extends AppCompatActivity {
 
                 return true;
             } else if (itemId == R.id.view_map) { // view map
-                Bundle bundle = new Bundle();
-                bundle.putString("eventId", eventId);
-                MapFragment mapFrag = new MapFragment();
-                mapFrag.setArguments(bundle);
 
-                // Replace the current fragment with the MapFragment
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.nav_host_fragment, mapFrag)
-                        .addToBackStack(null)
-                        .commit();
                 return true;
             } else {
                 return false;
@@ -388,5 +410,4 @@ public class ManageEventActivity extends AppCompatActivity {
         });
         popupMenu.show();
     }
-
 }
