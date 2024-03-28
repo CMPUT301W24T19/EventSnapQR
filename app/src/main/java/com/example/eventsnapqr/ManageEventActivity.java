@@ -1,5 +1,6 @@
 package com.example.eventsnapqr;
 
+import static android.app.PendingIntent.getActivity;
 import static androidx.core.content.ContentProviderCompat.requireContext;
 
 import static java.security.AccessController.getContext;
