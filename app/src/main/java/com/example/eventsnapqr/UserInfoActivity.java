@@ -67,8 +67,8 @@ public class UserInfoActivity extends AppCompatActivity {
     private boolean editMode = false;
     private ImageView editButton;
     private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
-    private MaterialCheckBox locationSwitch;
-    private MaterialCheckBox notificationSwitch;
+    private Switch locationSwitch;
+    private Switch notificationSwitch;
 
     private final int PERMISSION_REQUEST_CODE = 100;
     String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
@@ -108,8 +108,9 @@ public class UserInfoActivity extends AppCompatActivity {
         homepage = findViewById(R.id.editTextHomepage);
         saveButton = findViewById(R.id.saveButton);
         editButton = findViewById(R.id.button_edit_profile_button);
-        locationSwitch = findViewById(R.id.checkboxLocation);
-        notificationSwitch = findViewById(R.id.checkboxNotifications);
+        locationSwitch = findViewById(R.id.switchLocation);
+        notificationSwitch = findViewById(R.id.switchNotifications);
+
         if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(notificationPermissions)){
             notificationSwitch.setChecked(false);
         }
