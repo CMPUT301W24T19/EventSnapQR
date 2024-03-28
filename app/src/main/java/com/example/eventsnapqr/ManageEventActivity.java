@@ -306,7 +306,7 @@ public class ManageEventActivity extends AppCompatActivity {
      */
     private void showDeleteConfirmationDialog(String attendeeId) {
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(ManageEventActivity.this);
-        builder.setTitle("Confirm Deletion")
+        builder.setTitle("Confirm Removal")
                 .setMessage("Are you sure you want to remove '" + attendeeId + "' from your event?")
                 .setPositiveButton("Yes", (dialog, which) -> { // if yes
                     Runnable completionCallback = null;

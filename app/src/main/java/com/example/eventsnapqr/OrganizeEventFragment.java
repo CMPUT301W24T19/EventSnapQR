@@ -148,25 +148,14 @@ public class OrganizeEventFragment extends Fragment {
                         try {
                             InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
                             Bitmap originalBitmap = BitmapFactory.decodeStream(inputStream);
-
-                            // Resize the bitmap to a reasonable size
-                            int targetWidth = 500;  // Adjust as needed
-                            int targetHeight = 500; // Adjust as needed
+                            int targetWidth = 500;
+                            int targetHeight = 500;
                             Bitmap resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidth, targetHeight, true);
-
-                            // Create a drawable with the resized bitmap
                             Drawable drawable = new BitmapDrawable(getResources(), resizedBitmap);
-
-// Set the bounds of the drawable to match the size of the TextInputEditText
                             drawable.setBounds(0, 0, uploadPosterButton.getWidth(), uploadPosterButton.getHeight());
-
-// Set the background drawable of the TextInputEditText instead of the TextInputLayout
                             uploadPosterButton.setBackground(drawable);
-
-
-                            // Set the background drawable of the TextInputLayout
-                            posterBox.setStartIconDrawable(null); // Remove the drawable image
-                            posterBox.setHint(null); // Remove the hint
+                            posterBox.setStartIconDrawable(null);
+                            posterBox.setHint(null);
 
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
