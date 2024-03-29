@@ -209,6 +209,7 @@ public class OrganizeEventFragment extends Fragment {
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         }
+                        imageUri = uri;
                     } else {
                         Log.d("TAG", "No media selected");
                     }
