@@ -40,6 +40,14 @@ android {
         viewBinding = true
     }
 }
+allprojects {
+    // forces all changing dependencies (i.e. SNAPSHOTs) to automatically download
+    configurations.all {
+        resolutionStrategy {
+            cacheChangingModulesFor(0, "seconds")
+        }
+    }
+}
 
 dependencies {
     implementation("com.google.android.gms:play-services-location:20.0.0")
@@ -73,6 +81,10 @@ dependencies {
     testImplementation ("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testRuntimeOnly ("org.junit.jupiter:junit-jupiter-engine:5.10.2")
     testImplementation("junit:junit:4.13.2")
+
+    implementation ("org.osmdroid:osmdroid-android:6.1.18")
+    implementation("com.google.android.gms:play-services-location:18.0.0")
+    implementation ("org.osmdroid:osmdroid-mapsforge:6.1.18") 
 
     implementation("com.firebaseui:firebase-ui-storage:8.0.2")
     implementation("com.google.firebase:firebase-storage:20.3.0")
