@@ -239,14 +239,20 @@ public class EventDetailFragment extends Fragment {
 
         eventLocation.setText("N/A");
 
-        StringBuilder announcementsText = new StringBuilder();
-        for (String announcement : event.getAnnouncements()) {
-            announcementsText.append("• ").append(announcement).append("<br>");
+        List<String> announcements = event.getAnnouncements();
+        if (announcements != null && !announcements.isEmpty()) {
+            StringBuilder announcementsText = new StringBuilder();
+            for (String announcement : announcements) {
+                announcementsText.append("• ").append(announcement).append("<br>");
+            }
+            eventAnnouncements.setText(Html.fromHtml(announcementsText.toString(), Html.FROM_HTML_MODE_COMPACT));
+        } else {
+            eventAnnouncements.setText("No Announcements");
         }
-        eventAnnouncements.setText(Html.fromHtml(announcementsText.toString(), Html.FROM_HTML_MODE_COMPACT));
         eventAnnouncements.setHint(null);
 
         eventMaxAttendees.setText(event.getMaxAttendees() != null ? String.valueOf(event.getMaxAttendees()) : "N/A");
     }
+
 
 }

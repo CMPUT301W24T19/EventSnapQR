@@ -627,7 +627,7 @@ public class FirebaseController {
                     String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
                     boolean active = document.getBoolean("active");
-                    
+
                     db.collection("events").document(eventIdentifier).collection("announcements")
                             .get()
                             .addOnCompleteListener(subCollectionTask -> {
