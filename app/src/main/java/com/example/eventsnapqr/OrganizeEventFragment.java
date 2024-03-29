@@ -392,14 +392,11 @@ public class OrganizeEventFragment extends Fragment {
 
         Date startDateTime;
         Date endDateTime;
-        //DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm");
-        DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
-        try {
 
-            //startDateTime = dateFormat.parse(eventStartDate + " " +eventStartTime);
-            startDateTime = dateFormat.parse(eventStartDate);
-            //endDateTime = dateFormat.parse(eventEndDate + " " + eventEndTime);
-            endDateTime = dateFormat.parse(eventEndDate);
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy" + " hh:mm");
+        try {
+            startDateTime = dateFormat.parse(eventStartDate + " " + eventStartTime);
+            endDateTime = dateFormat.parse(eventEndDate + " " + eventEndTime);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
