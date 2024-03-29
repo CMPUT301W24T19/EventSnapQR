@@ -48,7 +48,7 @@ public class MainPageFragment extends Fragment {
     private ExtendedFloatingActionButton buttonScanQR;
     private ImageView buttonViewProfile;
     private String androidId;
-    private ViewFlipper viewFlipper;
+    private ViewFlipper viewFlipper, viewFlipperOrganizers;
 
     /**
      * What should be executed when the fragment is created
@@ -133,7 +133,7 @@ public class MainPageFragment extends Fragment {
         buttonViewProfile = view.findViewById(R.id.view_user_button);
         updateProfilePicture();
 
-        getImageUris(new ImageUriCallback() {
+        getImageUris(new ImageUriCallback() { // *** not done have too hook up popular event organizers view flipper images ***
             @Override
             public void onImageUrisLoaded(List<String> imageUris) {
                 Context context = getContext(); // get the context once and reuse it
@@ -143,30 +143,44 @@ public class MainPageFragment extends Fragment {
                 }
 
                 viewFlipper = view.findViewById(R.id.viewFlipper);
-                if (viewFlipper == null) {
+                viewFlipperOrganizers = view.findViewById(R.id.viewFlipperOrganizers);
+                if (viewFlipper == null || viewFlipperOrganizers == null) {
                     // viewFlipper not found --> handle
                     return;
                 }
 
                 viewFlipper.removeAllViews();
+                viewFlipperOrganizers.removeAllViews();
 
                 for (String uriString : imageUris) {
                     ImageView imageView = new ImageView(context);
+
                     imageView.setLayoutParams(new ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.MATCH_PARENT));
                     imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
+                    ImageView imageViewOrganizers = new ImageView(context);
+
+                    imageViewOrganizers.setLayoutParams(new ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT));
+                    imageViewOrganizers.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     // load the image from URI using the obtained context
                     Glide.with(context)
                             .load(uriString)
                             .into(imageView);
+                    Glide.with(context)
+                            .load(uriString)
+                            .into(imageViewOrganizers);
 
                     viewFlipper.addView(imageView);
+                    viewFlipperOrganizers.addView(imageViewOrganizers);
                 }
 
-                if (!viewFlipper.isFlipping() && imageUris.size() > 1) {
+                if (!viewFlipperOrganizers.isFlipping() && !viewFlipper.isFlipping() && imageUris.size() > 1) {
                     viewFlipper.startFlipping();
+                    viewFlipperOrganizers.startFlipping();
                 }
             }
         });

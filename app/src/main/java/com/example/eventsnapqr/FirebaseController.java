@@ -725,11 +725,8 @@ public class FirebaseController {
                                         if(count == 5){
                                             addMilestone(event, "5 users have promised to attend your event!");
                                         }
-                                        if(count == 10){
-                                            addMilestone(event, "10 users have promised to attend your event!");
-                                        }
-                                        if(count == 20){
-                                            addMilestone(event, "20 users have promised to attend your event!");
+                                        if(count%10 == 0){
+                                            addMilestone(event, count+ " users have promised to attend your event!");
                                         }
                                         Log.d("Count of promised attendees", "Number of promised attendees for event: " + count);
                                     }
