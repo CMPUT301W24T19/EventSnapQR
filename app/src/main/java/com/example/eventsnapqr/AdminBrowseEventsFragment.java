@@ -75,15 +75,14 @@ public class AdminBrowseEventsFragment extends Fragment {
                     FirebaseController.getInstance().getEvent(doc.getId(), new FirebaseController.OnEventRetrievedListener() {
                         @Override
                         public void onEventRetrieved(Event event) {
-                            Log.d("TAG", "Event date: " + event.getEventEndDateTime());
                             if (event.isActive()) {
                                 Date currentDate = new Date();
                                 if (currentDate.compareTo(event.getEventEndDateTime()) > 0) {
-                                    Log.d("TAG", "True");
                                     Runnable completionCallback = null;
                                     FirebaseController.getInstance().deleteEvent(event, (FirebaseController.FirestoreOperationCallback) completionCallback);
                                 }
                                 else {
+                                    Log.d("TAG", "true");
                                     eventIds.add(event.getEventID());
                                     eventNames.add(event.getEventName());
                                 }
