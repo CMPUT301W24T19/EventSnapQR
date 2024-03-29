@@ -82,15 +82,14 @@ public class AdminBrowseEventsFragment extends Fragment {
                                     FirebaseController.getInstance().deleteEvent(event, (FirebaseController.FirestoreOperationCallback) completionCallback);
                                 }
                                 else {
-                                    Log.d("TAG", "true");
                                     eventIds.add(event.getEventID());
                                     eventNames.add(event.getEventName());
+                                    eventAdapter.notifyDataSetChanged();
                                 }
                             }
                         }
                     });
                 }
-                eventAdapter.notifyDataSetChanged();
             }
         });
         searchButton.setOnClickListener(new View.OnClickListener() {
