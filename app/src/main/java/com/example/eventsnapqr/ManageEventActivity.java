@@ -428,6 +428,11 @@ public class ManageEventActivity extends AppCompatActivity {
 
                 return true;
             } else if (itemId == R.id.view_map) { // view map
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.your_event_constrained_layout, new MapFragment());
+                fragmentTransaction.addToBackStack("manage_activity");
+                fragmentTransaction.commit();
 
                 return true;
             } else {
