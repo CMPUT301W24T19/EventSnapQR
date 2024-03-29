@@ -627,25 +627,25 @@ public class FirebaseController {
                     String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
                     boolean active = document.getBoolean("active");
-
-                    // Fetch announcements from subcollection
+                    
                     db.collection("events").document(eventIdentifier).collection("announcements")
                             .get()
                             .addOnCompleteListener(subCollectionTask -> {
                                 if (subCollectionTask.isSuccessful()) {
                                     List<String> announcements = new ArrayList<>();
                                     for (QueryDocumentSnapshot announcementDoc : subCollectionTask.getResult()) {
-                                        // Extract announcement ID and add to list
-                                        announcements.add(announcementDoc.getId());
+                                        String message = announcementDoc.getString("message");
+                                        if (message != null) {
+                                            announcements.add(message);
+                                        }
                                     }
 
-                                    // Retrieve the user who organized the event
                                     getUser(organizerID, new OnUserRetrievedListener() {
                                         @Override
                                         public void onUserRetrieved(User user) {
                                             if (user != null) {
                                                 Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, active, latitude, longitude);
-                                                event.setAnnouncements(announcements); // Set the announcements list
+                                                event.setAnnouncements(announcements); // Set the announcements list with messages
                                                 listener.onEventRetrieved(event);
                                             } else {
                                                 Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);
