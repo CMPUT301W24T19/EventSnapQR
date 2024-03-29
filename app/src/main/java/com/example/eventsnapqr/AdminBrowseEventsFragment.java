@@ -102,16 +102,9 @@ public class AdminBrowseEventsFragment extends Fragment {
                         @Override
                         public void onEventRetrieved(Event event) {
                             if (event.isActive()) {
-                                Date currentDate = new Date();
-                                if (currentDate.compareTo(event.getEventEndDateTime()) > 0) {
-                                    Runnable completionCallback = null;
-                                    FirebaseController.getInstance().deleteEvent(event, (FirebaseController.FirestoreOperationCallback) completionCallback);
-                                }
-                                else {
-                                    eventIds.add(event.getEventID());
-                                    eventNames.add(event.getEventName());
-                                    eventAdapter.notifyDataSetChanged();
-                                }
+                                eventIds.add(event.getEventID());
+                                eventNames.add(event.getEventName());
+                                eventAdapter.notifyDataSetChanged();
                             }
                         }
                     });
