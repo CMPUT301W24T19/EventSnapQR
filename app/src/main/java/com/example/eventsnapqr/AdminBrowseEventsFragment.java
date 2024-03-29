@@ -11,15 +11,21 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 //import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Firebase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -29,6 +35,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -37,12 +44,14 @@ import java.util.List;
  */
 public class AdminBrowseEventsFragment extends Fragment {
     private ListView eventListView;
+    private ImageView backButton;
     private ArrayAdapter<String> eventAdapter;
     private List<String> eventNames;
     private List<String> eventIds;
     private FirebaseFirestore db;
     private Button searchButton;
     private EditText searchBar;
+    ProgressBar loadingProgressBar;
     private ArrayList<String> viewList = new ArrayList<>();
 
     /**
@@ -65,6 +74,23 @@ public class AdminBrowseEventsFragment extends Fragment {
         searchBar = view.findViewById(R.id.search_bar);
         eventIds = new ArrayList<>();
         searchButton = view.findViewById(R.id.button_search);
+        backButton = view.findViewById(R.id.button_back_button);
+        loadingProgressBar = view.findViewById(R.id.loadingProgressBar);
+
+        db = FirebaseFirestore.getInstance();
+
+        loadingProgressBar.setVisibility(View.VISIBLE);
+        backButton.setVisibility(View.INVISIBLE);
+        searchButton.setVisibility(View.INVISIBLE);
+        searchBar.setVisibility(View.INVISIBLE);
+        eventListView.setVisibility(View.INVISIBLE);
+
+        List<DocumentSnapshot> events;
+        Task<QuerySnapshot> getEvents = db.collection("events").get();
+        Tasks.whenAll(getEvents).addOnCompleteListener(aVoid -> {
+            Log.d("TAG", "true");
+            loadEvents(0, getEvents.getResult().getDocuments());
+        });
 
         FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -92,6 +118,7 @@ public class AdminBrowseEventsFragment extends Fragment {
                 }
             }
         });
+
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,9 +142,8 @@ public class AdminBrowseEventsFragment extends Fragment {
         });
         eventAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, eventNames);
         eventListView.setAdapter(eventAdapter);
-        db = FirebaseFirestore.getInstance();
 
-        view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 requireActivity().onBackPressed();
@@ -192,5 +218,34 @@ public class AdminBrowseEventsFragment extends Fragment {
                 .setNegativeButton("No", null)
                 .create()
                 .show();
+    }
+
+    private void loadEvents(int curIndex, List<DocumentSnapshot> events) {
+        if (curIndex == events.size()) {
+            loadingProgressBar.setVisibility(View.INVISIBLE);
+            backButton.setVisibility(View.VISIBLE);
+            searchButton.setVisibility(View.VISIBLE);
+            searchBar.setVisibility(View.VISIBLE);
+            eventListView.setVisibility(View.VISIBLE);
+        }
+
+        else {
+            FirebaseController.getInstance().getEvent(events.get(curIndex).getId(), new FirebaseController.OnEventRetrievedListener() {
+                @Override
+                public void onEventRetrieved(Event event) {
+                    Date currentDate = new Date();
+                    if (currentDate.compareTo(event.getEventEndDateTime()) > 0) {
+                        FirebaseController.getInstance().deleteEvent(event, new FirebaseController.FirestoreOperationCallback() {
+                            @Override
+                            public void onCompleted() {
+                                loadEvents(curIndex + 1, events);
+                            }
+                        });
+                    } else {
+                        loadEvents(curIndex + 1, events);
+                    }
+                }
+            });
+        }
     }
 }
