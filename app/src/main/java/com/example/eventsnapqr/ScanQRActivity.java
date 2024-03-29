@@ -218,6 +218,10 @@ public class ScanQRActivity extends AppCompatActivity {
 
                 String eventId = contents.trim();
 
+            if (eventId.length() != 20) {
+                showInvalidQRContentDialog();
+            }
+
                 FirebaseController.getInstance().checkUserInAttendees(eventId, userId, new FirebaseController.OnUserInAttendeesListener() {
                     @Override
                     public void onUserInAttendees(boolean isInAttendees) {
