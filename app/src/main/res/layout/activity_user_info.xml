@@ -100,7 +100,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:id="@+id/textInputName"
+                    android:id="@+id/textInputOrganizer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -121,7 +121,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextName"
+                        android:id="@+id/editTextOrganizerName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:maxLength="50"
@@ -130,7 +130,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:id="@+id/textInputEmailAddress"
+                    android:id="@+id/textInputDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -148,19 +148,18 @@
                     app:helperTextTextColor="@color/red"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textInputName">
+                    app:layout_constraintTop_toBottomOf="@id/textInputOrganizer">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextEmail"
+                        android:id="@+id/editTextDescription"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="#FFFFFF" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Phone Number Text Input -->
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:id="@+id/textInputNumber"
+                    android:id="@+id/textInputStartDateTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -179,10 +178,10 @@
                     app:helperTextTextColor="@color/red"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textInputEmailAddress">
+                    app:layout_constraintTop_toBottomOf="@id/textInputDescription">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextNumber"
+                        android:id="@+id/editTextStartDateTime"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="#FFFFFF" />
@@ -191,7 +190,7 @@
                 <!-- Homepage Text Input -->
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:id="@+id/textInputHomepage"
+                    android:id="@+id/textInputEndDateTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -209,10 +208,10 @@
                     app:helperTextTextColor="@color/red"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textInputNumber">
+                    app:layout_constraintTop_toBottomOf="@id/textInputStartDateTime">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextHomepage"
+                        android:id="@+id/editTextEndDateTime"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="#FFFFFF" />
@@ -227,7 +226,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textInputHomepage" />
+                    app:layout_constraintTop_toBottomOf="@id/textInputEndDateTime" />
 
                 <Switch
                     android:id="@+id/switchNotifications"
