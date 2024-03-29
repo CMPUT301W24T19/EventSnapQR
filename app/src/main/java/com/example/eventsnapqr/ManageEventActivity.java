@@ -1,5 +1,6 @@
 package com.example.eventsnapqr;
 
+import static android.app.PendingIntent.getActivity;
 import static androidx.core.content.ContentProviderCompat.requireContext;
 
 import static java.security.AccessController.getContext;
@@ -14,6 +15,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -30,9 +32,13 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -57,7 +63,7 @@ public class ManageEventActivity extends AppCompatActivity {
     private FirebaseController firebaseController;
     private ListView attendeeListView, milestoneListView;
     private ArrayAdapter<String> eventAdapter, milestoneAdapter;
-    private List<String> attendeeNames, milestoneList;
+    private List<String> attendeeNames, milestoneList, attendeeIds;
     private List<Integer> attendeeCheckedIn;
     private FirebaseFirestore db;
     private String eventId;
@@ -83,6 +89,7 @@ public class ManageEventActivity extends AppCompatActivity {
 
         firebaseController = new FirebaseController();
         attendeeNames = new ArrayList<>();
+        attendeeIds = new ArrayList<>();
         milestoneList = new ArrayList<>();
         eventAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, attendeeNames);
         milestoneAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, milestoneList);
@@ -167,6 +174,32 @@ public class ManageEventActivity extends AppCompatActivity {
             }
         });
 
+        eventAdapter = new ArrayAdapter<String>(this, R.layout.list_attendees_layout, R.id.attendee_name, attendeeNames) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView attendeeNameTextView = view.findViewById(R.id.attendee_name);
+                ImageView checkMarkImageView = view.findViewById(R.id.checkedIn_image);
+
+                // Set attendee name
+                attendeeNameTextView.setText(attendeeNames.get(position));
+
+                // Show checkmark icon if attendee has checked in more than once
+                if (attendeeCheckedIn.get(position) >= 1) {
+                    checkMarkImageView.setVisibility(View.VISIBLE);
+                } else {
+                    checkMarkImageView.setVisibility(View.GONE);
+                }
+
+                return view;
+            }
+        };
+
+
+        // Set the adapter for the attendeeListView
+        attendeeListView.setAdapter(eventAdapter);
+
         attendeeListView.setOnItemClickListener((parent, view1, position, id) -> attendeeDialog(position));
         updateTexts();
     }
@@ -218,6 +251,7 @@ public class ManageEventActivity extends AppCompatActivity {
                     firebaseController.getUser(attendeeId, user -> {
                         if (user != null) {
                             attendeeNames.add(user.getName());
+                            attendeeIds.add(user.getDeviceID());
                             attendeeCheckedIn.add(numCheckIns); // Add checked in count
                             eventAdapter.notifyDataSetChanged();
 
@@ -256,15 +290,38 @@ public class ManageEventActivity extends AppCompatActivity {
         Integer timesCheckedIn = attendeeCheckedIn.get(position);
         String timesString = timesCheckedIn == 1 ? "time" : "times";
 
-        builder.setMessage(attendeeName + " has checked in to your event " + timesCheckedIn + " " + timesString + ".")
-                .setPositiveButton("OK", (dialog, id) -> {
-                    // Handle OK button click if needed
+        builder.setMessage(attendeeName + " has checked-in " + timesCheckedIn + " " + timesString + ".")
+                .setPositiveButton("View Profile", (dialog, id) -> {
+                    // lead to fragment_view_user_profile
                 })
-                .setNegativeButton("View on Map", (dialog, id) -> {
-                    // Handle View on Map button click if needed
+                .setNegativeButton("Remove Attendee", (dialog, id) -> {
+                    showDeleteConfirmationDialog(attendeeIds.get(position));
                 });
         builder.create().show();
     }
+
+    /**
+     * alert dialog used to confirm if the admin wants to delete the event
+     * @param attendeeId the user object that may be removed from the event
+     */
+    private void showDeleteConfirmationDialog(String attendeeId) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(ManageEventActivity.this);
+        builder.setTitle("Confirm Removal")
+                .setMessage("Are you sure you want to remove '" + attendeeId + "' from your event?")
+                .setPositiveButton("Yes", (dialog, which) -> { // if yes
+                    Runnable completionCallback = null;
+                    try {
+                        // delete the attendee from the event
+                    }
+                    catch (Exception e) {
+                        Log.d("TAG", e.toString());
+                    }
+                })
+                .setNegativeButton("No", null)
+                .create()
+                .show();
+    }
+
 
     /**
      * displays dialog for an organizer to make an announcement
@@ -371,16 +428,12 @@ public class ManageEventActivity extends AppCompatActivity {
 
                 return true;
             } else if (itemId == R.id.view_map) { // view map
-                Bundle bundle = new Bundle();
-                bundle.putString("eventId", eventId);
-                MapFragment mapFrag = new MapFragment();
-                mapFrag.setArguments(bundle);
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.your_event_constrained_layout, new MapFragment());
+                fragmentTransaction.addToBackStack("manage_activity");
+                fragmentTransaction.commit();
 
-                // Replace the current fragment with the MapFragment
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.nav_host_fragment, mapFrag)
-                        .addToBackStack(null)
-                        .commit();
                 return true;
             } else {
                 return false;
@@ -388,5 +441,4 @@ public class ManageEventActivity extends AppCompatActivity {
         });
         popupMenu.show();
     }
-
 }

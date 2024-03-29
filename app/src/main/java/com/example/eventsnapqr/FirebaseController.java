@@ -461,7 +461,7 @@ public class FirebaseController {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "CHANNEL_ID_NOTIFICATION");
         builder.setContentTitle("Notification from " + event.getEventName())
                 .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setContentText(announcement)
                 .setSmallIcon(R.drawable.baseline_notifications_24).setContentIntent(pendingIntent);
 
@@ -527,8 +527,11 @@ public class FirebaseController {
                                         @Override
                                         public void onSeen(boolean seen) {
                                             if(!seen){
-                                                String announcementMessage = dc.getDocument().getString("message");
-                                                makeNotification(context, announcementMessage, event);
+                                                if(!event.getOrganizer().getDeviceID().equals(Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID))){
+                                                    String announcementMessage = dc.getDocument().getString("message");
+                                                    makeNotification(context, announcementMessage, event);
+                                                }
+
                                             }
                                         }
                                     });
@@ -630,24 +633,24 @@ public class FirebaseController {
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
                     boolean active = document.getBoolean("active");
 
-                    // Fetch announcements from subcollection
                     db.collection("events").document(eventIdentifier).collection("announcements")
                             .get()
                             .addOnCompleteListener(subCollectionTask -> {
                                 if (subCollectionTask.isSuccessful()) {
                                     List<String> announcements = new ArrayList<>();
                                     for (QueryDocumentSnapshot announcementDoc : subCollectionTask.getResult()) {
-                                        // Extract announcement ID and add to list
-                                        announcements.add(announcementDoc.getId());
+                                        String message = announcementDoc.getString("message");
+                                        if (message != null) {
+                                            announcements.add(message);
+                                        }
                                     }
 
-                                    // Retrieve the user who organized the event
                                     getUser(organizerID, new OnUserRetrievedListener() {
                                         @Override
                                         public void onUserRetrieved(User user) {
                                             if (user != null) {
                                                 Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, active, latitude, longitude);
-                                                event.setAnnouncements(announcements); // Set the announcements list
+                                                event.setAnnouncements(announcements); // Set the announcements list with messages
                                                 listener.onEventRetrieved(event);
                                             } else {
                                                 Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);
@@ -727,11 +730,8 @@ public class FirebaseController {
                                         if(count == 5){
                                             addMilestone(event, "5 users have promised to attend your event!");
                                         }
-                                        if(count == 10){
-                                            addMilestone(event, "10 users have promised to attend your event!");
-                                        }
-                                        if(count == 20){
-                                            addMilestone(event, "20 users have promised to attend your event!");
+                                        if(count%10 == 0){
+                                            addMilestone(event, count+ " users have promised to attend your event!");
                                         }
                                         Log.d("Count of promised attendees", "Number of promised attendees for event: " + count);
                                     }

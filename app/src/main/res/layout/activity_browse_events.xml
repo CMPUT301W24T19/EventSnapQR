@@ -28,8 +28,10 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_below="@id/page_name"
         android:layout_above="@id/tabLayout"
-        android:layout_below="@id/page_name" />
+        android:layout_marginTop="16dp" />
+    
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"

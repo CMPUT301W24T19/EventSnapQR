@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -34,12 +36,15 @@ import java.util.List;
 public class EventDetailFragment extends Fragment {
     private String eventId;
     private String androidId;
-    private TextView eventName;
-    private TextView eventDescription;
     private ImageView eventPosterImage;
-    private TextView eventOrganizer;
-    private TextView eventMaxAttendees;
-    private TextView eventAnnouncement;
+    private TextView eventName;
+    private TextInputEditText eventOrganizer;
+    private TextInputEditText eventDescription;
+    private TextInputEditText eventLocation;
+    private TextInputEditText eventMaxAttendees;
+    private TextInputEditText eventAnnouncements;
+    private TextInputEditText eventStartDateTime;
+    private TextInputEditText eventEndDateTime;
     private Integer position;
 
     /**
@@ -82,18 +87,28 @@ public class EventDetailFragment extends Fragment {
                         View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         );
 
+        eventPosterImage = view.findViewById(R.id.eventPosterImageView);
+        eventName = view.findViewById(R.id.eventNameTextView);
+        eventOrganizer = view.findViewById(R.id.editTextOrganizerName);
+        eventDescription = view.findViewById(R.id.editTextDescription);
+        eventLocation = view.findViewById(R.id.editTextLocation);
+        eventMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
+        eventAnnouncements = view.findViewById(R.id.editTextAnnouncements);
+        eventStartDateTime = view.findViewById(R.id.editTextStartDateTime);
+        eventEndDateTime = view.findViewById(R.id.editTextEndDateTime);
+
         FirebaseController.getInstance().isUserSignedUp(androidId, eventId, new FirebaseController.OnSignUpCheckListener() {
             @Override
             public void onSignUpCheck(boolean isSignedUp) {
                 if (isSignedUp) {
-                    view.findViewById(R.id.sign_up_button).setVisibility(View.GONE);
+                    view.findViewById(R.id.sign_up_button).setVisibility(View.INVISIBLE);
                     TextView signUpMessage = view.findViewById(R.id.sign_up_message);
                     signUpMessage.setVisibility(View.VISIBLE);
                 }
             }
         });
 
-        view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (position == -1) {
@@ -200,36 +215,44 @@ public class EventDetailFragment extends Fragment {
      * @param event the event object to be displayed
      */
     private void displayEventDetails(Event event) {
-        eventPosterImage = getView().findViewById(R.id.event_poster);
+        eventPosterImage = getView().findViewById(R.id.eventPosterImageView);
         Glide.with(requireContext())
                 .load(event.getPosterURI())
                 .placeholder(R.drawable.place_holder_img)
-                .dontAnimate()
                 .into(eventPosterImage);
 
-        eventDescription = getView().findViewById(R.id.description_content);
-        eventDescription.setText(event.getDescription());
+        eventName.setText(event.getEventName() != null ? event.getEventName() : "N/A");
+        eventOrganizer.setText(event.getOrganizer() != null && event.getOrganizer().getName() != null ? event.getOrganizer().getName() : "N/A");
+        eventDescription.setText(event.getDescription() != null ? event.getDescription() : "N/A");
 
-        eventName = getView().findViewById(R.id.page_name);
-        eventName.setText(event.getEventName());
+        if (event.getEventStartDateTime() != null) {
+            eventStartDateTime.setText(event.getEventStartDateTime().toString());
+        } else {
+            eventStartDateTime.setText("N/A");
+        }
 
-        eventOrganizer = getView().findViewById(R.id.organizer_content);
-        eventOrganizer.setText(event.getOrganizer().getName());
+        if (event.getEventEndDateTime() != null) {
+            eventEndDateTime.setText(event.getEventEndDateTime().toString());
+        } else {
+            eventEndDateTime.setText("N/A");
+        }
 
-        eventMaxAttendees = getView().findViewById(R.id.max_attendees_content);
-        eventMaxAttendees.setText(event.getMaxAttendees() != null ? event.getMaxAttendees().toString() : "N/A");
+        eventLocation.setText("N/A");
 
-        eventAnnouncement = getView().findViewById(R.id.announce_content);
-        StringBuilder announcementText = new StringBuilder();
         List<String> announcements = event.getAnnouncements();
         if (announcements != null && !announcements.isEmpty()) {
+            StringBuilder announcementsText = new StringBuilder();
             for (String announcement : announcements) {
-                announcementText.append("\u2022 ").append(announcement).append("\n"); // Prefix each announcement with a bullet point
+                announcementsText.append("• ").append(announcement).append("<br>");
             }
+            eventAnnouncements.setText(Html.fromHtml(announcementsText.toString(), Html.FROM_HTML_MODE_COMPACT));
         } else {
-            announcementText.append("No announcements available");
+            eventAnnouncements.setText("No Announcements");
         }
-        eventAnnouncement.setText(announcementText.toString());
+        eventAnnouncements.setHint(null);
+
+        eventMaxAttendees.setText(event.getMaxAttendees() != null ? String.valueOf(event.getMaxAttendees()) : "N/A");
     }
+
 
 }

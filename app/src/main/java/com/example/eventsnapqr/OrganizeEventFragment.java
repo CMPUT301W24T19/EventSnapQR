@@ -7,8 +7,19 @@ import android.app.TimePickerDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Shader;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.LevelListDrawable;
 import android.Manifest;
 import android.graphics.ImageDecoder;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +28,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -25,12 +37,15 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.zxing.Binarizer;
@@ -55,6 +70,7 @@ import java.text.SimpleDateFormat;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
+
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
@@ -77,7 +93,9 @@ public class OrganizeEventFragment extends Fragment {
     private TextInputEditText editTextStartTime;
     private TextInputEditText editTextEndDate;
     private TextInputEditText editTextEndTime;
-    private Button uploadPosterButton;
+    private TextInputEditText uploadPosterButton;
+    private TextInputEditText locationButton;
+    private TextInputLayout posterBox;
     private Button reuseQRButton;
     private String androidID;
     private FirebaseController firebaseController = new FirebaseController();
@@ -114,8 +132,11 @@ public class OrganizeEventFragment extends Fragment {
         editTextEventName = view.findViewById(R.id.editTextEventName);
         editTextEventDesc = view.findViewById(R.id.edit_text_number);
         editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
-        uploadPosterButton = view.findViewById(R.id.buttonUploadPoster);
         reuseQRButton = view.findViewById(R.id.buttonReuseQR);
+        uploadPosterButton = view.findViewById(R.id.editTextPoster);
+        posterBox = view.findViewById(R.id.posterInput);
+
+        locationButton = view.findViewById(R.id.editTextLocation);
 
         // set up date and time picker dialogs
         editTextStartDate = view.findViewById(R.id.editTextStartDate);
@@ -134,15 +155,67 @@ public class OrganizeEventFragment extends Fragment {
 
         ActivityResultLauncher<PickVisualMediaRequest> choosePoster =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-                    // Callback is invoked after the user selects a media item or closes the
-                    // photo picker.
                     if (uri != null) {
-                        Log.d("TAG", "Selected URI: " + uri);
-                        imageUri = uri;
+                        try {
+                            InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
+                            Bitmap originalBitmap = BitmapFactory.decodeStream(inputStream);
+                            float scaleWidth = uploadPosterButton.getWidth() / (float) originalBitmap.getWidth();
+                            float scaleHeight = uploadPosterButton.getHeight() / (float) originalBitmap.getHeight();
+                            Matrix matrix = new Matrix();
+                            matrix.setScale(scaleWidth, scaleHeight);
+                            BitmapShader shader = new BitmapShader(originalBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+                            shader.setLocalMatrix(matrix);
+                            ShapeDrawable shapeDrawable = new ShapeDrawable(new RoundRectShape(new float[] {
+                                    50, 50, 50, 50, 50, 50, 50, 50 }, null, null));
+                            shapeDrawable.getPaint().setShader(shader);
+                            int shapeDrawableWidth = Math.min(uploadPosterButton.getWidth(), uploadPosterButton.getWidth());
+                            int shapeDrawableHeight = Math.min(uploadPosterButton.getHeight(), uploadPosterButton.getHeight());
+                            shapeDrawable.setBounds(0, 0, shapeDrawableWidth, shapeDrawableHeight);
+                            uploadPosterButton.setBackground(shapeDrawable);
+                            posterBox.setStartIconDrawable(null);
+                            posterBox.setHint(null);
+                            posterBox.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_NONE);
+                            posterBox.setBackground(shapeDrawable);
+                            
+
+                            // Create a rounded corner drawable
+                            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), originalBitmap);
+                            roundedBitmapDrawable.setCornerRadius(getResources().getDimension(R.dimen.corner_radius));
+                            roundedBitmapDrawable.setAntiAlias(true);
+
+                            // Set drawable bounds based on button dimensions after layout
+                            ViewTreeObserver vto = uploadPosterButton.getViewTreeObserver();
+                            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    uploadPosterButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                                    int buttonWidth = uploadPosterButton.getWidth();
+                                    int buttonHeight = uploadPosterButton.getHeight();
+                                    Log.d("TAG", "Button dimensions: " + buttonWidth + "x" + buttonHeight);
+                                    roundedBitmapDrawable.setBounds(0, 0, buttonWidth, buttonHeight);
+
+                                    uploadPosterButton.setBackground(roundedBitmapDrawable);
+                                    uploadPosterButton.setHint(null);
+
+                                    Drawable backgroundDrawable = uploadPosterButton.getBackground();
+                                    if (backgroundDrawable != null) {
+                                        Log.d("TAG", "Background Drawable set: " + backgroundDrawable.toString());
+                                    } else {
+                                        Log.d("TAG", "Background Drawable is null");
+                                    }
+                                }
+                            });
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
                     } else {
                         Log.d("TAG", "No media selected");
                     }
                 });
+
+
+
 
         /**
          * Credits: https://stackoverflow.com/questions/55427308/scaning-qrcode-from-image-not-from-camera-using-zxing
@@ -319,14 +392,11 @@ public class OrganizeEventFragment extends Fragment {
 
         Date startDateTime;
         Date endDateTime;
-        DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm");
-        //DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
-        try {
 
-            startDateTime = dateFormat.parse(eventStartDate + " " +eventStartTime);
-            //startDateTime = dateFormat.parse(eventStartDate);
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy" + " hh:mm");
+        try {
+            startDateTime = dateFormat.parse(eventStartDate + " " + eventStartTime);
             endDateTime = dateFormat.parse(eventEndDate + " " + eventEndTime);
-            //endDateTime = dateFormat.parse(eventEndDate);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
