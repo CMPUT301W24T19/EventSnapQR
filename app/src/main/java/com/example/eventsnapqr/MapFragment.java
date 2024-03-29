@@ -17,15 +17,18 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
 
 public class MapFragment extends Fragment {
 
     private MapView mapView;
     private String eventName;
+    private Location lastLocation;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,10 +73,26 @@ public class MapFragment extends Fragment {
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+                if (lastLocation != null) {
+                    // Remove previous marker
+                    mapView.getOverlays().clear();
+                }
+
+                lastLocation = location;
                 // Update map's center to the current location
-                mapView.getController().setCenter(new GeoPoint(location.getLatitude(), location.getLongitude()));
-                mapView.getController().setZoom(12.0); // Set an initial zoom level
-                locationManager.removeUpdates(this); // Stop further location updates
+                IMapController mapController = mapView.getController();
+                mapController.setCenter(new GeoPoint(location.getLatitude(), location.getLongitude()));
+                mapController.setZoom(18.0); // Set an initial zoom level
+
+                // Add marker for current location
+                Marker marker = new Marker(mapView);
+                marker.setPosition(new GeoPoint(location.getLatitude(), location.getLongitude()));
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                marker.setTitle("Current Location");
+                marker.setSnippet(String.format("(%.6f, %.6f)", location.getLatitude(), location.getLongitude()));
+                mapView.getOverlays().add(marker);
+
+                mapView.invalidate(); // Refresh the map view
             }
 
             @Override
@@ -110,6 +129,4 @@ public class MapFragment extends Fragment {
         super.onPause();
         mapView.onPause();
     }
-
-
 }
