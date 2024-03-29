@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -95,6 +96,7 @@ public class OrganizeEventFragment extends Fragment {
     private TextInputEditText editTextEndTime;
     private TextInputEditText uploadPosterButton;
     private TextInputEditText locationButton;
+    private TextView removePosterTextView;
     private TextInputLayout posterBox;
     private Button reuseQRButton;
     private String androidID;
@@ -135,7 +137,7 @@ public class OrganizeEventFragment extends Fragment {
         reuseQRButton = view.findViewById(R.id.buttonReuseQR);
         uploadPosterButton = view.findViewById(R.id.editTextPoster);
         posterBox = view.findViewById(R.id.posterInput);
-
+        removePosterTextView = view.findViewById(R.id.removePosterTextView);
         locationButton = view.findViewById(R.id.editTextLocation);
 
         // set up date and time picker dialogs
@@ -152,6 +154,21 @@ public class OrganizeEventFragment extends Fragment {
         editTextEndTime.setOnClickListener(v -> showTimePickerDialog(editTextEndTime));
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         requestLocation();
+
+        removePosterTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadPosterButton.setText("");
+                removePosterTextView.setVisibility(View.INVISIBLE);
+                posterBox.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
+                posterBox.setStartIconDrawable(android.R.drawable.ic_menu_upload);
+                posterBox.setBackground(null);
+                posterBox.setHint("Upload Poster");
+                imageUri = null;
+                uriString = null;
+            }
+        });
+
 
         ActivityResultLauncher<PickVisualMediaRequest> choosePoster =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
@@ -171,19 +188,17 @@ public class OrganizeEventFragment extends Fragment {
                             int shapeDrawableWidth = Math.min(uploadPosterButton.getWidth(), uploadPosterButton.getWidth());
                             int shapeDrawableHeight = Math.min(uploadPosterButton.getHeight(), uploadPosterButton.getHeight());
                             shapeDrawable.setBounds(0, 0, shapeDrawableWidth, shapeDrawableHeight);
+                            removePosterTextView.setVisibility(View.VISIBLE);
                             uploadPosterButton.setBackground(shapeDrawable);
                             posterBox.setStartIconDrawable(null);
                             posterBox.setHint(null);
                             posterBox.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_NONE);
                             posterBox.setBackground(shapeDrawable);
-                            
 
-                            // Create a rounded corner drawable
                             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), originalBitmap);
                             roundedBitmapDrawable.setCornerRadius(getResources().getDimension(R.dimen.corner_radius));
                             roundedBitmapDrawable.setAntiAlias(true);
 
-                            // Set drawable bounds based on button dimensions after layout
                             ViewTreeObserver vto = uploadPosterButton.getViewTreeObserver();
                             vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                                 @Override
@@ -197,6 +212,7 @@ public class OrganizeEventFragment extends Fragment {
 
                                     uploadPosterButton.setBackground(roundedBitmapDrawable);
                                     uploadPosterButton.setHint(null);
+                                    removePosterTextView.setVisibility(View.VISIBLE);
 
                                     Drawable backgroundDrawable = uploadPosterButton.getBackground();
                                     if (backgroundDrawable != null) {
@@ -214,9 +230,6 @@ public class OrganizeEventFragment extends Fragment {
                         Log.d("TAG", "No media selected");
                     }
                 });
-
-
-
 
         /**
          * Credits: https://stackoverflow.com/questions/55427308/scaning-qrcode-from-image-not-from-camera-using-zxing
