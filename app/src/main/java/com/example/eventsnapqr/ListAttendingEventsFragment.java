@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -42,10 +43,12 @@ public class ListAttendingEventsFragment extends Fragment {
      * fetch all the events that the given user is attending
      * @param userId
      */
-    private void loadAttendingEvents(String userId) {
+    private void loadAttendingEvents(String userId, ProgressBar loadingProgressBar) {
+        loadingProgressBar.setVisibility(View.VISIBLE);
         db.collection("users").document(userId).collection("promisedEvents")
                 .get()
                 .addOnCompleteListener(task -> {
+                    loadingProgressBar.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
                         attendEventNames.clear(); // Clear existing items
                         for (QueryDocumentSnapshot document : task.getResult()) {
@@ -86,6 +89,7 @@ public class ListAttendingEventsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_browse_events, container, false);
 
+        ProgressBar loadingProgressBar = view.findViewById(R.id.loadingProgressBar);
         eventListView = view.findViewById(R.id.events);
         attendEventNames = new ArrayList<>();
         attendEventIds = new ArrayList<>();
@@ -93,7 +97,7 @@ public class ListAttendingEventsFragment extends Fragment {
         eventListView.setAdapter(attendEventAdapter);
         userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         db = FirebaseFirestore.getInstance();
-        loadAttendingEvents(userId);
+        loadAttendingEvents(userId, loadingProgressBar);
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
             String eventId = attendEventIds.get(position);
