@@ -456,7 +456,7 @@ public class FirebaseController {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "CHANNEL_ID_NOTIFICATION");
         builder.setContentTitle("Notification from " + event.getEventName())
                 .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setContentText(announcement)
                 .setSmallIcon(R.drawable.baseline_notifications_24).setContentIntent(pendingIntent);
 
