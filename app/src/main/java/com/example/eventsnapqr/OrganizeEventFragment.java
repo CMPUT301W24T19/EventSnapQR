@@ -108,6 +108,7 @@ public class OrganizeEventFragment extends Fragment {
 
     private double latitude = 0.0;
     private double longitude = 0.0;
+    private boolean eventCreated = false;
 
 
     /**
@@ -294,7 +295,8 @@ public class OrganizeEventFragment extends Fragment {
 
         backButton.setOnClickListener(v -> navigateToMainPageFragment());
         createEventButton.setOnClickListener(v -> {
-            if (validateInput()) {
+            if (validateInput() && !eventCreated) {
+                eventCreated = true;
                 createEvent();
             }
         });
