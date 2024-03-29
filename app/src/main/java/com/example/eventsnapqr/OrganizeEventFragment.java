@@ -7,11 +7,19 @@ import android.app.TimePickerDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Shader;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.LevelListDrawable;
 import android.Manifest;
 import android.graphics.ImageDecoder;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -151,6 +159,24 @@ public class OrganizeEventFragment extends Fragment {
                         try {
                             InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
                             Bitmap originalBitmap = BitmapFactory.decodeStream(inputStream);
+                            float scaleWidth = uploadPosterButton.getWidth() / (float) originalBitmap.getWidth();
+                            float scaleHeight = uploadPosterButton.getHeight() / (float) originalBitmap.getHeight();
+                            Matrix matrix = new Matrix();
+                            matrix.setScale(scaleWidth, scaleHeight);
+                            BitmapShader shader = new BitmapShader(originalBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+                            shader.setLocalMatrix(matrix);
+                            ShapeDrawable shapeDrawable = new ShapeDrawable(new RoundRectShape(new float[] {
+                                    50, 50, 50, 50, 50, 50, 50, 50 }, null, null));
+                            shapeDrawable.getPaint().setShader(shader);
+                            int shapeDrawableWidth = Math.min(uploadPosterButton.getWidth(), uploadPosterButton.getWidth());
+                            int shapeDrawableHeight = Math.min(uploadPosterButton.getHeight(), uploadPosterButton.getHeight());
+                            shapeDrawable.setBounds(0, 0, shapeDrawableWidth, shapeDrawableHeight);
+                            uploadPosterButton.setBackground(shapeDrawable);
+                            posterBox.setStartIconDrawable(null);
+                            posterBox.setHint(null);
+                            posterBox.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_NONE);
+                            posterBox.setBackground(shapeDrawable);
+                            
 
                             // Create a rounded corner drawable
                             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), originalBitmap);
