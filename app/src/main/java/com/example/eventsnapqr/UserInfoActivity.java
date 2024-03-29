@@ -1,23 +1,15 @@
 package com.example.eventsnapqr;
 import android.Manifest;
 
-import static java.security.AccessController.getContext;
-
-import android.content.ContentResolver;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -25,25 +17,17 @@ import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 //import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
-
-import androidmads.library.qrgenearator.QRGContents;
-import androidmads.library.qrgenearator.QRGEncoder;
 
 
 /**
@@ -102,10 +86,10 @@ public class UserInfoActivity extends AppCompatActivity {
         buttonAddImage = findViewById(R.id.upload_profile_button);
         buttonRemoveImage = findViewById(R.id.delete_profile_button);
         profilePictureImage = findViewById(R.id.iv_profile_pic);
-        userName = findViewById(R.id.editTextName);
-        email = findViewById(R.id.editTextEmail);
-        phoneNumber = findViewById(R.id.editTextNumber);
-        homepage = findViewById(R.id.editTextHomepage);
+        userName = findViewById(R.id.editTextOrganizerName);
+        email = findViewById(R.id.editTextDescription);
+        phoneNumber = findViewById(R.id.editTextStartDateTime);
+        homepage = findViewById(R.id.editTextEndDateTime);
         saveButton = findViewById(R.id.saveButton);
         editButton = findViewById(R.id.button_edit_profile_button);
         locationSwitch = findViewById(R.id.switchLocation);

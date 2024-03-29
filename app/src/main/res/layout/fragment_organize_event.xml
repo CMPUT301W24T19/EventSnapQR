@@ -54,7 +54,7 @@
                 app:boxStrokeColor="@color/black"
                 app:boxStrokeWidth="2dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/textInputNumber"
+                app:layout_constraintEnd_toEndOf="@id/textInputStartDateTime"
                 app:layout_constraintTop_toTopOf="parent"
                 android:clickable="true"
                 android:focusable="true"
@@ -79,7 +79,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:id="@+id/textInputName"
+                android:id="@+id/textInputOrganizer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -92,7 +92,7 @@
                 app:endIconMode="clear_text"
                 app:helperTextTextColor="@color/red"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/textInputNumber"
+                app:layout_constraintEnd_toEndOf="@id/textInputStartDateTime"
                 app:layout_constraintTop_toBottomOf="@id/posterInput">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -105,7 +105,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:id="@+id/textInputNumber"
+                android:id="@+id/textInputStartDateTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
@@ -121,7 +121,7 @@
                 app:helperTextTextColor="@color/red"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textInputName">
+                app:layout_constraintTop_toBottomOf="@id/textInputOrganizer">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_text_number"
@@ -149,7 +149,7 @@
                 app:helperTextTextColor="@color/red"
                 app:layout_constraintEnd_toStartOf="@+id/inputTextStartTime"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textInputNumber">
+                app:layout_constraintTop_toBottomOf="@id/textInputStartDateTime">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextStartDate"
@@ -179,7 +179,7 @@
                 app:helperTextTextColor="@color/red"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/inputTextStartDate"
-                app:layout_constraintTop_toBottomOf="@id/textInputNumber">
+                app:layout_constraintTop_toBottomOf="@id/textInputStartDateTime">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextStartTime"
