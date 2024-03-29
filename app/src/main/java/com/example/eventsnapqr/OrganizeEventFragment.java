@@ -437,7 +437,7 @@ public class OrganizeEventFragment extends Fragment {
                             userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                 imageUri = uri;
                                 uriString = imageUri.toString();
-                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, true, latitude, longitude);
+                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, true);
                                 Log.d("USER NAME", newEvent.getOrganizer().getName());
                                 firebaseController.addEvent(newEvent);
                                 bundle.putString("destination", "main");
@@ -453,9 +453,7 @@ public class OrganizeEventFragment extends Fragment {
                         });
                     } else {
                         uriString = null;
-                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, true, latitude, longitude);
-                        newEvent.setLatitude(latitude);
-                        newEvent.setLongitude(longitude);
+                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, true);
                         Log.d("USER NAME", " "+newEvent.getOrganizer().getName());
 
                         firebaseController.addEvent(newEvent);

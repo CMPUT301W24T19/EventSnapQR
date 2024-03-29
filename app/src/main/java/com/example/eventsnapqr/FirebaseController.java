@@ -395,8 +395,6 @@ public class FirebaseController {
         eventData.put("startDateTime", event.getEventStartDateTime());
         eventData.put("endDateTime", event.getEventEndDateTime());
         eventData.put("active", event.isActive());
-        eventData.put("latitude", event.getLatitude());
-        eventData.put("longitude", event.getLongitude());
 
         if (event.getPosterURI() != null) {
             eventData.put("posterURI", event.getPosterURI());
@@ -648,7 +646,7 @@ public class FirebaseController {
                                         @Override
                                         public void onUserRetrieved(User user) {
                                             if (user != null) {
-                                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, active, latitude, longitude);
+                                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, active);
                                                 event.setAnnouncements(announcements); // Set the announcements list with messages
                                                 listener.onEventRetrieved(event);
                                             } else {

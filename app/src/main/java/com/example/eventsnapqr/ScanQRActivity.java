@@ -81,14 +81,14 @@ public class ScanQRActivity extends AppCompatActivity {
      * @param eventId identifier of the given event
      */
     private void notSignedUpDialog(String eventId) {
-        if (!isFinishing()) { // Check if activity is finishing or destroyed
+        if (!isFinishing()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
             builder.setTitle("Not Signed-Up for Event")
                     .setPositiveButton("View Event Details", (dialog, which) -> {
                         NavController navController = Navigation.findNavController(ScanQRActivity.this, R.id.nav_host_fragment);
                         Bundle bundle = new Bundle();
                         bundle.putString("eventId", eventId);
-                        // navController.navigate(R.id.eventDetailsFragment, bundle);
+                        navController.navigate(R.id.eventDetailsFragment, bundle);
                     })
                     .setNegativeButton("Return", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
@@ -131,7 +131,6 @@ public class ScanQRActivity extends AppCompatActivity {
                                     .setOnDismissListener(new DialogInterface.OnDismissListener() {
                                         @Override
                                         public void onDismiss(DialogInterface dialog) {
-                                            // Finish activity if dialog is dismissed without button press
                                             finish();
                                         }
                                     });
@@ -147,7 +146,6 @@ public class ScanQRActivity extends AppCompatActivity {
                                     .setOnDismissListener(new DialogInterface.OnDismissListener() {
                                         @Override
                                         public void onDismiss(DialogInterface dialog) {
-                                            // finish activity if dialog is dismissed without button press
                                             finish();
                                         }
                                     });
@@ -216,13 +214,9 @@ public class ScanQRActivity extends AppCompatActivity {
         if (intentResult != null) {
             String contents = intentResult.getContents();
             if (contents != null) {
-                Log.d(TAG, "QR code content: " + contents);
-                String eventId = contents.trim();
+                Log.d(TAG, "QR code content: " + contents); // Log the content of the QR code
 
-                if (eventId.length() != 20) { // NEED TO FIND BETTER WAY TO VERIFY :)
-                    showInvalidQRContentDialog();
-                    return;
-                }
+                String eventId = contents.trim();
 
                 FirebaseController.getInstance().checkUserInAttendees(eventId, userId, new FirebaseController.OnUserInAttendeesListener() {
                     @Override
