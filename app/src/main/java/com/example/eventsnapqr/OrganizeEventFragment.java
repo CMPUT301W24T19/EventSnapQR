@@ -28,6 +28,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -36,6 +37,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -175,6 +178,34 @@ public class OrganizeEventFragment extends Fragment {
                             posterBox.setBackground(shapeDrawable);
                             
 
+                            // Create a rounded corner drawable
+                            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), originalBitmap);
+                            roundedBitmapDrawable.setCornerRadius(getResources().getDimension(R.dimen.corner_radius));
+                            roundedBitmapDrawable.setAntiAlias(true);
+
+                            // Set drawable bounds based on button dimensions after layout
+                            ViewTreeObserver vto = uploadPosterButton.getViewTreeObserver();
+                            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    uploadPosterButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                                    int buttonWidth = uploadPosterButton.getWidth();
+                                    int buttonHeight = uploadPosterButton.getHeight();
+                                    Log.d("TAG", "Button dimensions: " + buttonWidth + "x" + buttonHeight);
+                                    roundedBitmapDrawable.setBounds(0, 0, buttonWidth, buttonHeight);
+
+                                    uploadPosterButton.setBackground(roundedBitmapDrawable);
+                                    uploadPosterButton.setHint(null);
+
+                                    Drawable backgroundDrawable = uploadPosterButton.getBackground();
+                                    if (backgroundDrawable != null) {
+                                        Log.d("TAG", "Background Drawable set: " + backgroundDrawable.toString());
+                                    } else {
+                                        Log.d("TAG", "Background Drawable is null");
+                                    }
+                                }
+                            });
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         }
@@ -182,7 +213,6 @@ public class OrganizeEventFragment extends Fragment {
                         Log.d("TAG", "No media selected");
                     }
                 });
-
 
 
 
