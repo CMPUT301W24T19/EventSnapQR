@@ -219,10 +219,11 @@ public class FirebaseController {
         Task<QuerySnapshot> getMilestones = db.collection("events").document(eventId).collection("milestones").get();
         Task<QuerySnapshot> getAttendees = db.collection("events").document(eventId).collection("attendees").get();
         Task<QuerySnapshot> getPromisedAttendees = db.collection("events").document(eventId).collection("promisedAttendees").get();
+        Task<QuerySnapshot> getAnnouncements = db.collection("events").document(eventId).collection("announcements").get();
 
         Task<QuerySnapshot> getUsersTask = db.collection("users").get();
 
-        Tasks.whenAll(getMilestones, getAttendees, getPromisedAttendees, getUsersTask).addOnSuccessListener(aVoid -> {
+        Tasks.whenAll(getMilestones, getAttendees, getPromisedAttendees, getAnnouncements, getUsersTask).addOnSuccessListener(aVoid -> {
             Log.d("TAG", "Tasks complete and success");
             List<Task<Void>> deletionTasks = new ArrayList<>();
             for (DocumentSnapshot userDoc : getUsersTask.getResult().getDocuments()) {
@@ -243,6 +244,10 @@ public class FirebaseController {
             for (DocumentSnapshot attendeeDoc : getPromisedAttendees.getResult().getDocuments()) {
                 Task<Void> deletePromisedAttendeeTask = db.collection("events").document(eventId).collection("promisedAttendees").document(attendeeDoc.getId()).delete();
                 deletionTasks.add(deletePromisedAttendeeTask);
+            }
+            for (DocumentSnapshot announcementDoc : getAnnouncements.getResult().getDocuments()) {
+                Task<Void> deleteAnnouncementTask = db.collection("events").document(eventId).collection("announcements").document(announcementDoc.getId()).delete();
+                deletionTasks.add(deleteAnnouncementTask);
             }
 
             Tasks.whenAllSuccess(deletionTasks).addOnSuccessListener(tasks -> {
