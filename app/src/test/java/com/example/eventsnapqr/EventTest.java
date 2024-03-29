@@ -21,7 +21,7 @@ public class EventTest {
         Date startDate = new Date();
         Date endDate = new Date();
         Event event = new Event(user, "Good Event", "It's going to be a good event", "www.goodevent.com", 5, "123456", startDate, endDate, true);
-        event.addAnnouncement("This event will begin January 1"); // Add an announcement
+        event.addAnnouncement("This event will begin January 1");
         return event;
     }
 
