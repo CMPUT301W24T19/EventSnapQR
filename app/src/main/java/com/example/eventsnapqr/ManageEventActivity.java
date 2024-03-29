@@ -63,13 +63,14 @@ public class ManageEventActivity extends AppCompatActivity {
     private FirebaseController firebaseController;
     private ListView attendeeListView, milestoneListView;
     private ArrayAdapter<String> eventAdapter, milestoneAdapter;
-    private List<String> attendeeNames, milestoneList, attendeeIds;
+    private List<String> attendeeNames, milestoneList, attendeeIds, checkedInNames, checkedInIds;
     private List<Integer> attendeeCheckedIn;
     private FirebaseFirestore db;
     private String eventId;
     private View menuButton;
     private ImageView backButton;
     private Event currentEvent;
+    private Switch filterSwitch;
     private Uri imageUri;
     private String uriString;
     private TextView totalAttendeesTextView;
@@ -102,6 +103,7 @@ public class ManageEventActivity extends AppCompatActivity {
         backButton = findViewById(R.id.button_back_button);
         totalAttendeesTextView = findViewById(R.id.total_attendees_label);
         totalCheckedInTextView = findViewById(R.id.total_checked_in_label);
+        filterSwitch = findViewById(R.id.filter_switch);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,8 +119,6 @@ public class ManageEventActivity extends AppCompatActivity {
             }
         });
 
-
-        // Retrieve eventId from intent
         if (getIntent() != null) {
             eventId = getIntent().getStringExtra("eventId");
         }
@@ -131,7 +131,7 @@ public class ManageEventActivity extends AppCompatActivity {
                     TextView eventNameTextView = findViewById(R.id.page_name);
                     eventNameTextView.setText(currentEvent.getEventName());
 
-                    fetchAttendeeData();
+                    fetchAttendeeData(true);
                     fetchMilestones();
                 } else {
                     Log.d("ManageEventActivity", "Failed to retrieve event");
@@ -181,11 +181,8 @@ public class ManageEventActivity extends AppCompatActivity {
                 View view = super.getView(position, convertView, parent);
                 TextView attendeeNameTextView = view.findViewById(R.id.attendee_name);
                 ImageView checkMarkImageView = view.findViewById(R.id.checkedIn_image);
-
-                // Set attendee name
                 attendeeNameTextView.setText(attendeeNames.get(position));
 
-                // Show checkmark icon if attendee has checked in more than once
                 if (attendeeCheckedIn.get(position) >= 1) {
                     checkMarkImageView.setVisibility(View.VISIBLE);
                 } else {
@@ -196,8 +193,17 @@ public class ManageEventActivity extends AppCompatActivity {
             }
         };
 
+        filterSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (filterSwitch.isChecked()) {
+                    fetchAttendeeData(false);
+                } else {
+                    fetchAttendeeData(true);
+                }
+            }
+        });
 
-        // Set the adapter for the attendeeListView
         attendeeListView.setAdapter(eventAdapter);
 
         attendeeListView.setOnItemClickListener((parent, view1, position, id) -> attendeeDialog(position));
@@ -223,9 +229,12 @@ public class ManageEventActivity extends AppCompatActivity {
     /**
      * a function to populate the attendees listView
      */
-    private void fetchAttendeeData() {
+    private void fetchAttendeeData(Boolean checkedIn) {
         db = FirebaseFirestore.getInstance();
         CollectionReference attendeesRef = db.collection("events").document(eventId).collection("attendees");
+        attendeeNames.clear();
+        attendeeIds.clear();
+        attendeeCheckedIn.clear();
 
         checkedInCount = 0;
         attendeeCount = 0;
@@ -241,39 +250,42 @@ public class ManageEventActivity extends AppCompatActivity {
                 Long longValue = documentSnapshot.getLong("checkedIn");
                 Integer numCheckIns = longValue != null ? longValue.intValue() : 0;
 
-                DocumentReference checkedInRef = attendeesRef.document(attendeeId).collection("checkedIn").document("check");
-                checkedInRef.get().addOnSuccessListener(checkedInDocumentSnapshot -> {
-                    Log.d("NUMCHECKINS", numCheckIns.toString());
-                    if (numCheckIns > 0) {
-                        checkedInCount++;
-                    }
+                if (checkedIn || numCheckIns > 0) { // Check if checkedIn is true or user is already checked in
+                    DocumentReference checkedInRef = attendeesRef.document(attendeeId).collection("checkedIn").document("check");
+                    checkedInRef.get().addOnSuccessListener(checkedInDocumentSnapshot -> {
+                        if (numCheckIns > 0) {
+                            checkedInCount++;
+                        }
 
-                    firebaseController.getUser(attendeeId, user -> {
-                        if (user != null) {
-                            attendeeNames.add(user.getName());
-                            attendeeIds.add(user.getDeviceID());
-                            attendeeCheckedIn.add(numCheckIns); // Add checked in count
-                            eventAdapter.notifyDataSetChanged();
+                        firebaseController.getUser(attendeeId, user -> {
+                            if (user != null) {
+                                attendeeNames.add(user.getName());
+                                attendeeIds.add(user.getDeviceID());
+                                attendeeCheckedIn.add(numCheckIns); // Add checked in count
+                                eventAdapter.notifyDataSetChanged();
 
-                            // Increment retrieval counter and check if all retrievals are done
-                            if (retrievalCounter.incrementAndGet() == totalAttendees) {
-                                updateTexts();
+                                if (retrievalCounter.incrementAndGet() == totalAttendees) {
+                                    updateTexts();
+                                }
                             }
+                        });
+                    }).addOnFailureListener(e -> {
+                        retrievalCounter.incrementAndGet(); // Increment even on failure to keep track
+                        if (retrievalCounter.get() == totalAttendees) {
+                            updateTexts();
                         }
                     });
-                }).addOnFailureListener(e -> {
-                    // Handle failure
-                    retrievalCounter.incrementAndGet(); // Increment even on failure to keep track
+                } else {
+                    retrievalCounter.incrementAndGet(); // Increment for non-checked-in users
                     if (retrievalCounter.get() == totalAttendees) {
                         updateTexts();
                     }
-                });
+                }
             }
         }).addOnFailureListener(e -> {
             Log.d("FetchAttendeeData", "Error fetching attendee data: " + e.getMessage());
         });
     }
-
 
     private void updateTexts() {
         totalAttendeesTextView.setText("Total Attendees: " + attendeeCount);
