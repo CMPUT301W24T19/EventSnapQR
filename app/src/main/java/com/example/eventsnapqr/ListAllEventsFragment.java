@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -38,9 +39,11 @@ public class ListAllEventsFragment extends Fragment {
     /**
      * retrieve any events that are currently in the database.
      */
-    private void loadEvents() {
+    private void loadEvents(ProgressBar loadingProgressBar) {
+        loadingProgressBar.setVisibility(View.VISIBLE);
         db.collection("events").get()
                 .addOnCompleteListener(task -> {
+                    loadingProgressBar.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
                         eventNames.clear();
                         for (DocumentSnapshot document : task.getResult()) {
@@ -56,6 +59,7 @@ public class ListAllEventsFragment extends Fragment {
                     }
                 });
     }
+
 
     /**
      * Setup actions to be taken upon view creation and when the views are interacted with
@@ -80,7 +84,9 @@ public class ListAllEventsFragment extends Fragment {
         eventAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, eventNames);
         eventListView.setAdapter(eventAdapter);
         db = FirebaseFirestore.getInstance();
-        loadEvents();
+
+        ProgressBar loadingProgressBar = view.findViewById(R.id.loadingProgressBar);
+        loadEvents(loadingProgressBar);
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
             String eventId = eventIds.get(position);
@@ -90,5 +96,6 @@ public class ListAllEventsFragment extends Fragment {
 
         return view;
     }
+
 }
 
