@@ -32,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
  * activity where the QR scanner is implemented using ZXing library
  * the following video was a major help and source for setting up
  * this functionality
+ *
  * https://www.youtube.com/watch?v=bWEt-_z7BOY&ab_channel=EasyOneCoders
  * the view event details after scanning an event you have not signed up
  * for is not currently linked to the event page. planned for project part 4
@@ -215,33 +216,61 @@ public class ScanQRActivity extends AppCompatActivity {
         if (intentResult != null) {
             String contents = intentResult.getContents();
             if (contents != null) {
-                Log.d(TAG, "QR code content: " + contents); // Log the content of the QR code
-                String eventId = contents;
+                Log.d(TAG, "QR code content: " + contents);
+                String eventId = contents.trim();
+
+                if (eventId.length() != 20) { // NEED TO FIND BETTER WAY TO VERIFY :)
+                    showInvalidQRContentDialog();
+                    return;
+                }
+
                 FirebaseController.getInstance().checkUserInAttendees(eventId, userId, new FirebaseController.OnUserInAttendeesListener() {
                     @Override
                     public void onUserInAttendees(boolean isInAttendees) {
                         if (isInAttendees) {
-                            Log.d(TAG, "User is in attendees"); // Log if the user is in attendees
-                            checkIn(eventId); // if the user has signed up
+                            Log.d(TAG, "User is in attendees");
+                            checkIn(eventId);
                         } else {
-                            Log.d(TAG, "User is not in attendees"); // Log if the user is not in attendees
-                            notSignedUpDialog(eventId); // if the user is not in the Attendees
+                            Log.d(TAG, "User is not in attendees");
+                            notSignedUpDialog(eventId);
                         }
                     }
 
                     @Override
                     public void onCheckFailed(Exception e) {
-                        Log.e(TAG, "User in Event attendees check failed: " + e.getMessage()); // Log if there's an error
+                        Log.e(TAG, "User in Event attendees check failed: " + e.getMessage());
+                        showInvalidQRContentDialog();
                     }
                 });
             } else {
                 // case when no QR code was scanned before camera closed
                 Log.d(TAG, "No QR code scanned before camera closed");
-                finish(); // finish the activity if no QR code was scanned before camera closed
+                finish();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
+    /**
+     * Displays a dialog to inform the user about the invalid QR code content.
+     */
+    private void showInvalidQRContentDialog() {
+        if (!isFinishing()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
+            builder.setTitle("Invalid QR Code Content")
+                    .setMessage("The scanned QR code contains an invalid content.")
+                    .setPositiveButton("Scan Another QR Code", (dialog, which) -> {
+                        initQRCodeScanner();
+                    })
+                    .setNegativeButton("Return", (dialog, which) -> {
+                        finish();
+                    })
+                    .setOnDismissListener(dialog -> {
+                        finish();
+                    })
+                    .create()
+                    .show();
+        }
+    }
 }

@@ -100,7 +100,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:id="@+id/textInputOrganizer"
+                    android:id="@+id/textInputEventName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -148,7 +148,7 @@
                     app:helperTextTextColor="@color/red"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textInputOrganizer">
+                    app:layout_constraintTop_toBottomOf="@id/textInputEventName">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextDescription"
