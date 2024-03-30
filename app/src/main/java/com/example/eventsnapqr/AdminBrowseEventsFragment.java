@@ -17,16 +17,13 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 //import androidx.appcompat.app.AlertDialog;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.Firebase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -35,7 +32,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -89,7 +85,7 @@ public class AdminBrowseEventsFragment extends Fragment {
         Task<QuerySnapshot> getEvents = db.collection("events").get();
         Tasks.whenAll(getEvents).addOnCompleteListener(aVoid -> {
             Log.d("TAG", "true");
-            loadEvents(0, getEvents.getResult().getDocuments());
+            filterEvents(0, getEvents.getResult().getDocuments());
         });
 
         FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -213,7 +209,7 @@ public class AdminBrowseEventsFragment extends Fragment {
                 .show();
     }
 
-    private void loadEvents(int curIndex, List<DocumentSnapshot> events) {
+    private void filterEvents(int curIndex, List<DocumentSnapshot> events) {
         if (curIndex == events.size()) {
             loadingProgressBar.setVisibility(View.INVISIBLE);
             backButton.setVisibility(View.VISIBLE);
@@ -223,22 +219,27 @@ public class AdminBrowseEventsFragment extends Fragment {
         }
 
         else {
-            FirebaseController.getInstance().getEvent(events.get(curIndex).getId(), new FirebaseController.OnEventRetrievedListener() {
-                @Override
-                public void onEventRetrieved(Event event) {
-                    Date currentDate = new Date();
-                    if (currentDate.compareTo(event.getEventEndDateTime()) > 0) {
-                        FirebaseController.getInstance().deleteEvent(event, new FirebaseController.FirestoreOperationCallback() {
-                            @Override
-                            public void onCompleted() {
-                                loadEvents(curIndex + 1, events);
+            if (Boolean.TRUE.equals(events.get(curIndex).getBoolean("active"))) {
+                FirebaseController.getInstance().getEvent(events.get(curIndex).getId(), new FirebaseController.OnEventRetrievedListener() {
+                    @Override
+                    public void onEventRetrieved(Event event) {
+                        Date currentDate = new Date();
+                            if (currentDate.compareTo(event.getEventEndDateTime()) > 0) {
+                                FirebaseController.getInstance().deleteEvent(event, new FirebaseController.FirestoreOperationCallback() {
+                                    @Override
+                                    public void onCompleted() {
+                                        filterEvents(curIndex + 1, events);
+                                    }
+                                });
+                            } else {
+                                filterEvents(curIndex + 1, events);
                             }
-                        });
-                    } else {
-                        loadEvents(curIndex + 1, events);
-                    }
-                }
-            });
+                        }
+                    });
+            }
+            else {
+                filterEvents(curIndex + 1, events);
+            }
         }
     }
 }
