@@ -41,6 +41,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -304,13 +305,20 @@ public class ManageEventActivity extends AppCompatActivity {
 
         builder.setMessage(attendeeName + " has checked-in " + timesCheckedIn + " " + timesString + ".")
                 .setPositiveButton("View Profile", (dialog, id) -> {
-                    // lead to fragment_view_user_profile
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.putExtra("fragmentToLoad", "ViewUserProfileFragment");
+                    // Optionally, pass the attendee ID or any other information
+                    intent.putExtra("attendeeId", attendeeIds.get(position));
+                    startActivity(intent);
                 })
                 .setNegativeButton("Remove Attendee", (dialog, id) -> {
                     showDeleteConfirmationDialog(attendeeIds.get(position));
                 });
         builder.create().show();
     }
+
+
+
 
     /**
      * alert dialog used to confirm if the admin wants to delete the event
