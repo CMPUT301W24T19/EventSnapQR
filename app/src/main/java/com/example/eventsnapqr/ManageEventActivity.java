@@ -54,6 +54,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +84,7 @@ public class ManageEventActivity extends AppCompatActivity {
     private ProgressBar loadingProgressBar;
     private TextView eventNameTextView;
     private ExtendedFloatingActionButton fab;
+    private List<HashMap<String, Object>> attendees;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +99,7 @@ public class ManageEventActivity extends AppCompatActivity {
         attendeeNames = new ArrayList<>();
         attendeeIds = new ArrayList<>();
         milestoneList = new ArrayList<>();
+        attendees = new ArrayList<>();
         eventAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, attendeeNames);
         milestoneAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, milestoneList);
         attendeeListView = findViewById(R.id.attendee_list);
@@ -241,6 +244,7 @@ public class ManageEventActivity extends AppCompatActivity {
     private void fetchAttendeeData(Boolean checkedIn) {
         db = FirebaseFirestore.getInstance();
         CollectionReference attendeesRef = db.collection("events").document(eventId).collection("attendees");
+        attendees.clear();
         attendeeNames.clear();
         attendeeIds.clear();
         attendeeCheckedIn.clear();
@@ -251,49 +255,78 @@ public class ManageEventActivity extends AppCompatActivity {
 
         attendeesRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
             int totalAttendees = queryDocumentSnapshots.size();
+            if (totalAttendees != 0) {
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    String attendeeId = documentSnapshot.getId();
 
-            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                String attendeeId = documentSnapshot.getId();
-                attendeeCount++;
+                    Long longValue = documentSnapshot.getLong("checkedIn");
+                    Integer numCheckIns = longValue != null ? longValue.intValue() : 0;
 
-                Long longValue = documentSnapshot.getLong("checkedIn");
-                Integer numCheckIns = longValue != null ? longValue.intValue() : 0;
-
-                if (checkedIn || numCheckIns > 0) { // Check if checkedIn is true or user is already checked in
-                    DocumentReference checkedInRef = attendeesRef.document(attendeeId).collection("checkedIn").document("check");
-                    checkedInRef.get().addOnSuccessListener(checkedInDocumentSnapshot -> {
-                        if (numCheckIns > 0) {
-                            checkedInCount++;
-                        }
-
-                        firebaseController.getUser(attendeeId, user -> {
-                            if (user != null) {
-                                attendeeNames.add(user.getName());
-                                attendeeIds.add(user.getDeviceID());
-                                attendeeCheckedIn.add(numCheckIns); // Add checked in count
-                                eventAdapter.notifyDataSetChanged();
-
-                                if (retrievalCounter.incrementAndGet() == totalAttendees) {
-                                    updateTexts();
-                                    fetchMilestones();
+                    Log.d("TAG", "true");
+                    if (checkedIn || numCheckIns > 0) { // Check if checkedIn is true or user is already checked in
+                        DocumentReference checkedInRef = attendeesRef.document(attendeeId).collection("checkedIn").document("check");
+                        checkedInRef.get().addOnSuccessListener(checkedInDocumentSnapshot -> {
+                            if (numCheckIns > 0) {
+                                checkedInCount++;
+                            }
+                            firebaseController.getUser(attendeeId, user -> {
+                                if (user != null) {
+                                    HashMap<String, Object> attendeeData = new HashMap<>();
+                                    attendeeData.put("name", user.getName());
+                                    attendeeData.put("id", user.getDeviceID());
+                                    attendeeData.put("checkedIn", numCheckIns);
+                                    attendees.add(attendeeData);
+                                    //attendeeNames.add(user.getName());
+                                    //attendeeIds.add(user.getDeviceID());
+                                    //attendeeCheckedIn.add(numCheckIns); // Add checked in count
+                                    eventAdapter.notifyDataSetChanged();
+                                    if (retrievalCounter.incrementAndGet() == totalAttendees) {
+                                        updateTexts();
+                                        attendees.sort(new Comparator<HashMap<String, Object>>() {
+                                            @Override
+                                            public int compare(HashMap<String, Object> o1, HashMap<String, Object> o2) {
+                                                String user1 = (String) o1.get("name");
+                                                user1 = user1.toLowerCase();
+                                                String user2 = (String) o2.get("name");
+                                                user2 = user2.toLowerCase();
+                                                return user1.compareTo(user2);
+                                            }
+                                        });
+                                        for (HashMap<String, Object> attendee : attendees) {
+                                            attendeeNames.add((String) attendee.get("name"));
+                                            attendeeIds.add((String) attendee.get("id"));
+                                            attendeeCheckedIn.add((Integer) attendee.get("checkedIn"));
+                                        }
+                                        eventAdapter.notifyDataSetChanged();
+                                        fetchMilestones();
+                                    }
                                 }
+                            });
+                        }).addOnFailureListener(e -> {
+                            Log.d("TAG", "true1");
+                            retrievalCounter.incrementAndGet(); // Increment even on failure to keep track
+                            if (retrievalCounter.get() == totalAttendees) {
+                                updateTexts();
+                                fetchMilestones();
                             }
                         });
-                    }).addOnFailureListener(e -> {
-                        retrievalCounter.incrementAndGet(); // Increment even on failure to keep track
+                    } else {
+                        Log.d("TAG", "true2");
+                        retrievalCounter.incrementAndGet(); // Increment for non-checked-in users
                         if (retrievalCounter.get() == totalAttendees) {
                             updateTexts();
+                            fetchMilestones();
                         }
-                    });
-                } else {
-                    retrievalCounter.incrementAndGet(); // Increment for non-checked-in users
-                    if (retrievalCounter.get() == totalAttendees) {
-                        updateTexts();
                     }
                 }
             }
+            else {
+                fetchMilestones();
+            }
         }).addOnFailureListener(e -> {
+            Log.d("TAG", "true3");
             Log.d("FetchAttendeeData", "Error fetching attendee data: " + e.getMessage());
+            fetchMilestones();
         });
     }
 
