@@ -227,6 +227,10 @@ public class UserInfoActivity extends AppCompatActivity {
                         Toast.makeText(UserInfoActivity.this, "Information successfully updated!", Toast.LENGTH_SHORT).show();
                         editMode = false;
                         saveButton.setVisibility(View.INVISIBLE);
+                        userName.setFocusable(false);
+                        email.setFocusable(false);
+                        phoneNumber.setFocusable(false);
+                        homepage.setFocusable(false);
                     }
                 });
             }

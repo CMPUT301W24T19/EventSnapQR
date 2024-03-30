@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onUserExistenceChecked(boolean exists) {
                 if (!exists) {
-                    User newUser = new User("user_" + androidId, androidId);
+                    User newUser = new User(androidId, androidId);
                     FirebaseController.getInstance().addUser(newUser);
                 }
             }
