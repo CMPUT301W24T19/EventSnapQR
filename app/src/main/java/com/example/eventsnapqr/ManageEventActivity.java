@@ -17,6 +17,7 @@ import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.Toast;
 import android.net.Uri;
@@ -78,6 +79,9 @@ public class ManageEventActivity extends AppCompatActivity {
     private ActivityResultLauncher<PickVisualMediaRequest> choosePoster;
     private int checkedInCount;
     private int attendeeCount;
+    private ProgressBar loadingProgressBar;
+    private TextView eventNameTextView;
+    private ExtendedFloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +108,9 @@ public class ManageEventActivity extends AppCompatActivity {
         totalAttendeesTextView = findViewById(R.id.total_attendees_label);
         totalCheckedInTextView = findViewById(R.id.total_checked_in_label);
         filterSwitch = findViewById(R.id.filter_switch);
+        loadingProgressBar = findViewById(R.id.loadingProgressBar);
+        eventNameTextView = findViewById(R.id.page_name);
+        fab = findViewById(R.id.make_announcements_fab);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,16 +130,25 @@ public class ManageEventActivity extends AppCompatActivity {
             eventId = getIntent().getStringExtra("eventId");
         }
 
+        loadingProgressBar.setVisibility(View.VISIBLE);
+        attendeeListView.setVisibility(View.INVISIBLE);
+        milestoneListView.setVisibility(View.INVISIBLE);
+        menuButton.setVisibility(View.INVISIBLE);
+        backButton.setVisibility(View.INVISIBLE);
+        filterSwitch.setVisibility(View.INVISIBLE);
+        totalAttendeesTextView.setVisibility(View.INVISIBLE);
+        totalCheckedInTextView.setVisibility(View.INVISIBLE);
+        eventNameTextView.setVisibility(View.INVISIBLE);
+        fab.setVisibility(View.INVISIBLE);
+
         firebaseController.getEvent(eventId, new FirebaseController.OnEventRetrievedListener() {
             @Override
             public void onEventRetrieved(Event event) {
                 if (event != null) {
                     currentEvent = event;
-                    TextView eventNameTextView = findViewById(R.id.page_name);
                     eventNameTextView.setText(currentEvent.getEventName());
 
                     fetchAttendeeData(true);
-                    fetchMilestones();
                 } else {
                     Log.d("ManageEventActivity", "Failed to retrieve event");
                 }
@@ -140,6 +156,7 @@ public class ManageEventActivity extends AppCompatActivity {
         });
 
         db = FirebaseFirestore.getInstance();
+        /*
         if (eventId != null) {
             DocumentReference eventDocRef = db.collection("events").document(eventId);
             eventDocRef.get().addOnSuccessListener(documentSnapshot -> {
@@ -153,7 +170,7 @@ public class ManageEventActivity extends AppCompatActivity {
             }).addOnFailureListener(e -> {
                 Log.d("ManageEventActivity", "Error fetching event data: " + e.getMessage());
             });
-        }
+        }*/
 
         // Set up the activity result launcher for choosing a poster
         choosePoster = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
@@ -166,7 +183,6 @@ public class ManageEventActivity extends AppCompatActivity {
             }
         });
 
-        ExtendedFloatingActionButton fab = findViewById(R.id.make_announcements_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -216,6 +232,16 @@ public class ManageEventActivity extends AppCompatActivity {
             @Override
             public void onMilestonesLoaded(List<String> milestones) {
                 processMilestones(milestones);
+                loadingProgressBar.setVisibility(View.INVISIBLE);
+                attendeeListView.setVisibility(View.VISIBLE);
+                milestoneListView.setVisibility(View.VISIBLE);
+                menuButton.setVisibility(View.VISIBLE);
+                backButton.setVisibility(View.VISIBLE);
+                filterSwitch.setVisibility(View.VISIBLE);
+                totalAttendeesTextView.setVisibility(View.VISIBLE);
+                totalCheckedInTextView.setVisibility(View.VISIBLE);
+                eventNameTextView.setVisibility(View.VISIBLE);
+                fab.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -266,6 +292,7 @@ public class ManageEventActivity extends AppCompatActivity {
 
                                 if (retrievalCounter.incrementAndGet() == totalAttendees) {
                                     updateTexts();
+                                    fetchMilestones();
                                 }
                             }
                         });
