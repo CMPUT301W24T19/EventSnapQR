@@ -34,6 +34,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        String fragmentToLoad = getIntent().getStringExtra("fragmentToLoad");
+        if ("ViewUserProfileFragment".equals(fragmentToLoad)) {
+            // Retrieve additional data if needed
+            String attendeeId = getIntent().getStringExtra("attendeeId");
+            NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+            Bundle bundle = new Bundle();
+            bundle.putString("attendeeId", attendeeId);
+            navController.navigate(R.id.action_global_viewUserProfileFragment, bundle);
+            // Clear the intent to prevent reloading the fragment on subsequent activity restarts
+            getIntent().removeExtra("fragmentToLoad");
+            getIntent().removeExtra("attendeeId");
+        }
         FirebaseController.checkUserExists(androidId, listener);
         FirebaseController firebaseController = new FirebaseController();
         FirebaseController.AttendeeCheckCallback attendeeCheckCallback = new FirebaseController.AttendeeCheckCallback() {
