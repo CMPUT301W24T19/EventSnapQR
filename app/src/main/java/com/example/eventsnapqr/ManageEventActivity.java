@@ -156,23 +156,6 @@ public class ManageEventActivity extends AppCompatActivity {
             }
         });
 
-        db = FirebaseFirestore.getInstance();
-        /*
-        if (eventId != null) {
-            DocumentReference eventDocRef = db.collection("events").document(eventId);
-            eventDocRef.get().addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()) {
-                    String eventName = documentSnapshot.getString("eventName");
-                    TextView eventNameTextView = findViewById(R.id.page_name);
-                    eventNameTextView.setText(eventName);
-                } else {
-                    Log.d("ManageEventActivity", "No such document");
-                }
-            }).addOnFailureListener(e -> {
-                Log.d("ManageEventActivity", "Error fetching event data: " + e.getMessage());
-            });
-        }*/
-
         // Set up the activity result launcher for choosing a poster
         choosePoster = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
             if (uri != null) {
@@ -222,7 +205,6 @@ public class ManageEventActivity extends AppCompatActivity {
         });
 
         attendeeListView.setAdapter(eventAdapter);
-
         attendeeListView.setOnItemClickListener((parent, view1, position, id) -> attendeeDialog(position));
         updateTexts();
     }
