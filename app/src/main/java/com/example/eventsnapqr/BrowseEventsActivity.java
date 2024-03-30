@@ -1,5 +1,6 @@
 package com.example.eventsnapqr;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -15,7 +16,7 @@ public class BrowseEventsActivity extends AppCompatActivity {
     private ViewPager2 fullscreenViewPager;
     private TabLayout tabLayout;
     private Integer position;
-
+    private String eventId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,10 +76,16 @@ public class BrowseEventsActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                if(eventId == null){
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                }
+                else{
+                    finish();
+                }
             }
         });
-        String eventId = getIntent().getStringExtra("eventID"); // for when user enters activity from notification click
+        eventId = getIntent().getStringExtra("eventID"); // for when user enters activity from notification click
         if(eventId != null){
             switchToFullscreenDetails(eventId);
         }

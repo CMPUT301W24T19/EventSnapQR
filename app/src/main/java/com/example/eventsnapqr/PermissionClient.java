@@ -63,7 +63,6 @@ public class PermissionClient {
     private void permissionRationale(Activity activity, int requestCode, String[] permissions, String deniedPermission){
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity, deniedPermission)) {
             showMessageOKCancel("Please allow access to the permissions", new DialogInterface.OnClickListener() {
-
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     askPermissions(activity, permissions, requestCode);
@@ -72,7 +71,6 @@ public class PermissionClient {
 
         }
     }
-
     private void showMessageOKCancel(String msg, DialogInterface.OnClickListener onClickListener) {
         new AlertDialog.Builder(context)
                 .setMessage(msg)
@@ -81,6 +79,4 @@ public class PermissionClient {
                 .create()
                 .show();
     }
-
-
 }
