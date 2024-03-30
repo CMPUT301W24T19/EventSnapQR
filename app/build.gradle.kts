@@ -50,11 +50,13 @@ allprojects {
 }
 
 dependencies {
-    implementation("com.google.android.gms:play-services-location:20.0.0")
+    implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation("androidx.work:work-runtime:2.9.0")
     implementation("androidx.concurrent:concurrent-listenablefuture:1.0.0-beta01")
     implementation("de.hdodenhof:circleimageview:3.1.0")
     implementation("androidx.cardview:cardview:1.0.0")
+    implementation("org.testng:testng:7.9.0")
+
     androidTestImplementation("androidx.fragment:fragment-testing:1.6.2")
     androidTestImplementation("com.android.support.test:runner:1.0.2")
     androidTestImplementation("com.android.support.test:rules:1.0.2")
@@ -66,7 +68,7 @@ dependencies {
     androidTestImplementation("com.android.support.test.espresso:espresso-contrib:3.0.2")
     androidTestImplementation("com.android.support.test.espresso:espresso-idling-resource:3.0.2")
     androidTestImplementation("com.google.firebase:firebase-storage:20.3.0")
-    androidTestImplementation(platform("com.google.firebase:firebase-bom:32.7.3"))
+    androidTestImplementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     androidTestImplementation("com.google.firebase:firebase-firestore")
     androidTestImplementation("com.firebaseui:firebase-ui-storage:8.0.2")
     androidTestImplementation("com.google.firebase:firebase-database:20.3.1")
@@ -83,17 +85,17 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
 
     implementation ("org.osmdroid:osmdroid-android:6.1.18")
-    implementation("com.google.android.gms:play-services-location:18.0.0")
+    implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation ("org.osmdroid:osmdroid-mapsforge:6.1.18") 
 
     implementation("com.firebaseui:firebase-ui-storage:8.0.2")
     implementation("com.google.firebase:firebase-storage:20.3.0")
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
-    implementation("androidx.camera:camera-camera2:1.3.1")
-    implementation("androidx.camera:camera-lifecycle:1.3.1")
-    implementation("androidx.camera:camera-view:1.3.1")
+    implementation("androidx.camera:camera-camera2:1.3.2")
+    implementation("androidx.camera:camera-lifecycle:1.3.2")
+    implementation("androidx.camera:camera-view:1.3.2")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
-    implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
+    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-database:20.3.1")
     implementation("com.google.zxing:core:3.5.3")
@@ -106,8 +108,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.navigation:navigation-fragment:2.7.7")
     implementation("androidx.navigation:navigation-ui:2.7.7")
-    implementation ("com.github.bumptech.glide:glide:4.12.0")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
 
 
 }

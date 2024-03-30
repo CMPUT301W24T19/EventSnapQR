@@ -109,6 +109,7 @@ public class UserInfoActivity extends AppCompatActivity {
                 }
                 else{
                     Toast.makeText(UserInfoActivity.this, "Permission already granted", Toast.LENGTH_LONG).show();
+                    notificationSwitch.setChecked(true);
                 }
             }
         });
