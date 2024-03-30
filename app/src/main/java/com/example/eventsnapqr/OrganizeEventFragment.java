@@ -442,6 +442,7 @@ public class OrganizeEventFragment extends Fragment {
                                 Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, true);
                                 Log.d("USER NAME", newEvent.getOrganizer().getName());
                                 firebaseController.addEvent(newEvent);
+                                firebaseController.addOrganizedEvent(user, newEvent);
                                 bundle.putString("destination", "main");
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                     firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + " created at: "+Instant.now());
