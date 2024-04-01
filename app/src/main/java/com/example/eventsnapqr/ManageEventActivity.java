@@ -490,9 +490,14 @@ public class ManageEventActivity extends AppCompatActivity {
 
                 return true;
             } else if (itemId == R.id.view_map) { // view map
+                // Retrieving the eventName from the currentEvent object
+                String eventName = currentEvent.getEventName();
+                // Creating an instance of MapFragment and passing the eventName
+                MapFragment mapFragment = new MapFragment(eventName);
+
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.your_event_constrained_layout, new MapFragment());
+                fragmentTransaction.replace(R.id.your_event_constrained_layout, mapFragment);
                 fragmentTransaction.addToBackStack("manage_activity");
                 fragmentTransaction.commit();
 
