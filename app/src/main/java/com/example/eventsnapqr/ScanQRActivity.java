@@ -214,13 +214,15 @@ public class ScanQRActivity extends AppCompatActivity {
         if (intentResult != null) {
             String contents = intentResult.getContents();
             if (contents != null) {
-                Log.d(TAG, "QR code content: " + contents); // Log the content of the QR code
+                contents = contents.trim();
+                String eventId;
 
-                String eventId = contents.trim();
-
-            if (eventId.length() != 20) {
-                showInvalidQRContentDialog();
-            }
+                if (!contents.startsWith("eventsnapqr/")) {
+                    showInvalidQRContentDialog();
+                    return;
+                } else {
+                    eventId = contents.substring("eventsnapqr/".length());
+                }
 
                 FirebaseController.getInstance().checkUserInAttendees(eventId, userId, new FirebaseController.OnUserInAttendeesListener() {
                     @Override

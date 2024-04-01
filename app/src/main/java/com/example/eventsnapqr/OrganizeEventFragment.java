@@ -105,7 +105,6 @@ public class OrganizeEventFragment extends Fragment {
     private Uri imageUri;
     private String uriString;
     private String reusingQR;
-
     private double latitude = 0.0;
     private double longitude = 0.0;
     private boolean eventCreated = false;

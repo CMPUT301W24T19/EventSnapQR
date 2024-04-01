@@ -72,7 +72,7 @@ public class QRDialogFragment extends DialogFragment {
         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
 
         try {
-            qrBitmap = barcodeEncoder.encodeBitmap(eventId, BarcodeFormat.QR_CODE, 400, 400);
+            qrBitmap = barcodeEncoder.encodeBitmap("eventsnapqr/" + eventId, BarcodeFormat.QR_CODE, 400, 400);
             if (qrBitmap != null) {
                 Log.d("QR_CODE", "QR Code generated successfully");
             } else {
