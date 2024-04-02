@@ -63,6 +63,7 @@ import java.util.Map;
 public class ScanQRActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CAMERA = 1;
     private String userId;
+    private String eventId;
     private LocationManager locationManager;
     private LocationListener locationListener;
 
@@ -73,8 +74,9 @@ public class ScanQRActivity extends AppCompatActivity {
 
     /**
      * What should be executed when the fragment is created
+     *
      * @param savedInstanceState If the fragment is being re-created from
-     * a previous saved state, this is the state.
+     *                           a previous saved state, this is the state.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,6 +182,7 @@ public class ScanQRActivity extends AppCompatActivity {
     /**
      * if the user has not signed up scanned event, give them the option to view the event details
      * or to return to the main page
+     *
      * @param eventId identifier of the given event
      */
     private void notSignedUpDialog(String eventId) {
@@ -213,6 +216,7 @@ public class ScanQRActivity extends AppCompatActivity {
     /**
      * display an alert dialog notifying the user they have successfully checked into the event
      * and return to the main page
+     *
      * @param eventId the unique identifier of the given event
      */
     private void checkIn(String eventId) {
@@ -227,24 +231,25 @@ public class ScanQRActivity extends AppCompatActivity {
                             getLatitudeAndLongitude();
                             DocumentReference eventRef = db.collection("events").document(eventId)
                                     .collection("attendees").document(userId);
-                            String lat  = String.valueOf(latitudeNow);
+                            String lat = String.valueOf(latitudeNow);
                             String longi = String.valueOf(longitudeNow);
 
                             Map<String, Object> updates = new HashMap<>();
                             updates.put("latitude", lat); // Setting latitude to the longitude value
-                            updates.put("longitude",longi);
+                            updates.put("longitude", longi);
 
                             eventRef.update(updates)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            Log.d("Success","latitude works"+latitudeNow);
+                                            Log.d("Success", "latitude works" + latitudeNow);
                                         }
                                     })
                                     .addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
-                                            Log.d("fail","latitude fail");                                        }
+                                            Log.d("fail", "latitude fail");
+                                        }
                                     });
 
                             getLatitudeAndLongitude();
@@ -309,6 +314,7 @@ public class ScanQRActivity extends AppCompatActivity {
 
     /**
      * returns the correct suffix for the given integer
+     *
      * @param n the number in which to retrieve the suffix
      */
     public String getSuffix(Integer n) {
@@ -330,14 +336,14 @@ public class ScanQRActivity extends AppCompatActivity {
 
     /**
      * handles what to do with the content of the QR code
+     *
      * @param requestCode The integer request code originally supplied to
      *                    startActivityForResult(), allowing you to identify who this
      *                    result came from.
-     * @param resultCode The integer result code returned by the child activity
-     *                   through its setResult().
-     * @param data An Intent, which can return result data to the caller
-     *               (various data can be attached to Intent "extras").
-     *
+     * @param resultCode  The integer result code returned by the child activity
+     *                    through its setResult().
+     * @param data        An Intent, which can return result data to the caller
+     *                    (various data can be attached to Intent "extras").
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -348,60 +354,54 @@ public class ScanQRActivity extends AppCompatActivity {
 
                 Log.d("ScanQR", "QR code content: " + contents); // Log the content of the QR code
 
-                String eventId = contents.trim();
-
-                if (eventId.length() != 20) {
-                    showInvalidQRContentDialog();
-
+                eventId = contents.trim();
                 contents = contents.trim();
-                String eventId;
 
-                if (!contents.startsWith("eventsnapqr/")) {
+                if (!contents.startsWith("eventsnapqr/")) { // if a invalid qr is scanned
                     showInvalidQRContentDialog();
                     return;
-                } else {
+                } else if (contents.startsWith("eventsnapqr/")) { // if a valied qr is scanned
                     eventId = contents.substring("eventsnapqr/".length());
 
-                }
-
-                FirebaseController.getInstance().checkUserInAttendees(eventId, userId, new FirebaseController.OnUserInAttendeesListener() {
-                    @Override
-                    public void onUserInAttendees(boolean isInAttendees) {
-                        if (isInAttendees) {
-                            Log.d("Scan QR Activity", "User is in attendees");
-                            checkIn(eventId);
-                        } else {
-                            Log.d("Scan QR Activity", "User is not in attendees");
-                            notSignedUpDialog(eventId);
+                    FirebaseController.getInstance().checkUserInAttendees(eventId, userId, new FirebaseController.OnUserInAttendeesListener() {
+                        @Override
+                        public void onUserInAttendees(boolean isInAttendees) {
+                            if (isInAttendees) {
+                                Log.d("Scan QR Activity", "User is in attendees");
+                                checkIn(eventId);
+                            } else {
+                                Log.d("Scan QR Activity", "User is not in attendees");
+                                notSignedUpDialog(eventId);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCheckFailed(Exception e) {
-                        Log.e("Scan QR Activity", "User in Event attendees check failed: " + e.getMessage());
-                        showInvalidQRContentDialog();
-                    }
-                });
+                        @Override
+                        public void onCheckFailed(Exception e) {
+                            Log.e("Scan QR Activity", "User in Event attendees check failed: " + e.getMessage());
+                            showInvalidQRContentDialog();
+                        }
+                    });
+                } else { // case when no QR code was scanned before camera closed
+                    Log.d("Scan QR Activity", "No QR code scanned before camera closed");
+                    finish();
+                }
             } else {
-                // case when no QR code was scanned before camera closed
-                Log.d("Scan QR Activity", "No QR code scanned before camera closed");
-                finish();
+                super.onActivityResult(requestCode, resultCode, data);
             }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
         }
     }
-
     /**
      * Displays a dialog to inform the user about the invalid QR code content.
      */
-    private void showInvalidQRContentDialog() {
+    private void showInvalidQRContentDialog () {
         if (!isFinishing()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
             builder.setTitle("Invalid QR Code Content")
                     .setMessage("The scanned QR code contains an invalid content.")
                     .setPositiveButton("Scan Another QR Code", (dialog, which) -> {
-                        initQRCodeScanner();
+                        Intent intent = getIntent();
+                        finish();
+                        startActivity(intent);
                     })
                     .setNegativeButton("Return", (dialog, which) -> {
                         finish();
