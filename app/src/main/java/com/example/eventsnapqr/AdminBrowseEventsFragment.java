@@ -81,13 +81,6 @@ public class AdminBrowseEventsFragment extends Fragment {
         searchBar.setVisibility(View.INVISIBLE);
         eventListView.setVisibility(View.INVISIBLE);
 
-        List<DocumentSnapshot> events;
-        Task<QuerySnapshot> getEvents = db.collection("events").get();
-        Tasks.whenAll(getEvents).addOnCompleteListener(aVoid -> {
-            Log.d("TAG", "true");
-            filterEvents(0, getEvents.getResult().getDocuments());
-        });
-
         FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -107,6 +100,12 @@ public class AdminBrowseEventsFragment extends Fragment {
                 }
             }
         });
+
+        loadingProgressBar.setVisibility(View.INVISIBLE);
+        backButton.setVisibility(View.VISIBLE);
+        searchButton.setVisibility(View.VISIBLE);
+        searchBar.setVisibility(View.VISIBLE);
+        eventListView.setVisibility(View.VISIBLE);
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,39 +206,5 @@ public class AdminBrowseEventsFragment extends Fragment {
                 .setNegativeButton("No", null)
                 .create()
                 .show();
-    }
-
-    private void filterEvents(int curIndex, List<DocumentSnapshot> events) {
-        if (curIndex == events.size()) {
-            loadingProgressBar.setVisibility(View.INVISIBLE);
-            backButton.setVisibility(View.VISIBLE);
-            searchButton.setVisibility(View.VISIBLE);
-            searchBar.setVisibility(View.VISIBLE);
-            eventListView.setVisibility(View.VISIBLE);
-        }
-
-        else {
-            if (Boolean.TRUE.equals(events.get(curIndex).getBoolean("active"))) {
-                FirebaseController.getInstance().getEvent(events.get(curIndex).getId(), new FirebaseController.OnEventRetrievedListener() {
-                    @Override
-                    public void onEventRetrieved(Event event) {
-                        Date currentDate = new Date();
-                            if (currentDate.compareTo(event.getEventEndDateTime()) > 0) {
-                                FirebaseController.getInstance().deleteEvent(event, new FirebaseController.FirestoreOperationCallback() {
-                                    @Override
-                                    public void onCompleted() {
-                                        filterEvents(curIndex + 1, events);
-                                    }
-                                });
-                            } else {
-                                filterEvents(curIndex + 1, events);
-                            }
-                        }
-                    });
-            }
-            else {
-                filterEvents(curIndex + 1, events);
-            }
-        }
     }
 }
