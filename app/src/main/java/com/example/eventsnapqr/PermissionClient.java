@@ -11,7 +11,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
-
+/*
+    Class derived from: https://www.youtube.com/watch?v=KeuV6cjVh6c&t=0s
+ */
 public class PermissionClient {
     private static PermissionClient instance = null;
     private Context context;
