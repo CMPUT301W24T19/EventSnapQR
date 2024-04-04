@@ -87,13 +87,17 @@ public class BrowseEventsActivity extends AppCompatActivity {
         });
         eventId = getIntent().getStringExtra("eventID"); // for when user enters activity from notification click
         if(eventId != null){
-            switchToFullscreenDetails(eventId);
+            switchToFullscreenDetails(eventId, true);
         }
     }
 
-    public void switchToFullscreenDetails(String eventId) {
+    public void switchToFullscreenDetails(String eventId, Boolean toMain) {
         EventDetailFragment detailsFragment = new EventDetailFragment();
         Bundle bundle = new Bundle();
+        if(toMain){
+            bundle.putBoolean("toMain", true);
+
+        }
         bundle.putString("eventId", eventId);
         if(position != null){ // for when user enters activity from notification click
             bundle.putInt("position", position);
