@@ -1,5 +1,6 @@
 package com.example.eventsnapqr;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
 import static androidx.fragment.app.FragmentManager.TAG;
 
 import androidx.annotation.NonNull;
@@ -81,6 +82,7 @@ public class ScanQRActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //setContentView(R.layout.activity_scan_qractivity);
         userId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
 
         // Initialize LocationManager
@@ -190,10 +192,11 @@ public class ScanQRActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
             builder.setTitle("Not Signed-Up for Event")
                     .setPositiveButton("View Event Details", (dialog, which) -> {
-                        NavController navController = Navigation.findNavController(ScanQRActivity.this, R.id.nav_host_fragment);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("eventId", eventId);
-                        navController.navigate(R.id.eventDetailsFragment, bundle);
+
+                        Intent intent = new Intent(ScanQRActivity.this, BrowseEventsActivity.class);
+                        intent.putExtra("eventID", eventId);
+                        startActivity(intent);
+
                     })
                     .setNegativeButton("Return", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {

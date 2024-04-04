@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/mainPageFragment">
-f
+
     <fragment
         android:id="@+id/mainPageFragment"
         android:name="com.example.eventsnapqr.MainPageFragment"
