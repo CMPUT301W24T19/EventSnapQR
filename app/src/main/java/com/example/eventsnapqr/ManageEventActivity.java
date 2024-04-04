@@ -38,6 +38,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
@@ -85,7 +86,17 @@ public class ManageEventActivity extends AppCompatActivity {
     private TextView eventNameTextView;
     private ExtendedFloatingActionButton fab;
     private List<HashMap<String, Object>> attendees;
-
+    @Override
+    public void onBackPressed() {
+        if (isMapFragmentVisible()) {
+            fab.setVisibility(View.VISIBLE);
+        }
+        super.onBackPressed();
+    }
+    private boolean isMapFragmentVisible() {
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.your_event_constrained_layout);
+        return currentFragment instanceof MapFragment;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -490,6 +501,7 @@ public class ManageEventActivity extends AppCompatActivity {
                 return true;
             } else if (itemId == R.id.view_map) { // view map
                 // Retrieving the eventName from the currentEvent object
+                fab.setVisibility(View.GONE);
                 String eventName = currentEvent.getEventName();
                 MapFragment mapFragment = new MapFragment(eventName);
                 FragmentManager fragmentManager = getSupportFragmentManager();

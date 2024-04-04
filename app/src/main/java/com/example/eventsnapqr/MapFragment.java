@@ -30,9 +30,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * fragment where the map is plotted for the event clicked
@@ -89,6 +93,8 @@ public class MapFragment extends Fragment {
         mapContainer = view.findViewById(R.id.mapContainer); // Reference to the parent layout
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setMultiTouchControls(true);
+        IMapController mapController = mapView.getController();
+        mapController.setZoom(16);
         Log.e("MapFragment", "Map clicked. Plotting attendees for event: " + eventName);
         plotEventAttendees(eventName);
 
@@ -172,6 +178,7 @@ public class MapFragment extends Fragment {
                                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                         @Override
                                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                            List<GeoPoint> points = new ArrayList<>();
                                             for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                                                 // Extract latitude and longitude values as strings
                                                 String latitudeStr = document.getString("latitude");
@@ -180,15 +187,17 @@ public class MapFragment extends Fragment {
                                                 Long checkINLong = document.getLong("checkedIn");
                                                 Log.e("MapFragment", "Found checkIN:  " + checkINLong);
 
-                                                if (checkINLong != null && latitudeStr!=null && longitudeStr!=null) {
+                                                if (checkINLong != null && !latitudeStr.isEmpty() && latitudeStr!=null && !longitudeStr.isEmpty() && longitudeStr!=null) {
                                                     int checkIN = checkINLong.intValue();
 
                                                     // Convert latitude and longitude from strings to doubles
+
                                                     double latitude = Double.parseDouble(latitudeStr);
                                                     double longitude = Double.parseDouble(longitudeStr);
                                                     Log.e("MapFragment", "Found latitude " + latitude);
 
                                                     if(checkIN>0) {
+                                                        points.add(new GeoPoint(latitude, longitude));
                                                         Marker marker = new Marker(mapView);
                                                         marker.setPosition(new GeoPoint(latitude, longitude));
                                                         // Getting the attendee ID
@@ -221,6 +230,20 @@ public class MapFragment extends Fragment {
                                                         mapView.getOverlays().add(marker);
                                                     }
                                                 }
+                                            }
+                                            if (!points.isEmpty()) {
+                                                // update the map view to include all markers
+                                                if (points.size() == 1) {
+                                                    // if there's only one point, center the map on it
+                                                    mapView.getController().setCenter(points.get(0));
+                                                } else {
+                                                    // calculate the bounding box and set the map view
+                                                    BoundingBox boundingBox = BoundingBox.fromGeoPoints(points);
+                                                    mapView.zoomToBoundingBox(boundingBox, true);
+                                                }
+                                            }
+                                            else{
+                                                Log.d("ORGANIZER MAP", "No points to focus map");
                                             }
                                             mapView.invalidate(); // Refresh the map view
                                         }
