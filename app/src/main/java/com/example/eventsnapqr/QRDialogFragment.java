@@ -64,7 +64,7 @@ public class QRDialogFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_q_r_dialog, container, false);
-
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialog);
         // Retrieve data from the bundle
         Bundle bundle = getArguments();
         eventId = bundle.getString("eventId");
