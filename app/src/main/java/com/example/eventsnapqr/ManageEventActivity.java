@@ -481,13 +481,7 @@ public class ManageEventActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, QRActivity.class);
                 intent.putExtra("eventId", eventId);
                 intent.putExtra("destination", "manage");
-                try {
-                    startActivity(intent);
-                }
-                catch (Exception e) {
-                    Log.d("TAG", e.toString());
-                }
-                Log.d("TAG", "true");
+                startActivity(intent);
                 //QRActivity qrDialogFragment = new QRActivity();
                 //qrDialogFragment.setArguments(bundle);
                 //qrDialogFragment.show(getSupportFragmentManager(), "qr_dialog_fragment");
