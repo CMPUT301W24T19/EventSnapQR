@@ -407,7 +407,6 @@ public class OrganizeEventFragment extends Fragment {
                             Toast.makeText(getContext(), "Geocoder failed, please try again later.", Toast.LENGTH_LONG).show();
                         }
 
-                        // Exit the loop after processing the first location
                         break;
                     }
                 }
