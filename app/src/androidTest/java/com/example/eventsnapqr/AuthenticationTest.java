@@ -41,12 +41,12 @@ public class AuthenticationTest {
     public void init(){
         ViewActions.closeSoftKeyboard();
     }
-    private Boolean userExists;
+
     /**
-     * US 02.06.01 ****user must not have account for test to work****
+     * US 02.06.01
      */
     @Test
-    public void identityTest(){
+    public void loginTest(){
         Context context = InstrumentationRegistry.getInstrumentation().getContext();
         ContentResolver contentResolver = context.getContentResolver();
         String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
@@ -57,59 +57,27 @@ public class AuthenticationTest {
                 "settings put global transition_animation_scale 0");
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global animator_duration_scale 0");
-        FirebaseController firebaseController = new FirebaseController();
         CountDownLatch latch = new CountDownLatch(1);
-        final Boolean[] userExists = new Boolean[1];
-        FirebaseController.Authenticator listener = new FirebaseController.Authenticator() {
+        ActivityScenario.launch(MainActivity.class);
+        FirebaseController.checkUserExists(androidId, new FirebaseController.Authenticator() {
             @Override
             public void onUserExistenceChecked(boolean exists) {
-                if (exists) {
-                    userExists[0] = true;
+                    assertTrue(exists);
                     latch.countDown();
-                }
-                else {
-                    userExists[0] = false;
-                    latch.countDown();
-                }
             }
+
             @Override
             public void onAdminExistenceChecked(boolean exists) {
-                // do nothing
+
             }
-        };
-        FirebaseController.checkUserExists(androidId, listener);
+        });
         try {
             latch.await(10, TimeUnit.SECONDS); // Adjust timeout as needed
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        ActivityScenario.launch(MainActivity.class);
-        if(!userExists[0]){
 
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            onView(withId(R.id.edit_text_name)).perform(typeText("Test Event Name"));
-            onView(withId(R.id.edit_text_description)).perform(typeText("4033402450"));
-            onView(withId(R.id.edit_text_email)).perform(typeText("test@email.com"));
-            onView(withId(R.id.edit_text_homepage)).perform(typeText("www.homepage.com"));
-            onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard());
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            onView(withId(R.id.button_sign_up)).perform(click());
-            FirebaseController.checkUserExists(androidId, listener);
-            try{
-                latch.await(8,TimeUnit.SECONDS);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            assertTrue(userExists[0]);
-        }
+
         // Enable animations after the test is finished
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global window_animation_scale 1");

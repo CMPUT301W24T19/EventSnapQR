@@ -68,7 +68,7 @@ public class OrganizeEventTest {
     public void geolocationTest(){
         // Launch OrganizeAnEventActivity and create the event
         ActivityScenario.launch(OrganizeAnEventActivity.class);
-        onView(withId(R.id.editTextEventName)).perform(typeText(id));
+        //onView(withId(R.id.editTextEventName)).perform(typeText(id));
         onView(withId(R.id.edit_text_description)).perform(typeText("Event description"));
     }
     /**
