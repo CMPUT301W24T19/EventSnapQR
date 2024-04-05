@@ -97,7 +97,7 @@ public class AdminBrowseProfilesFragment extends Fragment {
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 profileList.clear();
                 Log.d("TAG", "Snapshot");
-                for (QueryDocumentSnapshot doc : value) {
+                for (QueryDocumentSnapshot doc: value) {
                     String deviceID = (String) doc.getId();
                     String userName = (String) doc.getData().get("name");
                     String homePage = (String) doc.getData().get("homepage");
@@ -113,9 +113,6 @@ public class AdminBrowseProfilesFragment extends Fragment {
                     }
                     if (email == null || email.isEmpty()) {
                         email = "N/A";
-                    }
-                    if (profilePicture == null || profilePicture.isEmpty()) {
-                        profilePicture = "N/A";
                     }
 
                     User user = new User(userName, deviceID, homePage, phoneNumber, email);
