@@ -134,25 +134,23 @@ public class AttendeeTest {
         firebaseController.addEvent(newEvent);
 
         // create an intent and put the event ID as an extra
-
-        String announcement = "Test Announcement";
-        FirebaseController firebaseControllerTwo = FirebaseController.getInstance();
-        //CollectionReference announcementsRef = firebaseController.collection("events").document(id).collection("announcements");
-        Map<String, Object> announcementData = new HashMap<>();
-        announcementData.put("message", announcement);
-        announcementData.put("timestamp", new Date());
         CountDownLatch latch = new CountDownLatch(1);
-        /*
-        announcementsRef.add(announcementData)
-                .addOnSuccessListener(documentReference -> latch.countDown())
-                .addOnFailureListener(e -> latch.countDown());
-
-         */
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), BrowseEventsActivity.class);
         intent.putExtra("eventID", id);
         // launch BrowseEventsActivity with the intent
         ActivityScenario<BrowseEventsActivity> activityScenario = ActivityScenario.launch(intent);
-
+        String announcement = "Test Announcement";
+        firebaseController.addTestAnnouncement(announcement, id, new FirebaseController.FirestoreOperationCallback() {
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        });
+        try{
+            latch.await(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         // US 02.04.01 check
         onView(withId(R.id.editTextAnnouncements))
                 .check(matches(withText(announcement)));
@@ -161,6 +159,7 @@ public class AttendeeTest {
         firebaseController.isAttendee(androidId, newEvent, new FirebaseController.AttendeeCheckCallback() {
             @Override
             public void onChecked(boolean isAttendee, Event event) {
+                // US 02.07.01 check
                 assertTrue(isAttendee);
                 latch.countDown();
             }
@@ -174,5 +173,6 @@ public class AttendeeTest {
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global animator_duration_scale 1");
     }
+
 }
 
