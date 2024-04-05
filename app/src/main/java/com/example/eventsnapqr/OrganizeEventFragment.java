@@ -4,19 +4,15 @@ import static android.graphics.ImageDecoder.decodeBitmap;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Shader;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.LevelListDrawable;
 import android.Manifest;
 import android.graphics.ImageDecoder;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
@@ -41,25 +37,17 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.zxing.Binarizer;
 import com.google.zxing.BinaryBitmap;
-import com.google.zxing.ChecksumException;
-import com.google.zxing.FormatException;
 import com.google.zxing.LuminanceSource;
-import com.google.zxing.MultiFormatReader;
-import com.google.zxing.NotFoundException;
 import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
-import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.qrcode.QRCodeReader;
 
 import java.io.FileNotFoundException;
@@ -73,7 +61,6 @@ import com.google.android.gms.location.LocationServices;
 
 
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -439,8 +426,6 @@ public class OrganizeEventFragment extends Fragment {
                     else {
                         eventID = reusingQR;
                     }
-                    Bundle bundle = new Bundle();
-                    bundle.putString("eventId", eventID);
 
                     if (imageUri != null) {
                         StorageReference userRef = storageRef.child("eventPosters/" + eventID); // specifies the path on the cloud storage
@@ -452,15 +437,17 @@ public class OrganizeEventFragment extends Fragment {
                                 Log.d("USER NAME", newEvent.getOrganizer().getName());
                                 firebaseController.addEvent(newEvent);
                                 firebaseController.addOrganizedEvent(user, newEvent);
-                                bundle.putString("destination", "main");
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                     firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + " created at: "+Instant.now());
                                 }
                                 else{
                                     firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + "has been created");
                                 }
-                                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                                navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                                Intent intent = new Intent(getActivity(), QRActivity.class);
+                                intent.putExtra("eventId", eventID);
+                                intent.putExtra("destination", "main");
+                                startActivity(intent);
+                                getActivity().finish();
                             });
                         });
                     } else {
@@ -469,7 +456,6 @@ public class OrganizeEventFragment extends Fragment {
                         Log.d("USER NAME", " "+newEvent.getOrganizer().getName());
 
                         firebaseController.addEvent(newEvent);
-                        bundle.putString("destination", "main");
                         firebaseController.addOrganizedEvent(user, newEvent);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + " created at: "+Instant.now());
@@ -477,8 +463,11 @@ public class OrganizeEventFragment extends Fragment {
                         else{
                             firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + "has been created");
                         }
-                        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                        navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                        Intent intent = new Intent(getActivity(), QRActivity.class);
+                        intent.putExtra("eventId", eventID);
+                        intent.putExtra("destination", "main");
+                        startActivity(intent);
+                        getActivity().finish();
                     }
                 }
             }

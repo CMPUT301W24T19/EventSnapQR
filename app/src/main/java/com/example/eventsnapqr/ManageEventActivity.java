@@ -1,19 +1,9 @@
 package com.example.eventsnapqr;
 
 import static android.app.PendingIntent.getActivity;
-import static androidx.core.content.ContentProviderCompat.requireContext;
 
-import static java.security.AccessController.getContext;
-
-import android.app.Activity;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -37,16 +27,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -60,7 +45,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ManageEventActivity extends AppCompatActivity {
@@ -272,7 +256,6 @@ public class ManageEventActivity extends AppCompatActivity {
                     Long longValue = documentSnapshot.getLong("checkedIn");
                     Integer numCheckIns = longValue != null ? longValue.intValue() : 0;
 
-                    Log.d("TAG", "true");
                     if (checkedIn || numCheckIns > 0) { // Check if checkedIn is true or user is already checked in
                         DocumentReference checkedInRef = attendeesRef.document(attendeeId).collection("checkedIn").document("check");
                         checkedInRef.get().addOnSuccessListener(checkedInDocumentSnapshot -> {
@@ -478,14 +461,17 @@ public class ManageEventActivity extends AppCompatActivity {
             int itemId = item.getItemId();
 
             if (itemId == R.id.view_qr) { // view QR code again
-                Bundle bundle = new Bundle();
-                bundle.putString("eventId", eventId);
-                bundle.putString("destination", "manage");
-                FragmentManager manager = getSupportFragmentManager();
-                QRDialogFragment qrDialogFragment = new QRDialogFragment();
-                qrDialogFragment.setArguments(bundle);
-                manager.beginTransaction().replace(android.R.id.content, qrDialogFragment).commit();
-                //QRDialogFragment qrDialogFragment = new QRDialogFragment();
+                Intent intent = new Intent(this, QRActivity.class);
+                intent.putExtra("eventId", eventId);
+                intent.putExtra("destination", "manage");
+                try {
+                    startActivity(intent);
+                }
+                catch (Exception e) {
+                    Log.d("TAG", e.toString());
+                }
+                Log.d("TAG", "true");
+                //QRActivity qrDialogFragment = new QRActivity();
                 //qrDialogFragment.setArguments(bundle);
                 //qrDialogFragment.show(getSupportFragmentManager(), "qr_dialog_fragment");
                 return true;
