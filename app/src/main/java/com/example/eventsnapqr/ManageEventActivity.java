@@ -237,7 +237,7 @@ public class ManageEventActivity extends AppCompatActivity {
             if (totalAttendees != 0) {
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                     String attendeeId = documentSnapshot.getId();
-
+                    attendeeCount++;
                     Long longValue = documentSnapshot.getLong("checkedIn");
                     Integer numCheckIns = longValue != null ? longValue.intValue() : 0;
 
@@ -247,7 +247,6 @@ public class ManageEventActivity extends AppCompatActivity {
                             if (numCheckIns > 0) {
                                 checkedInCount++;
                             }
-                            attendeeCount++;
                             firebaseController.getUser(attendeeId, user -> {
                                 if (user != null) {
                                     HashMap<String, Object> attendeeData = new HashMap<>();
