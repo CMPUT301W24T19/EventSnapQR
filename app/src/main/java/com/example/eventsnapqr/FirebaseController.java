@@ -272,25 +272,6 @@ public class FirebaseController {
     }
 
     /**
-     * iterates through the users event collections to remove an event, used
-     * when the given event is being deleted
-     * @param db instance of a database
-     * @param eventId event identifier to look for
-     */
-    private void removeFromUsersCollections(FirebaseFirestore db, String eventId) {
-        db.collection("users").get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                        String userId = documentSnapshot.getId();
-                        db.collection("users").document(userId).collection("organizedEvents").document(eventId).delete();
-                        db.collection("users").document(userId).collection("promisedEvents").document(eventId).delete();
-                        Log.d("Remove Event from User", "Removed event " + eventId + " from user: " + userId);
-                    }
-                })
-                .addOnFailureListener(e -> Log.e("Remove Event from Users", "Error removing event from users", e));
-    }
-
-    /**
      * adds a given user to the firestore database
      * @param user user object
      */
@@ -397,6 +378,7 @@ public class FirebaseController {
         eventData.put("startDateTime", event.getEventStartDateTime());
         eventData.put("endDateTime", event.getEventEndDateTime());
         eventData.put("active", event.isActive());
+        eventData.put("address", event.getAddress());
 
         if (event.getPosterURI() != null) {
             eventData.put("posterURI", event.getPosterURI());
@@ -628,6 +610,7 @@ public class FirebaseController {
                     String posterUri = document.getString("posterURI");
                     Date startDateTime = document.getDate("startDateTime");
                     Date endDateTime = document.getDate("endDateTime");
+                    String address = document.getString("address");
                     String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
                     boolean active = document.getBoolean("active");
@@ -648,8 +631,8 @@ public class FirebaseController {
                                         @Override
                                         public void onUserRetrieved(User user) {
                                             if (user != null) {
-                                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, active);
-                                                event.setAnnouncements(announcements); // Set the announcements list with messages
+                                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, address, active);
+                                                event.setAnnouncements(announcements);
                                                 listener.onEventRetrieved(event);
                                             } else {
                                                 Log.d("Error", "Failed to retrieve organizer details for event: " + eventIdentifier);
@@ -724,15 +707,15 @@ public class FirebaseController {
                                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                                         int count = queryDocumentSnapshots.size();
                                         if(count == 1){
-                                            addMilestone(event, "First attendee has signed up to your event: " + user.getName());
+                                            addMilestone(event, "First attendee has signed for your event: " + user.getName());
                                         }
                                         if(count == 5){
-                                            addMilestone(event, "5 users have promised to attend your event!");
+                                            addMilestone(event, "5 users have signed up for your event!");
                                         }
                                         if(count%10 == 0){
-                                            addMilestone(event, count+ " users have promised to attend your event!");
+                                            addMilestone(event, count+ " users have signed up for your event!");
                                         }
-                                        Log.d("Count of promised attendees", "Number of promised attendees for event: " + count);
+                                        Log.d("Count of promised attendees", "Number of signed up attendees for event: " + count);
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
@@ -900,7 +883,6 @@ public class FirebaseController {
         void onCheckInComplete(int count);
         void onCheckInFailure(Exception e);
     }
-
 
     /**
      * increment the number of times an attendee has checked into an event,

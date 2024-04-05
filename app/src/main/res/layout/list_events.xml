@@ -1,0 +1,35 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/eventImage"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="16dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/place_holder_img"/>
+
+    <TextView
+        android:id="@+id/eventName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/eventImage"
+        android:layout_alignTop="@id/eventImage"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="Event Name" />
+
+    <TextView
+        android:id="@+id/eventOrganizer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/eventName"
+        android:layout_toEndOf="@id/eventImage"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:text="Organizer Name"/>
+</RelativeLayout>

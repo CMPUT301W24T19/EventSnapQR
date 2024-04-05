@@ -71,7 +71,7 @@ public class AttendeeTest {
      */
     @Test
     public void QRScanTest(){
-        String eventID = "testeventid";
+        String eventID = FirebaseController.getInstance().getUniqueEventID();
         FirebaseController firebaseController = FirebaseController.getInstance();
         Event newEvent = new Event(new User(), "testEvent", "testEventDescription", null, 5, eventID, new Date(), new Date(), true);
         firebaseController.addEvent(newEvent);

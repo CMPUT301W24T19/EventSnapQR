@@ -30,11 +30,9 @@ import java.util.List;
  */
 public class ListAllEventsFragment extends Fragment {
     private ListView eventListView; // list of events
-    private ArrayAdapter<String> eventAdapter;
-    private List<String> eventNames; // list of event names
-    private List<String> eventIds; // list of event ids
+    private EventAdapter eventAdapter;
+    private List<Event> events;
     private FirebaseFirestore db; // database instance
-    // TODO add search for browse events
 
     /**
      * retrieve any events that are currently in the database.
@@ -45,11 +43,24 @@ public class ListAllEventsFragment extends Fragment {
                 .addOnCompleteListener(task -> {
                     loadingProgressBar.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
-                        eventNames.clear();
                         for (DocumentSnapshot document : task.getResult()) {
                             if (Boolean.TRUE.equals(document.getBoolean("active"))) {
-                                eventIds.add(document.getId());
-                                eventNames.add(document.getString("eventName"));
+                                Long maxAttendeesLong = document.getLong("maxAttendees");
+                                int maxAttendees = (maxAttendeesLong != null) ? maxAttendeesLong.intValue() : 0; // Default value of 0
+
+                                Event event = new Event(
+                                        new User(document.getString("organizerId")), // Assuming organizer ID is stored and User constructor can handle it
+                                        document.getString("eventName"),
+                                        document.getString("description"),
+                                        document.getString("posterURI"),
+                                        maxAttendees,
+                                        document.getId(), // Assuming event ID is the document ID
+                                        document.getDate("eventStartDateTime"),
+                                        document.getDate("eventEndDateTime"),
+                                        document.getString("address"),
+                                        document.getBoolean("active")
+                                );
+                                events.add(event);
                             }
                         }
                         eventAdapter.notifyDataSetChanged();
@@ -79,9 +90,8 @@ public class ListAllEventsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_browse_events, container, false);
 
         eventListView = view.findViewById(R.id.events);
-        eventNames = new ArrayList<>();
-        eventIds = new ArrayList<>();
-        eventAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, eventNames);
+        events = new ArrayList<>();
+        eventAdapter = new EventAdapter(requireContext(), events);
         eventListView.setAdapter(eventAdapter);
         db = FirebaseFirestore.getInstance();
 
@@ -89,7 +99,7 @@ public class ListAllEventsFragment extends Fragment {
         loadEvents(loadingProgressBar);
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
-            String eventId = eventIds.get(position);
+            String eventId = events.get(position).getEventID();
             BrowseEventsActivity activity = (BrowseEventsActivity) requireActivity();
             activity.switchToFullscreenDetails(eventId, false);
         });

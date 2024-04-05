@@ -77,6 +77,8 @@ import com.google.android.gms.location.LocationServices;
 
 import java.time.Instant;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -99,6 +101,7 @@ public class OrganizeEventFragment extends Fragment {
     private TextInputEditText editTextEndDate;
     private TextInputEditText editTextEndTime;
     private TextInputEditText uploadPosterButton;
+    private TextInputEditText editTextAddress;
     private TextInputEditText editTextLocation;
     private TextInputLayout inputTextLocation;
     private Button locationButton;
@@ -162,6 +165,7 @@ public class OrganizeEventFragment extends Fragment {
 
         editTextEndTime = view.findViewById(R.id.editTextEndTime);
         editTextEndTime.setOnClickListener(v -> showTimePickerDialog(editTextEndTime));
+        editTextAddress = view.findViewById(R.id.editTextAddress);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         requestLocation();
 
@@ -406,8 +410,6 @@ public class OrganizeEventFragment extends Fragment {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
 
-
-
     private void requestLocation() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
@@ -422,7 +424,6 @@ public class OrganizeEventFragment extends Fragment {
                     }
                 });
     }
-
 
     /**
      * validate each input field before creating an event
@@ -486,6 +487,7 @@ public class OrganizeEventFragment extends Fragment {
         String eventStartTime = editTextStartTime.getText().toString();
         String eventEndDate = editTextEndDate.getText().toString();
         String eventEndTime = editTextEndTime.getText().toString();
+        String eventAddress = editTextAddress.getText().toString();
 
         Date startDateTime;
         Date endDateTime;
@@ -518,12 +520,15 @@ public class OrganizeEventFragment extends Fragment {
                             userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                 imageUri = uri;
                                 uriString = imageUri.toString();
-                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, true);
+                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, eventAddress, true);
                                 Log.d("USER NAME", newEvent.getOrganizer().getName());
                                 firebaseController.addEvent(newEvent);
                                 firebaseController.addOrganizedEvent(user, newEvent);
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + " created at: "+Instant.now());
+                                    LocalDateTime now = LocalDateTime.now();
+                                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy '@' hh:mm a");
+                                    String formattedNow = formatter.format(now);
+                                    firebaseController.addMilestone(newEvent, newEvent.getEventName() + " created on "+ formattedNow);
                                 }
                                 else{
                                     firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + "has been created");
@@ -537,13 +542,16 @@ public class OrganizeEventFragment extends Fragment {
                         });
                     } else {
                         uriString = null;
-                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, true);
+                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, eventAddress, true);
                         Log.d("USER NAME", " "+newEvent.getOrganizer().getName());
 
                         firebaseController.addEvent(newEvent);
                         firebaseController.addOrganizedEvent(user, newEvent);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + " created at: "+Instant.now());
+                            LocalDateTime now = LocalDateTime.now();
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy '@' hh:mm a");
+                            String formattedNow = formatter.format(now);
+                            firebaseController.addMilestone(newEvent, newEvent.getEventName() + " created on "+ formattedNow);
                         }
                         else{
                             firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + "has been created");

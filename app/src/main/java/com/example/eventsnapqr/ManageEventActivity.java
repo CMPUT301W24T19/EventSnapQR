@@ -148,7 +148,6 @@ public class ManageEventActivity extends AppCompatActivity {
                 if (event != null) {
                     currentEvent = event;
                     eventNameTextView.setText(currentEvent.getEventName());
-
                     fetchAttendeeData(true);
                 } else {
                     Log.d("ManageEventActivity", "Failed to retrieve event");
@@ -329,6 +328,9 @@ public class ManageEventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * update the real time attendance counters and add checked in milestones according to them
+     */
     private void updateTexts() {
         totalAttendeesTextView.setText("Total Attendees: " + attendeeCount);
         totalCheckedInTextView.setText("Total Checked-In: " + checkedInCount);
