@@ -5,6 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <View
+        android:id="@+id/horizontal_line"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/grey"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="45dp"/>
+
     <ImageView
         android:id="@+id/button_back_button"
         android:layout_width="45dp"
@@ -18,8 +28,8 @@
         android:id="@+id/page_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Event"
-        android:textSize="20sp"
+        android:text="Organize New Event"
+        android:textSize="22sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/button_back_button"
@@ -56,7 +66,7 @@
                 app:boxStrokeColor="@color/black"
                 app:boxStrokeWidth="2dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/text_input_description"
+                app:layout_constraintEnd_toEndOf="@id/textInputStartDateTime"
                 app:layout_constraintTop_toTopOf="parent"
                 android:clickable="true"
                 android:focusable="true"
@@ -68,7 +78,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextPoster"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="260dp"
                     android:maxLength="50"
                     android:focusable="false"
                     android:cursorVisible="false"
@@ -108,7 +118,7 @@
                 app:endIconMode="clear_text"
                 app:helperTextTextColor="@color/red"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/text_input_description"
+                app:layout_constraintEnd_toEndOf="@id/textInputStartDateTime"
                 app:layout_constraintTop_toBottomOf="@id/posterInput">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -121,7 +131,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:id="@+id/text_input_description"
+                android:id="@+id/textInputStartDateTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
@@ -165,7 +175,7 @@
                 app:helperTextTextColor="@color/red"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/text_input_description">
+                app:layout_constraintTop_toBottomOf="@id/textInputStartDateTime">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextAddress"
