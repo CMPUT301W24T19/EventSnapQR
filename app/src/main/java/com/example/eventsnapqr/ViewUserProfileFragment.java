@@ -83,7 +83,7 @@ public class ViewUserProfileFragment extends Fragment {
         backToOrganizedEvents = view.findViewById(R.id.back_button);
         backToOrganizedEvents.setOnClickListener(v -> {
             if (getActivity() != null) {
-                getActivity().onBackPressed();
+                getActivity().finish();
             }
         });
 
