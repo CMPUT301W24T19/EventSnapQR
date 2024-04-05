@@ -1,6 +1,15 @@
 package com.example.eventsnapqr;
 
 import static android.graphics.ImageDecoder.decodeBitmap;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationCallback;
+import android.os.Looper;
+
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import android.location.Geocoder;
+import android.location.Address;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -16,6 +25,9 @@ import android.graphics.ImageDecoder;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,6 +49,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.fragment.app.Fragment;
+
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -64,6 +77,8 @@ import java.time.Instant;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * fragment where a user can organize an event using an eventName, an optional poster (default image
@@ -82,7 +97,9 @@ public class OrganizeEventFragment extends Fragment {
     private TextInputEditText editTextEndDate;
     private TextInputEditText editTextEndTime;
     private TextInputEditText uploadPosterButton;
-    private TextInputEditText locationButton;
+    private TextInputEditText editTextLocation;
+    private TextInputLayout inputTextLocation;
+    private Button locationButton;
     private TextView removePosterTextView;
     private TextInputLayout posterBox;
     private Button reuseQRButton;
@@ -119,13 +136,17 @@ public class OrganizeEventFragment extends Fragment {
         backButton = view.findViewById(R.id.button_back_button);
         createEventButton = view.findViewById(R.id.extendedFabCreateEvent);
         editTextEventName = view.findViewById(R.id.editTextEventName);
-        editTextEventDesc = view.findViewById(R.id.edit_text_number);
+        editTextEventDesc = view.findViewById(R.id.edit_text_description);
         editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
+
+        editTextLocation = view.findViewById(R.id.editTextLocation);
+        inputTextLocation = view.findViewById(R.id.inputTextLocation);
+
         reuseQRButton = view.findViewById(R.id.buttonReuseQR);
         uploadPosterButton = view.findViewById(R.id.editTextPoster);
         posterBox = view.findViewById(R.id.posterInput);
         removePosterTextView = view.findViewById(R.id.removePosterTextView);
-        locationButton = view.findViewById(R.id.editTextLocation);
+
 
         // set up date and time picker dialogs
         editTextStartDate = view.findViewById(R.id.editTextStartDate);
@@ -289,7 +310,7 @@ public class OrganizeEventFragment extends Fragment {
                     }
                 });
 
-        backButton.setOnClickListener(v -> navigateToMainPageFragment());
+        backButton.setOnClickListener(v -> getActivity().finish());
         createEventButton.setOnClickListener(v -> {
             if (validateInput() && !eventCreated) {
                 eventCreated = true;
@@ -305,6 +326,9 @@ public class OrganizeEventFragment extends Fragment {
                         .build());
             }
         });
+        editTextLocation.setOnClickListener(v -> {
+            requestCurrentLocation();
+        });
 
         reuseQRButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -316,6 +340,72 @@ public class OrganizeEventFragment extends Fragment {
         });
         return view;
     }
+    private void requestCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Request permission
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
+            return;
+        }
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10000); // 10 seconds
+        locationRequest.setFastestInterval(5000); // 5 seconds
+
+        LocationCallback locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    Toast.makeText(getContext(), "Current location not available.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        // Stop location updates
+                        fusedLocationClient.removeLocationUpdates(this);
+
+                        // Now use the location to find the city, country, and then geocode the address
+                        try {
+                            Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                            List<Address> currentAddresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                            if (!currentAddresses.isEmpty()) {
+                                Address currentAddress = currentAddresses.get(0);
+                                String city = currentAddress.getLocality();
+                                String country = currentAddress.getCountryName();
+                                String fullAddress = editTextLocation.getText().toString() + ", " + city + ", " + country;
+
+                                List<Address> addresses = geocoder.getFromLocationName(fullAddress, 1);
+                                if (addresses != null && !addresses.isEmpty()) {
+                                    Address address = addresses.get(0);
+
+                                    // Create a bundle and add the latitude and longitude
+                                    Bundle bundle = new Bundle();
+                                    bundle.putDouble("latitude", address.getLatitude());
+                                    bundle.putDouble("longitude", address.getLongitude());
+
+                                    NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+                                    navController.navigate(R.id.action_organizeEventFragment_to_mapFragment, bundle);
+                                } else {
+                                    Toast.makeText(getContext(), "Location not found. Please try a different address.", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getContext(), "Geocoder failed, please try again later.", Toast.LENGTH_LONG).show();
+                        }
+
+                        // Exit the loop after processing the first location
+                        break;
+                    }
+                }
+            }
+        };
+
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+    }
+
+
+
     private void requestLocation() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
@@ -380,13 +470,6 @@ public class OrganizeEventFragment extends Fragment {
         }
 
         return true;
-    }
-
-    /**
-     * used to return to the main page
-     */
-    private void navigateToMainPageFragment() {
-        getActivity().finish();
     }
 
     /**
@@ -504,4 +587,5 @@ public class OrganizeEventFragment extends Fragment {
                 hourOfDay, minute, false);
         timePickerDialog.show();
     }
+
 }

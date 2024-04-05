@@ -37,11 +37,9 @@ public class ViewUserProfileFragment extends Fragment {
         TextView textViewHomepage = view.findViewById(R.id.editTextEndDateTime);
         ImageView imageViewProfilePic = view.findViewById(R.id.iv_profile_pic);
 
-        // Retrieve the attendeeId passed through the arguments
         Bundle arguments = getArguments();
         if (arguments != null && arguments.containsKey("attendeeId")) {
             String attendeeId = arguments.getString("attendeeId");
-            // Fetch the user details from Firestore
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
             FirebaseController.getInstance().getUser(attendeeId, new FirebaseController.OnUserRetrievedListener() {
@@ -53,6 +51,16 @@ public class ViewUserProfileFragment extends Fragment {
                         String phone = user.getPhoneNumber();
                         String homepage = user.getHomepage();
                         String profilePicUri = user.getProfilePicture();
+
+                        if (email == null || email.isEmpty()) {
+                            email = "N/A";
+                        }
+                        if (phone == null || phone.isEmpty()) {
+                            phone = "N/A";
+                        }
+                        if (homepage == null || homepage.isEmpty()) {
+                            homepage = "N/A";
+                        }
 
                         if (profilePicUri != null && !profilePicUri.isEmpty()) {
                             Glide.with(getContext())

@@ -6,18 +6,24 @@
     android:layout_height="match_parent"
     android:id="@+id/browseProfileFragment">
 
+    <View
+        android:id="@+id/horizontal_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="45dp"/>
+
     <TextView
         android:id="@+id/tv_browse_profiles"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:gravity="center"
-        android:text="Admin Browse Profiles"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textSize="20sp"
-
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="6dp"
+        android:text="Admin Browse Images"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -35,7 +41,7 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:clickable="true"
-        android:src="@drawable/baseline_arrow_back_24"
+        android:src="?attr/actionModeCloseDrawable"
         android:padding="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

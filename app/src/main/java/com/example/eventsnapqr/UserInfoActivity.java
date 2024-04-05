@@ -53,6 +53,7 @@ public class UserInfoActivity extends AppCompatActivity {
     private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
     private Switch locationSwitch;
     private Switch notificationSwitch;
+    private boolean showSwitches;
 
     private final int PERMISSION_REQUEST_CODE = 100;
     String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
@@ -147,6 +148,12 @@ public class UserInfoActivity extends AppCompatActivity {
 
         Bundle extra = getIntent().getExtras();
         androidID = extra.get("androidId").toString();
+        showSwitches = extra.getBoolean("showSwitches");
+
+        if (!showSwitches) {
+            locationSwitch.setVisibility(View.INVISIBLE);
+            notificationSwitch.setVisibility(View.INVISIBLE);
+        }
 
         FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
             @Override
@@ -162,14 +169,17 @@ public class UserInfoActivity extends AppCompatActivity {
                         profilePictureImage.setImageBitmap(initialsImageBitmap);
                     }
 
-                    userName.setText(user.getName());
-                    Log.d("TAG", "User name: " + user.getName());
-                    email.setText(user.getEmail());
-                    Log.d("TAG", "User email: " + user.getEmail());
-                    phoneNumber.setText(user.getPhoneNumber());
-                    Log.d("TAG", "User phone number: " + user.getPhoneNumber());
-                    homepage.setText(user.getHomepage());
-                    Log.d("TAG", "User homepage: " + user.getHomepage());
+                    userName.setText(user.getName().trim());
+                    if (user.getEmail() != null) {
+                        email.setText(user.getEmail().trim());
+                    }
+                    if (user.getPhoneNumber() != null) {
+                        phoneNumber.setText(user.getPhoneNumber().trim());
+                    }
+                    if (user.getHomepage() != null) {
+                        homepage.setText(user.getHomepage().trim());
+                    }
+
                 }
             }
         });
@@ -217,9 +227,15 @@ public class UserInfoActivity extends AppCompatActivity {
                     @Override
                     public void onUserRetrieved(User user) {
                         user.setName(userName.getText().toString());
-                        user.setEmail(email.getText().toString());
-                        user.setPhoneNumber(phoneNumber.getText().toString());
-                        user.setHomepage(homepage.getText().toString());
+                        if (user.getEmail() != null) {
+                            email.setText(user.getEmail().trim());
+                        }
+                        if (user.getPhoneNumber() != null) {
+                            phoneNumber.setText(user.getPhoneNumber().trim());
+                        }
+                        if (user.getHomepage() != null) {
+                            homepage.setText(user.getHomepage().trim());
+                        }
                         FirebaseController.getInstance().addUser(user);
                         if (user.getProfilePicture() == null) {
                             Bitmap initialsImageBitmap = user.generateInitialsImage(user.getName().toString());

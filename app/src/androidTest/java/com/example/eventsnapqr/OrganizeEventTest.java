@@ -3,31 +3,19 @@ package com.example.eventsnapqr;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static junit.framework.TestCase.assertEquals;
 
-import android.content.ContentResolver;
-import android.content.Context;
-import android.provider.Settings;
-
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-
-import java.util.ArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /**
  *  Test class for testing organize events
@@ -80,8 +68,8 @@ public class OrganizeEventTest {
     public void geolocationTest(){
         // Launch OrganizeAnEventActivity and create the event
         ActivityScenario.launch(OrganizeAnEventActivity.class);
-        onView(withId(R.id.editTextEventName)).perform(typeText(id));
-        onView(withId(R.id.edit_text_number)).perform(typeText("Event description"));
+        //onView(withId(R.id.editTextEventName)).perform(typeText(id));
+        onView(withId(R.id.edit_text_description)).perform(typeText("Event description"));
     }
     /**
     @Before

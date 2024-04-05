@@ -19,6 +19,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -45,6 +46,8 @@ public class EventDetailFragment extends Fragment {
     private TextInputEditText eventAnnouncements;
     private TextInputEditText eventStartDateTime;
     private TextInputEditText eventEndDateTime;
+    private ExtendedFloatingActionButton signUpButton;
+    private TextView signUpMessage;
     private Integer position;
     private Boolean toMain;
 
@@ -98,15 +101,34 @@ public class EventDetailFragment extends Fragment {
         eventAnnouncements = view.findViewById(R.id.editTextAnnouncements);
         eventStartDateTime = view.findViewById(R.id.editTextStartDateTime);
         eventEndDateTime = view.findViewById(R.id.editTextEndDateTime);
+        signUpButton = view.findViewById(R.id.sign_up_button);
+        signUpMessage = view.findViewById(R.id.sign_up_message);
 
         FirebaseController.getInstance().isUserSignedUp(androidId, eventId, new FirebaseController.OnSignUpCheckListener() {
             @Override
             public void onSignUpCheck(boolean isSignedUp) {
                 if (isSignedUp) {
-                    view.findViewById(R.id.sign_up_button).setVisibility(View.INVISIBLE);
-                    TextView signUpMessage = view.findViewById(R.id.sign_up_message);
+                    signUpButton.setVisibility(View.INVISIBLE);
                     signUpMessage.setVisibility(View.VISIBLE);
+                    FirebaseController.getInstance().checkAttendeeCheckins(eventId, androidId, new FirebaseController.CheckAttendeeCheckinsCallback() {
+                        @Override
+                        public void onSuccess(int checkins) {
+                            if (checkins == 1) {
+                                signUpMessage.setText("Checked in 1 time!");
+                            } else if (checkins > 0) {
+                                signUpMessage.setText("Checked in " + checkins + "times!");
+                            } else if (checkins == -1) {
+                                signUpMessage.setText("You are signed-up to attend this event!");
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Toast.makeText(getContext(), "Failed to get check-ins information.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
+                signUpMessage.setText("You are signed up for this event!");
             }
         });
 
@@ -128,7 +150,7 @@ public class EventDetailFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.sign_up_button).setOnClickListener(new View.OnClickListener() {
+        signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FirebaseController.getInstance().getUser(androidId, new FirebaseController.OnUserRetrievedListener() {
@@ -187,11 +209,11 @@ public class EventDetailFragment extends Fragment {
      */
     public void CreateDialog(String eventName) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle ("You have successfully signed up for " + eventName)
+        builder.setTitle ("Signed up for " + eventName)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // Back to main page
-                        requireActivity().finish();
+                        signUpButton.setVisibility(View.INVISIBLE);
+                        signUpMessage.setVisibility(View.VISIBLE);
                     }
                 });
 
@@ -260,5 +282,25 @@ public class EventDetailFragment extends Fragment {
         eventMaxAttendees.setText(event.getMaxAttendees() != null ? String.valueOf(event.getMaxAttendees()) : "N/A");
     }
 
-
+    /**
+     * returns the correct suffix for the given integer
+     *
+     * @param n the number in which to retrieve the suffix
+     */
+    public String getSuffix(Integer n) {
+        if (n >= 11 && n <= 13) {
+            return "th";
+        } else {
+            switch (n % 10) {
+                case 1:
+                    return "st";
+                case 2:
+                    return "nd";
+                case 3:
+                    return "rd";
+                default:
+                    return "th";
+            }
+        }
+    }
 }

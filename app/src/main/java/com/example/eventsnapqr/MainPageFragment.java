@@ -219,6 +219,7 @@ public class MainPageFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), UserInfoActivity.class);
                 intent.putExtra("androidId", androidId);
+                intent.putExtra("showSwitches", true);
                 startActivity(intent);
             }
         });
