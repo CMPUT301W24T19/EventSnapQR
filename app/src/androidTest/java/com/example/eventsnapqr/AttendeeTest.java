@@ -117,7 +117,7 @@ public class AttendeeTest {
     }
 
     /**
-     * Test for  US 02.07.01, US 02.04.01
+     * Test for  US 02.07.01, US 02.04.01 (sill in progress)
      */
     @Test
     public void signUpForEventTest(){
