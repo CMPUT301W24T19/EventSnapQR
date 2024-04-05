@@ -319,20 +319,11 @@
                     android:id="@+id/editTextLocation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:cursorVisible="false"
                     android:focusable="false"
-                    android:inputType="none"
+                    android:cursorVisible="false"
                     android:textColor="@color/black" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
-                android:id="@+id/locationButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Open Map"
-                android:drawablePadding="8dp"
-                android:visibility="gone"/>
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inputTextMaxAttendees"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"

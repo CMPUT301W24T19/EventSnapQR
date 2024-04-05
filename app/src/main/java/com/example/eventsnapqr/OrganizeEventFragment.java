@@ -141,7 +141,6 @@ public class OrganizeEventFragment extends Fragment {
         editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
 
         editTextLocation = view.findViewById(R.id.editTextLocation);
-        locationButton = view.findViewById(R.id.locationButton);
         inputTextLocation = view.findViewById(R.id.inputTextLocation);
 
         reuseQRButton = view.findViewById(R.id.buttonReuseQR);
@@ -312,7 +311,7 @@ public class OrganizeEventFragment extends Fragment {
                     }
                 });
 
-        backButton.setOnClickListener(v -> navigateToMainPageFragment());
+        backButton.setOnClickListener(v -> getActivity().finish());
         createEventButton.setOnClickListener(v -> {
             if (validateInput() && !eventCreated) {
                 eventCreated = true;
@@ -329,19 +328,8 @@ public class OrganizeEventFragment extends Fragment {
             }
         });
         editTextLocation.setOnClickListener(v -> {
-            // Make the "Open Map" button visible
-            locationButton.setVisibility(View.VISIBLE);
-            // Optionally, you can also make editTextLocation focusable and open keyboard for input
-            editTextLocation.setFocusableInTouchMode(true);
-            editTextLocation.requestFocus();
-
+            requestCurrentLocation();
         });
-
-        locationButton.setOnClickListener(v -> {
-            requestCurrentLocation(); // Now calling the new method to get the current location
-        });
-
-
 
         reuseQRButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -483,13 +471,6 @@ public class OrganizeEventFragment extends Fragment {
         }
 
         return true;
-    }
-
-    /**
-     * used to return to the main page
-     */
-    private void navigateToMainPageFragment() {
-        getActivity().finish();
     }
 
     /**
