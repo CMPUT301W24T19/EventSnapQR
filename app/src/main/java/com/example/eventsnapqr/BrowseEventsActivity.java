@@ -8,6 +8,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -77,8 +79,9 @@ public class BrowseEventsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(eventId == null){
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
+                    //Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    //startActivity(intent);
+                    finish();
                 }
                 else{
                     finish();
