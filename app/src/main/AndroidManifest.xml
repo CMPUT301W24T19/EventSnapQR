@@ -49,6 +49,7 @@
             tools:replace="android:screenOrientation" />
         <activity
             android:name=".OrganizeAnEventActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
         <activity
             android:name=".UserInfoActivity"
