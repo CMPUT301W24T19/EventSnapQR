@@ -19,6 +19,7 @@ public class Event {
     private String eventID; // unique id
     private Date eventStartDateTime;
     private Date eventEndDateTime;
+    private String address;
     private boolean active;
 
     /**
@@ -30,7 +31,8 @@ public class Event {
      * @param posterURI URL for the event poster
      * @param maxAttendees maximum number of attendees
      */
-    public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees, String eventID, Date eventStartDateTime, Date eventEndDateTime, boolean active) {
+    public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees,
+                 String eventID, Date eventStartDateTime, Date eventEndDateTime, String address, boolean active) {
         this.organizer = organizer;
         this.eventName = eventName;
         this.description = description;
@@ -39,6 +41,7 @@ public class Event {
         this.eventID = eventID;
         this.eventStartDateTime = eventStartDateTime;
         this.eventEndDateTime = eventEndDateTime;
+        this.address = address;
         this.active = active;
         this.announcements = new ArrayList<>();
     }
@@ -183,6 +186,14 @@ public class Event {
      */
     public Date getEventEndDateTime() {
         return this.eventEndDateTime;
+    }
+
+    /**
+     * get the address of the event
+     * @return
+     */
+    public String getAddress() {
+        return address;
     }
 
     /**

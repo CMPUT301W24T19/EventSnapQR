@@ -1,19 +1,11 @@
 package com.example.eventsnapqr;
 
 import static android.app.PendingIntent.getActivity;
+import static androidx.camera.core.CameraXThreads.TAG;
 import static androidx.core.content.ContentProviderCompat.requireContext;
 
-import static java.security.AccessController.getContext;
-
-import android.app.Activity;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -37,16 +29,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -60,7 +47,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ManageEventActivity extends AppCompatActivity {
@@ -162,7 +148,6 @@ public class ManageEventActivity extends AppCompatActivity {
                 if (event != null) {
                     currentEvent = event;
                     eventNameTextView.setText(currentEvent.getEventName());
-
                     fetchAttendeeData(true);
                 } else {
                     Log.d("ManageEventActivity", "Failed to retrieve event");
@@ -272,13 +257,13 @@ public class ManageEventActivity extends AppCompatActivity {
                     Long longValue = documentSnapshot.getLong("checkedIn");
                     Integer numCheckIns = longValue != null ? longValue.intValue() : 0;
 
-                    Log.d("TAG", "true");
                     if (checkedIn || numCheckIns > 0) { // Check if checkedIn is true or user is already checked in
                         DocumentReference checkedInRef = attendeesRef.document(attendeeId).collection("checkedIn").document("check");
                         checkedInRef.get().addOnSuccessListener(checkedInDocumentSnapshot -> {
                             if (numCheckIns > 0) {
                                 checkedInCount++;
                             }
+                            attendeeCount++;
                             firebaseController.getUser(attendeeId, user -> {
                                 if (user != null) {
                                     HashMap<String, Object> attendeeData = new HashMap<>();
@@ -286,9 +271,6 @@ public class ManageEventActivity extends AppCompatActivity {
                                     attendeeData.put("id", user.getDeviceID());
                                     attendeeData.put("checkedIn", numCheckIns);
                                     attendees.add(attendeeData);
-                                    //attendeeNames.add(user.getName());
-                                    //attendeeIds.add(user.getDeviceID());
-                                    //attendeeCheckedIn.add(numCheckIns); // Add checked in count
                                     eventAdapter.notifyDataSetChanged();
                                     if (retrievalCounter.incrementAndGet() == totalAttendees) {
                                         updateTexts();
@@ -309,37 +291,46 @@ public class ManageEventActivity extends AppCompatActivity {
                                         }
                                         eventAdapter.notifyDataSetChanged();
                                         fetchMilestones();
+                                        updateTexts();
                                     }
                                 }
                             });
                         }).addOnFailureListener(e -> {
-                            Log.d("TAG", "true1");
                             retrievalCounter.incrementAndGet(); // Increment even on failure to keep track
                             if (retrievalCounter.get() == totalAttendees) {
-                                updateTexts();
+                                eventAdapter.notifyDataSetChanged();
                                 fetchMilestones();
+                                updateTexts();
                             }
                         });
                     } else {
                         Log.d("TAG", "true2");
                         retrievalCounter.incrementAndGet(); // Increment for non-checked-in users
                         if (retrievalCounter.get() == totalAttendees) {
-                            updateTexts();
+                            eventAdapter.notifyDataSetChanged();
                             fetchMilestones();
+                            updateTexts();
                         }
                     }
                 }
             }
             else {
+                eventAdapter.notifyDataSetChanged();
                 fetchMilestones();
+                updateTexts();
             }
         }).addOnFailureListener(e -> {
             Log.d("TAG", "true3");
             Log.d("FetchAttendeeData", "Error fetching attendee data: " + e.getMessage());
+            eventAdapter.notifyDataSetChanged();
             fetchMilestones();
+            updateTexts();
         });
     }
 
+    /**
+     * update the real time attendance counters and add checked in milestones according to them
+     */
     private void updateTexts() {
         totalAttendeesTextView.setText("Total Attendees: " + attendeeCount);
         totalCheckedInTextView.setText("Total Checked-In: " + checkedInCount);
@@ -359,7 +350,7 @@ public class ManageEventActivity extends AppCompatActivity {
                 .setPositiveButton("View Profile", (dialog, id) -> {
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("fragmentToLoad", "ViewUserProfileFragment");
-                    // Optionally, pass the attendee ID or any other information
+                    // optionally, pass the attendee ID or any other information
                     intent.putExtra("attendeeId", attendeeIds.get(position));
                     startActivity(intent);
                 })
@@ -369,30 +360,46 @@ public class ManageEventActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-
-
-
     /**
      * alert dialog used to confirm if the admin wants to delete the event
      * @param attendeeId the user object that may be removed from the event
      */
-    private void showDeleteConfirmationDialog(String attendeeId) {
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(ManageEventActivity.this);
+    private void showDeleteConfirmationDialog(final String attendeeId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ManageEventActivity.this);
         builder.setTitle("Confirm Removal")
-                .setMessage("Are you sure you want to remove '" + attendeeId + "' from your event?")
-                .setPositiveButton("Yes", (dialog, which) -> { // if yes
-                    Runnable completionCallback = null;
-                    try {
-                        // delete the attendee from the event
-                    }
-                    catch (Exception e) {
-                        Log.d("TAG", e.toString());
-                    }
+                .setMessage("Are you sure you want to remove this attendee from your event?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    firebaseController.removeAttendee(eventId, attendeeId, new FirebaseController.RemoveAttendeeCallback() {
+                        @Override
+                        public void onSuccess() {
+                            runOnUiThread(() -> {
+                                int indexToRemove = attendeeIds.indexOf(attendeeId);
+                                if (indexToRemove != -1) {
+                                    attendeeNames.remove(indexToRemove);
+                                    attendeeIds.remove(indexToRemove);
+                                    attendeeCheckedIn.remove(indexToRemove);
+                                    eventAdapter.notifyDataSetChanged();
+                                    attendeeCount--;
+                                    updateTexts();
+                                    Toast.makeText(ManageEventActivity.this, "Attendee removed successfully", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            runOnUiThread(() -> {
+                                Log.d("MANAGE ERROR", "Error removing attendee: " + e.getMessage());
+                                Toast.makeText(ManageEventActivity.this, "Failed to remove attendee", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    });
                 })
                 .setNegativeButton("No", null)
                 .create()
                 .show();
     }
+
 
 
     /**
@@ -478,14 +485,11 @@ public class ManageEventActivity extends AppCompatActivity {
             int itemId = item.getItemId();
 
             if (itemId == R.id.view_qr) { // view QR code again
-                Bundle bundle = new Bundle();
-                bundle.putString("eventId", eventId);
-                bundle.putString("destination", "manage");
-                FragmentManager manager = getSupportFragmentManager();
-                QRDialogFragment qrDialogFragment = new QRDialogFragment();
-                qrDialogFragment.setArguments(bundle);
-                manager.beginTransaction().replace(android.R.id.content, qrDialogFragment).commit();
-                //QRDialogFragment qrDialogFragment = new QRDialogFragment();
+                Intent intent = new Intent(this, QRActivity.class);
+                intent.putExtra("eventId", eventId);
+                intent.putExtra("destination", "manage");
+                startActivity(intent);
+                //QRActivity qrDialogFragment = new QRActivity();
                 //qrDialogFragment.setArguments(bundle);
                 //qrDialogFragment.show(getSupportFragmentManager(), "qr_dialog_fragment");
                 return true;
@@ -504,7 +508,6 @@ public class ManageEventActivity extends AppCompatActivity {
 
                 return true;
             } else if (itemId == R.id.view_map) { // view map
-                // Retrieving the eventName from the currentEvent object
                 fab.setVisibility(View.GONE);
                 String eventName = currentEvent.getEventName();
                 MapFragment mapFragment = new MapFragment(eventName);

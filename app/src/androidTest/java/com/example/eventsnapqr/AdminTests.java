@@ -368,7 +368,7 @@ public class AdminTests {
         }
         Log.d("TAG", "Making event");
         Log.d("TAG", "Event URI: " + result[0].toString());
-        Event testEvent = new Event(testUser, "testEvent", "testDescription", result[0].toString(), null, "eventID", "testAnnouncements", null);
+        Event testEvent = new Event(testUser, "testEvent", "testDescription", result[0].toString(), 5, "eventID", null, null, true);
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseFirestore.collection("users").document(androidId).set(testUser);

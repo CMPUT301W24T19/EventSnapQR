@@ -13,6 +13,7 @@ import android.location.Address;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -76,6 +77,8 @@ import com.google.android.gms.location.LocationServices;
 
 import java.time.Instant;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -98,6 +101,7 @@ public class OrganizeEventFragment extends Fragment {
     private TextInputEditText editTextEndDate;
     private TextInputEditText editTextEndTime;
     private TextInputEditText uploadPosterButton;
+    private TextInputEditText editTextAddress;
     private TextInputEditText editTextLocation;
     private TextInputLayout inputTextLocation;
     private Button locationButton;
@@ -141,7 +145,6 @@ public class OrganizeEventFragment extends Fragment {
         editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
 
         editTextLocation = view.findViewById(R.id.editTextLocation);
-        locationButton = view.findViewById(R.id.locationButton);
         inputTextLocation = view.findViewById(R.id.inputTextLocation);
 
         reuseQRButton = view.findViewById(R.id.buttonReuseQR);
@@ -162,6 +165,7 @@ public class OrganizeEventFragment extends Fragment {
 
         editTextEndTime = view.findViewById(R.id.editTextEndTime);
         editTextEndTime.setOnClickListener(v -> showTimePickerDialog(editTextEndTime));
+        editTextAddress = view.findViewById(R.id.editTextAddress);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         requestLocation();
 
@@ -312,7 +316,7 @@ public class OrganizeEventFragment extends Fragment {
                     }
                 });
 
-        backButton.setOnClickListener(v -> navigateToMainPageFragment());
+        backButton.setOnClickListener(v -> getActivity().finish());
         createEventButton.setOnClickListener(v -> {
             if (validateInput() && !eventCreated) {
                 eventCreated = true;
@@ -329,19 +333,8 @@ public class OrganizeEventFragment extends Fragment {
             }
         });
         editTextLocation.setOnClickListener(v -> {
-            // Make the "Open Map" button visible
-            locationButton.setVisibility(View.VISIBLE);
-            // Optionally, you can also make editTextLocation focusable and open keyboard for input
-            editTextLocation.setFocusableInTouchMode(true);
-            editTextLocation.requestFocus();
-
+            requestCurrentLocation();
         });
-
-        locationButton.setOnClickListener(v -> {
-            requestCurrentLocation(); // Now calling the new method to get the current location
-        });
-
-
 
         reuseQRButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -416,8 +409,6 @@ public class OrganizeEventFragment extends Fragment {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
 
-
-
     private void requestLocation() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
@@ -432,7 +423,6 @@ public class OrganizeEventFragment extends Fragment {
                     }
                 });
     }
-
 
     /**
      * validate each input field before creating an event
@@ -485,13 +475,6 @@ public class OrganizeEventFragment extends Fragment {
     }
 
     /**
-     * used to return to the main page
-     */
-    private void navigateToMainPageFragment() {
-        getActivity().finish();
-    }
-
-    /**
      * add the event to the database and generate a unique QR code for the event
      */
     private void createEvent() {
@@ -503,6 +486,7 @@ public class OrganizeEventFragment extends Fragment {
         String eventStartTime = editTextStartTime.getText().toString();
         String eventEndDate = editTextEndDate.getText().toString();
         String eventEndTime = editTextEndTime.getText().toString();
+        String eventAddress = editTextAddress.getText().toString();
 
         Date startDateTime;
         Date endDateTime;
@@ -528,8 +512,6 @@ public class OrganizeEventFragment extends Fragment {
                     else {
                         eventID = reusingQR;
                     }
-                    Bundle bundle = new Bundle();
-                    bundle.putString("eventId", eventID);
 
                     if (imageUri != null) {
                         StorageReference userRef = storageRef.child("eventPosters/" + eventID); // specifies the path on the cloud storage
@@ -537,37 +519,47 @@ public class OrganizeEventFragment extends Fragment {
                             userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                 imageUri = uri;
                                 uriString = imageUri.toString();
-                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, true);
+                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, eventAddress, true);
                                 Log.d("USER NAME", newEvent.getOrganizer().getName());
                                 firebaseController.addEvent(newEvent);
                                 firebaseController.addOrganizedEvent(user, newEvent);
-                                bundle.putString("destination", "main");
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + " created at: "+Instant.now());
+                                    LocalDateTime now = LocalDateTime.now();
+                                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy '@' hh:mm a");
+                                    String formattedNow = formatter.format(now);
+                                    firebaseController.addMilestone(newEvent, newEvent.getEventName() + " created on "+ formattedNow);
                                 }
                                 else{
                                     firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + "has been created");
                                 }
-                                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                                navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                                Intent intent = new Intent(getActivity(), QRActivity.class);
+                                intent.putExtra("eventId", eventID);
+                                intent.putExtra("destination", "main");
+                                startActivity(intent);
+                                getActivity().finish();
                             });
                         });
                     } else {
                         uriString = null;
-                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, true);
+                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, eventAddress, true);
                         Log.d("USER NAME", " "+newEvent.getOrganizer().getName());
 
                         firebaseController.addEvent(newEvent);
-                        bundle.putString("destination", "main");
                         firebaseController.addOrganizedEvent(user, newEvent);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + " created at: "+Instant.now());
+                            LocalDateTime now = LocalDateTime.now();
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy '@' hh:mm a");
+                            String formattedNow = formatter.format(now);
+                            firebaseController.addMilestone(newEvent, newEvent.getEventName() + " created on "+ formattedNow);
                         }
                         else{
                             firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + "has been created");
                         }
-                        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                        navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                        Intent intent = new Intent(getActivity(), QRActivity.class);
+                        intent.putExtra("eventId", eventID);
+                        intent.putExtra("destination", "main");
+                        startActivity(intent);
+                        getActivity().finish();
                     }
                 }
             }

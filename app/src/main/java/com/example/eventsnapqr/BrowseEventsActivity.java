@@ -38,6 +38,7 @@ public class BrowseEventsActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
         fullscreenViewPager = findViewById(R.id.fullscreenViewPager);
         tabLayout = findViewById(R.id.tabLayout);
+        viewPager.setOffscreenPageLimit(3);
 
 
         viewPager.setAdapter(new BrowseEventsAdapter(this));

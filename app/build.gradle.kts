@@ -69,7 +69,7 @@ dependencies {
     androidTestImplementation("com.android.support.test.espresso:espresso-idling-resource:3.0.2")
     androidTestImplementation("com.google.firebase:firebase-storage:20.3.0")
     androidTestImplementation(platform("com.google.firebase:firebase-bom:32.8.0"))
-    androidTestImplementation("com.google.firebase:firebase-firestore")
+    androidTestImplementation("com.google.firebase:firebase-firestore:24.11.0")
     androidTestImplementation("com.firebaseui:firebase-ui-storage:8.0.2")
     androidTestImplementation("com.google.firebase:firebase-database:20.3.1")
 
@@ -83,7 +83,7 @@ dependencies {
     testImplementation ("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testRuntimeOnly ("org.junit.jupiter:junit-jupiter-engine:5.10.2")
     testImplementation("junit:junit:4.13.2")
-
+    androidTestImplementation("org.mockito:mockito-android:5.11.0")
     implementation ("org.osmdroid:osmdroid-android:6.1.18")
     implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation ("org.osmdroid:osmdroid-mapsforge:6.1.18") 
