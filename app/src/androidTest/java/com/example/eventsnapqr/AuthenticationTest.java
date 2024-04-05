@@ -3,43 +3,31 @@ package com.example.eventsnapqr;
 //import org.junit.Rule;
 
 import static android.app.PendingIntent.getActivity;
-import static androidx.test.espresso.Espresso.closeSoftKeyboard;
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static junit.framework.TestCase.assertEquals;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertTrue;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.Settings;
-import android.view.inputmethod.InputMethodManager;
 
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.action.CloseKeyboardAction;
 import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.rule.ActivityTestRule;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -104,7 +92,7 @@ public class AuthenticationTest {
                 e.printStackTrace();
             }
             onView(withId(R.id.edit_text_name)).perform(typeText("Test Event Name"));
-            onView(withId(R.id.edit_text_number)).perform(typeText("4033402450"));
+            onView(withId(R.id.edit_text_description)).perform(typeText("4033402450"));
             onView(withId(R.id.edit_text_email)).perform(typeText("test@email.com"));
             onView(withId(R.id.edit_text_homepage)).perform(typeText("www.homepage.com"));
             onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard());

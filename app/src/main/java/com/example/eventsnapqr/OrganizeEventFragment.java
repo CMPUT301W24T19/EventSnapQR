@@ -8,15 +8,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Shader;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.LevelListDrawable;
 import android.Manifest;
 import android.graphics.ImageDecoder;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
@@ -49,17 +44,11 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.zxing.Binarizer;
 import com.google.zxing.BinaryBitmap;
-import com.google.zxing.ChecksumException;
-import com.google.zxing.FormatException;
 import com.google.zxing.LuminanceSource;
-import com.google.zxing.MultiFormatReader;
-import com.google.zxing.NotFoundException;
 import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
-import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.qrcode.QRCodeReader;
 
 import java.io.FileNotFoundException;
@@ -73,7 +62,6 @@ import com.google.android.gms.location.LocationServices;
 
 
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -132,7 +120,7 @@ public class OrganizeEventFragment extends Fragment {
         backButton = view.findViewById(R.id.button_back_button);
         createEventButton = view.findViewById(R.id.extendedFabCreateEvent);
         editTextEventName = view.findViewById(R.id.editTextEventName);
-        editTextEventDesc = view.findViewById(R.id.edit_text_number);
+        editTextEventDesc = view.findViewById(R.id.edit_text_description);
         editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
         reuseQRButton = view.findViewById(R.id.buttonReuseQR);
         uploadPosterButton = view.findViewById(R.id.editTextPoster);
