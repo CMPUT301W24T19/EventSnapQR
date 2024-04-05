@@ -481,9 +481,13 @@ public class ManageEventActivity extends AppCompatActivity {
                 Bundle bundle = new Bundle();
                 bundle.putString("eventId", eventId);
                 bundle.putString("destination", "manage");
+                FragmentManager manager = getSupportFragmentManager();
                 QRDialogFragment qrDialogFragment = new QRDialogFragment();
                 qrDialogFragment.setArguments(bundle);
-                qrDialogFragment.show(getSupportFragmentManager(), "qr_dialog_fragment");
+                manager.beginTransaction().replace(android.R.id.content, qrDialogFragment).commit();
+                //QRDialogFragment qrDialogFragment = new QRDialogFragment();
+                //qrDialogFragment.setArguments(bundle);
+                //qrDialogFragment.show(getSupportFragmentManager(), "qr_dialog_fragment");
                 return true;
             } else if (itemId == R.id.upload_poster) { // modify the associated poster
                 choosePoster.launch(new PickVisualMediaRequest.Builder()
