@@ -14,6 +14,7 @@
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="Admin Browse Images"
+        android:textColor="#4c4943"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/rv_event_posters"
@@ -26,7 +27,7 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:clickable="true"
-        android:src="@drawable/baseline_arrow_back_24"
+        android:src="?attr/actionModeCloseDrawable"
         android:padding="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

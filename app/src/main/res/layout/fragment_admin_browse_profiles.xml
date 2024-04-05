@@ -15,7 +15,7 @@
         android:text="Admin Browse Profiles"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="20sp"
-
+        android:textColor="#4c4943"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -35,7 +35,7 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:clickable="true"
-        android:src="@drawable/baseline_arrow_back_24"
+        android:src="?attr/actionModeCloseDrawable"
         android:padding="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -1,6 +1,7 @@
 package com.example.eventsnapqr;
 
 import static android.app.PendingIntent.getActivity;
+import static androidx.camera.core.CameraXThreads.TAG;
 import static androidx.core.content.ContentProviderCompat.requireContext;
 
 import static java.security.AccessController.getContext;
@@ -279,6 +280,7 @@ public class ManageEventActivity extends AppCompatActivity {
                             if (numCheckIns > 0) {
                                 checkedInCount++;
                             }
+                            attendeeCount++;
                             firebaseController.getUser(attendeeId, user -> {
                                 if (user != null) {
                                     HashMap<String, Object> attendeeData = new HashMap<>();
@@ -286,9 +288,6 @@ public class ManageEventActivity extends AppCompatActivity {
                                     attendeeData.put("id", user.getDeviceID());
                                     attendeeData.put("checkedIn", numCheckIns);
                                     attendees.add(attendeeData);
-                                    //attendeeNames.add(user.getName());
-                                    //attendeeIds.add(user.getDeviceID());
-                                    //attendeeCheckedIn.add(numCheckIns); // Add checked in count
                                     eventAdapter.notifyDataSetChanged();
                                     if (retrievalCounter.incrementAndGet() == totalAttendees) {
                                         updateTexts();
@@ -309,6 +308,7 @@ public class ManageEventActivity extends AppCompatActivity {
                                         }
                                         eventAdapter.notifyDataSetChanged();
                                         fetchMilestones();
+                                        updateTexts();
                                     }
                                 }
                             });
@@ -359,7 +359,7 @@ public class ManageEventActivity extends AppCompatActivity {
                 .setPositiveButton("View Profile", (dialog, id) -> {
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.putExtra("fragmentToLoad", "ViewUserProfileFragment");
-                    // Optionally, pass the attendee ID or any other information
+                    // optionally, pass the attendee ID or any other information
                     intent.putExtra("attendeeId", attendeeIds.get(position));
                     startActivity(intent);
                 })
@@ -369,30 +369,46 @@ public class ManageEventActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-
-
-
     /**
      * alert dialog used to confirm if the admin wants to delete the event
      * @param attendeeId the user object that may be removed from the event
      */
-    private void showDeleteConfirmationDialog(String attendeeId) {
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(ManageEventActivity.this);
+    private void showDeleteConfirmationDialog(final String attendeeId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ManageEventActivity.this);
         builder.setTitle("Confirm Removal")
-                .setMessage("Are you sure you want to remove '" + attendeeId + "' from your event?")
-                .setPositiveButton("Yes", (dialog, which) -> { // if yes
-                    Runnable completionCallback = null;
-                    try {
-                        // delete the attendee from the event
-                    }
-                    catch (Exception e) {
-                        Log.d("TAG", e.toString());
-                    }
+                .setMessage("Are you sure you want to remove this attendee from your event?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    firebaseController.removeAttendee(eventId, attendeeId, new FirebaseController.RemoveAttendeeCallback() {
+                        @Override
+                        public void onSuccess() {
+                            runOnUiThread(() -> {
+                                int indexToRemove = attendeeIds.indexOf(attendeeId);
+                                if (indexToRemove != -1) {
+                                    attendeeNames.remove(indexToRemove);
+                                    attendeeIds.remove(indexToRemove);
+                                    attendeeCheckedIn.remove(indexToRemove);
+                                    eventAdapter.notifyDataSetChanged();
+                                    attendeeCount--;
+                                    updateTexts();
+                                    Toast.makeText(ManageEventActivity.this, "Attendee removed successfully", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            runOnUiThread(() -> {
+                                Log.d("MANAGE ERROR", "Error removing attendee: " + e.getMessage());
+                                Toast.makeText(ManageEventActivity.this, "Failed to remove attendee", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    });
                 })
                 .setNegativeButton("No", null)
                 .create()
                 .show();
     }
+
 
 
     /**
@@ -485,9 +501,6 @@ public class ManageEventActivity extends AppCompatActivity {
                 QRDialogFragment qrDialogFragment = new QRDialogFragment();
                 qrDialogFragment.setArguments(bundle);
                 manager.beginTransaction().replace(android.R.id.content, qrDialogFragment).commit();
-                //QRDialogFragment qrDialogFragment = new QRDialogFragment();
-                //qrDialogFragment.setArguments(bundle);
-                //qrDialogFragment.show(getSupportFragmentManager(), "qr_dialog_fragment");
                 return true;
             } else if (itemId == R.id.upload_poster) { // modify the associated poster
                 choosePoster.launch(new PickVisualMediaRequest.Builder()
@@ -504,7 +517,6 @@ public class ManageEventActivity extends AppCompatActivity {
 
                 return true;
             } else if (itemId == R.id.view_map) { // view map
-                // Retrieving the eventName from the currentEvent object
                 fab.setVisibility(View.GONE);
                 String eventName = currentEvent.getEventName();
                 MapFragment mapFragment = new MapFragment(eventName);

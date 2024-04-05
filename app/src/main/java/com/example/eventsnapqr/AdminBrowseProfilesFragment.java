@@ -97,18 +97,33 @@ public class AdminBrowseProfilesFragment extends Fragment {
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 profileList.clear();
                 Log.d("TAG", "Snapshot");
-                for (QueryDocumentSnapshot doc: value) {
+                for (QueryDocumentSnapshot doc : value) {
                     String deviceID = (String) doc.getId();
                     String userName = (String) doc.getData().get("name");
                     String homePage = (String) doc.getData().get("homepage");
                     String phoneNumber = (String) doc.getData().get("phoneNumber");
                     String email = (String) doc.getData().get("email");
                     String profilePicture = (String) doc.getData().get("profileURI");
+
+                    if (homePage == null || homePage.isEmpty()) {
+                        homePage = "N/A";
+                    }
+                    if (phoneNumber == null || phoneNumber.isEmpty()) {
+                        phoneNumber = "N/A";
+                    }
+                    if (email == null || email.isEmpty()) {
+                        email = "N/A";
+                    }
+                    if (profilePicture == null || profilePicture.isEmpty()) {
+                        profilePicture = "N/A";
+                    }
+
                     User user = new User(userName, deviceID, homePage, phoneNumber, email);
                     user.setProfilePicture(profilePicture);
                     Log.d("TAG", "Profile: " + userName);
                     profileList.add(user);
                 }
+
                 adapter.notifyDataSetChanged();
             }
         });
@@ -123,9 +138,9 @@ public class AdminBrowseProfilesFragment extends Fragment {
                         + "Phone Number: " + user.getPhoneNumber() + "\n"
                         + "Email: " + user.getEmail() + "\n")
                         .setPositiveButton("View", (dialog, which) -> {
-                            // Use the position parameter directly
                             Intent intent = new Intent(getContext(), UserInfoActivity.class);
                             intent.putExtra("androidId", user.getDeviceID());
+                            intent.putExtra("showSwitches", false);
                             startActivity(intent);
                         })
                         .setNegativeButton("Delete", (dialog, which) -> {

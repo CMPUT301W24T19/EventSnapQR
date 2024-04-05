@@ -53,6 +53,7 @@ public class UserInfoActivity extends AppCompatActivity {
     private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
     private Switch locationSwitch;
     private Switch notificationSwitch;
+    private boolean showSwitches;
 
     private final int PERMISSION_REQUEST_CODE = 100;
     String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
@@ -147,6 +148,12 @@ public class UserInfoActivity extends AppCompatActivity {
 
         Bundle extra = getIntent().getExtras();
         androidID = extra.get("androidId").toString();
+        showSwitches = extra.getBoolean("showSwitches");
+
+        if (!showSwitches) {
+            locationSwitch.setVisibility(View.INVISIBLE);
+            notificationSwitch.setVisibility(View.INVISIBLE);
+        }
 
         FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
             @Override

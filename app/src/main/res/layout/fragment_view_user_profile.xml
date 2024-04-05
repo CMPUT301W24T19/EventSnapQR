@@ -70,7 +70,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="36dp"
-                    android:textColorHint="#E4E4E4"
+                    android:textColorHint="@color/grey"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
@@ -92,7 +92,7 @@
                         android:maxLength="50"
                         android:focusable="false"
                         android:cursorVisible="false"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -104,7 +104,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Email"
-                    android:textColorHint="#E4E4E4"
+                    android:textColorHint="@color/grey"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
@@ -123,7 +123,7 @@
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:cursorVisible="false"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -135,7 +135,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Phone Number"
-                    android:textColorHint="#E4E4E4"
+                    android:textColorHint="@color/grey"
                     android:inputType="phone"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
@@ -155,7 +155,7 @@
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:cursorVisible="false"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -167,7 +167,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Homepage"
-                    android:textColorHint="#E4E4E4"
+                    android:textColorHint="@color/grey"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
@@ -186,7 +186,7 @@
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:cursorVisible="false"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
