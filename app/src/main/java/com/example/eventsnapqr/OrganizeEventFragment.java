@@ -13,6 +13,7 @@ import android.location.Address;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -510,8 +511,6 @@ public class OrganizeEventFragment extends Fragment {
                     else {
                         eventID = reusingQR;
                     }
-                    Bundle bundle = new Bundle();
-                    bundle.putString("eventId", eventID);
 
                     if (imageUri != null) {
                         StorageReference userRef = storageRef.child("eventPosters/" + eventID); // specifies the path on the cloud storage
@@ -523,15 +522,17 @@ public class OrganizeEventFragment extends Fragment {
                                 Log.d("USER NAME", newEvent.getOrganizer().getName());
                                 firebaseController.addEvent(newEvent);
                                 firebaseController.addOrganizedEvent(user, newEvent);
-                                bundle.putString("destination", "main");
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                     firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + " created at: "+Instant.now());
                                 }
                                 else{
                                     firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + "has been created");
                                 }
-                                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                                navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                                Intent intent = new Intent(getActivity(), QRActivity.class);
+                                intent.putExtra("eventId", eventID);
+                                intent.putExtra("destination", "main");
+                                startActivity(intent);
+                                getActivity().finish();
                             });
                         });
                     } else {
@@ -540,7 +541,6 @@ public class OrganizeEventFragment extends Fragment {
                         Log.d("USER NAME", " "+newEvent.getOrganizer().getName());
 
                         firebaseController.addEvent(newEvent);
-                        bundle.putString("destination", "main");
                         firebaseController.addOrganizedEvent(user, newEvent);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + " created at: "+Instant.now());
@@ -548,8 +548,11 @@ public class OrganizeEventFragment extends Fragment {
                         else{
                             firebaseController.addMilestone(newEvent, "Event: " + newEvent.getEventName() + "has been created");
                         }
-                        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                        navController.navigate(R.id.action_organizeEventFragment_to_qRDialogFragment, bundle);
+                        Intent intent = new Intent(getActivity(), QRActivity.class);
+                        intent.putExtra("eventId", eventID);
+                        intent.putExtra("destination", "main");
+                        startActivity(intent);
+                        getActivity().finish();
                     }
                 }
             }

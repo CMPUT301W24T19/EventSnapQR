@@ -34,22 +34,13 @@
         <action
             android:id="@+id/action_organizeEventFragment_to_mainPageFragment"
             app:destination="@id/mainPageFragment" />
-        <action
-            android:id="@+id/action_organizeEventFragment_to_qRDialogFragment"
-            app:destination="@+id/qRDialogFragment" />
+<<<<<<< HEAD
+        
+=======
+>>>>>>> 96005b86729532481837725a7ccd35d904f67269
         <action
             android:id="@+id/action_organizeEventFragment_to_mapFragment"
             app:destination="@+id/MapFragmentOrganize"/>
-    </fragment>
-
-    <fragment
-        android:id="@+id/qRDialogFragment"
-        android:name="com.example.eventsnapqr.QRDialogFragment"
-        android:label="Organize Event"
-        tools:layout="@layout/fragment_q_r_dialog">
-        <action
-            android:id="@+id/action_qRDialogFragment_to_mainPageFragment"
-            app:destination="@id/mainPageFragment" />
     </fragment>
 
 
