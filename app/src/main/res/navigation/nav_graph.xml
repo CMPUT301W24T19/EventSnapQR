@@ -1,91 +1,180 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.eventsnapqr">
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainPageFragment">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <fragment
+        android:id="@+id/mainPageFragment"
+        android:name="com.example.eventsnapqr.MainPageFragment"
+        android:label="Main Page"
+        app:layout="@layout/fragment_main_page"
+        tools:layout="@layout/fragment_main_page">
+
+        <action
+            android:id="@+id/action_mainPageFragment_to_adminModeMainPageFragment"
+            app:destination="@id/adminModeMainPageFragment" />
+        <action
+            android:id="@+id/action_mainPageFragment_to_browseEventFragment"
+            app:destination="@+id/browseEventFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/adminUserDetailsFragment"
+        android:name="com.example.eventsnapqr.AdminUserDetailsFragment"
+        android:label="Sign Up"
+        tools:layout="@layout/fragment_admin_user_details">
+    </fragment>
+
+    <fragment
+        android:id="@+id/organizeEventFragment"
+        android:name="com.example.eventsnapqr.OrganizeEventFragment"
+        android:label="Organize Event"
+        tools:layout="@layout/fragment_organize_event">
+        <action
+            android:id="@+id/action_organizeEventFragment_to_mainPageFragment"
+            app:destination="@id/mainPageFragment" />
+        <action
+            android:id="@+id/action_organizeEventFragment_to_mapFragment"
+            app:destination="@+id/MapFragmentOrganize"/>
+    </fragment>
 
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <fragment
+        android:id="@+id/MapFragment"
+        android:name="com.example.eventsnapqr.MapFragment"
+        android:label="Map Fragment"
+        tools:layout="@layout/fragment_attendee_map">
 
-    <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="false" />
+    </fragment>
 
-    <application
-        android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/Theme.EventSnapQR"
-        tools:targetApi="31">
-        <activity
-            android:name=".AdminViewImageActivity"
-            android:exported="false" />
-        <activity
-            android:name=".BrowseEventsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ScanQRActivity"
-            android:exported="true" />
-        <activity
-            android:name="com.journeyapps.barcodescanner.CaptureActivity"
-            android:screenOrientation="portrait"
-            android:stateNotNeeded="true"
-            tools:replace="android:screenOrientation" />
-        <activity
-            android:name=".OrganizeAnEventActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
-        <activity
-            android:name=".UserInfoActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
-        <activity
-            android:name=".ManageEventActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustPan">
+    <fragment
+        android:id="@+id/MapFragmentOrganize"
+        android:name="com.example.eventsnapqr.MapFragmentOrganize"
+        android:label="Map Fragment Organize"
+        tools:layout="@layout/fragment_map">
 
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <action android:name="android.intent.action.MAIN" />
+    </fragment>
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
+    <fragment
+        android:id="@+id/adminModeMainPageFragment"
+        android:name="com.example.eventsnapqr.AdminModeMainPageFragment"
+        android:label="Admin Mode"
+        tools:layout="@layout/fragment_admin_mode_main_page">
+        <action
+            android:id="@+id/action_adminModeMainPageFragment_to_mainPageFragment"
+            app:destination="@id/mainPageFragment" />
+        <action
+            android:id="@+id/action_adminModeMainPageFragment_to_adminBrowseEventsFragment"
+            app:destination="@id/adminBrowseEventsFragment" />
+        <action
+            android:id="@+id/action_adminModeMainPageFragment_to_adminBrowseProfilesFragment"
+            app:destination="@id/adminModeBrowseProfilesFragment" />
+        <action
+            android:id="@+id/action_adminModeMainPageFragment_to_adminBrowseImagesFragment"
+            app:destination="@id/adminModeBrowseImagesFragment" />
+    </fragment>
 
-                <data
-                    android:host="com.example.eventsnapqr"
-                    android:pathPrefix="/join/event"
-                    android:scheme="eventsnapqr" />
-            </intent-filter>
-        </activity>
+    <fragment
+        android:id="@+id/adminModeBrowseEventsFragment"
+        android:name="com.example.eventsnapqr.AdminBrowseEventsFragment"
+        android:label="Admin Browse Events"
+        tools:layout="@layout/fragment_admin_browse_events">
+        <action
+            android:id="@+id/action_adminBrowseEventsFragment_to_AdminModeMainPageFragment"
+            app:destination="@id/adminModeMainPageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/adminModeBrowseProfilesFragment"
+        android:name="com.example.eventsnapqr.AdminBrowseProfilesFragment"
+        android:label="Admin Browse Events"
+        tools:layout="@layout/fragment_admin_browse_profiles">
+        <action
+            android:id="@+id/action_adminBrowseProfilesFragment_to_AdminModeMainPageFragment"
+            app:destination="@id/adminModeMainPageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/adminModeBrowseImagesFragment"
+        android:name="com.example.eventsnapqr.AdminBrowseImagesFragment"
+        android:label="Admin Browse Events"
+        tools:layout="@layout/fragment_admin_browse_images">
+        <action
+            android:id="@+id/action_adminBrowseImagesFragment_to_AdminModeMainPageFragment"
+            app:destination="@id/adminModeMainPageFragment" />
+    </fragment>
 
-        <activity android:name=".QRActivity"
-            android:exported="false" />
+    <fragment
+        android:id="@+id/adminBrowseEventsFragment"
+        android:name="com.example.eventsnapqr.AdminBrowseEventsFragment"
+        android:label="Admin Browse Events"
+        tools:layout="@layout/fragment_admin_browse_events">
+        <action
+            android:id="@+id/action_adminBrowseEventsFragment_to_eventDetailFragment"
+            app:destination="@id/eventDetailFragment" />
+        <action
+            android:id="@+id/action_adminBrowseEventsFragment_to_AdminModeMainPageFragment"
+            app:destination="@id/adminModeMainPageFragment" />
+    </fragment>
 
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.eventsnapqr"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/paths" />
-        </provider>
-    </application>
+    <fragment
+        android:id="@+id/eventDetailsFragment"
+        android:name="com.example.eventsnapqr.EventDetailFragment"
+        android:label="Event Details"
+        tools:layout="@layout/fragment_event_details">
+        <action
+            android:id="@+id/action_eventDetailsFragment_to_mainPageFragment"
+            app:destination="@id/mainPageFragment" />
+    </fragment>
 
-</manifest>
+    <fragment
+        android:id="@+id/ListAllEventsFragment"
+        android:name="com.example.eventsnapqr.ListAllEventsFragment"
+        android:label="List All Events"
+        tools:layout="@layout/fragment_browse_events" >
+        <action
+            android:id="@+id/action_allEvents_to_eventDetails"
+            app:destination="@id/eventDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ListAttendingEventsFragment"
+        android:name="com.example.eventsnapqr.ListAttendingEventsFragment"
+        android:label="List Attending Events"
+        tools:layout="@layout/fragment_browse_events" >
+        <action
+            android:id="@+id/action_attendingEvents_to_eventDetails"
+            app:destination="@id/eventDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ListOrganizedEventsFragment"
+        android:name="com.example.eventsnapqr.ListOrganizedEventsFragment"
+        android:label="List Organized Events"
+        tools:layout="@layout/fragment_browse_events" >
+        <action
+            android:id="@+id/action_attendingEvents_to_eventDetails"
+            app:destination="@id/eventDetailsFragment"/>
+        <action
+            android:id="@+id/action_currentFragment_to_fragmentViewUserProfile"
+            app:destination="@id/viewUserProfileFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/eventDetailFragment"
+        android:name="com.example.eventsnapqr.EventDetailFragment"
+        android:label="Event Details"
+        tools:layout="@layout/fragment_event_details" />
+
+    <fragment
+        android:id="@+id/viewUserProfileFragment"
+        android:name="com.example.eventsnapqr.ViewUserProfileFragment"
+        android:label="View User Profile"
+        tools:layout="@layout/fragment_view_user_profile">
+    </fragment>
+
+
+    <action android:id="@+id/action_global_viewUserProfileFragment"
+        app:destination="@id/viewUserProfileFragment" />
+
+
+</navigation>
