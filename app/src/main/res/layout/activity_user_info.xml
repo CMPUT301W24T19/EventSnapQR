@@ -111,7 +111,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:id="@+id/textInputEventName"
+                    android:id="@+id/textInputUserName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -125,27 +125,27 @@
                     app:endIconMode="clear_text"
                     android:textColorHint="@color/grey"
                     app:counterEnabled="false"
-                    app:counterMaxLength="50"
+                    app:counterMaxLength="20"
                     app:helperTextTextColor="@color/red"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextOrganizerName"
+                        android:id="@+id/editTextUserName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxLength="50"
+                        android:maxLength="20"
                         android:textColor="@color/black"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:id="@+id/textInputDescription"
+                    android:id="@+id/textInputEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Email"
                     android:textColorHint="@color/grey"
@@ -155,57 +155,59 @@
                     app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                     app:endIconMode="clear_text"
                     app:counterEnabled="false"
-                    app:counterMaxLength="100"
+                    app:counterMaxLength="20"
                     app:helperTextTextColor="@color/red"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textInputEventName">
+                    app:layout_constraintTop_toBottomOf="@id/textInputUserName">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextDescription"
+                        android:id="@+id/editTextEmail"
                         android:layout_width="match_parent"
+                        android:maxLength="20"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/black"/>
+                        android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:id="@+id/textInputStartDateTime"
+                    android:id="@+id/textInputPhoneNumber"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Phone Number"
                     android:textColorHint="@color/grey"
                     android:inputType="phone"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
+                    app:counterEnabled="false"
+                    app:counterMaxLength="10"
                     app:boxStrokeWidth="2dp"
                     app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                     app:endIconMode="clear_text"
-                    app:counterEnabled="false"
-                    app:counterMaxLength="100"
                     app:helperTextTextColor="@color/red"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textInputDescription">
+                    app:layout_constraintTop_toBottomOf="@id/textInputHomepage">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextStartDateTime"
+                        android:id="@+id/editTextPhoneNumber"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="phone"
+                        android:maxLength="10"
                         android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:id="@+id/textInputEndDateTime"
+                    android:id="@+id/textInputHomepage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Homepage"
                     app:boxBackgroundColor="#00FFFFFF"
@@ -215,17 +217,18 @@
                     app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                     app:endIconMode="clear_text"
                     app:counterEnabled="false"
-                    app:counterMaxLength="100"
+                    app:counterMaxLength="30"
                     app:helperTextTextColor="@color/red"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textInputStartDateTime">
+                    app:layout_constraintTop_toBottomOf="@id/textInputEmail">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextEndDateTime"
+                        android:id="@+id/editTextHomepage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:maxLength="30"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Switch
@@ -238,7 +241,7 @@
                     android:textColor="#4c4943"
                     android:layout_marginBottom="16dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textInputEndDateTime" />
+                    app:layout_constraintTop_toBottomOf="@id/textInputPhoneNumber" />
 
                 <Switch
                     android:id="@+id/switchNotifications"

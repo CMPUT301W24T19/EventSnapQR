@@ -96,7 +96,7 @@ android:background="@drawable/gradient_background">
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:id="@+id/textInputEventName"
+                        android:id="@+id/textInputUserName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
@@ -117,7 +117,7 @@ android:background="@drawable/gradient_background">
                         app:layout_constraintTop_toTopOf="parent">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextOrganizerName"
+                            android:id="@+id/editTextUserName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:maxLength="50"
@@ -128,7 +128,7 @@ android:background="@drawable/gradient_background">
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:id="@+id/textInputDescription"
+                        android:id="@+id/textInputEmail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
@@ -146,10 +146,10 @@ android:background="@drawable/gradient_background">
                         app:helperTextTextColor="@color/red"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/textInputEventName">
+                        app:layout_constraintTop_toBottomOf="@id/textInputUserName">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextDescription"
+                            android:id="@+id/editTextEmail"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:focusable="false"
@@ -223,7 +223,7 @@ android:background="@drawable/gradient_background">
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:id="@+id/textInputStartDateTime"
+                        android:id="@+id/textInputPhoneNumber"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
@@ -245,7 +245,7 @@ android:background="@drawable/gradient_background">
                         app:layout_constraintTop_toBottomOf="@id/textInputAddress">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextStartDateTime"
+                            android:id="@+id/editTextPhoneNumber"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:focusable="false"
@@ -256,7 +256,7 @@ android:background="@drawable/gradient_background">
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:id="@+id/textInputEndDateTime"
+                        android:id="@+id/textInputHomepage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
@@ -274,10 +274,10 @@ android:background="@drawable/gradient_background">
                         app:helperTextTextColor="@color/red"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/textInputStartDateTime">
+                        app:layout_constraintTop_toBottomOf="@id/textInputPhoneNumber">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextEndDateTime"
+                            android:id="@+id/editTextHomepage"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:focusable="false"
@@ -305,7 +305,7 @@ android:background="@drawable/gradient_background">
                         app:helperTextTextColor="@color/red"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/textInputDescription">
+                        app:layout_constraintTop_toBottomOf="@id/textInputEmail">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/editTextAnnouncements"

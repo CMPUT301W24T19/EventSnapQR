@@ -90,7 +90,7 @@ public class AdminBrowseProfilesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_admin_browse_profiles, container, false);
 
         recyclerView = view.findViewById(R.id.user_profile_pictures);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         recyclerView.setAdapter(adapter);
         FirebaseFirestore.getInstance().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -113,6 +113,10 @@ public class AdminBrowseProfilesFragment extends Fragment {
                     }
                     if (email == null || email.isEmpty()) {
                         email = "N/A";
+                    }
+
+                    if (userName != null && userName.length() > 16) {
+                        userName = userName.substring(0, 14) + "...";
                     }
 
                     User user = new User(userName, deviceID, homePage, phoneNumber, email);

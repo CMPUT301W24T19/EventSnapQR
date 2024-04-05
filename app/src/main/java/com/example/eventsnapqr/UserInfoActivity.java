@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
@@ -44,9 +45,13 @@ public class UserInfoActivity extends AppCompatActivity {
     private ImageView profilePictureImage;
     private String profilePictureURI;
     private TextInputEditText userName;
+    private TextInputLayout userNameLayout;
     private TextInputEditText email;
+    private TextInputLayout emailLayout;
     private TextInputEditText phoneNumber;
+    private TextInputLayout numberLayout;
     private TextInputEditText homepage;
+    private TextInputLayout homepageLayout;
     private ExtendedFloatingActionButton saveButton;
     private boolean editMode = false;
     private ImageView editButton;
@@ -54,7 +59,6 @@ public class UserInfoActivity extends AppCompatActivity {
     private Switch locationSwitch;
     private Switch notificationSwitch;
     private boolean showSwitches;
-
     private final int PERMISSION_REQUEST_CODE = 100;
     String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
     //String[] notificationPermissions = {Manifest.permission.ACCESS_NOTIFICATION_POLICY, Manifest.permission.POST_NOTIFICATIONS}; // might not need NOTIFCATION_POLICY
@@ -87,10 +91,14 @@ public class UserInfoActivity extends AppCompatActivity {
         buttonAddImage = findViewById(R.id.upload_profile_button);
         buttonRemoveImage = findViewById(R.id.delete_profile_button);
         profilePictureImage = findViewById(R.id.iv_profile_pic);
-        userName = findViewById(R.id.editTextOrganizerName);
-        email = findViewById(R.id.editTextDescription);
-        phoneNumber = findViewById(R.id.editTextStartDateTime);
-        homepage = findViewById(R.id.editTextEndDateTime);
+        userName = findViewById(R.id.editTextUserName);
+        userNameLayout = findViewById(R.id.textInputUserName);
+        email = findViewById(R.id.editTextEmail);
+        emailLayout = findViewById(R.id.textInputEmail);
+        phoneNumber = findViewById(R.id.editTextPhoneNumber);
+        numberLayout = findViewById(R.id.textInputPhoneNumber);
+        homepage = findViewById(R.id.editTextHomepage);
+        homepageLayout = findViewById(R.id.textInputHomepage);
         saveButton = findViewById(R.id.saveButton);
         editButton = findViewById(R.id.button_edit_profile_button);
         locationSwitch = findViewById(R.id.switchLocation);
@@ -223,25 +231,40 @@ public class UserInfoActivity extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String name = userName.getText().toString().trim();
+                String userEmail = email.getText().toString().trim();
+                String userPhoneNumber = phoneNumber.getText().toString().trim();
+                String userHomepage = homepage.getText().toString().trim();
+
+                if (name.isEmpty()) {
+                    userNameLayout.setError("Name cannot be empty");
+                    return; // Stop execution if name is empty
+                } else {
+                    userNameLayout.setError(null); // Clear any previous error
+                }
+
+                // Validate phone number if not empty
+                if (!userPhoneNumber.isEmpty()) {
+                    if (!isValidPhoneNumber(userPhoneNumber)) {
+                        numberLayout.setError("Invalid phone number format");
+                        return; // Stop execution if phone number format is invalid
+                    } else {
+                        numberLayout.setError(null); // Clear any previous error
+                    }
+                }
+
                 FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
                     @Override
                     public void onUserRetrieved(User user) {
-                        user.setName(userName.getText().toString());
-                        if (user.getEmail() != null) {
-                            email.setText(user.getEmail().trim());
-                        }
-                        if (user.getPhoneNumber() != null) {
-                            phoneNumber.setText(user.getPhoneNumber().trim());
-                        }
-                        if (user.getHomepage() != null) {
-                            homepage.setText(user.getHomepage().trim());
-                        }
+                        user.setName(name);
+                        user.setEmail(userEmail);
+                        user.setPhoneNumber(userPhoneNumber);
+                        user.setHomepage(userHomepage);
                         FirebaseController.getInstance().addUser(user);
-                        if (user.getProfilePicture() == null) {
-                            Bitmap initialsImageBitmap = user.generateInitialsImage(user.getName().toString());
-                            profilePictureImage.setImageBitmap(initialsImageBitmap);
-                        }
+
+                        // Update UI or show a message indicating successful save
                         Toast.makeText(UserInfoActivity.this, "Information successfully updated!", Toast.LENGTH_SHORT).show();
+
                         editMode = false;
                         saveButton.setVisibility(View.INVISIBLE);
                         userName.setEnabled(editMode);
@@ -252,6 +275,8 @@ public class UserInfoActivity extends AppCompatActivity {
                 });
             }
         });
+
+
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -263,10 +288,20 @@ public class UserInfoActivity extends AppCompatActivity {
 
                 if (editMode) {
                     saveButton.setVisibility(View.VISIBLE);
+                    userNameLayout.setCounterEnabled(true);
+                    emailLayout.setCounterEnabled(true);
+                    numberLayout.setCounterEnabled(true);
+                    homepageLayout.setCounterEnabled(true);
                 }
                 else {
                     saveButton.setVisibility(View.INVISIBLE);
+                    userNameLayout.setCounterEnabled(false);
+                    emailLayout.setCounterEnabled(false);
+                    numberLayout.setCounterEnabled(false);
+                    homepageLayout.setCounterEnabled(false);
                 }
+
+
             }
         });
         buttonRemoveImage.setOnClickListener(new View.OnClickListener() {
@@ -306,4 +341,15 @@ public class UserInfoActivity extends AppCompatActivity {
             }
         });
     }
+
+    private boolean isValidPhoneNumber(String phoneNumber) {
+        if (!phoneNumber.matches("[0-9]+")) {
+            return false;
+        }
+        if (phoneNumber.length() != 10) {
+            return false;
+        }
+        return true;
+    }
+
 }

@@ -430,50 +430,58 @@ public class OrganizeEventFragment extends Fragment {
      * @return
      */
     private boolean validateInput() {
+        boolean isValid = true;
+
+        // Initialize your EditText variables if not already done
+        // Assuming editTextEventName, editTextEventDesc, etc. are already defined
+
         String eventName = editTextEventName.getText().toString().trim();
         String eventDesc = editTextEventDesc.getText().toString().trim();
         String eventStartTime = editTextStartTime.getText().toString().trim();
         String eventStartDate = editTextStartDate.getText().toString().trim();
         String eventEndTime = editTextEndTime.getText().toString().trim();
         String eventEndDate = editTextEndDate.getText().toString().trim();
+        String eventAddress = editTextAddress.getText().toString().trim();
 
         if (eventName.isEmpty()) {
             editTextEventName.setError("Event Name Required");
-            return false;
-        }
-
-        if (eventName.length() > 50) {
-            editTextEventName.setError("Event name cannot exceed 50 characters");
-            return false;
+            isValid = false;
         }
 
         if (eventDesc.isEmpty()) {
             editTextEventDesc.setError("Event Description Required");
-            return false;
+            isValid = false;
+        }
+
+        if (eventAddress.isEmpty()) {
+             editTextAddress.setError("Event Address Required");
+             isValid = false;
         }
 
         if (eventStartDate.isEmpty()) {
             editTextStartDate.setError("Start Date Required");
-            return false;
+            isValid = false;
         }
 
         if (eventStartTime.isEmpty()) {
             editTextStartTime.setError("Start Time Required");
-            return false;
+            isValid = false;
         }
 
         if (eventEndDate.isEmpty()) {
             editTextEndDate.setError("End Date Required");
-            return false;
+            isValid = false;
         }
 
         if (eventEndTime.isEmpty()) {
             editTextEndTime.setError("End Time Required");
-            return false;
+            isValid = false;
         }
 
-        return true;
+        // Return true if no errors were found, false otherwise
+        return isValid;
     }
+
 
     /**
      * add the event to the database and generate a unique QR code for the event
@@ -597,5 +605,4 @@ public class OrganizeEventFragment extends Fragment {
                 hourOfDay, minute, false);
         timePickerDialog.show();
     }
-
 }
