@@ -35,44 +35,6 @@ public class ListAllEventsFragment extends Fragment {
     private FirebaseFirestore db; // database instance
 
     /**
-     * retrieve any events that are currently in the database.
-     */
-    private void loadEvents(ProgressBar loadingProgressBar) {
-        loadingProgressBar.setVisibility(View.VISIBLE);
-        db.collection("events").get()
-                .addOnCompleteListener(task -> {
-                    loadingProgressBar.setVisibility(View.GONE);
-                    if (task.isSuccessful()) {
-                        for (DocumentSnapshot document : task.getResult()) {
-                            if (Boolean.TRUE.equals(document.getBoolean("active"))) {
-                                Long maxAttendeesLong = document.getLong("maxAttendees");
-                                int maxAttendees = (maxAttendeesLong != null) ? maxAttendeesLong.intValue() : 0; // Default value of 0
-
-                                Event event = new Event(
-                                        new User(document.getString("organizerId")), // Assuming organizer ID is stored and User constructor can handle it
-                                        document.getString("eventName"),
-                                        document.getString("description"),
-                                        document.getString("posterURI"),
-                                        maxAttendees,
-                                        document.getId(), // Assuming event ID is the document ID
-                                        document.getDate("eventStartDateTime"),
-                                        document.getDate("eventEndDateTime"),
-                                        document.getString("address"),
-                                        document.getBoolean("active")
-                                );
-                                events.add(event);
-                            }
-                        }
-                        eventAdapter.notifyDataSetChanged();
-                    }
-                    else {
-                        Toast.makeText(requireContext(), "Error loading events", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-
-    /**
      * Setup actions to be taken upon view creation and when the views are interacted with
      * @param inflater The LayoutInflater object that can be used to inflate
      * any views in the fragment,
@@ -107,5 +69,46 @@ public class ListAllEventsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * retrieve any events that are currently in the database.
+     */
+    private void loadEvents(ProgressBar loadingProgressBar) {
+        loadingProgressBar.setVisibility(View.VISIBLE);
+        db.collection("events").get()
+                .addOnCompleteListener(task -> {
+                    loadingProgressBar.setVisibility(View.GONE);
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot document : task.getResult()) {
+                            if (Boolean.TRUE.equals(document.getBoolean("active"))) {
+                                Long maxAttendeesLong = document.getLong("maxAttendees");
+                                int maxAttendees = (maxAttendeesLong != null) ? maxAttendeesLong.intValue() : 0;
+                                String organizerId = document.getString("organizerID");
+                                FirebaseController.getInstance().getUser(organizerId, user -> {
+                                    if (user != null) {
+                                        Event event = new Event(
+                                                user,
+                                                document.getString("eventName"),
+                                                document.getString("description"),
+                                                document.getString("posterURI"),
+                                                maxAttendees,
+                                                document.getId(), // Assuming event ID is the document ID
+                                                document.getDate("eventStartDateTime"),
+                                                document.getDate("eventEndDateTime"),
+                                                document.getString("address"),
+                                                document.getBoolean("active")
+                                        );
+                                        events.add(event);
+                                        eventAdapter.notifyDataSetChanged();
+                                    } else {
+                                        Toast.makeText(requireContext(), "Organizer not found for event: " + document.getId(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Error loading events", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 }
 

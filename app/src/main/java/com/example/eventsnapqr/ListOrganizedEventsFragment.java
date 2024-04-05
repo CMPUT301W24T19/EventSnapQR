@@ -31,47 +31,11 @@ import java.util.List;
  * fragment for organzers to browse any events that they have organized
  */
 public class ListOrganizedEventsFragment extends Fragment {
-    private ListView eventListView; // list of events
-    private List<String> organizedEventIds; // list of event ids
-    private ArrayAdapter<String> organizedEventAdapter;
-    private ArrayList<String>  organizedEventNames;
-    private FirebaseFirestore db; // database instance
+    private ListView eventListView;
+    private EventAdapter eventAdapter;
+    private List<Event> organizedEvents;
+    private FirebaseFirestore db;
     private String userId;
-    // TODO add search for browse events
-
-    /**
-     * fetch all the events that the given user is organizing
-     * @param userId
-     */
-    private void loadOrganizedEvents(String userId, ProgressBar loadingProgressBar) {
-        loadingProgressBar.setVisibility(View.VISIBLE);
-        db.collection("users").document(userId).collection("organizedEvents")
-                .get()
-                .addOnCompleteListener(task -> {
-                    loadingProgressBar.setVisibility(View.GONE);
-                    if (task.isSuccessful()) {
-                        organizedEventNames.clear(); // Clear existing items
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String eventId = document.getId();
-                            db.collection("events").document(eventId).get()
-                                    .addOnSuccessListener(eventDocument -> {
-                                        String eventName = eventDocument.getString("eventName");
-                                        if (eventName != null) {
-                                            organizedEventNames.add(eventName);
-                                            organizedEventIds.add(eventId);
-                                            Log.d("EVENTNAME",eventName);
-                                            Log.d("EVENTID", eventId);
-                                            organizedEventAdapter.notifyDataSetChanged();
-                                        }
-                                    })
-                                    .addOnFailureListener(e -> Log.e("Error", "Error getting event details: ", e));
-                        }
-                    } else {
-                        Log.e("Error", "Error getting organized events: ", task.getException());
-                        Toast.makeText(getContext(), "Error loading attending events", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
 
     /**
      * Setup actions to be taken upon view creation and when the views are interacted with
@@ -91,22 +55,76 @@ public class ListOrganizedEventsFragment extends Fragment {
 
         ProgressBar loadingProgressBar = view.findViewById(R.id.loadingProgressBar);
         eventListView = view.findViewById(R.id.events);
-        organizedEventNames = new ArrayList<>();
-        organizedEventIds = new ArrayList<>();
-        organizedEventAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, organizedEventNames);
-        eventListView.setAdapter(organizedEventAdapter);
+        organizedEvents = new ArrayList<>();
+        eventAdapter = new EventAdapter(requireContext(), organizedEvents);
+        eventListView.setAdapter(eventAdapter);
         userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         db = FirebaseFirestore.getInstance();
         loadOrganizedEvents(userId, loadingProgressBar);
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
-            // launch new activity here
-            String eventId = organizedEventIds.get(position);
+            String eventId = organizedEvents.get(position).getEventID();
             Intent intent = new Intent(requireContext(), ManageEventActivity.class);
             intent.putExtra("eventId", eventId);
             startActivity(intent);
         });
 
         return view;
+    }
+
+    /**
+     * fetch all the events that the given user is organizing
+     * @param userId
+     */
+    private void loadOrganizedEvents(String userId, ProgressBar loadingProgressBar) {
+        loadingProgressBar.setVisibility(View.VISIBLE);
+        db.collection("users").document(userId).collection("organizedEvents")
+                .get()
+                .addOnCompleteListener(task -> {
+                    loadingProgressBar.setVisibility(View.GONE);
+                    if (task.isSuccessful()) {
+                        organizedEvents.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String eventId = document.getId();
+                            db.collection("events").document(eventId).get()
+                                    .addOnSuccessListener(eventDocument -> {
+                                        if (eventDocument.exists()) {
+                                            Long maxAttendeesLong = document.getLong("maxAttendees");
+                                            int maxAttendees = (maxAttendeesLong != null) ? maxAttendeesLong.intValue() : 0;
+                                            String eventName = eventDocument.getString("eventName");
+                                            String organizerId = eventDocument.getString("organizerID");
+                                            String posterURI = eventDocument.getString("posterURI");
+
+                                            FirebaseController.getInstance().getUser(organizerId, user -> {
+                                                if (user != null) {
+                                                    Event event = new Event(
+                                                            user,
+                                                            eventName,
+                                                            eventDocument.getString("description"),
+                                                            posterURI,
+                                                            maxAttendees,
+                                                            eventId,
+                                                            eventDocument.getDate("eventStartDateTime"),
+                                                            eventDocument.getDate("eventEndDateTime"),
+                                                            eventDocument.getString("address"),
+                                                            eventDocument.getBoolean("active")
+                                                    );
+                                                    organizedEvents.add(event);
+                                                    eventAdapter.notifyDataSetChanged();
+                                                } else {
+                                                    Toast.makeText(requireContext(), "Organizer not found for event: " + eventId, Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                        } else {
+                                            Log.e("Error", "Event document doesn't exist");
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> Log.e("Error", "Error getting event details: ", e));
+                        }
+                    } else {
+                        Log.e("Error", "Error getting organized events: ", task.getException());
+                        Toast.makeText(getContext(), "Error loading organized events", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
