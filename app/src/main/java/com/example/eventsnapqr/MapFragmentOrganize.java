@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
@@ -38,98 +37,75 @@ import org.osmdroid.views.overlay.Marker;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * fragment where the map is plotted for the event clicked
- * the following sources were a major help  for setting this up
- *
- * I used OpenAI: chatGPT to get the structure of how to plot the coordinates
- * using osmdroid. Prompt "How can I plot a set of coordinated using osmdroid."
- * The startLocationUpdates, onProvider, onLocation change, onResume, onPause
- * permission check and request is taken from chatgpt.
- *
- * Along with that I used this video to get run time permissions:
- * "https://www.youtube.com/watch?v=KeuV6cjVh6c"
- *
- * To get current location I also referred to these 3 videos:
- * "https://www.youtube.com/watch?v=M0kUd2dpxo4"
- * "https://www.youtube.com/watch?v=waX6ygjIqmw"
- * Used code to setup the manView on the xml and initialization from the video below
- * "https://www.youtube.com/watch?v=xoFtgcOoO1I"
- */
-public class MapFragment extends Fragment {
+public class MapFragmentOrganize extends Fragment {
 
     private MapView mapView;
     private FirebaseFirestore db;
     private String eventName;
     private FrameLayout mapContainer;
 
-    //constructor to get the passes EventName
-    public MapFragment() {
+    // Added for receiving latitude and longitude
+    private double targetLatitude = 0.0;
+    private double targetLongitude = 0.0;
+
+    public MapFragmentOrganize() {
         // Required empty public constructor
     }
-    public MapFragment(String eventName) {
+    public MapFragmentOrganize(String eventName) {
         this.eventName = eventName;
-        //plotEventAttendees(eventName);
     }
-
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Initialize OSMDroid configuration
         Configuration.getInstance().load(getContext(), getActivity().getSharedPreferences("osmdroid", 0));
         db = FirebaseFirestore.getInstance();
         if (getArguments() != null) {
-
             eventName = getArguments().getString("eventName");
+
+            // Receive latitude and longitude if provided
+            targetLatitude = getArguments().getDouble("latitude", 0.0);
+            targetLongitude = getArguments().getDouble("longitude", 0.0);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_attendee_map, container, false);
-        TextView text = view.findViewById(R.id.page_name);
-        text.setText("Map of " + eventName + " Attendees");
 
         mapView = view.findViewById(R.id.mapView);
-        mapContainer = view.findViewById(R.id.mapContainer); // Reference to the parent layout
+        mapContainer = view.findViewById(R.id.mapContainer);
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setMultiTouchControls(true);
         IMapController mapController = mapView.getController();
         mapController.setZoom(16);
-        Log.e("MapFragment", "Map clicked. Plotting attendees for event: " + eventName);
-        plotEventAttendees(eventName);
 
-        // Request location permission
+        // Check if coordinates are provided and valid
+        if (targetLatitude != 0.0 && targetLongitude != 0.0) {
+            // Center map on provided coordinates
+            GeoPoint startPoint = new GeoPoint(targetLatitude, targetLongitude);
+            mapController.setCenter(startPoint);
+            Marker startMarker = new Marker(mapView);
+            startMarker.setPosition(startPoint);
+            startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+            mapView.getOverlays().add(startMarker);
+        } else {
+            // Fallback behavior: plot attendees for event if no specific coordinates provided
+            Log.e("MapFragment", "Map clicked. Plotting attendees for event: " + eventName);
+            plotEventAttendees(eventName);
+        }
+
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // Permission granted, start requesting location updates
             startLocationUpdates();
         } else {
-            // Permission not granted, request it
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
 
-        // Set up the back button click listener
-        view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("MapFragment", "Back clicked. Plotting attendees for event: " + eventName);
-                requireActivity().onBackPressed();
-            }
-        });
-        mapContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // When parent layout is clicked, plot attendees of the event
-                Log.e("MapFragment", "Map clicked. Plotting attendees for event: " + eventName);
-                Log.e("MapFragment", "Reached method call");
-                plotEventAttendees(eventName);
-            }
-        });
+        view.findViewById(R.id.button_back_button).setOnClickListener(v -> requireActivity().onBackPressed());
 
         return view;
     }
+
 
 
     private void startLocationUpdates() {
