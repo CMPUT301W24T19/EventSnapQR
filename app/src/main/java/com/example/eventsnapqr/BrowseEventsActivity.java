@@ -74,19 +74,13 @@ public class BrowseEventsActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {}
         });
 
+
         fullscreenViewPager.setVisibility(View.GONE);
         ImageView backButton = findViewById(R.id.button_back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(eventId == null){
-                    //Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    //startActivity(intent);
-                    finish();
-                }
-                else{
-                    finish();
-                }
+                finish();
             }
         });
         eventId = getIntent().getStringExtra("eventID"); // for when user enters activity from notification click
