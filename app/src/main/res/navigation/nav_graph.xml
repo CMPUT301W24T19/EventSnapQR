@@ -37,6 +37,9 @@
         <action
             android:id="@+id/action_organizeEventFragment_to_qRDialogFragment"
             app:destination="@+id/qRDialogFragment" />
+        <action
+            android:id="@+id/action_organizeEventFragment_to_mapFragment"
+            app:destination="@+id/MapFragmentOrganize"/>
     </fragment>
 
     <fragment
@@ -55,6 +58,14 @@
         android:name="com.example.eventsnapqr.MapFragment"
         android:label="Map Fragment"
         tools:layout="@layout/fragment_attendee_map">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/MapFragmentOrganize"
+        android:name="com.example.eventsnapqr.MapFragmentOrganize"
+        android:label="Map Fragment Organize"
+        tools:layout="@layout/fragment_map">
 
     </fragment>
 
