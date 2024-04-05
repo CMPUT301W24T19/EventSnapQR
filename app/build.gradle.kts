@@ -83,7 +83,7 @@ dependencies {
     testImplementation ("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testRuntimeOnly ("org.junit.jupiter:junit-jupiter-engine:5.10.2")
     testImplementation("junit:junit:4.13.2")
-
+    androidTestImplementation("org.mockito:mockito-android:5.11.0")
     implementation ("org.osmdroid:osmdroid-android:6.1.18")
     implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation ("org.osmdroid:osmdroid-mapsforge:6.1.18") 
