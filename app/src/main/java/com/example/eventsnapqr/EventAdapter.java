@@ -3,6 +3,7 @@ package com.example.eventsnapqr;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+
+import com.bumptech.glide.Glide;
 
 public class EventAdapter extends ArrayAdapter<Event> {
 
@@ -41,23 +44,13 @@ public class EventAdapter extends ArrayAdapter<Event> {
         eventName.setText(event.getEventName());
         eventOrganizer.setText(event.getOrganizer().getName());
 
-        try {
-            Bitmap bitmap = getBitmapFromURL(event.getPosterURI());
-            eventImage.setImageBitmap(bitmap);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Load image using Glide
+        Glide.with(getContext())
+                .load(event.getPosterURI())
+                .placeholder(R.drawable.place_holder_img)
+                .into(eventImage);
 
         return itemView;
     }
-
-    private Bitmap getBitmapFromURL(String urlString) throws IOException {
-        URL url = new URL(urlString);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setDoInput(true);
-        connection.connect();
-        InputStream input = connection.getInputStream();
-        Bitmap bitmap = BitmapFactory.decodeStream(input);
-        return bitmap;
-    }
 }
+
