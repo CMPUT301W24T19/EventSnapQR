@@ -34,9 +34,7 @@
         <action
             android:id="@+id/action_organizeEventFragment_to_mainPageFragment"
             app:destination="@id/mainPageFragment" />
-
-        
-<action
+        <action
             android:id="@+id/action_organizeEventFragment_to_mapFragment"
             app:destination="@+id/MapFragmentOrganize"/>
     </fragment>
