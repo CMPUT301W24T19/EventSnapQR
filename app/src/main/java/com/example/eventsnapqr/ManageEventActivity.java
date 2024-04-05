@@ -297,30 +297,35 @@ public class ManageEventActivity extends AppCompatActivity {
                                 }
                             });
                         }).addOnFailureListener(e -> {
-                            Log.d("TAG", "true1");
                             retrievalCounter.incrementAndGet(); // Increment even on failure to keep track
                             if (retrievalCounter.get() == totalAttendees) {
-                                updateTexts();
+                                eventAdapter.notifyDataSetChanged();
                                 fetchMilestones();
+                                updateTexts();
                             }
                         });
                     } else {
                         Log.d("TAG", "true2");
                         retrievalCounter.incrementAndGet(); // Increment for non-checked-in users
                         if (retrievalCounter.get() == totalAttendees) {
-                            updateTexts();
+                            eventAdapter.notifyDataSetChanged();
                             fetchMilestones();
+                            updateTexts();
                         }
                     }
                 }
             }
             else {
+                eventAdapter.notifyDataSetChanged();
                 fetchMilestones();
+                updateTexts();
             }
         }).addOnFailureListener(e -> {
             Log.d("TAG", "true3");
             Log.d("FetchAttendeeData", "Error fetching attendee data: " + e.getMessage());
+            eventAdapter.notifyDataSetChanged();
             fetchMilestones();
+            updateTexts();
         });
     }
 
