@@ -11,9 +11,9 @@
         android:id="@+id/button_back"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_gravity="start"
-        android:clickable="true"
-        app:srcCompat="@drawable/baseline_arrow_back_24" />
+        android:src="?attr/actionModeCloseDrawable"
+        android:padding="5dp"
+        android:clickable="true" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,8 +38,7 @@
         android:layout_weight="0.2"
         android:gravity="center"
         android:text="Admin Mode"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textSize="20sp" />
+        android:textSize="30sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -56,6 +55,8 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:textColor="@color/black"
+            android:backgroundTint="@color/glaucous"
             android:text="Browse Profiles" />
 
         <Button
@@ -63,12 +64,16 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:textColor="@color/black"
+            android:backgroundTint="@color/glaucous"
             android:text="Browse Images" />
 
         <Button
             android:id="@+id/buttonBrowseEvents"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:backgroundTint="@color/glaucous"
             android:text="Browse Events" />
     </LinearLayout>
 </LinearLayout>

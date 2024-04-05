@@ -1,5 +1,7 @@
 package com.example.eventsnapqr;
 
+import static androidx.camera.core.CameraXThreads.TAG;
+
 import com.google.firebase.firestore.DocumentChange;
 
 import android.annotation.SuppressLint;
@@ -1031,6 +1033,59 @@ public class FirebaseController {
     public interface OnSignUpCheckListener {
         void onSignUpCheck(boolean isSignedUp);
     }
+
+
+
+    public void removeAttendee(String eventId, String userId, RemoveAttendeeCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        DocumentReference attendeeRef = db.collection("events").document(eventId).collection("attendees").document(userId);
+        DocumentReference promisedEventRef = db.collection("users").document(userId).collection("promisedEvents").document(eventId);
+
+        attendeeRef.delete().addOnCompleteListener(attendeeDeleteTask -> {
+            if (attendeeDeleteTask.isSuccessful()) {
+                promisedEventRef.delete().addOnCompleteListener(promisedEventDeleteTask -> {
+                    if (promisedEventDeleteTask.isSuccessful()) {
+                        if (callback != null) callback.onSuccess();
+                    } else if (callback != null) callback.onFailure(promisedEventDeleteTask.getException());
+                });
+            } else if (callback != null) callback.onFailure(attendeeDeleteTask.getException());
+        });
+    }
+
+    public interface RemoveAttendeeCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    public void checkAttendeeCheckins(String eventId, String userId, CheckAttendeeCheckinsCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        DocumentReference attendeeRef = db.collection("events").document(eventId)
+                .collection("attendees").document(userId);
+
+        attendeeRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Number checkinsNumber = document.getLong("checkedIn");
+                    if (checkinsNumber != null) {
+                        callback.onSuccess(checkinsNumber.intValue());
+                    } else {
+                        callback.onSuccess(-1);
+                    }
+                } else {
+                    callback.onSuccess(-1);
+                }
+            } else {
+                callback.onFailure(task.getException());
+            }
+        });
+    }
+
+
+    public interface CheckAttendeeCheckinsCallback {
+        void onSuccess(int checkins);
+        void onFailure(Exception e);
+    }
 }
-
-

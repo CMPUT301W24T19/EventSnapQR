@@ -104,11 +104,23 @@ public class AdminBrowseProfilesFragment extends Fragment {
                     String phoneNumber = (String) doc.getData().get("phoneNumber");
                     String email = (String) doc.getData().get("email");
                     String profilePicture = (String) doc.getData().get("profileURI");
+
+                    if (homePage == null || homePage.isEmpty()) {
+                        homePage = "N/A";
+                    }
+                    if (phoneNumber == null || phoneNumber.isEmpty()) {
+                        phoneNumber = "N/A";
+                    }
+                    if (email == null || email.isEmpty()) {
+                        email = "N/A";
+                    }
+
                     User user = new User(userName, deviceID, homePage, phoneNumber, email);
                     user.setProfilePicture(profilePicture);
                     Log.d("TAG", "Profile: " + userName);
                     profileList.add(user);
                 }
+
                 adapter.notifyDataSetChanged();
             }
         });
@@ -123,9 +135,9 @@ public class AdminBrowseProfilesFragment extends Fragment {
                         + "Phone Number: " + user.getPhoneNumber() + "\n"
                         + "Email: " + user.getEmail() + "\n")
                         .setPositiveButton("View", (dialog, which) -> {
-                            // Use the position parameter directly
                             Intent intent = new Intent(getContext(), UserInfoActivity.class);
                             intent.putExtra("androidId", user.getDeviceID());
+                            intent.putExtra("showSwitches", false);
                             startActivity(intent);
                         })
                         .setNegativeButton("Delete", (dialog, which) -> {

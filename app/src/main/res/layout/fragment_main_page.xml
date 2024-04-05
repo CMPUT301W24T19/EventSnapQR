@@ -29,7 +29,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
+                android:textColor="@color/black"
+                android:backgroundTint="@color/glaucous"
                 android:text="ADMIN"
+
                 android:textSize="12sp"
                 android:visibility="visible" />
 
@@ -172,6 +175,8 @@
                 android:id="@+id/organize_event_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:backgroundTint="@color/glaucous"
                 android:layout_marginBottom="8dp"
                 android:text="Organize New Event" />
 
@@ -193,6 +198,8 @@
                 android:id="@+id/browse_events_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:backgroundTint="@color/glaucous"
                 android:layout_marginBottom="8dp"
                 android:text="Browse Events" />
 
@@ -211,6 +218,8 @@
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:text="Scan QR"
+        android:textColor="@color/black"
+        android:backgroundTint="@color/ochre"
         app:iconGravity="textStart"
         android:gravity="center" />
 </RelativeLayout>

@@ -45,8 +45,6 @@ public class AdminBrowseEventsFragment extends Fragment {
     private List<String> eventNames;
     private List<String> eventIds;
     private FirebaseFirestore db;
-    private Button searchButton;
-    private EditText searchBar;
     ProgressBar loadingProgressBar;
     private ArrayList<String> viewList = new ArrayList<>();
 
@@ -67,9 +65,7 @@ public class AdminBrowseEventsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_admin_browse_events, container, false);
         eventListView = view.findViewById(R.id.events);
         eventNames = new ArrayList<>();
-        searchBar = view.findViewById(R.id.search_bar);
         eventIds = new ArrayList<>();
-        searchButton = view.findViewById(R.id.button_search);
         backButton = view.findViewById(R.id.button_back_button);
         loadingProgressBar = view.findViewById(R.id.loadingProgressBar);
 
@@ -77,8 +73,6 @@ public class AdminBrowseEventsFragment extends Fragment {
 
         loadingProgressBar.setVisibility(View.VISIBLE);
         backButton.setVisibility(View.INVISIBLE);
-        searchButton.setVisibility(View.INVISIBLE);
-        searchBar.setVisibility(View.INVISIBLE);
         eventListView.setVisibility(View.INVISIBLE);
 
         FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -103,31 +97,8 @@ public class AdminBrowseEventsFragment extends Fragment {
 
         loadingProgressBar.setVisibility(View.INVISIBLE);
         backButton.setVisibility(View.VISIBLE);
-        searchButton.setVisibility(View.VISIBLE);
-        searchBar.setVisibility(View.VISIBLE);
         eventListView.setVisibility(View.VISIBLE);
 
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewList.clear();
-
-                for(String eventName: eventNames){
-                    if(eventName.contains(searchBar.getText())){
-                        viewList.add(eventName);
-                        eventAdapter.notifyDataSetChanged();
-                    }
-                }
-                if(!viewList.isEmpty()){
-                    eventAdapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,viewList );
-                    eventListView.setAdapter(eventAdapter);
-                }
-                else{
-                    Toast.makeText(getContext(), "No events found with: " + searchBar.getText(), Toast.LENGTH_LONG).show();
-                    eventAdapter.notifyDataSetChanged();
-                }
-            }
-        });
         eventAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, eventNames);
         eventListView.setAdapter(eventAdapter);
 
@@ -144,11 +115,6 @@ public class AdminBrowseEventsFragment extends Fragment {
         });
 
         return view;
-    }
-
-    public void gotoMyEventActivity() {
-        Intent intent = new Intent(getContext(), ManageEventActivity.class);
-        startActivity(intent);
     }
 
     private void showEventDetailsDialog(String eventId, int position) {
