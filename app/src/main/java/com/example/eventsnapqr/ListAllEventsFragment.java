@@ -91,7 +91,7 @@ public class ListAllEventsFragment extends Fragment {
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
             String eventId = eventIds.get(position);
             BrowseEventsActivity activity = (BrowseEventsActivity) requireActivity();
-            activity.switchToFullscreenDetails(eventId);
+            activity.switchToFullscreenDetails(eventId, false);
         });
 
         return view;

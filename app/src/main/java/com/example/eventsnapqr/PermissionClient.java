@@ -11,7 +11,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
-
+/*
+    Class derived from: https://www.youtube.com/watch?v=KeuV6cjVh6c&t=0s
+ */
 public class PermissionClient {
     private static PermissionClient instance = null;
     private Context context;
@@ -63,7 +65,6 @@ public class PermissionClient {
     private void permissionRationale(Activity activity, int requestCode, String[] permissions, String deniedPermission){
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity, deniedPermission)) {
             showMessageOKCancel("Please allow access to the permissions", new DialogInterface.OnClickListener() {
-
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     askPermissions(activity, permissions, requestCode);
@@ -72,7 +73,6 @@ public class PermissionClient {
 
         }
     }
-
     private void showMessageOKCancel(String msg, DialogInterface.OnClickListener onClickListener) {
         new AlertDialog.Builder(context)
                 .setMessage(msg)
@@ -81,6 +81,4 @@ public class PermissionClient {
                 .create()
                 .show();
     }
-
-
 }

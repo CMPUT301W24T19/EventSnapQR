@@ -64,7 +64,7 @@ public class QRDialogFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_q_r_dialog, container, false);
-
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialog);
         // Retrieve data from the bundle
         Bundle bundle = getArguments();
         eventId = bundle.getString("eventId");
@@ -72,7 +72,7 @@ public class QRDialogFragment extends DialogFragment {
         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
 
         try {
-            qrBitmap = barcodeEncoder.encodeBitmap(eventId, BarcodeFormat.QR_CODE, 400, 400);
+            qrBitmap = barcodeEncoder.encodeBitmap("eventsnapqr/" + eventId, BarcodeFormat.QR_CODE, 400, 400);
             if (qrBitmap != null) {
                 Log.d("QR_CODE", "QR Code generated successfully");
             } else {

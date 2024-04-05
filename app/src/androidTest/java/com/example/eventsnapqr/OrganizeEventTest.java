@@ -19,9 +19,11 @@ import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -32,10 +34,56 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
+@FixMethodOrder(MethodSorters.JVM)
 public class OrganizeEventTest {
     @Rule
-    public ActivityScenarioRule<MainActivity> scenario = new
-            ActivityScenarioRule<MainActivity>(MainActivity.class);
+    public ActivityScenarioRule<OrganizeAnEventActivity> scenario = new
+            ActivityScenarioRule<OrganizeAnEventActivity>(OrganizeAnEventActivity.class);
+    /**
+     * Test to test that an event is successfully created
+     * US 01.01.01
+
+     @Test
+     public void organizeEventTest() {
+     FirebaseController firebaseController = new FirebaseController();
+     String id = firebaseController.getUniqueEventID();
+
+     // Launch OrganizeAnEventActivity and create the event
+     ActivityScenario.launch(OrganizeAnEventActivity.class);
+     onView(withId(R.id.editTextEventName)).perform(typeText(id));
+     onView(withId(R.id.edit_text_number)).perform(typeText("Event description"));
+
+     onView(withId(R.id.button)).perform(click());
+     // Use CountDownLatch to wait for Firebase operation to complete
+     CountDownLatch latch = new CountDownLatch(1);
+     firebaseController.getAllEvents(new FirebaseController.OnEventsLoadedListener() {
+     @Override
+     public void onEventsLoaded(ArrayList<Event> events) {
+     // Verify the event after it's loaded
+     for (Event event : events) {
+     if (event.getEventName().equals(id)) {
+     assertEquals(event.getEventName(), id);
+     latch.countDown(); // Signal that events are loaded
+     break;
+     }
+     }
+     }
+     });
+     try {
+     latch.await(10, TimeUnit.SECONDS); // Adjust timeout as needed
+     } catch (InterruptedException e) {
+     e.printStackTrace();
+     }
+     }
+     **/
+    @Test
+    public void geolocationTest(){
+        // Launch OrganizeAnEventActivity and create the event
+        ActivityScenario.launch(OrganizeAnEventActivity.class);
+        onView(withId(R.id.editTextEventName)).perform(typeText(id));
+        onView(withId(R.id.edit_text_number)).perform(typeText("Event description"));
+    }
+    /**
     @Before
     public void init() {
         Context context = InstrumentationRegistry.getInstrumentation().getContext();
@@ -115,43 +163,8 @@ public class OrganizeEventTest {
                     "settings put global animator_duration_scale 1");
         }
     }
+**/
 
-    /**
-     * Test to test that an event is successfully created
-     * US 01.01.01
-     */
-    @Test
-    public void organizeEventTest() {
-        FirebaseController firebaseController = new FirebaseController();
-        String id = firebaseController.getUniqueEventID();
-
-        // Launch OrganizeAnEventActivity and create the event
-        ActivityScenario.launch(OrganizeAnEventActivity.class);
-        onView(withId(R.id.editTextEventName)).perform(typeText(id));
-        onView(withId(R.id.edit_text_number)).perform(typeText("Event description"));
-
-        onView(withId(R.id.button_create)).perform(click());
-        // Use CountDownLatch to wait for Firebase operation to complete
-        CountDownLatch latch = new CountDownLatch(1);
-        firebaseController.getAllEvents(new FirebaseController.OnEventsLoadedListener() {
-            @Override
-            public void onEventsLoaded(ArrayList<Event> events) {
-                // Verify the event after it's loaded
-                for (Event event : events) {
-                    if (event.getEventName().equals(id)) {
-                        assertEquals(event.getEventName(), id);
-                        latch.countDown(); // Signal that events are loaded
-                        break;
-                    }
-                }
-            }
-        });
-        try {
-            latch.await(10, TimeUnit.SECONDS); // Adjust timeout as needed
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 }
 
 

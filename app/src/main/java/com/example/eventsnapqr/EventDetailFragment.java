@@ -46,6 +46,7 @@ public class EventDetailFragment extends Fragment {
     private TextInputEditText eventStartDateTime;
     private TextInputEditText eventEndDateTime;
     private Integer position;
+    private Boolean toMain;
 
     /**
      * What should be executed when the fragment is created
@@ -58,6 +59,7 @@ public class EventDetailFragment extends Fragment {
         if (getArguments() != null) {
             eventId = getArguments().getString("eventId");
             position = getArguments().getInt("position");
+            toMain = getArguments().getBoolean("toMain");
             loadEventDetails(eventId);
 
         }
@@ -111,7 +113,11 @@ public class EventDetailFragment extends Fragment {
         view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (position == -1) {
+                if(toMain){
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    startActivity(intent);
+                }
+                else if (position == -1) {
                     requireActivity().onBackPressed();
                 } else {
                     Intent intent = requireActivity().getIntent();

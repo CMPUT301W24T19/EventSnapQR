@@ -7,9 +7,12 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,25 +20,65 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * fragment where the map is plotted for the event clicked
+ * the following sources were a major help  for setting this up
+ *
+ * I used OpenAI: chatGPT to get the structure of how to plot the coordinates
+ * using osmdroid. Prompt "How can I plot a set of coordinated using osmdroid."
+ * The startLocationUpdates, onProvider, onLocation change, onResume, onPause
+ * permission check and request is taken from chatgpt.
+ *
+ * Along with that I used this video to get run time permissions:
+ * "https://www.youtube.com/watch?v=KeuV6cjVh6c"
+ *
+ * To get current location I also referred to these 3 videos:
+ * "https://www.youtube.com/watch?v=M0kUd2dpxo4"
+ * "https://www.youtube.com/watch?v=waX6ygjIqmw"
+ * Used code to setup the manView on the xml and initialization from the video below
+ * "https://www.youtube.com/watch?v=xoFtgcOoO1I"
+ */
 public class MapFragment extends Fragment {
 
     private MapView mapView;
+    private FirebaseFirestore db;
     private String eventName;
-    private Location lastLocation;
+    private FrameLayout mapContainer;
+
+    //constructor to get the passes EventName
+    public MapFragment(String eventName) {
+        this.eventName = eventName;
+        //plotEventAttendees(eventName);
+    }
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Initialize OSMDroid configuration
         Configuration.getInstance().load(getContext(), getActivity().getSharedPreferences("osmdroid", 0));
+        db = FirebaseFirestore.getInstance();
         if (getArguments() != null) {
+
             eventName = getArguments().getString("eventName");
         }
     }
@@ -43,9 +86,17 @@ public class MapFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_attendee_map, container, false);
+        TextView text = view.findViewById(R.id.page_name);
+        text.setText("Map of " + eventName + " Attendees");
+
         mapView = view.findViewById(R.id.mapView);
+        mapContainer = view.findViewById(R.id.mapContainer); // Reference to the parent layout
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setMultiTouchControls(true);
+        IMapController mapController = mapView.getController();
+        mapController.setZoom(16);
+        Log.e("MapFragment", "Map clicked. Plotting attendees for event: " + eventName);
+        plotEventAttendees(eventName);
 
         // Request location permission
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -60,7 +111,17 @@ public class MapFragment extends Fragment {
         view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.e("MapFragment", "Back clicked. Plotting attendees for event: " + eventName);
                 requireActivity().onBackPressed();
+            }
+        });
+        mapContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // When parent layout is clicked, plot attendees of the event
+                Log.e("MapFragment", "Map clicked. Plotting attendees for event: " + eventName);
+                Log.e("MapFragment", "Reached method call");
+                plotEventAttendees(eventName);
             }
         });
 
@@ -73,25 +134,6 @@ public class MapFragment extends Fragment {
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                if (lastLocation != null) {
-                    // Remove previous marker
-                    mapView.getOverlays().clear();
-                }
-
-                lastLocation = location;
-                // Update map's center to the current location
-                IMapController mapController = mapView.getController();
-                mapController.setCenter(new GeoPoint(location.getLatitude(), location.getLongitude()));
-                mapController.setZoom(18.0); // Set an initial zoom level
-
-                // Add marker for current location
-                Marker marker = new Marker(mapView);
-                marker.setPosition(new GeoPoint(location.getLatitude(), location.getLongitude()));
-                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-                marker.setTitle("Current Location");
-                marker.setSnippet(String.format("(%.6f, %.6f)", location.getLatitude(), location.getLongitude()));
-                mapView.getOverlays().add(marker);
-
                 mapView.invalidate(); // Refresh the map view
             }
 
@@ -116,6 +158,111 @@ public class MapFragment extends Fragment {
             e.printStackTrace();
             Toast.makeText(requireContext(), "Error getting location: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+    }
+    private void plotEventAttendees(String eventName) {
+        // Query Firestore to find the event document based on the event name
+        db.collection("events")
+                .whereEqualTo("eventName", eventName)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            // Get the event document ID
+                            String eventId = document.getId();
+
+                            // Query the "attendees" subcollection to get the list of attendees
+                            db.collection("events").document(eventId)
+                                    .collection("attendees")
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                            List<GeoPoint> points = new ArrayList<>();
+                                            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                                // Extract latitude and longitude values as strings
+                                                String latitudeStr = document.getString("latitude");
+                                                String longitudeStr = document.getString("longitude");
+                                                Log.e("MapFragment", "Found latitude " + latitudeStr);
+                                                Long checkINLong = document.getLong("checkedIn");
+                                                Log.e("MapFragment", "Found checkIN:  " + checkINLong);
+
+                                                if (checkINLong != null && !latitudeStr.isEmpty() && latitudeStr!=null && !longitudeStr.isEmpty() && longitudeStr!=null) {
+                                                    int checkIN = checkINLong.intValue();
+
+                                                    // Convert latitude and longitude from strings to doubles
+
+                                                    double latitude = Double.parseDouble(latitudeStr);
+                                                    double longitude = Double.parseDouble(longitudeStr);
+                                                    Log.e("MapFragment", "Found latitude " + latitude);
+
+                                                    if(checkIN>0) {
+                                                        points.add(new GeoPoint(latitude, longitude));
+                                                        Marker marker = new Marker(mapView);
+                                                        marker.setPosition(new GeoPoint(latitude, longitude));
+                                                        // Getting the attendee ID
+                                                        String attendeeId = document.getId();
+
+                                                        // Retrieve user information using the attendee ID
+                                                        db.collection("users").document(attendeeId)
+                                                                .get()
+                                                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                                    @Override
+                                                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                        if (documentSnapshot.exists()) {
+                                                                            // Retrieve the user name
+                                                                            String userName = documentSnapshot.getString("name");
+                                                                            // Set marker title with user name
+                                                                            marker.setTitle("User name: " + userName);
+                                                                        } else {
+                                                                            Log.e("MapFragment", "User document does not exist for attendee ID: " + attendeeId);
+                                                                        }
+                                                                    }
+                                                                })
+                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+                                                                        Log.e("MapFragment", "Error getting user document: " + e.getMessage());
+                                                                    }
+                                                                });
+
+                                                        marker.setSnippet("Checked In: " + checkIN); // Include the check-in information in the snippet
+                                                        mapView.getOverlays().add(marker);
+                                                    }
+                                                }
+                                            }
+                                            if (!points.isEmpty()) {
+                                                // update the map view to include all markers
+                                                if (points.size() == 1) {
+                                                    // if there's only one point, center the map on it
+                                                    mapView.getController().setCenter(points.get(0));
+                                                } else {
+                                                    // calculate the bounding box and set the map view
+                                                    BoundingBox boundingBox = BoundingBox.fromGeoPoints(points);
+                                                    mapView.zoomToBoundingBox(boundingBox, true);
+                                                }
+                                            }
+                                            else{
+                                                Log.d("ORGANIZER MAP", "No points to focus map");
+                                            }
+                                            mapView.invalidate(); // Refresh the map view
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.e("MapFragment", "Error getting attendees: " + e.getMessage());
+                                        }
+                                    });
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("MapFragment", "Error getting event document: " + e.getMessage());
+                    }
+                });
     }
 
     @Override

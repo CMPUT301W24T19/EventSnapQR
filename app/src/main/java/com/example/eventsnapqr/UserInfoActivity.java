@@ -109,6 +109,7 @@ public class UserInfoActivity extends AppCompatActivity {
                 }
                 else{
                     Toast.makeText(UserInfoActivity.this, "Permission already granted", Toast.LENGTH_LONG).show();
+                    notificationSwitch.setChecked(true);
                 }
             }
         });
@@ -227,6 +228,10 @@ public class UserInfoActivity extends AppCompatActivity {
                         Toast.makeText(UserInfoActivity.this, "Information successfully updated!", Toast.LENGTH_SHORT).show();
                         editMode = false;
                         saveButton.setVisibility(View.INVISIBLE);
+                        userName.setEnabled(editMode);
+                        email.setEnabled(editMode);
+                        phoneNumber.setEnabled(editMode);
+                        homepage.setEnabled(editMode);
                     }
                 });
             }
@@ -239,6 +244,7 @@ public class UserInfoActivity extends AppCompatActivity {
                 email.setEnabled(editMode);
                 phoneNumber.setEnabled(editMode);
                 homepage.setEnabled(editMode);
+
                 if (editMode) {
                     saveButton.setVisibility(View.VISIBLE);
                 }

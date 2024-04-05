@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onUserExistenceChecked(boolean exists) {
                 if (!exists) {
-                    User newUser = new User("user_" + androidId, androidId);
+                    User newUser = new User(androidId, androidId);
                     FirebaseController.getInstance().addUser(newUser);
                 }
             }
@@ -101,14 +101,4 @@ public class MainActivity extends AppCompatActivity {
         };
         FirebaseController.checkUserExists(androidId, listener);
     }
-
-    /**
-     * navigate to the the sign up fragment
-     */
-//    public void signUp(){
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-//        Bundle bundle = new Bundle();
-//        bundle.putString("userId", androidId);
-//        navController.navigate(R.id.signUpFragment, bundle);
-//    }
 }

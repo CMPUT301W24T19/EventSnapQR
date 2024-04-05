@@ -35,7 +35,7 @@
             android:exported="false" />
         <activity
             android:name=".AdminViewImageActivity"
-            android:exported="false" /> <!-- <activity -->
+            android:exported="false" />
         <activity
             android:name=".BrowseEventsActivity"
             android:exported="false" />
@@ -52,13 +52,16 @@
             android:exported="false" />
         <activity
             android:name=".UserInfoActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
         <activity
             android:name=".ManageEventActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan">
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
