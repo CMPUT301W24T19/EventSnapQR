@@ -1,6 +1,8 @@
 package com.example.eventsnapqr;
 
 import static androidx.test.espresso.Espresso.onData;
+import com.google.firebase.firestore.CollectionReference;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -26,6 +28,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
@@ -35,6 +38,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import com.google.firebase.firestore.CollectionReference;
 import com.google.zxing.client.android.Intents;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -46,7 +50,9 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 /**
@@ -67,7 +73,6 @@ public class AttendeeTest {
     public void QRScanTest(){
         String eventID = "testeventid";
         FirebaseController firebaseController = FirebaseController.getInstance();
-
         Event newEvent = new Event(new User(), "testEvent", "testEventDescription", null, 5, eventID, new Date(), new Date(), true);
         firebaseController.addEvent(newEvent);
         CountDownLatch latch = new CountDownLatch(1);
@@ -110,8 +115,9 @@ public class AttendeeTest {
             }
         });
     }
+
     /**
-     * Test for  US 02.07.01
+     * Test for  US 02.07.01, US 02.04.01
      */
     @Test
     public void signUpForEventTest(){
@@ -128,14 +134,30 @@ public class AttendeeTest {
         firebaseController.addEvent(newEvent);
 
         // create an intent and put the event ID as an extra
+
+        String announcement = "Test Announcement";
+        FirebaseController firebaseControllerTwo = FirebaseController.getInstance();
+        //CollectionReference announcementsRef = firebaseController.collection("events").document(id).collection("announcements");
+        Map<String, Object> announcementData = new HashMap<>();
+        announcementData.put("message", announcement);
+        announcementData.put("timestamp", new Date());
+        CountDownLatch latch = new CountDownLatch(1);
+        /*
+        announcementsRef.add(announcementData)
+                .addOnSuccessListener(documentReference -> latch.countDown())
+                .addOnFailureListener(e -> latch.countDown());
+
+         */
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), BrowseEventsActivity.class);
         intent.putExtra("eventID", id);
         // launch BrowseEventsActivity with the intent
         ActivityScenario<BrowseEventsActivity> activityScenario = ActivityScenario.launch(intent);
 
-        // use CountDownLatch to wait for Firebase operation to complete
-        CountDownLatch latch = new CountDownLatch(1);
+        // US 02.04.01 check
+        onView(withId(R.id.editTextAnnouncements))
+                .check(matches(withText(announcement)));
         onView(withId(R.id.sign_up_button)).perform(click());
+
         firebaseController.isAttendee(androidId, newEvent, new FirebaseController.AttendeeCheckCallback() {
             @Override
             public void onChecked(boolean isAttendee, Event event) {
