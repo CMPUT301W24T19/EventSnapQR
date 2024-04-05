@@ -131,16 +131,7 @@ public class ManageEventActivity extends AppCompatActivity {
             eventId = getIntent().getStringExtra("eventId");
         }
 
-        loadingProgressBar.setVisibility(View.VISIBLE);
-        attendeeListView.setVisibility(View.INVISIBLE);
-        milestoneListView.setVisibility(View.INVISIBLE);
-        menuButton.setVisibility(View.INVISIBLE);
-        backButton.setVisibility(View.INVISIBLE);
-        filterSwitch.setVisibility(View.INVISIBLE);
-        totalAttendeesTextView.setVisibility(View.INVISIBLE);
-        totalCheckedInTextView.setVisibility(View.INVISIBLE);
-        eventNameTextView.setVisibility(View.INVISIBLE);
-        fab.setVisibility(View.INVISIBLE);
+        turnOnLoading();
 
         firebaseController.getEvent(eventId, new FirebaseController.OnEventRetrievedListener() {
             @Override
@@ -148,7 +139,7 @@ public class ManageEventActivity extends AppCompatActivity {
                 if (event != null) {
                     currentEvent = event;
                     eventNameTextView.setText(currentEvent.getEventName());
-                    fetchAttendeeData(true);
+                    fetchAttendeeData(true, true);
                 } else {
                     Log.d("ManageEventActivity", "Failed to retrieve event");
                 }
@@ -195,10 +186,12 @@ public class ManageEventActivity extends AppCompatActivity {
         filterSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                loadingProgressBar.setVisibility(View.VISIBLE);
+                attendeeListView.setVisibility(View.INVISIBLE);
                 if (filterSwitch.isChecked()) {
-                    fetchAttendeeData(false);
+                    fetchAttendeeData(false, false);
                 } else {
-                    fetchAttendeeData(true);
+                    fetchAttendeeData(true, false);
                 }
             }
         });
@@ -213,16 +206,7 @@ public class ManageEventActivity extends AppCompatActivity {
             @Override
             public void onMilestonesLoaded(List<String> milestones) {
                 processMilestones(milestones);
-                loadingProgressBar.setVisibility(View.INVISIBLE);
-                attendeeListView.setVisibility(View.VISIBLE);
-                milestoneListView.setVisibility(View.VISIBLE);
-                menuButton.setVisibility(View.VISIBLE);
-                backButton.setVisibility(View.VISIBLE);
-                filterSwitch.setVisibility(View.VISIBLE);
-                totalAttendeesTextView.setVisibility(View.VISIBLE);
-                totalCheckedInTextView.setVisibility(View.VISIBLE);
-                eventNameTextView.setVisibility(View.VISIBLE);
-                fab.setVisibility(View.VISIBLE);
+                turnOffLoading();
             }
         });
     }
@@ -236,7 +220,7 @@ public class ManageEventActivity extends AppCompatActivity {
     /**
      * a function to populate the attendees listView
      */
-    private void fetchAttendeeData(Boolean checkedIn) {
+    private void fetchAttendeeData(Boolean checkedIn, Boolean initialization) {
         db = FirebaseFirestore.getInstance();
         CollectionReference attendeesRef = db.collection("events").document(eventId).collection("attendees");
         attendees.clear();
@@ -253,7 +237,7 @@ public class ManageEventActivity extends AppCompatActivity {
             if (totalAttendees != 0) {
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                     String attendeeId = documentSnapshot.getId();
-
+                    attendeeCount++;
                     Long longValue = documentSnapshot.getLong("checkedIn");
                     Integer numCheckIns = longValue != null ? longValue.intValue() : 0;
 
@@ -263,7 +247,6 @@ public class ManageEventActivity extends AppCompatActivity {
                             if (numCheckIns > 0) {
                                 checkedInCount++;
                             }
-                            attendeeCount++;
                             firebaseController.getUser(attendeeId, user -> {
                                 if (user != null) {
                                     HashMap<String, Object> attendeeData = new HashMap<>();
@@ -290,8 +273,12 @@ public class ManageEventActivity extends AppCompatActivity {
                                             attendeeCheckedIn.add((Integer) attendee.get("checkedIn"));
                                         }
                                         eventAdapter.notifyDataSetChanged();
-                                        fetchMilestones();
+                                        if (initialization) {
+                                            fetchMilestones();
+                                        }
                                         updateTexts();
+                                        loadingProgressBar.setVisibility(View.INVISIBLE);
+                                        attendeeListView.setVisibility(View.VISIBLE);
                                     }
                                 }
                             });
@@ -299,8 +286,12 @@ public class ManageEventActivity extends AppCompatActivity {
                             retrievalCounter.incrementAndGet(); // Increment even on failure to keep track
                             if (retrievalCounter.get() == totalAttendees) {
                                 eventAdapter.notifyDataSetChanged();
-                                fetchMilestones();
+                                if (initialization) {
+                                    fetchMilestones();
+                                }
                                 updateTexts();
+                                loadingProgressBar.setVisibility(View.INVISIBLE);
+                                attendeeListView.setVisibility(View.VISIBLE);
                             }
                         });
                     } else {
@@ -308,23 +299,35 @@ public class ManageEventActivity extends AppCompatActivity {
                         retrievalCounter.incrementAndGet(); // Increment for non-checked-in users
                         if (retrievalCounter.get() == totalAttendees) {
                             eventAdapter.notifyDataSetChanged();
-                            fetchMilestones();
+                            if (initialization) {
+                                fetchMilestones();
+                            }
                             updateTexts();
+                            loadingProgressBar.setVisibility(View.INVISIBLE);
+                            attendeeListView.setVisibility(View.VISIBLE);
                         }
                     }
                 }
             }
             else {
                 eventAdapter.notifyDataSetChanged();
-                fetchMilestones();
+                if (initialization) {
+                    fetchMilestones();
+                }
                 updateTexts();
+                loadingProgressBar.setVisibility(View.INVISIBLE);
+                attendeeListView.setVisibility(View.VISIBLE);
             }
         }).addOnFailureListener(e -> {
             Log.d("TAG", "true3");
             Log.d("FetchAttendeeData", "Error fetching attendee data: " + e.getMessage());
             eventAdapter.notifyDataSetChanged();
-            fetchMilestones();
+            if (initialization) {
+                fetchMilestones();
+            }
             updateTexts();
+            loadingProgressBar.setVisibility(View.INVISIBLE);
+            attendeeListView.setVisibility(View.VISIBLE);
         });
     }
 
@@ -523,5 +526,31 @@ public class ManageEventActivity extends AppCompatActivity {
             }
         });
         popupMenu.show();
+    }
+
+    private void turnOnLoading() {
+        loadingProgressBar.setVisibility(View.VISIBLE);
+        attendeeListView.setVisibility(View.INVISIBLE);
+        milestoneListView.setVisibility(View.INVISIBLE);
+        menuButton.setVisibility(View.INVISIBLE);
+        backButton.setVisibility(View.INVISIBLE);
+        filterSwitch.setVisibility(View.INVISIBLE);
+        totalAttendeesTextView.setVisibility(View.INVISIBLE);
+        totalCheckedInTextView.setVisibility(View.INVISIBLE);
+        eventNameTextView.setVisibility(View.INVISIBLE);
+        fab.setVisibility(View.INVISIBLE);
+    }
+
+    private void turnOffLoading() {
+        loadingProgressBar.setVisibility(View.INVISIBLE);
+        attendeeListView.setVisibility(View.VISIBLE);
+        milestoneListView.setVisibility(View.VISIBLE);
+        menuButton.setVisibility(View.VISIBLE);
+        backButton.setVisibility(View.VISIBLE);
+        filterSwitch.setVisibility(View.VISIBLE);
+        totalAttendeesTextView.setVisibility(View.VISIBLE);
+        totalCheckedInTextView.setVisibility(View.VISIBLE);
+        eventNameTextView.setVisibility(View.VISIBLE);
+        fab.setVisibility(View.VISIBLE);
     }
 }

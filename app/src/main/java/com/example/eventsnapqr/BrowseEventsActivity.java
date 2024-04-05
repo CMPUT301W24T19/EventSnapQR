@@ -8,6 +8,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -72,18 +74,13 @@ public class BrowseEventsActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {}
         });
 
+
         fullscreenViewPager.setVisibility(View.GONE);
         ImageView backButton = findViewById(R.id.button_back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(eventId == null){
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
-                }
-                else{
-                    finish();
-                }
+                finish();
             }
         });
         eventId = getIntent().getStringExtra("eventID"); // for when user enters activity from notification click
