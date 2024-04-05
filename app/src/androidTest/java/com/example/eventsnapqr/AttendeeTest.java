@@ -1,6 +1,8 @@
 package com.example.eventsnapqr;
 
 import static androidx.test.espresso.Espresso.onData;
+import com.google.firebase.firestore.CollectionReference;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -12,6 +14,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertEquals;
 
 import static org.hamcrest.Matchers.allOf;
@@ -25,14 +28,17 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import com.google.firebase.firestore.CollectionReference;
 import com.google.zxing.client.android.Intents;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -44,7 +50,9 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 /**
@@ -63,9 +71,8 @@ public class AttendeeTest {
      */
     @Test
     public void QRScanTest(){
-        String eventID = "testeventid";
+        String eventID = FirebaseController.getInstance().getUniqueEventID();
         FirebaseController firebaseController = FirebaseController.getInstance();
-
         Event newEvent = new Event(new User(), "testEvent", "testEventDescription", null, 5, eventID, new Date(), new Date(), true);
         firebaseController.addEvent(newEvent);
         CountDownLatch latch = new CountDownLatch(1);
@@ -108,8 +115,9 @@ public class AttendeeTest {
             }
         });
     }
+
     /**
-     * Tests for  US 02.07.01, US 02.08.01, US 02.09.01
+     * Test for  US 02.07.01, US 02.04.01 (sill in progress)
      */
     @Test
     public void signUpForEventTest(){
@@ -122,77 +130,41 @@ public class AttendeeTest {
                 "settings put global animator_duration_scale 0");
         FirebaseController firebaseController = new FirebaseController();
         id = firebaseController.getUniqueEventID();
-        // Launch OrganizeAnEventActivity and create the event
-        ActivityScenario activityScenario = ActivityScenario.launch(OrganizeAnEventActivity.class);
-        onView(withId(R.id.editTextEventName)).perform(typeText(id));
-        onView(withId(R.id.edit_text_description)).perform(typeText("Event description"));
+        Event newEvent = new Event(new User(), "testEvent", "testEventDescription", null, 5, id, new Date(), new Date(), true);
+        firebaseController.addEvent(newEvent);
 
-        // Use CountDownLatch to wait for Firebase operation to complete
+        // create an intent and put the event ID as an extra
         CountDownLatch latch = new CountDownLatch(1);
-        // Launch MainActivity and browse events
-        ActivityScenario.launch(MainActivity.class);
-        onView(withId(R.id.browse_events_button)).perform(click());
-        try {
-            latch.await(10, TimeUnit.SECONDS);
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        onView(withId(R.id.events))
-                .check(matches(hasDescendant(withText(startsWith(id)))));
-        onData(hasToString(startsWith(id)))
-                .inAdapterView(withId(R.id.events))
-                .atPosition(0)
-                .perform(click());
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        onView(withId(R.id.sign_up_button)).check(matches(isDisplayed())).perform(click());
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        onView(withText("OK")).inRoot(isDialog()).perform(click());
-        activityScenario.close();
-        ArrayList<String> allAttendees = new ArrayList<>();
-        firebaseController.getEvent(id, new FirebaseController.OnEventRetrievedListener() {
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), BrowseEventsActivity.class);
+        intent.putExtra("eventID", id);
+        // launch BrowseEventsActivity with the intent
+        ActivityScenario<BrowseEventsActivity> activityScenario = ActivityScenario.launch(intent);
+        String announcement = "Test Announcement";
+        firebaseController.addTestAnnouncement(announcement, id, new FirebaseController.FirestoreOperationCallback() {
             @Override
-            public void onEventRetrieved(Event event) {
-                if(event != null){
-                    firebaseController.getEventAttendees(event, new User.AttendeesCallback() {
-                        @Override
-                        public void onCallback(List<User> userList) {
-                            // do nothing
-                            latch.countDown();
-                        }
-
-                        @Override
-                        public void onAttendeesLoaded(List<String> attendees) {
-                            allAttendees.addAll(attendees);
-                            latch.countDown();
-                        }
-                    });
-                }
-
+            public void onCompleted() {
+                latch.countDown();
             }
         });
         try{
             latch.await(10, TimeUnit.SECONDS);
-        }catch(Exception e){
-            e.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
-        Context context = InstrumentationRegistry.getInstrumentation().getContext();
-        ContentResolver contentResolver = context.getContentResolver();
-        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+        // US 02.04.01 check
+        onView(withId(R.id.editTextAnnouncements))
+                .check(matches(withText(announcement)));
+        onView(withId(R.id.sign_up_button)).perform(click());
 
-        for(String attendeeId: allAttendees){
-            if(androidId.equals(attendeeId)){
-                assertEquals(attendeeId, androidId);
+        firebaseController.isAttendee(androidId, newEvent, new FirebaseController.AttendeeCheckCallback() {
+            @Override
+            public void onChecked(boolean isAttendee, Event event) {
+                // US 02.07.01 check
+                assertTrue(isAttendee);
+                latch.countDown();
             }
-        }
+        });
+
         // Enable animations after the test is finished
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global window_animation_scale 1");
@@ -201,5 +173,6 @@ public class AttendeeTest {
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global animator_duration_scale 1");
     }
+
 }
 

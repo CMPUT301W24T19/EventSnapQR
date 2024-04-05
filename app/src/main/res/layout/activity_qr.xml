@@ -30,6 +30,8 @@
             android:id="@+id/button_exit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/glaucous"
+            android:textColor="@color/black"
             android:text="Return" />
         <Space
             android:layout_width="26dp"
@@ -39,6 +41,8 @@
             android:id="@+id/button_save_qr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/glaucous"
+            android:textColor="@color/black"
             android:text="Share QRCode" />
     </LinearLayout>
 

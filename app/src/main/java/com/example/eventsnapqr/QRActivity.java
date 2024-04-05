@@ -50,6 +50,10 @@ public class QRActivity extends AppCompatActivity {
         Log.d("EVENT ID QR DIALOG: ", eventId);
         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+
         try {
             qrBitmap = barcodeEncoder.encodeBitmap("eventsnapqr/" + eventId, BarcodeFormat.QR_CODE, 400, 400);
             if (qrBitmap != null) {

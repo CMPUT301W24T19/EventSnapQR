@@ -69,7 +69,7 @@ dependencies {
     androidTestImplementation("com.android.support.test.espresso:espresso-idling-resource:3.0.2")
     androidTestImplementation("com.google.firebase:firebase-storage:20.3.0")
     androidTestImplementation(platform("com.google.firebase:firebase-bom:32.8.0"))
-    androidTestImplementation("com.google.firebase:firebase-firestore")
+    androidTestImplementation("com.google.firebase:firebase-firestore:24.11.0")
     androidTestImplementation("com.firebaseui:firebase-ui-storage:8.0.2")
     androidTestImplementation("com.google.firebase:firebase-database:20.3.1")
 

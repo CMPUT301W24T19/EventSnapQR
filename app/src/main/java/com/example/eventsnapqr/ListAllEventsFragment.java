@@ -30,36 +30,9 @@ import java.util.List;
  */
 public class ListAllEventsFragment extends Fragment {
     private ListView eventListView; // list of events
-    private ArrayAdapter<String> eventAdapter;
-    private List<String> eventNames; // list of event names
-    private List<String> eventIds; // list of event ids
+    private EventAdapter eventAdapter;
+    private List<Event> events;
     private FirebaseFirestore db; // database instance
-    // TODO add search for browse events
-
-    /**
-     * retrieve any events that are currently in the database.
-     */
-    private void loadEvents(ProgressBar loadingProgressBar) {
-        loadingProgressBar.setVisibility(View.VISIBLE);
-        db.collection("events").get()
-                .addOnCompleteListener(task -> {
-                    loadingProgressBar.setVisibility(View.GONE);
-                    if (task.isSuccessful()) {
-                        eventNames.clear();
-                        for (DocumentSnapshot document : task.getResult()) {
-                            if (Boolean.TRUE.equals(document.getBoolean("active"))) {
-                                eventIds.add(document.getId());
-                                eventNames.add(document.getString("eventName"));
-                            }
-                        }
-                        eventAdapter.notifyDataSetChanged();
-                    }
-                    else {
-                        Toast.makeText(requireContext(), "Error loading events", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
 
     /**
      * Setup actions to be taken upon view creation and when the views are interacted with
@@ -73,15 +46,13 @@ public class ListAllEventsFragment extends Fragment {
      *
      * @return the resulting view
      */
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_browse_events, container, false);
 
         eventListView = view.findViewById(R.id.events);
-        eventNames = new ArrayList<>();
-        eventIds = new ArrayList<>();
-        eventAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, eventNames);
+        events = new ArrayList<>();
+        eventAdapter = new EventAdapter(requireContext(), events);
         eventListView.setAdapter(eventAdapter);
         db = FirebaseFirestore.getInstance();
 
@@ -89,7 +60,7 @@ public class ListAllEventsFragment extends Fragment {
         loadEvents(loadingProgressBar);
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
-            String eventId = eventIds.get(position);
+            String eventId = events.get(position).getEventID();
             BrowseEventsActivity activity = (BrowseEventsActivity) requireActivity();
             activity.switchToFullscreenDetails(eventId, false);
         });
@@ -97,5 +68,46 @@ public class ListAllEventsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * retrieve any events that are currently in the database.
+     */
+    private void loadEvents(ProgressBar loadingProgressBar) {
+        loadingProgressBar.setVisibility(View.VISIBLE);
+        db.collection("events").get()
+                .addOnCompleteListener(task -> {
+                    loadingProgressBar.setVisibility(View.GONE);
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot document : task.getResult()) {
+                            if (Boolean.TRUE.equals(document.getBoolean("active"))) {
+                                Long maxAttendeesLong = document.getLong("maxAttendees");
+                                int maxAttendees = (maxAttendeesLong != null) ? maxAttendeesLong.intValue() : 0;
+                                String organizerId = document.getString("organizerID");
+                                FirebaseController.getInstance().getUser(organizerId, user -> {
+                                    if (user != null) {
+                                        Event event = new Event(
+                                                user,
+                                                document.getString("eventName"),
+                                                document.getString("description"),
+                                                document.getString("posterURI"),
+                                                maxAttendees,
+                                                document.getId(), // Assuming event ID is the document ID
+                                                document.getDate("eventStartDateTime"),
+                                                document.getDate("eventEndDateTime"),
+                                                document.getString("address"),
+                                                document.getBoolean("active")
+                                        );
+                                        events.add(event);
+                                        eventAdapter.notifyDataSetChanged();
+                                    } else {
+                                        Toast.makeText(requireContext(), "Organizer not found for event: " + document.getId(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Error loading events", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 }
 
