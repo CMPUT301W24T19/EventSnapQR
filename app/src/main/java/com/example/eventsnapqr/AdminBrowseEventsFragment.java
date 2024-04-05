@@ -32,7 +32,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -46,7 +48,7 @@ public class AdminBrowseEventsFragment extends Fragment {
     private List<String> eventIds;
     private FirebaseFirestore db;
     ProgressBar loadingProgressBar;
-    private ArrayList<String> viewList = new ArrayList<>();
+    private List<HashMap<String, Object>> eventData;
 
     /**
      * Setup actions to be taken upon view creation and when the views are interacted with
@@ -66,6 +68,7 @@ public class AdminBrowseEventsFragment extends Fragment {
         eventListView = view.findViewById(R.id.events);
         eventNames = new ArrayList<>();
         eventIds = new ArrayList<>();
+        eventData = new ArrayList<>();
         backButton = view.findViewById(R.id.button_back_button);
         loadingProgressBar = view.findViewById(R.id.loadingProgressBar);
 
@@ -80,24 +83,43 @@ public class AdminBrowseEventsFragment extends Fragment {
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 eventIds.clear();
                 eventNames.clear();
+                final int[] i = {0};
                 for (QueryDocumentSnapshot doc: value) {
                     FirebaseController.getInstance().getEvent(doc.getId(), new FirebaseController.OnEventRetrievedListener() {
                         @Override
                         public void onEventRetrieved(Event event) {
                             if (event.isActive()) {
-                                eventIds.add(event.getEventID());
-                                eventNames.add(event.getEventName());
-                                eventAdapter.notifyDataSetChanged();
+                                HashMap<String, Object> data = new HashMap<>();
+                                data.put("name", event.getEventName());
+                                data.put("id", event.getEventID());
+                                eventData.add(data);
                             }
+                            if (i[0] == value.size() - 1) {
+                                eventData.sort(new Comparator<HashMap<String, Object>>() {
+                                    @Override
+                                    public int compare(HashMap<String, Object> o1, HashMap<String, Object> o2) {
+                                        String event1 = (String) o1.get("name");
+                                        event1 = event1.toLowerCase();
+                                        String event2 = (String) o2.get("name");
+                                        event2 = event2.toLowerCase();
+                                        return event1.compareTo(event2);
+                                    }
+                                });
+                                for (HashMap<String, Object> data: eventData) {
+                                    eventIds.add((String) data.get("id"));
+                                    eventNames.add((String) data.get("name"));
+                                }
+                                eventAdapter.notifyDataSetChanged();
+                                loadingProgressBar.setVisibility(View.INVISIBLE);
+                                backButton.setVisibility(View.VISIBLE);
+                                eventListView.setVisibility(View.VISIBLE);
+                            }
+                            i[0]++;
                         }
                     });
                 }
             }
         });
-
-        loadingProgressBar.setVisibility(View.INVISIBLE);
-        backButton.setVisibility(View.VISIBLE);
-        eventListView.setVisibility(View.VISIBLE);
 
         eventAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, eventNames);
         eventListView.setAdapter(eventAdapter);
