@@ -46,6 +46,7 @@ public class EventDetailFragment extends Fragment {
     private TextInputEditText eventAnnouncements;
     private TextInputEditText eventStartDateTime;
     private TextInputEditText eventEndDateTime;
+    private TextInputEditText eventAddress;
     private ExtendedFloatingActionButton signUpButton;
     private TextView signUpMessage;
     private Integer position;
@@ -101,6 +102,7 @@ public class EventDetailFragment extends Fragment {
         eventAnnouncements = view.findViewById(R.id.editTextAnnouncements);
         eventStartDateTime = view.findViewById(R.id.editTextStartDateTime);
         eventEndDateTime = view.findViewById(R.id.editTextEndDateTime);
+        eventAddress = view.findViewById(R.id.editTextAddress);
         signUpButton = view.findViewById(R.id.sign_up_button);
         signUpMessage = view.findViewById(R.id.sign_up_message);
 
@@ -266,6 +268,12 @@ public class EventDetailFragment extends Fragment {
         }
 
         eventLocation.setText("N/A");
+
+        if (event.getAddress() != null) {
+            eventAddress.setText(event.getAddress());
+        } else {
+            eventAddress.setText("N/A");
+        }
 
         List<String> announcements = event.getAnnouncements();
         if (announcements != null && !announcements.isEmpty()) {
