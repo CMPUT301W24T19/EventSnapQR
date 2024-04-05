@@ -32,6 +32,7 @@
                 android:textColor="@color/black"
                 android:backgroundTint="@color/glaucous"
                 android:text="ADMIN"
+
                 android:textSize="12sp"
                 android:visibility="visible" />
 
