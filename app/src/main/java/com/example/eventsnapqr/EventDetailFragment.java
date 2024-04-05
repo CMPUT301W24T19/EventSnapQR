@@ -110,7 +110,25 @@ public class EventDetailFragment extends Fragment {
                 if (isSignedUp) {
                     signUpButton.setVisibility(View.INVISIBLE);
                     signUpMessage.setVisibility(View.VISIBLE);
+                    FirebaseController.getInstance().checkAttendeeCheckins(eventId, androidId, new FirebaseController.CheckAttendeeCheckinsCallback() {
+                        @Override
+                        public void onSuccess(int checkins) {
+                            if (checkins == 1) {
+                                signUpMessage.setText("Checked in 1 time!");
+                            } else if (checkins > 0) {
+                                signUpMessage.setText("Checked in " + checkins + "times!");
+                            } else if (checkins == -1) {
+                                signUpMessage.setText("You are signed-up to attend this event!");
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Toast.makeText(getContext(), "Failed to get check-ins information.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
+                signUpMessage.setText("You are signed up for this event!");
             }
         });
 
@@ -264,5 +282,25 @@ public class EventDetailFragment extends Fragment {
         eventMaxAttendees.setText(event.getMaxAttendees() != null ? String.valueOf(event.getMaxAttendees()) : "N/A");
     }
 
-
+    /**
+     * returns the correct suffix for the given integer
+     *
+     * @param n the number in which to retrieve the suffix
+     */
+    public String getSuffix(Integer n) {
+        if (n >= 11 && n <= 13) {
+            return "th";
+        } else {
+            switch (n % 10) {
+                case 1:
+                    return "st";
+                case 2:
+                    return "nd";
+                case 3:
+                    return "rd";
+                default:
+                    return "th";
+            }
+        }
+    }
 }
