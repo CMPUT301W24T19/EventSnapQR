@@ -80,16 +80,15 @@ public class AdminBrowseImagesFragment extends Fragment {
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 posters.clear();
                 for (QueryDocumentSnapshot doc : value) {
-                    String eventID = (String) doc.getId();
-                    boolean eventActivity = (boolean) doc.getBoolean("active");
+                    String eventID = doc.getId();
+                    boolean eventActivity = doc.getBoolean("active");
                     if (eventActivity) {
-                        String eventName = (String) doc.getData().get("eventName");
-                        String posterUri = (String) doc.getData().get("posterURI");
-                        Event event = null;
+                        String eventName = doc.getString("eventName");
+                        String posterUri = doc.getString("posterURI");
                         if (posterUri != null) {
-                            event = new Event(null, eventName, null, posterUri, null, eventID, null, null, true);
+                            Event event = new Event(null, eventName, null, posterUri, null, eventID, null, null, true);
+                            posters.add(event);
                         }
-                        posters.add(event);
                     }
                 }
                 adapter.notifyDataSetChanged();
@@ -112,6 +111,7 @@ public class AdminBrowseImagesFragment extends Fragment {
                 adapter.notifyDataSetChanged();
             }
         });
+
 
         buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {
             @Override

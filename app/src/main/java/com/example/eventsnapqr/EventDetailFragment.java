@@ -187,7 +187,7 @@ public class EventDetailFragment extends Fragment {
      */
     public void CreateDialog(String eventName) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle ("You have successfully signed up for " + eventName)
+        builder.setTitle ("Signed up for " + eventName)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Back to main page

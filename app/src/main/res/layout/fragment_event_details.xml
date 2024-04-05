@@ -85,7 +85,7 @@ tools:context=".UserInfoActivity">
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="48dp"
-                    android:textColorHint="#E4E4E4"
+                    android:textColorHint="@color/grey"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
@@ -107,7 +107,7 @@ tools:context=".UserInfoActivity">
                         android:maxLength="50"
                         android:focusable="false"
                         android:cursorVisible="false"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -116,10 +116,10 @@ tools:context=".UserInfoActivity">
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Description"
-                    android:textColorHint="#E4E4E4"
+                    android:textColorHint="@color/grey"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
@@ -138,7 +138,7 @@ tools:context=".UserInfoActivity">
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:cursorVisible="false"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -147,10 +147,10 @@ tools:context=".UserInfoActivity">
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Location"
-                    android:textColorHint="#E4E4E4"
+                    android:textColorHint="@color/grey"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
@@ -169,7 +169,7 @@ tools:context=".UserInfoActivity">
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:cursorVisible="false"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -179,10 +179,10 @@ tools:context=".UserInfoActivity">
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Start Date / Time"
-                    android:textColorHint="#E4E4E4"
+                    android:textColorHint="@color/grey"
                     android:inputType="phone"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
@@ -202,7 +202,7 @@ tools:context=".UserInfoActivity">
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:cursorVisible="false"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -212,10 +212,10 @@ tools:context=".UserInfoActivity">
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="32dp"
                     android:hint="End Date / Time"
-                    android:textColorHint="#E4E4E4"
+                    android:textColorHint="@color/grey"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
@@ -234,7 +234,7 @@ tools:context=".UserInfoActivity">
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:cursorVisible="false"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -243,10 +243,10 @@ tools:context=".UserInfoActivity">
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Announcements"
-                    android:textColorHint="#E4E4E4"
+                    android:textColorHint="@color/grey"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
@@ -266,7 +266,7 @@ tools:context=".UserInfoActivity">
                         android:focusable="false"
                         android:cursorVisible="false"
                         android:gravity="top|start"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -275,10 +275,10 @@ tools:context=".UserInfoActivity">
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Maximum Attendees"
-                    android:textColorHint="#E4E4E4"
+                    android:textColorHint="@color/grey"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
@@ -297,7 +297,7 @@ tools:context=".UserInfoActivity">
                         android:layout_height="wrap_content"
                         android:focusable="false"
                         android:cursorVisible="false"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -311,6 +311,7 @@ tools:context=".UserInfoActivity">
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/ochre"
         android:layout_marginEnd="16dp"
         android:text="Sign Up"
         app:iconGravity="textStart"

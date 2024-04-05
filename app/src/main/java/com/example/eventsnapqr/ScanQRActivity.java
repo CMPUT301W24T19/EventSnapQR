@@ -82,11 +82,15 @@ public class ScanQRActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_scan_qractivity);
+        setContentView(R.layout.activity_main);
         userId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
 
         // Initialize LocationManager
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
 
         // Define location listener
         locationListener = new LocationListener() {
@@ -261,7 +265,7 @@ public class ScanQRActivity extends AppCompatActivity {
 
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-                            builder.setTitle("You have checked into " + event.getEventName() + " for the " + count + getSuffix(count) + " time!")
+                            builder.setTitle("Checked into " + event.getEventName() + " for the " + count + getSuffix(count) + " time!")
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             finish();

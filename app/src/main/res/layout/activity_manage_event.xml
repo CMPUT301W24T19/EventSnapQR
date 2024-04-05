@@ -42,7 +42,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="8dp" />
 
 
     <TextView
@@ -85,6 +85,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Checked-In Only"
+        android:textColor="#4c4943"
         android:layout_marginRight="35dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/attendees_label"
@@ -109,6 +110,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Announcement"
+        android:backgroundTint="@color/ochre"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="16dp"
