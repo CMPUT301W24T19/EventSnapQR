@@ -19,6 +19,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -45,6 +46,8 @@ public class EventDetailFragment extends Fragment {
     private TextInputEditText eventAnnouncements;
     private TextInputEditText eventStartDateTime;
     private TextInputEditText eventEndDateTime;
+    private ExtendedFloatingActionButton signUpButton;
+    private TextView signUpMessage;
     private Integer position;
     private Boolean toMain;
 
@@ -98,13 +101,14 @@ public class EventDetailFragment extends Fragment {
         eventAnnouncements = view.findViewById(R.id.editTextAnnouncements);
         eventStartDateTime = view.findViewById(R.id.editTextStartDateTime);
         eventEndDateTime = view.findViewById(R.id.editTextEndDateTime);
+        signUpButton = view.findViewById(R.id.sign_up_button);
+        signUpMessage = view.findViewById(R.id.sign_up_message);
 
         FirebaseController.getInstance().isUserSignedUp(androidId, eventId, new FirebaseController.OnSignUpCheckListener() {
             @Override
             public void onSignUpCheck(boolean isSignedUp) {
                 if (isSignedUp) {
-                    view.findViewById(R.id.sign_up_button).setVisibility(View.INVISIBLE);
-                    TextView signUpMessage = view.findViewById(R.id.sign_up_message);
+                    signUpButton.setVisibility(View.INVISIBLE);
                     signUpMessage.setVisibility(View.VISIBLE);
                 }
             }
@@ -128,7 +132,7 @@ public class EventDetailFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.sign_up_button).setOnClickListener(new View.OnClickListener() {
+        signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FirebaseController.getInstance().getUser(androidId, new FirebaseController.OnUserRetrievedListener() {
@@ -190,8 +194,8 @@ public class EventDetailFragment extends Fragment {
         builder.setTitle ("Signed up for " + eventName)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // Back to main page
-                        requireActivity().finish();
+                        signUpButton.setVisibility(View.INVISIBLE);
+                        signUpMessage.setVisibility(View.VISIBLE);
                     }
                 });
 
