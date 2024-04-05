@@ -34,10 +34,6 @@
         <action
             android:id="@+id/action_organizeEventFragment_to_mainPageFragment"
             app:destination="@id/mainPageFragment" />
-<<<<<<< HEAD
-        
-=======
->>>>>>> 96005b86729532481837725a7ccd35d904f67269
         <action
             android:id="@+id/action_organizeEventFragment_to_mapFragment"
             app:destination="@+id/MapFragmentOrganize"/>
