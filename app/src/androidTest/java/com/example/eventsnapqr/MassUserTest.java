@@ -1,12 +1,30 @@
 package com.example.eventsnapqr;
 
+import static androidx.test.espresso.Espresso.onData;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anything;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.Settings;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.test.espresso.ViewAssertion;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -21,6 +39,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,7 +64,7 @@ public class MassUserTest {
 
     @Before
     public void init() {
-        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        /*Context context = InstrumentationRegistry.getInstrumentation().getContext();
         ContentResolver contentResolver = context.getContentResolver();
 
         CountDownLatch latch = new CountDownLatch(1);
@@ -119,11 +138,34 @@ public class MassUserTest {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     @Test
-    public void testTest() {
-        Log.d("TAG", "true");
+    public void browseEventTest() {
+        CountDownLatch latch = new CountDownLatch(1);
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        onView(withId(R.id.browse_events_button)).perform(click());
+        //for (Event event: eventList) {
+            //Log.d("TAG", event.getEventID());
+        Log.d("TAG", "" + R.id.events);
+        //onView(withText("Attending")).perform(click());
+        onData(anything()).inAdapterView(withId(R.id.viewPager)).atPosition(0).atPosition(0).perform(click());
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //onView(allOf(withId(R.id.events), isDisplayingAtLeast(1))).check(matches(hasDescendant(withText("Hf1TIYBgqAIBqpnTW2P9"))));
+            //onView(allOf(withId(R.id.events), isDisplayingAtLeast(1)))
+             //       .perform(scrollTo(hasDescendant(withText("Hf1TIYBgqAIBqpnTW2P9"))));
+            //onView(withText("Hf1TIYBgqAIBqpnTW2P9")).check(matches(isDisplayed()));
+        //}
     }
 }
