@@ -165,7 +165,9 @@ public class OrganizeEventFragment extends Fragment {
 
         editTextEndTime = view.findViewById(R.id.editTextEndTime);
         editTextEndTime.setOnClickListener(v -> showTimePickerDialog(editTextEndTime));
+
         editTextAddress = view.findViewById(R.id.editTextAddress);
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         requestLocation();
 
@@ -318,7 +320,7 @@ public class OrganizeEventFragment extends Fragment {
 
         backButton.setOnClickListener(v -> getActivity().finish());
         createEventButton.setOnClickListener(v -> {
-            if (validateInput() && !eventCreated) {
+            if (validateInput(view) && !eventCreated) {
                 eventCreated = true;
                 createEvent();
             }
@@ -450,11 +452,8 @@ public class OrganizeEventFragment extends Fragment {
      * validate each input field before creating an event
      * @return
      */
-    private boolean validateInput() {
+    private boolean validateInput(View view) {
         boolean isValid = true;
-
-        // Initialize your EditText variables if not already done
-        // Assuming editTextEventName, editTextEventDesc, etc. are already defined
 
         String eventName = editTextEventName.getText().toString().trim();
         String eventDesc = editTextEventDesc.getText().toString().trim();
