@@ -65,6 +65,7 @@ public class ListAttendingEventsFragment extends Fragment {
         eventListView.setAdapter(eventAdapter);
         userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         db = FirebaseFirestore.getInstance();
+        eventListView.setVisibility(View.INVISIBLE);
         loadAttendingEvents(userId, loadingProgressBar);
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
@@ -82,113 +83,76 @@ public class ListAttendingEventsFragment extends Fragment {
      */
     private void loadAttendingEvents(String userId, ProgressBar loadingProgressBar) {
         loadingProgressBar.setVisibility(View.VISIBLE);
-        eventListView.setVisibility(View.INVISIBLE);
-        db.collection("users").document(userId).collection("promisedEvents").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                final int[] i = {0};
-                for (QueryDocumentSnapshot document: value) {
-                    String eventId = document.getId();
-                    try {
-                        FirebaseController.getInstance().getEvent(eventId, new FirebaseController.OnEventRetrievedListener() {
-                            @Override
-                            public void onEventRetrieved(Event event) {
-                                if (event != null) {
-                                    if (event.isActive()) {
-                                        //int maxAttendees = event.getMaxAttendees();
-                                        //String eventName = event.getEventName();
-                                        String organizerId = event.getOrganizer().getDeviceID();
-                                        String posterURI = event.getPosterURI();
-                                        Log.d("TAG", "true1");
-                                        Log.d("TAG", "" + event.getMaxAttendees());
-                                        FirebaseController.getInstance().getUser(organizerId, new FirebaseController.OnUserRetrievedListener() {
-                                            @Override
-                                            public void onUserRetrieved(User user) {
-                                                if (user != null) {
-                                                    attendingEvents.add(event);
-                                                } else {
-                                                    Toast.makeText(requireContext(), "Organizer not found for event: " + eventId, Toast.LENGTH_SHORT).show();
-                                                }
-                                                if (i[0] == value.size()) {
-                                                    attendingEvents.sort(new Comparator<Event>() {
-                                                        @Override
-                                                        public int compare(Event o1, Event o2) {
-                                                            String event1 = (String) o1.getEventName();
-                                                            event1 = event1.toLowerCase();
-                                                            String event2 = (String) o2.getEventName();
-                                                            event2 = event2.toLowerCase();
-                                                            return event1.compareTo(event2);
-                                                        }
-                                                    });
-                                                    Log.d("TAG", "true");
-                                                    eventAdapter.notifyDataSetChanged();
-                                                    eventListView.setVisibility(View.VISIBLE);
-                                                    loadingProgressBar.setVisibility(View.GONE);
-                                                }
-
-                                            }
-                                        });
-                                    }
-                                }
-                                else {
-                                    Log.d("TAG", "Event does not exist");
-                                }
-                            }
-                        });
-                    }
-                    catch (Exception e) {
-                        Log.d("TAG", "unable to retrieve event");
-                    }
-                    i[0]++;
-                }
-            }
-        });/*
+        db.collection("users").document(userId).collection("promisedEvents")
                 .get()
                 .addOnCompleteListener(task -> {
-                    loadingProgressBar.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
                         attendingEvents.clear();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String eventId = document.getId();
-                            db.collection("events").document(eventId).get()
-                                    .addOnSuccessListener(eventDocument -> {
-                                        if (eventDocument.exists()) {
-                                            Long maxAttendeesLong = document.getLong("maxAttendees");
-                                            int maxAttendees = (maxAttendeesLong != null) ? maxAttendeesLong.intValue() : 0;
-                                            String eventName = eventDocument.getString("eventName");
-                                            String organizerId = eventDocument.getString("organizerID");
-                                            String posterURI = eventDocument.getString("posterURI");
+                        int[] i = {0};
+                        QuerySnapshot documents = task.getResult();
+                        if (documents.size() != 0) {
+                            for (QueryDocumentSnapshot document : documents) {
+                                String eventId = document.getId();
+                                db.collection("events").document(eventId).get()
+                                        .addOnSuccessListener(eventDocument -> {
+                                            if (eventDocument.exists()) {
+                                                Long maxAttendeesLong = document.getLong("maxAttendees");
+                                                int maxAttendees = (maxAttendeesLong != null) ? maxAttendeesLong.intValue() : 0;
+                                                String eventName = eventDocument.getString("eventName");
+                                                String organizerId = eventDocument.getString("organizerID");
+                                                String posterURI = eventDocument.getString("posterURI");
 
-                                            FirebaseController.getInstance().getUser(organizerId, user -> {
-                                                if (user != null) {
-                                                    Event event = new Event(
-                                                            user,
-                                                            eventName,
-                                                            eventDocument.getString("description"),
-                                                            posterURI,
-                                                            maxAttendees,
-                                                            eventId,
-                                                            eventDocument.getDate("eventStartDateTime"),
-                                                            eventDocument.getDate("eventEndDateTime"),
-                                                            eventDocument.getString("address"),
-                                                            eventDocument.getBoolean("active")
-                                                    );
-                                                    attendingEvents.add(event);
-                                                    eventAdapter.notifyDataSetChanged();
-                                                } else {
-                                                    Toast.makeText(requireContext(), "Organizer not found for event: " + eventId, Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
-                                        } else {
-                                            Log.e("Error", "Event document doesn't exist");
-                                        }
-                                    })
-                                    .addOnFailureListener(e -> Log.e("Error", "Error getting event details: ", e));
+                                                FirebaseController.getInstance().getUser(organizerId, user -> {
+                                                    if (user != null) {
+                                                        Event event = new Event(
+                                                                user,
+                                                                eventName,
+                                                                eventDocument.getString("description"),
+                                                                posterURI,
+                                                                maxAttendees,
+                                                                eventId,
+                                                                eventDocument.getDate("eventStartDateTime"),
+                                                                eventDocument.getDate("eventEndDateTime"),
+                                                                eventDocument.getString("address"),
+                                                                eventDocument.getBoolean("active")
+                                                        );
+                                                        attendingEvents.add(event);
+                                                        if (i[0] == documents.size() - 1) {
+                                                            attendingEvents.sort(new Comparator<Event>() {
+                                                                @Override
+                                                                public int compare(Event o1, Event o2) {
+                                                                    String event1 = o1.getEventName();
+                                                                    event1 = event1.toLowerCase();
+                                                                    String event2 = o2.getEventName();
+                                                                    event2 = event2.toLowerCase();
+                                                                    return event1.compareTo(event2);
+                                                                }
+                                                            });
+                                                            eventListView.setVisibility(View.VISIBLE);
+                                                            loadingProgressBar.setVisibility(View.GONE);
+                                                            eventAdapter.notifyDataSetChanged();
+                                                        }
+                                                    } else {
+                                                        Toast.makeText(requireContext(), "Organizer not found for event: " + eventId, Toast.LENGTH_SHORT).show();
+                                                    }
+                                                    i[0]++;
+                                                });
+                                            } else {
+                                                Log.e("Error", "Event document doesn't exist");
+                                                i[0]++;
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> Log.e("Error", "Error getting event details: ", e));
+                            }
+                        } else {
+                            eventListView.setVisibility(View.VISIBLE);
+                            loadingProgressBar.setVisibility(View.GONE);
+                            eventAdapter.notifyDataSetChanged();
                         }
                     } else {
                         Log.e("Error", "Error getting attending events: ", task.getException());
                         Toast.makeText(getContext(), "Error loading attending events", Toast.LENGTH_SHORT).show();
                     }
-                });*/
+                });
     }
 }
