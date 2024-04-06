@@ -83,43 +83,48 @@ public class AdminBrowseEventsFragment extends Fragment {
                 eventIds.clear();
                 eventNames.clear();
                 final int[] i = {0};
-                for (QueryDocumentSnapshot doc: value) {
-                    try {
-                        FirebaseController.getInstance().getEvent(doc.getId(), new FirebaseController.OnEventRetrievedListener() {
-                            @Override
-                            public void onEventRetrieved(Event event) {
-                                if (event.isActive()) {
-                                    HashMap<String, Object> data = new HashMap<>();
-                                    data.put("name", event.getEventName());
-                                    data.put("id", event.getEventID());
-                                    eventData.add(data);
-                                }
-                                if (i[0] == value.size() - 1) {
-                                    eventData.sort(new Comparator<HashMap<String, Object>>() {
-                                        @Override
-                                        public int compare(HashMap<String, Object> o1, HashMap<String, Object> o2) {
-                                            String event1 = (String) o1.get("name");
-                                            event1 = event1.toLowerCase();
-                                            String event2 = (String) o2.get("name");
-                                            event2 = event2.toLowerCase();
-                                            return event1.compareTo(event2);
-                                        }
-                                    });
-                                    for (HashMap<String, Object> data : eventData) {
-                                        eventIds.add((String) data.get("id"));
-                                        eventNames.add((String) data.get("name"));
+                if (value.size() != 0) {
+                    for (QueryDocumentSnapshot doc : value) {
+                        try {
+                            FirebaseController.getInstance().getEvent(doc.getId(), new FirebaseController.OnEventRetrievedListener() {
+                                @Override
+                                public void onEventRetrieved(Event event) {
+                                    if (event.isActive()) {
+                                        HashMap<String, Object> data = new HashMap<>();
+                                        data.put("name", event.getEventName());
+                                        data.put("id", event.getEventID());
+                                        eventData.add(data);
                                     }
-                                    eventAdapter.notifyDataSetChanged();
-                                    loadingProgressBar.setVisibility(View.INVISIBLE);
-                                    eventListView.setVisibility(View.VISIBLE);
+                                    if (i[0] == value.size() - 1) {
+                                        eventData.sort(new Comparator<HashMap<String, Object>>() {
+                                            @Override
+                                            public int compare(HashMap<String, Object> o1, HashMap<String, Object> o2) {
+                                                String event1 = (String) o1.get("name");
+                                                event1 = event1.toLowerCase();
+                                                String event2 = (String) o2.get("name");
+                                                event2 = event2.toLowerCase();
+                                                return event1.compareTo(event2);
+                                            }
+                                        });
+                                        for (HashMap<String, Object> data : eventData) {
+                                            eventIds.add((String) data.get("id"));
+                                            eventNames.add((String) data.get("name"));
+                                        }
+                                        eventAdapter.notifyDataSetChanged();
+                                        loadingProgressBar.setVisibility(View.GONE);
+                                        eventListView.setVisibility(View.VISIBLE);
+                                    }
+                                    i[0]++;
                                 }
-                                i[0]++;
-                            }
-                        });
-                    } catch (Exception e) {
-                        Log.d("TAG", "Event retrieval failure");
-                        i[0]++;
+                            });
+                        } catch (Exception e) {
+                            Log.d("TAG", "Event retrieval failure");
+                            i[0]++;
+                        }
                     }
+                } else {
+                    loadingProgressBar.setVisibility(View.GONE);
+                    eventListView.setVisibility(View.VISIBLE);
                 }
             }
         });
