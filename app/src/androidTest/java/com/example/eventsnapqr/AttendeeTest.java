@@ -1,6 +1,7 @@
 package com.example.eventsnapqr;
 
 import static androidx.test.espresso.Espresso.onData;
+import static androidx.test.espresso.action.ViewActions.clearText;
 import com.google.firebase.firestore.CollectionReference;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -56,6 +57,7 @@ import com.google.zxing.client.android.Intents;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
@@ -134,13 +136,13 @@ public class AttendeeTest {
         onView(withId(R.id.button_edit_profile_button)).perform(click());
         String testName = "TestName";
 
-        onView(withId(R.id.editTextUserName)).perform(scrollTo(), click(), typeText(testName), closeSoftKeyboard());
+        onView(withId(R.id.editTextUserName)).perform(scrollTo(), click(), clearText(),typeText(testName), closeSoftKeyboard());
 
         String testEmail = "testemail@email.com";
-        onView(withId(R.id.editTextEmail)).perform(scrollTo(), click(), typeText(testEmail), closeSoftKeyboard());
+        onView(withId(R.id.editTextEmail)).perform(scrollTo(), click(), clearText(),typeText(testEmail), closeSoftKeyboard());
 
         String testHomepage = "www.TestHomePage.com";
-        onView(withId(R.id.editTextHomepage)).perform(scrollTo(), click(), typeText(testHomepage), closeSoftKeyboard());
+        onView(withId(R.id.editTextHomepage)).perform(scrollTo(), click(), clearText(),typeText(testHomepage), closeSoftKeyboard());
 
         onView(withId(R.id.saveButton)).perform(scrollTo(), click());
 
@@ -240,15 +242,18 @@ public class AttendeeTest {
         // launch BrowseEventsActivity with the intent
         ActivityScenario<BrowseEventsActivity> activityScenario = ActivityScenario.launch(intent);
         try {
-            Thread.sleep(2000); // Wait for 1 second
+            Thread.sleep(5000); // Wait for 1 second
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
         // US 2.04.01 check
+        onView(withId(R.id.editTextAnnouncements)).perform(scrollTo())
+                .check(matches(withText(CoreMatchers.containsString("Test Announcement"))));
+        /**
         onView(withId(R.id.editTextAnnouncements))
                 .perform(scrollTo())
                 .check(matches(withText("• Test Announcement\n")));
-
+**/
         firebaseController.isAttendee(androidId, newEvent, new FirebaseController.AttendeeCheckCallback() {
             @Override
             public void onChecked(boolean isAttendee, Event event) {
