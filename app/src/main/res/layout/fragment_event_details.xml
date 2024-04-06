@@ -309,9 +309,7 @@ android:background="@drawable/gradient_background">
                         android:layout_marginStart="32dp"
                         android:layout_marginTop="12dp"
                         android:layout_marginEnd="32dp"
-                        android:hint="Start Date / Time"
-                        android:visibility="invisible"
-                        android:inputType="phone"
+                        android:hint="Announcements"
                         android:textColorHint="@color/grey"
                         app:boxBackgroundColor="#00FFFFFF"
                         app:boxStrokeColor="@color/black"
@@ -324,9 +322,12 @@ android:background="@drawable/gradient_background">
                             android:id="@+id/editTextStartDateTime"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:visibility="invisible"
-                            android:cursorVisible="false"
-                            android:focusable="false"
+                            android:focusable="true"
+                            android:enabled="true"
+                            android:clickable="true"
+                            android:focusableInTouchMode="true"
+                            android:cursorVisible="true"
+                            android:gravity="top|start"
                             android:textColor="@color/black" />
                     </com.google.android.material.textfield.TextInputLayout>
 
