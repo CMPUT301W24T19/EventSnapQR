@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -40,6 +41,7 @@ public class ListOrganizedEventsFragment extends Fragment {
     private List<Event> organizedEvents;
     private FirebaseFirestore db;
     private String userId;
+    private TextView noEventsText; // empty list message
 
     /**
      * Setup actions to be taken upon view creation and when the views are interacted with
@@ -65,6 +67,7 @@ public class ListOrganizedEventsFragment extends Fragment {
         userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         db = FirebaseFirestore.getInstance();
         eventListView.setVisibility(View.INVISIBLE);
+        noEventsText = view.findViewById(R.id.noEventsTextView);
         loadOrganizedEvents(userId, loadingProgressBar);
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
@@ -91,7 +94,8 @@ public class ListOrganizedEventsFragment extends Fragment {
                         organizedEvents.clear();
                         int[] i = {0};
                         QuerySnapshot documents = task.getResult();
-                        if (documents.size() != 0) {
+                        if (documents.size() > 0) {
+                            noEventsText.setVisibility(View.INVISIBLE);
                             for (QueryDocumentSnapshot document : documents) {
                                 String eventId = document.getId();
                                 db.collection("events").document(eventId).get()
@@ -166,6 +170,9 @@ public class ListOrganizedEventsFragment extends Fragment {
                         } else {
                             eventListView.setVisibility(View.VISIBLE);
                             loadingProgressBar.setVisibility(View.GONE);
+                            noEventsText.setVisibility(View.VISIBLE);
+                            noEventsText.setText("You have no organized events");
+                            eventAdapter.notifyDataSetChanged();
                         }
                     } else {
                         Log.e("Error", "Error getting organized events: ", task.getException());

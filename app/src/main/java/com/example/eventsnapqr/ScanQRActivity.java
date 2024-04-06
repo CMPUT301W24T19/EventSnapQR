@@ -323,6 +323,8 @@ public class ScanQRActivity extends AppCompatActivity {
                     finish();
                 }
             } else {
+                progressBar.setVisibility(View.GONE);
+                qrMessageTextView.setVisibility(View.VISIBLE);
                 super.onActivityResult(requestCode, resultCode, data);
             }
         }
@@ -336,6 +338,7 @@ public class ScanQRActivity extends AppCompatActivity {
      */
     private void notSignedUp(String eventId) {
         qrMessageTextView.setText("Not signed up for this event.");
+        qrMessageTextView.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
         miscButton.setText("View Event Details");
         miscButton.setVisibility(View.VISIBLE);
@@ -354,6 +357,8 @@ public class ScanQRActivity extends AppCompatActivity {
     private void invalidQR() {
         if (!isFinishing()) {
             qrMessageTextView.setText("Invalid QR Code");
+            qrMessageTextView.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
             backButton.setOnClickListener(view -> finish());
         }
     }
