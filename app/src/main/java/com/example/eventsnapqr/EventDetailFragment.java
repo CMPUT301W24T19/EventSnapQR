@@ -230,11 +230,16 @@ public class EventDetailFragment extends Fragment {
      */
     public void CreateDialog(String eventName) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle ("Signed up for " + eventName)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        builder.setTitle("Confirm sign-up for " + eventName + "?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         signUpButton.setVisibility(View.INVISIBLE);
                         signUpMessage.setVisibility(View.VISIBLE);
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // dismiss
                     }
                 });
 

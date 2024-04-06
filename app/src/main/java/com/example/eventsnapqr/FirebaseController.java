@@ -1032,7 +1032,6 @@ public class FirebaseController {
     }
 
 
-
     public void removeAttendee(String eventId, String userId, RemoveAttendeeCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -1079,7 +1078,6 @@ public class FirebaseController {
             }
         });
     }
-
 
     public interface CheckAttendeeCheckinsCallback {
         void onSuccess(int checkins);

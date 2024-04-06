@@ -1,15 +1,10 @@
 package com.example.eventsnapqr;
 
-import static androidx.core.content.ContentProviderCompat.requireContext;
-import static androidx.fragment.app.FragmentManager.TAG;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -21,8 +16,8 @@ import android.os.Bundle;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -30,11 +25,12 @@ import com.google.zxing.integration.android.IntentResult;
 import android.Manifest;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,9 +63,12 @@ public class ScanQRActivity extends AppCompatActivity {
     private String eventId;
     private LocationManager locationManager;
     private LocationListener locationListener;
-
     private double latitudeNow;
     private double longitudeNow;
+    private TextView qrMessageTextView;
+    private Button miscButton;
+    private ExtendedFloatingActionButton scanButton;
+    private ImageView backButton;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final int PERMISSION_REQUEST_LOCATION = 2;
 
@@ -82,7 +81,7 @@ public class ScanQRActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_scan_qr);
         userId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
 
         // Initialize LocationManager
@@ -91,6 +90,22 @@ public class ScanQRActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+
+        qrMessageTextView = findViewById(R.id.qrMessage);
+        miscButton = findViewById(R.id.miscButton);
+        backButton = findViewById(R.id.button_back);
+        scanButton = findViewById(R.id.scan_qr_button);
+
+        backButton.setOnClickListener(view -> finish());
+
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = getIntent();
+                finish();
+                startActivity(intent);
+            }
+        });
 
         // Define location listener
         locationListener = new LocationListener() {
@@ -185,44 +200,9 @@ public class ScanQRActivity extends AppCompatActivity {
         integrator.initiateScan();
     }
 
-    /**
-     * if the user has not signed up scanned event, give them the option to view the event details
-     * or to return to the main page
-     *
-     * @param eventId identifier of the given event
-     */
-    private void notSignedUpDialog(String eventId) {
-        if (!isFinishing()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-            builder.setTitle("Not Signed-Up for Event")
-                    .setPositiveButton("View Event Details", (dialog, which) -> {
-
-                        Intent intent = new Intent(ScanQRActivity.this, BrowseEventsActivity.class);
-                        intent.putExtra("eventID", eventId);
-                        startActivity(intent);
-
-                    })
-                    .setNegativeButton("Return", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            finish();
-                        }
-                    })
-                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                        @Override
-                        public void onDismiss(DialogInterface dialog) {
-                            // finish activity if dialog is dismissed without button press
-                            finish();
-                        }
-                    })
-                    .create()
-                    .show();
-        }
-    }
-
 
     /**
-     * display an alert dialog notifying the user they have successfully checked into the event
-     * and return to the main page
+     * update the user if they have successfully checked into the event
      *
      * @param eventId the unique identifier of the given event
      */
@@ -263,36 +243,10 @@ public class ScanQRActivity extends AppCompatActivity {
                             // Use latitude and longitude variables here
                             Log.d("ScanQRActivity", "Latitude: " + latitudeNow + ", Longitude: " + longitudeNow);
 
+                            qrMessageTextView.setText("Checked into " + event.getEventName() + " for the " + count + getSuffix(count) + " time!");
 
-                            AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-                            builder.setTitle("Checked into " + event.getEventName() + " for the " + count + getSuffix(count) + " time!")
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            finish();
-                                        }
-                                    })
-                                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                        @Override
-                                        public void onDismiss(DialogInterface dialog) {
-                                            finish();
-                                        }
-                                    });
-                            builder.create().show();
                         } else {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-                            builder.setMessage("Failed to retrieve event details.")
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            finish();
-                                        }
-                                    })
-                                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                        @Override
-                                        public void onDismiss(DialogInterface dialog) {
-                                            finish();
-                                        }
-                                    });
-                            builder.create().show();
+                            qrMessageTextView.setText("Failed to retrieve event details.");
                         }
                     }
                 });
@@ -300,46 +254,12 @@ public class ScanQRActivity extends AppCompatActivity {
 
             @Override
             public void onCheckInFailure(Exception e) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-                builder.setMessage("Failed to increment check-in count.")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                finish();
-                            }
-                        })
-                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                            @Override
-                            public void onDismiss(DialogInterface dialog) {
-                                // Finish activity if dialog is dismissed without user interaction
-                                finish();
-                            }
-                        });
-                builder.create().show();
+                qrMessageTextView.setText("Failed to increment check-in count.");
             }
         });
     }
 
-    /**
-     * returns the correct suffix for the given integer
-     *
-     * @param n the number in which to retrieve the suffix
-     */
-    public String getSuffix(Integer n) {
-        if (n >= 11 && n <= 13) {
-            return "th";
-        } else {
-            switch (n % 10) {
-                case 1:
-                    return "st";
-                case 2:
-                    return "nd";
-                case 3:
-                    return "rd";
-                default:
-                    return "th";
-            }
-        }
-    }
+
 
     /**
      * handles what to do with the content of the QR code
@@ -365,7 +285,7 @@ public class ScanQRActivity extends AppCompatActivity {
                 contents = contents.trim();
 
                 if (!contents.startsWith("eventsnapqr/")) { // if a invalid qr is scanned
-                    showInvalidQRContentDialog();
+                    invalidQR();
                     return;
                 } else if (contents.startsWith("eventsnapqr/")) { // if a valied qr is scanned
                     eventId = contents.substring("eventsnapqr/".length());
@@ -378,14 +298,14 @@ public class ScanQRActivity extends AppCompatActivity {
                                 checkIn(eventId);
                             } else {
                                 Log.d("Scan QR Activity", "User is not in attendees");
-                                notSignedUpDialog(eventId);
+                                notSignedUp(eventId);
                             }
                         }
 
                         @Override
                         public void onCheckFailed(Exception e) {
                             Log.e("Scan QR Activity", "User in Event attendees check failed: " + e.getMessage());
-                            showInvalidQRContentDialog();
+                            invalidQR();
                         }
                     });
                 } else { // case when no QR code was scanned before camera closed
@@ -397,27 +317,55 @@ public class ScanQRActivity extends AppCompatActivity {
             }
         }
     }
+
     /**
-     * Displays a dialog to inform the user about the invalid QR code content.
+     * if the user has not signed up scanned event, give them the option to view the event details
+     * or to return to the main page
+     *
+     * @param eventId identifier of the given event
      */
-    private void showInvalidQRContentDialog () {
+    private void notSignedUp(String eventId) {
+        qrMessageTextView.setText("Not signed up for this event.");
+
+        miscButton.setVisibility(View.VISIBLE);
+        miscButton.setText("View Event Details");
+        miscButton.setOnClickListener(view -> {
+            Intent intent = new Intent(ScanQRActivity.this, BrowseEventsActivity.class);
+            intent.putExtra("eventID", eventId);
+            startActivity(intent);
+        });
+
+        backButton.setOnClickListener(view -> finish());
+    }
+
+    /**
+     * handles case where a qrcode is scanned, but not generated by EventSnapQR
+     */
+    private void invalidQR() {
         if (!isFinishing()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-            builder.setTitle("Invalid QR Code Content")
-                    .setMessage("The scanned QR code contains an invalid content.")
-                    .setPositiveButton("Scan Another QR Code", (dialog, which) -> {
-                        Intent intent = getIntent();
-                        finish();
-                        startActivity(intent);
-                    })
-                    .setNegativeButton("Return", (dialog, which) -> {
-                        finish();
-                    })
-                    .setOnDismissListener(dialog -> {
-                        finish();
-                    })
-                    .create()
-                    .show();
+            qrMessageTextView.setText("Invalid QR Code");
+            backButton.setOnClickListener(view -> finish());
+        }
+    }
+
+    /**
+     * returns the correct suffix for the given integer
+     * @param n the number in which to retrieve the suffix
+     */
+    public String getSuffix(Integer n) {
+        if (n >= 11 && n <= 13) {
+            return "th";
+        } else {
+            switch (n % 10) {
+                case 1:
+                    return "st";
+                case 2:
+                    return "nd";
+                case 3:
+                    return "rd";
+                default:
+                    return "th";
+            }
         }
     }
 }

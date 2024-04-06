@@ -67,7 +67,7 @@
                 app:boxStrokeColor="@color/black"
                 app:boxStrokeWidth="2dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/textInputPhoneNumber"
+                app:layout_constraintEnd_toEndOf="@id/inputTextPhoneNumber"
                 app:layout_constraintTop_toTopOf="parent"
                 android:clickable="true"
                 android:focusable="true"
@@ -121,7 +121,7 @@
                 app:endIconMode="clear_text"
                 app:helperTextTextColor="@color/red"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/textInputPhoneNumber"
+                app:layout_constraintEnd_toEndOf="@id/inputTextPhoneNumber"
                 app:layout_constraintTop_toBottomOf="@id/posterInput">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -134,7 +134,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:id="@+id/textInputPhoneNumber"
+                android:id="@+id/inputTextPhoneNumber"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
@@ -154,7 +154,7 @@
                 app:layout_constraintTop_toBottomOf="@id/textInputUserName">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_text_description"
+                    android:id="@+id/editTextDescription"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textColor="@color/black"
@@ -181,7 +181,7 @@
                 app:helperTextTextColor="@color/red"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textInputPhoneNumber">
+                app:layout_constraintTop_toBottomOf="@id/inputTextMaxAttendees">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextAddress"
@@ -242,7 +242,7 @@
                 app:helperTextTextColor="@color/red"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/inputTextStartDate"
-                app:layout_constraintTop_toBottomOf="@id/inputTextMaxAttendees">
+                app:layout_constraintTop_toBottomOf="@id/inputTextLocation">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextStartTime"
@@ -319,8 +319,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
-                android:layout_marginTop="6dp"
-                android:layout_marginEnd="8dp"
                 android:textColorHint="@color/grey"
                 app:boxBackgroundColor="#00FFFFFF"
                 app:boxStrokeColor="@color/black"
@@ -329,8 +327,8 @@
                 app:endIconMode="clear_text"
                 app:helperTextTextColor="@color/red"
                 android:hint="Location"
-                app:layout_constraintEnd_toStartOf="@+id/inputTextMaxAttendees"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/inputTextAddress"
                 app:layout_constraintTop_toBottomOf="@id/inputTextAddress">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -347,24 +345,29 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
                 android:layout_marginEnd="32dp"
                 android:hint="Max Attendees"
                 android:textColorHint="@color/grey"
                 app:boxBackgroundColor="#00FFFFFF"
+                app:counterEnabled="true"
+                app:counterMaxLength="4"
                 app:boxStrokeColor="@color/black"
                 app:boxStrokeWidth="2dp"
+                app:helperText="* Optional"
                 app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/inputTextPhoneNumber"
                 app:layout_constraintStart_toEndOf="@+id/inputTextLocation"
-                app:layout_constraintTop_toTopOf="@id/inputTextLocation">
+                app:layout_constraintTop_toBottomOf="@id/inputTextPhoneNumber">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextMaxAttendees"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:maxLength="4"
+                    android:gravity="top|start"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -373,7 +376,7 @@
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:text="Reuse QR"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginRight="8dp"
                 android:textColor="@color/black"
                 android:backgroundTint="@color/glaucous"
