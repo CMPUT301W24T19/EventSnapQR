@@ -5,6 +5,7 @@ import com.google.firebase.firestore.CollectionReference;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
@@ -39,10 +40,12 @@ import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.client.android.Intents;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,16 +68,31 @@ public class AttendeeTest {
     Context context = InstrumentationRegistry.getInstrumentation().getContext();
     ContentResolver contentResolver = context.getContentResolver();
     String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+    Event newEvent = new Event();
+    /**
+    @After
+    public void deleteEvent() {
+        FirebaseController firebaseController = new FirebaseController();
+        firebaseController.deleteEvent(newEvent, new FirebaseController.FirestoreOperationCallback() {
+            @Override
+            public void onCompleted() {
+                // Completion logic here
+            }
+        });
+    }
+    **/
 
     /**
      * US 02.01.01 test (in progrss)
      */
+    /**
     @Test
     public void QRScanTest(){
         String eventID = FirebaseController.getInstance().getUniqueEventID();
         FirebaseController firebaseController = FirebaseController.getInstance();
-        Event newEvent = new Event(new User(), "testEvent", "testEventDescription", null, 5, eventID, new Date(), new Date(), true);
+        newEvent = new Event(new User(), "testEvent", "testEventDescription", null, 5, id, new Date(), new Date(), "123 Spooner St.",true);
         firebaseController.addEvent(newEvent);
+
         CountDownLatch latch = new CountDownLatch(1);
         int requestCode = 0; // the request code used when starting the scan
         int resultCode = Activity.RESULT_OK;
@@ -108,16 +126,11 @@ public class AttendeeTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        firebaseController.deleteEvent(newEvent, new FirebaseController.FirestoreOperationCallback() {
-            @Override
-            public void onCompleted() {
 
-            }
-        });
     }
-
+**/
     /**
-     * Test for  US 02.07.01, US 02.04.01 (sill in progress)
+     * Test for  US 02.07.01, US 02.04.01
      */
     @Test
     public void signUpForEventTest(){
@@ -128,33 +141,42 @@ public class AttendeeTest {
                 "settings put global transition_animation_scale 0");
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global animator_duration_scale 0");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseController firebaseController = new FirebaseController();
         id = firebaseController.getUniqueEventID();
-        Event newEvent = new Event(new User(), "testEvent", "testEventDescription", null, 5, id, new Date(), new Date(), true);
+        Event newEvent = new Event(new User(androidId), "testEvent", "testEventDescription", null, 5, id, new Date(), new Date(), "123 Spooner St.",true);
         firebaseController.addEvent(newEvent);
-
-        // create an intent and put the event ID as an extra
+        String announcement = "Test Announcement";
+        CollectionReference announcementsRef = db.collection("events").document(id).collection("announcements");
+        Map<String, Object> announcementData = new HashMap<>();
+        announcementData.put("message", announcement);
+        announcementData.put("timestamp", new Date());
         CountDownLatch latch = new CountDownLatch(1);
+
+        announcementsRef.add(announcementData)
+                .addOnSuccessListener(documentReference -> latch.countDown())
+                .addOnFailureListener(e -> latch.countDown());
+        try{
+            latch.await(10, TimeUnit.SECONDS);
+        }catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        // create an intent and put the event ID as an extra
+
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), BrowseEventsActivity.class);
+
         intent.putExtra("eventID", id);
         // launch BrowseEventsActivity with the intent
         ActivityScenario<BrowseEventsActivity> activityScenario = ActivityScenario.launch(intent);
-        String announcement = "Test Announcement";
-        firebaseController.addTestAnnouncement(announcement, id, new FirebaseController.FirestoreOperationCallback() {
-            @Override
-            public void onCompleted() {
-                latch.countDown();
-            }
-        });
-        try{
-            latch.await(10, TimeUnit.SECONDS);
+        try {
+            Thread.sleep(1000); // Wait for 1 second
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
         }
-        // US 02.04.01 check
+        // US 2.04.01check
         onView(withId(R.id.editTextAnnouncements))
-                .check(matches(withText(announcement)));
-        onView(withId(R.id.sign_up_button)).perform(click());
+                .perform(scrollTo())
+                .check(matches(withText("• Test Announcement\n")));
 
         firebaseController.isAttendee(androidId, newEvent, new FirebaseController.AttendeeCheckCallback() {
             @Override
@@ -164,7 +186,12 @@ public class AttendeeTest {
                 latch.countDown();
             }
         });
+        firebaseController.deleteEvent(newEvent, new FirebaseController.FirestoreOperationCallback() {
+            @Override
+            public void onCompleted() {
 
+            }
+        });
         // Enable animations after the test is finished
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global window_animation_scale 1");
