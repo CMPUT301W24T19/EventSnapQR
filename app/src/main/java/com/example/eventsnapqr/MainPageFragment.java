@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -51,7 +53,7 @@ public class MainPageFragment extends Fragment {
     private ExtendedFloatingActionButton buttonScanQR;
     private ImageView buttonViewProfile;
     private String androidId;
-    private ViewFlipper viewFlipper, viewFlipperOrganizers;
+    private ViewFlipper viewFlipper;
 
     /**
      * What should be executed when the fragment is created
@@ -111,6 +113,7 @@ public class MainPageFragment extends Fragment {
             }
         });
     }
+
     /**
      * handles button presses throughout the fragment
      * @param inflater The LayoutInflater object that can be used to inflate
@@ -136,55 +139,22 @@ public class MainPageFragment extends Fragment {
         buttonViewProfile = view.findViewById(R.id.view_user_button);
         updateProfilePicture();
 
-        getImageUris(new ImageUriCallback() { // *** not done have too hook up popular event organizers view flipper images ***
+        getImageUris(new ImageUriCallback() {
             @Override
             public void onImageUrisLoaded(List<String> imageUris) {
-                Context context = getContext(); // get the context once and reuse it
+                Context context = getContext();
                 if (context == null) {
-                    // context is not available --> handle
                     return;
                 }
 
-                viewFlipper = view.findViewById(R.id.viewFlipper);
-                viewFlipperOrganizers = view.findViewById(R.id.viewFlipperOrganizers);
-                if (viewFlipper == null || viewFlipperOrganizers == null) {
-                    // viewFlipper not found --> handle
+                RecyclerView recyclerView = view.findViewById(R.id.recyclerViewCarousel);
+                if (recyclerView == null) {
                     return;
                 }
 
-                viewFlipper.removeAllViews();
-                viewFlipperOrganizers.removeAllViews();
-
-                for (String uriString : imageUris) {
-                    ImageView imageView = new ImageView(context);
-
-                    imageView.setLayoutParams(new ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT));
-                    imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-                    ImageView imageViewOrganizers = new ImageView(context);
-
-                    imageViewOrganizers.setLayoutParams(new ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT));
-                    imageViewOrganizers.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    // load the image from URI using the obtained context
-                    Glide.with(context)
-                            .load(uriString)
-                            .into(imageView);
-                    Glide.with(context)
-                            .load(uriString)
-                            .into(imageViewOrganizers);
-
-                    viewFlipper.addView(imageView);
-                    viewFlipperOrganizers.addView(imageViewOrganizers);
-                }
-
-                if (!viewFlipperOrganizers.isFlipping() && !viewFlipper.isFlipping() && imageUris.size() > 1) {
-                    viewFlipper.startFlipping();
-                    viewFlipperOrganizers.startFlipping();
-                }
+                recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+                ImageCarouselAdapter adapter = new ImageCarouselAdapter(context, imageUris);
+                recyclerView.setAdapter(adapter);
             }
         });
 
@@ -248,4 +218,45 @@ public class MainPageFragment extends Fragment {
             }
         });
 }
+}
+class ImageCarouselAdapter extends RecyclerView.Adapter<ImageCarouselAdapter.ViewHolder> {
+    private List<String> imageUris;
+    private Context context;
+
+    public ImageCarouselAdapter(Context context, List<String> imageUris) {
+        this.context = context;
+        this.imageUris = imageUris;
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        ImageView imageView = new ImageView(context);
+        imageView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        return new ViewHolder(imageView);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Glide.with(context)
+                .load(imageUris.get(position))
+                .into(holder.imageView);
+    }
+
+    @Override
+    public int getItemCount() {
+        return imageUris.size();
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView imageView;
+
+        ViewHolder(ImageView imageView) {
+            super(imageView);
+            this.imageView = imageView;
+        }
+    }
 }
