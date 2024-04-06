@@ -99,7 +99,7 @@ public class UserInfoActivity extends AppCompatActivity {
         email = findViewById(R.id.editTextEmail);
         emailLayout = findViewById(R.id.textInputEmail);
         phoneNumber = findViewById(R.id.editTextPhoneNumber);
-        numberLayout = findViewById(R.id.textInputPhoneNumber);
+        numberLayout = findViewById(R.id.inputTextPhoneNumber);
         homepage = findViewById(R.id.editTextHomepage);
         homepageLayout = findViewById(R.id.textInputHomepage);
         saveButton = findViewById(R.id.saveButton);
