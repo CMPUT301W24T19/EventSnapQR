@@ -5,11 +5,13 @@ import com.google.firebase.firestore.CollectionReference;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -23,17 +25,26 @@ import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertNotNull;
 
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.provider.Settings;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.Espresso;
+import androidx.test.espresso.IdlingResource;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -45,6 +56,7 @@ import com.google.zxing.client.android.Intents;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +70,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  *  Test class for testing Attendee
  */
@@ -69,18 +83,82 @@ public class AttendeeTest {
     ContentResolver contentResolver = context.getContentResolver();
     String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
     Event newEvent = new Event();
-    /**
+
     @After
     public void deleteEvent() {
         FirebaseController firebaseController = new FirebaseController();
+        /**
         firebaseController.deleteEvent(newEvent, new FirebaseController.FirestoreOperationCallback() {
             @Override
             public void onCompleted() {
                 // Completion logic here
             }
         });
+         **/
+        // Enable animations after the test is finished
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 1");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 1");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 1");
     }
-    **/
+
+    @Before
+    public void beforeTest(){
+        // Disable animations
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 0");
+    }
+    /**
+     * US 02.02.03 Test
+     */
+    @Test
+    public void updateContactInfoTest() {
+        FirebaseIdlingResource idlingResource = new FirebaseIdlingResource();
+        Espresso.registerIdlingResources(idlingResource);
+
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), UserInfoActivity.class);
+        intent.putExtra("androidId", androidId);
+        ActivityScenario<UserInfoActivity> scenario = ActivityScenario.launch(intent);
+        try {
+
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        onView(withId(R.id.button_edit_profile_button)).perform(click());
+        String testName = "TestName";
+
+        onView(withId(R.id.editTextUserName)).perform(scrollTo(), click(), typeText(testName), closeSoftKeyboard());
+
+        String testEmail = "testemail@email.com";
+        onView(withId(R.id.editTextEmail)).perform(scrollTo(), click(), typeText(testEmail), closeSoftKeyboard());
+
+        String testHomepage = "www.TestHomePage.com";
+        onView(withId(R.id.editTextHomepage)).perform(scrollTo(), click(), typeText(testHomepage), closeSoftKeyboard());
+
+        onView(withId(R.id.saveButton)).perform(scrollTo(), click());
+
+        FirebaseController firebaseController = new FirebaseController();
+        idlingResource.setIdleState(false);
+        firebaseController.getUser(androidId, user -> {
+            assertNotNull(user);
+            assertEquals(testEmail, user.getEmail());
+            assertEquals(testName, user.getName());
+            assertEquals(testHomepage, user.getHomepage());
+
+            idlingResource.setIdleState(true); // Set idle state to true after the operation is complete
+        });
+
+        Espresso.unregisterIdlingResources(idlingResource);
+    }
+
+
 
     /**
      * US 02.01.01 test (in progrss)
@@ -134,13 +212,6 @@ public class AttendeeTest {
      */
     @Test
     public void signUpForEventTest(){
-        // Disable animations
-        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                "settings put global window_animation_scale 0");
-        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                "settings put global transition_animation_scale 0");
-        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                "settings put global animator_duration_scale 0");
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseController firebaseController = new FirebaseController();
         id = firebaseController.getUniqueEventID();
@@ -169,11 +240,11 @@ public class AttendeeTest {
         // launch BrowseEventsActivity with the intent
         ActivityScenario<BrowseEventsActivity> activityScenario = ActivityScenario.launch(intent);
         try {
-            Thread.sleep(1000); // Wait for 1 second
+            Thread.sleep(2000); // Wait for 1 second
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        // US 2.04.01check
+        // US 2.04.01 check
         onView(withId(R.id.editTextAnnouncements))
                 .perform(scrollTo())
                 .check(matches(withText("• Test Announcement\n")));
@@ -192,13 +263,7 @@ public class AttendeeTest {
 
             }
         });
-        // Enable animations after the test is finished
-        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                "settings put global window_animation_scale 1");
-        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                "settings put global transition_animation_scale 1");
-        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                "settings put global animator_duration_scale 1");
+
     }
 
 }
