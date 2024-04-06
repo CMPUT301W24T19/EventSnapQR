@@ -106,7 +106,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1">
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -122,11 +122,11 @@
                     app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                     android:layout_marginEnd="32dp"
                     android:hint="Name"
-                    app:endIconMode="clear_text"
                     android:textColorHint="@color/grey"
-                    app:counterEnabled="false"
+                    app:cursorErrorColor="@color/black"
+                    app:helperTextTextColor="@color/grey"
                     app:counterMaxLength="20"
-                    app:helperTextTextColor="@color/red"
+                    app:endIconMode="clear_text"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -134,9 +134,10 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextUserName"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:maxLength="20"
-                        android:textColor="@color/black"/>
+                        android:textColor="@color/black"
+                        app:errorIconDrawable="@drawable/baseline_error_outline_24"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -149,14 +150,14 @@
                     android:layout_marginEnd="32dp"
                     android:hint="Email"
                     android:textColorHint="@color/grey"
+                    app:cursorErrorColor="@color/black"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
                     app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
+                    app:counterMaxLength="50"
                     app:endIconMode="clear_text"
-                    app:counterEnabled="false"
-                    app:counterMaxLength="20"
-                    app:helperTextTextColor="@color/red"
+                    app:helperTextTextColor="@color/grey"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textInputUserName">
@@ -164,7 +165,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextEmail"
                         android:layout_width="match_parent"
-                        android:maxLength="20"
+                        android:maxLength="50"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -183,11 +184,12 @@
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:counterEnabled="false"
-                    app:counterMaxLength="10"
+                    app:counterMaxLength="12"
                     app:boxStrokeWidth="2dp"
-                    app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                     app:endIconMode="clear_text"
-                    app:helperTextTextColor="@color/red"
+                    app:cursorErrorColor="@color/black"
+                    app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
+                    app:helperTextTextColor="@color/grey"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textInputHomepage">
@@ -197,7 +199,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="phone"
-                        android:maxLength="10"
+                        android:maxLength="12"
                         android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -215,10 +217,10 @@
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
                     app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-                    app:endIconMode="clear_text"
                     app:counterEnabled="false"
                     app:counterMaxLength="30"
-                    app:helperTextTextColor="@color/red"
+                    app:endIconMode="clear_text"
+                    app:helperTextTextColor="@color/grey"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textInputEmail">
@@ -262,7 +264,7 @@
                     android:text="Save Changes"
                     android:textColor="@color/black"
                     android:layout_marginEnd="16dp"
-                    android:backgroundTint="@color/ochre"
+                    android:backgroundTint="@color/coral"
                     android:layout_marginTop="32dp"
                     android:layout_marginBottom="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"

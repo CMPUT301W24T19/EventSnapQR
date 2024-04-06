@@ -30,6 +30,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * activity where the user can view and edit their information. the geolocation and
@@ -236,21 +239,41 @@ public class UserInfoActivity extends AppCompatActivity {
                 String userPhoneNumber = phoneNumber.getText().toString().trim();
                 String userHomepage = homepage.getText().toString().trim();
 
+                List<String> errorMessages = new ArrayList<>();
+
                 if (name.isEmpty()) {
-                    userNameLayout.setError("Name cannot be empty");
-                    return; // Stop execution if name is empty
-                } else {
-                    userNameLayout.setError(null); // Clear any previous error
+                    errorMessages.add("Name cannot be empty");
                 }
 
-                // Validate phone number if not empty
-                if (!userPhoneNumber.isEmpty()) {
-                    if (!isValidPhoneNumber(userPhoneNumber)) {
-                        numberLayout.setError("Invalid phone number format");
-                        return; // Stop execution if phone number format is invalid
-                    } else {
-                        numberLayout.setError(null); // Clear any previous error
+                // validate phone number if not empty
+                if (!userPhoneNumber.isEmpty() && !isValidPhoneNumber(userPhoneNumber)) {
+                    errorMessages.add("Invalid phone number format");
+                }
+
+                // validate email format if not empty
+                if (!userEmail.isEmpty() && !isValidEmail(userEmail)) {
+                    errorMessages.add("Invalid email format");
+                }
+
+                // validate homepage if not empty
+                if (!userHomepage.isEmpty() && !isValidHomepage(userHomepage)) {
+                    errorMessages.add("Invalid homepage format");
+                }
+
+                // display the errors
+                if (!errorMessages.isEmpty()) {
+                    for (String errorMessage : errorMessages) {
+                        if (errorMessage.contains("Name cannot be empty")) {
+                            userName.setError(errorMessage);
+                        } else if (errorMessage.contains("Invalid phone number format")) {
+                            phoneNumber.setError(errorMessage);
+                        } else if (errorMessage.contains("Invalid homepage format")) {
+                            homepage.setError(errorMessage);
+                        } else if (errorMessage.contains("Invalid email format")) {
+                            email.setError(errorMessage);
+                        }
                     }
+                    return;
                 }
 
                 FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
@@ -262,19 +285,14 @@ public class UserInfoActivity extends AppCompatActivity {
                         user.setHomepage(userHomepage);
                         FirebaseController.getInstance().addUser(user);
 
-                        // Update UI or show a message indicating successful save
                         Toast.makeText(UserInfoActivity.this, "Information successfully updated!", Toast.LENGTH_SHORT).show();
 
-                        editMode = false;
-                        saveButton.setVisibility(View.INVISIBLE);
-                        userName.setEnabled(editMode);
-                        email.setEnabled(editMode);
-                        phoneNumber.setEnabled(editMode);
-                        homepage.setEnabled(editMode);
+                        saveButtonLayoutSwitch();
                     }
                 });
             }
         });
+
 
 
         editButton.setOnClickListener(new View.OnClickListener() {
@@ -292,6 +310,9 @@ public class UserInfoActivity extends AppCompatActivity {
                     emailLayout.setCounterEnabled(true);
                     numberLayout.setCounterEnabled(true);
                     homepageLayout.setCounterEnabled(true);
+
+                    userNameLayout.setHelperText("* Required");
+                    numberLayout.setHelperText("Format: ***-***-****");
                 }
                 else {
                     saveButton.setVisibility(View.INVISIBLE);
@@ -299,6 +320,9 @@ public class UserInfoActivity extends AppCompatActivity {
                     emailLayout.setCounterEnabled(false);
                     numberLayout.setCounterEnabled(false);
                     homepageLayout.setCounterEnabled(false);
+
+                    userNameLayout.setHelperTextEnabled(false);
+                    numberLayout.setHelperTextEnabled(false);
                 }
 
 
@@ -342,14 +366,69 @@ public class UserInfoActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * after the save button is pressed these layout properties must be flipped
+     */
+    private void saveButtonLayoutSwitch() {
+        userName.setError(null);
+        email.setError(null);
+        homepage.setError(null);
+        phoneNumber.setError(null);
+
+        userNameLayout.setCounterEnabled(false);
+        emailLayout.setCounterEnabled(false);
+        numberLayout.setCounterEnabled(false);
+        homepageLayout.setCounterEnabled(false);
+
+        userNameLayout.setHelperTextEnabled(false);
+        emailLayout.setHelperTextEnabled(false);
+        numberLayout.setHelperTextEnabled(false);
+        homepageLayout.setCounterEnabled(false);
+
+        editMode = false;
+        saveButton.setVisibility(View.INVISIBLE);
+        userName.setEnabled(editMode);
+        email.setEnabled(editMode);
+        phoneNumber.setEnabled(editMode);
+        homepage.setEnabled(editMode);
+    }
+
+    /**
+     * determines if a given string is formatted as a phone number
+     * @param phoneNumber
+     * @return
+     */
     private boolean isValidPhoneNumber(String phoneNumber) {
-        if (!phoneNumber.matches("[0-9]+")) {
+        if (!phoneNumber.matches("\\d{3}-\\d{3}-\\d{4}")) {
             return false;
         }
-        if (phoneNumber.length() != 10) {
+
+        String digitsOnly = phoneNumber.replaceAll("-", "");
+
+        if (digitsOnly.length() != 10) {
             return false;
         }
+
         return true;
     }
 
+    /**
+     * determines if a given string resembles an email address
+     * @param email string to be checked
+     * @return true if the string resembles an email address, otherwise false
+     */
+    private boolean isValidEmail(String email) {
+        String emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+        return email.matches(emailPattern);
+    }
+
+    /**
+     * determines if a given string resembles a homepage
+     * @param homepage string to be checked
+     * @return true if the string resembles a homepage, otherwise false
+     */
+    private boolean isValidHomepage(String homepage) {
+        String homepagePattern = ".*\\..*";
+        return homepage.matches(homepagePattern);
+    }
 }
