@@ -58,6 +58,8 @@ public class EventDetailFragment extends Fragment {
     private Integer position;
     private Boolean toMain;
     private ProgressBar progressBar;
+    private boolean checkedIn;
+    private boolean signedUp;
 
     /**
      * What should be executed when the fragment is created
@@ -67,16 +69,6 @@ public class EventDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            eventId = getArguments().getString("eventId");
-            position = getArguments().getInt("position");
-            toMain = getArguments().getBoolean("toMain");
-            loadEventDetails(eventId);
-
-        }
-        Log.d("position in detail", "position: " + position);
-        androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-
     }
 
     /**
@@ -128,39 +120,57 @@ public class EventDetailFragment extends Fragment {
         eventEndDateTime.setVisibility(View.INVISIBLE);
         eventAddress.setVisibility(View.INVISIBLE);
         signUpButton.setVisibility(View.INVISIBLE);
+
+        signUpMessage.setText("You are signed up for this event!");
         signUpMessage.setVisibility(View.INVISIBLE);
+
+        checkMarkImageView.setColorFilter(ContextCompat.getColor(getContext(), R.color.coral));
         checkMarkImageView.setVisibility(View.INVISIBLE);
 
+        Log.d("position in detail", "position: " + position);
+
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            eventId = bundle.getString("eventId");
+            position = bundle.getInt("position");
+            toMain = bundle.getBoolean("toMain");
+        }
+        androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         FirebaseController.getInstance().isUserSignedUp(androidId, eventId, new FirebaseController.OnSignUpCheckListener() {
             @Override
             public void onSignUpCheck(boolean isSignedUp) {
                 if (isSignedUp) {
-                    signUpButton.setVisibility(View.INVISIBLE);
-                    signUpMessage.setVisibility(View.VISIBLE);
+                    signedUp = isSignedUp;
                     FirebaseController.getInstance().checkAttendeeCheckins(eventId, androidId, new FirebaseController.CheckAttendeeCheckinsCallback() {
                         @Override
                         public void onSuccess(int checkins) {
                             if (checkins == 1) {
                                 signUpMessage.setText("Checked in 1 time!");
-                                checkMarkImageView.setVisibility(View.VISIBLE);
-                                checkMarkImageView.setColorFilter(ContextCompat.getColor(getContext(), R.color.coral));
+                                //checkMarkImageView.setVisibility(View.VISIBLE);
+                                checkedIn = true;
                             } else if (checkins > 0) {
                                 signUpMessage.setText("Checked in " + checkins + " times!");
-                                checkMarkImageView.setVisibility(View.VISIBLE);
-                                checkMarkImageView.setColorFilter(ContextCompat.getColor(getContext(), R.color.coral));
+                                //checkMarkImageView.setVisibility(View.VISIBLE);
+                                checkedIn = true;
 
                             } else if (checkins == -1) {
                                 signUpMessage.setText("You are signed-up to attend this event!");
+                                checkedIn = false;
                             }
+                            loadEventDetails(eventId);
                         }
 
                         @Override
                         public void onFailure(Exception e) {
                             Toast.makeText(getContext(), "Failed to get check-ins information.", Toast.LENGTH_SHORT).show();
+                            checkedIn = false;
+                            loadEventDetails(eventId);
                         }
                     });
+                } else {
+                    checkedIn = false;
+                    loadEventDetails(eventId);
                 }
-                signUpMessage.setText("You are signed up for this event!");
             }
         });
 
@@ -277,6 +287,26 @@ public class EventDetailFragment extends Fragment {
                     displayEventDetails(event);
                 } else {
                     Toast.makeText(requireContext(), "Failed to retrieve event details", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.INVISIBLE);
+                    eventPosterImage.setVisibility(View.VISIBLE);
+                    eventName.setVisibility(View.VISIBLE);
+                    eventOrganizer.setVisibility(View.VISIBLE);
+                    eventDescription.setVisibility(View.VISIBLE);
+                    eventLocation.setVisibility(View.VISIBLE);
+                    eventMaxAttendees.setVisibility(View.VISIBLE);
+                    eventAnnouncements.setVisibility(View.VISIBLE);
+                    eventStartDateTime.setVisibility(View.VISIBLE);
+                    eventEndDateTime.setVisibility(View.VISIBLE);
+                    eventAddress.setVisibility(View.VISIBLE);
+                    if (!signedUp) {
+                        signUpButton.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        signUpMessage.setVisibility(View.VISIBLE);
+                    }
+                    if (checkedIn) {
+                        checkMarkImageView.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         });
@@ -342,9 +372,15 @@ public class EventDetailFragment extends Fragment {
         eventStartDateTime.setVisibility(View.VISIBLE);
         eventEndDateTime.setVisibility(View.VISIBLE);
         eventAddress.setVisibility(View.VISIBLE);
-        signUpButton.setVisibility(View.VISIBLE);
-        signUpMessage.setVisibility(View.VISIBLE);
-        checkMarkImageView.setVisibility(View.VISIBLE);
+        if (!signedUp) {
+            signUpButton.setVisibility(View.VISIBLE);
+        }
+        else {
+            signUpMessage.setVisibility(View.VISIBLE);
+        }
+        if (checkedIn) {
+            checkMarkImageView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
