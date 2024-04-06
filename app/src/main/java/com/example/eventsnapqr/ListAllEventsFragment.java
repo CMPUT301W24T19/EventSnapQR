@@ -19,12 +19,14 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -92,15 +94,27 @@ public class ListAllEventsFragment extends Fragment {
                                     String organizerId = document.getString("organizerID");
                                     FirebaseController.getInstance().getUser(organizerId, user -> {
                                         if (user != null) {
+                                            Date startDateTime = null;
+                                            Date endDateTime = null;
+                                            Timestamp startTimestamp = document.getTimestamp("eventStartDateTime");
+                                            Timestamp endTimestamp = document.getTimestamp("eventEndDateTime");
+
+                                            if (startTimestamp != null) {
+                                                startDateTime = startTimestamp.toDate();
+                                            }
+                                            if (endTimestamp != null) {
+                                                endDateTime = endTimestamp.toDate();
+                                            }
+
                                             Event event = new Event(
                                                     user,
                                                     document.getString("eventName"),
                                                     document.getString("description"),
                                                     document.getString("posterURI"),
                                                     maxAttendees,
-                                                    document.getId(), // Assuming event ID is the document ID
-                                                    document.getDate("eventStartDateTime"),
-                                                    document.getDate("eventEndDateTime"),
+                                                    document.getId(),
+                                                    startDateTime,
+                                                    endDateTime,
                                                     document.getString("address"),
                                                     document.getBoolean("active")
                                             );

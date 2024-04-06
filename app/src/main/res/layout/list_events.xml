@@ -10,7 +10,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginEnd="16dp"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:background="@drawable/rounded_corner_shape" />
 
     <TextView
         android:id="@+id/eventName"
@@ -18,17 +19,27 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/eventImage"
         android:layout_alignTop="@id/eventImage"
-        android:textSize="18sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:text="Event Name" />
 
     <TextView
-        android:id="@+id/eventOrganizer"
+        android:id="@+id/eventDateTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/eventName"
         android:layout_toEndOf="@id/eventImage"
+        android:layout_marginTop="6dp"
         android:textSize="14sp"
-        android:textColor="@android:color/darker_gray"
-        android:text="Organizer Name"/>
+        android:text="Date and Time" />
+
+    <TextView
+        android:id="@+id/eventAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/eventDateTime"
+        android:layout_toEndOf="@id/eventImage"
+        android:layout_marginTop="6dp"
+        android:textSize="14sp"
+        android:text="Address" />
 </RelativeLayout>
