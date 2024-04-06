@@ -423,14 +423,20 @@ public class ManageEventActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 String announcement = editTextAnnouncement.getText().toString();
 
+                // Always update the event's announcements regardless of the switch's state
                 CollectionReference announcementsRef = db.collection("events").document(currentEvent.getEventID()).collection("announcements");
                 Map<String, Object> announcementData = new HashMap<>();
                 announcementData.put("message", announcement);
                 announcementData.put("timestamp", new Date());
 
                 announcementsRef.add(announcementData)
-                        .addOnSuccessListener(documentReference -> Toast.makeText(getApplicationContext(), "Announcement sent successfully", Toast.LENGTH_SHORT).show())
-                        .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Failed to send announcement", Toast.LENGTH_SHORT).show());
+                        .addOnSuccessListener(documentReference -> {
+                            Toast.makeText(getApplicationContext(), "Announcement updated successfully", Toast.LENGTH_SHORT).show();
+                            if (switchEnableNotifications.isChecked()) {
+                                Toast.makeText(getApplicationContext(), "Notifications sent", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Failed to update announcement", Toast.LENGTH_SHORT).show());
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -442,6 +448,7 @@ public class ManageEventActivity extends AppCompatActivity {
 
         builder.show();
     }
+
 
 
     /**
