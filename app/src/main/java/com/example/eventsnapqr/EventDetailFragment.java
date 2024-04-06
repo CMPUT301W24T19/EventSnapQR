@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +57,7 @@ public class EventDetailFragment extends Fragment {
     private TextView signUpMessage;
     private Integer position;
     private Boolean toMain;
+    private ProgressBar progressBar;
 
     /**
      * What should be executed when the fragment is created
@@ -112,6 +114,22 @@ public class EventDetailFragment extends Fragment {
         signUpMessage = view.findViewById(R.id.sign_up_message);
         backButton = view.findViewById(R.id.back_button);
         checkMarkImageView = view.findViewById(R.id.checkMarkImageView);
+        progressBar = view.findViewById(R.id.loadingProgressBar);
+
+        progressBar.setVisibility(View.VISIBLE);
+        eventPosterImage.setVisibility(View.INVISIBLE);
+        eventName.setVisibility(View.INVISIBLE);
+        eventOrganizer.setVisibility(View.INVISIBLE);
+        eventDescription.setVisibility(View.INVISIBLE);
+        eventLocation.setVisibility(View.INVISIBLE);
+        eventMaxAttendees.setVisibility(View.INVISIBLE);
+        eventAnnouncements.setVisibility(View.INVISIBLE);
+        eventStartDateTime.setVisibility(View.INVISIBLE);
+        eventEndDateTime.setVisibility(View.INVISIBLE);
+        eventAddress.setVisibility(View.INVISIBLE);
+        signUpButton.setVisibility(View.INVISIBLE);
+        signUpMessage.setVisibility(View.INVISIBLE);
+        checkMarkImageView.setVisibility(View.INVISIBLE);
 
         FirebaseController.getInstance().isUserSignedUp(androidId, eventId, new FirebaseController.OnSignUpCheckListener() {
             @Override
@@ -307,6 +325,21 @@ public class EventDetailFragment extends Fragment {
         eventAnnouncements.setHint(null);
 
         eventMaxAttendees.setText(event.getMaxAttendees() != null ? String.valueOf(event.getMaxAttendees()) : "N/A");
+
+        progressBar.setVisibility(View.INVISIBLE);
+        eventPosterImage.setVisibility(View.VISIBLE);
+        eventName.setVisibility(View.VISIBLE);
+        eventOrganizer.setVisibility(View.VISIBLE);
+        eventDescription.setVisibility(View.VISIBLE);
+        eventLocation.setVisibility(View.VISIBLE);
+        eventMaxAttendees.setVisibility(View.VISIBLE);
+        eventAnnouncements.setVisibility(View.VISIBLE);
+        eventStartDateTime.setVisibility(View.VISIBLE);
+        eventEndDateTime.setVisibility(View.VISIBLE);
+        eventAddress.setVisibility(View.VISIBLE);
+        signUpButton.setVisibility(View.VISIBLE);
+        signUpMessage.setVisibility(View.VISIBLE);
+        checkMarkImageView.setVisibility(View.VISIBLE);
     }
 
     /**

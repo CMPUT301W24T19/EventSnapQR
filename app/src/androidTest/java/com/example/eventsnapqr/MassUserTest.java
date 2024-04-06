@@ -22,7 +22,9 @@ import org.junit.Test;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -36,25 +38,49 @@ public class MassUserTest {
         Context context = InstrumentationRegistry.getInstrumentation().getContext();
         ContentResolver contentResolver = context.getContentResolver();
 
+        CountDownLatch latch = new CountDownLatch(1);
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseFirestore.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        /*firebaseFirestore.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot querySnapshot) {
                 for (QueryDocumentSnapshot doc : querySnapshot) {
-                    firebaseFirestore.collection("users").document(doc.getId()).delete();
+                    FirebaseController.getInstance().getUser(doc.getId(), new FirebaseController.OnUserRetrievedListener() {
+                        @Override
+                        public void onUserRetrieved(User user) {
+                            FirebaseController.getInstance().deleteUser(user);
+                        }
+                    });
                 }
             }
-        });
+        });*/
+        Map<String, String> data = new HashMap<>();
+        data.put("path", "events");
 
         firebaseFirestore.collection("events").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot querySnapshot) {
                 for (QueryDocumentSnapshot doc : querySnapshot) {
-                    firebaseFirestore.collection("events").document(doc.getId()).delete();
+                    FirebaseController.getInstance().getEvent(doc.getId(), new FirebaseController.OnEventRetrievedListener() {
+                        @Override
+                        public void onEventRetrieved(Event event) {
+                            FirebaseController.getInstance().deleteEvent(event, new FirebaseController.FirestoreOperationCallback() {
+                                @Override
+                                public void onCompleted() {
+                                    firebaseFirestore.collection("users").document(doc.getId()).delete();
+                                }
+                            });
+                        }
+                    });
                 }
-
             }
         });
+
+        try {
+            latch.await(20, TimeUnit.SECONDS);
+            Thread.sleep(20000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         List<User> userList = new ArrayList<>();
         Random random = new Random();
@@ -64,19 +90,21 @@ public class MassUserTest {
             userList.add(newUser);
             FirebaseController.getInstance().addUser(newUser);
         }
+
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         List<Event> eventList = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             String eventID = FirebaseController.getInstance().getUniqueEventID();
             int randomEvent = random.nextInt(50);
             Event newEvent = new Event(userList.get(randomEvent), eventID, "Test Event Number: " + i, null, null, eventID, new Date(), new Date(9223372036854775807L), String.valueOf(i), true);
+            FirebaseController.getInstance().addEvent(newEvent);
 
-        }
-        CountDownLatch latch = new CountDownLatch(1);
-        try {
-            latch.await(10, TimeUnit.SECONDS);
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
