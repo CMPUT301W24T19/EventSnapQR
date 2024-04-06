@@ -134,6 +134,9 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextUserName"
                         android:layout_width="match_parent"
+                        android:focusable="true"
+                        android:enabled="true"
+                        android:focusableInTouchMode="true"
                         android:layout_height="match_parent"
                         android:maxLength="20"
                         android:textColor="@color/black"
@@ -165,8 +168,11 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextEmail"
                         android:layout_width="match_parent"
-                        android:maxLength="50"
                         android:layout_height="wrap_content"
+                        android:focusable="true"
+                        android:enabled="true"
+                        android:focusableInTouchMode="true"
+                        android:maxLength="50"
                         android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -198,6 +204,9 @@
                         android:id="@+id/editTextPhoneNumber"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:focusable="true"
+                        android:enabled="true"
+                        android:focusableInTouchMode="true"
                         android:inputType="phone"
                         android:maxLength="12"
                         android:textColor="@color/black" />
@@ -230,6 +239,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
+                        android:focusable="true"
+                        android:enabled="true"
+                        android:focusableInTouchMode="true"
                         android:maxLength="30"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
