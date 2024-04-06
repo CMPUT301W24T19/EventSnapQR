@@ -130,6 +130,7 @@ public class EventDetailFragment extends Fragment {
         signUpButton.setVisibility(View.INVISIBLE);
         signUpMessage.setVisibility(View.INVISIBLE);
         checkMarkImageView.setVisibility(View.INVISIBLE);
+        checkMarkImageView.setColorFilter(ContextCompat.getColor(getContext(), R.color.coral));
 
         FirebaseController.getInstance().isUserSignedUp(androidId, eventId, new FirebaseController.OnSignUpCheckListener() {
             @Override
@@ -143,11 +144,9 @@ public class EventDetailFragment extends Fragment {
                             if (checkins == 1) {
                                 signUpMessage.setText("Checked in 1 time!");
                                 checkMarkImageView.setVisibility(View.VISIBLE);
-                                checkMarkImageView.setColorFilter(ContextCompat.getColor(getContext(), R.color.coral));
                             } else if (checkins > 0) {
                                 signUpMessage.setText("Checked in " + checkins + " times!");
                                 checkMarkImageView.setVisibility(View.VISIBLE);
-                                checkMarkImageView.setColorFilter(ContextCompat.getColor(getContext(), R.color.coral));
 
                             } else if (checkins == -1) {
                                 signUpMessage.setText("You are signed-up to attend this event!");
