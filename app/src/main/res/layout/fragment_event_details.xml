@@ -18,6 +18,18 @@ android:background="@drawable/gradient_background">
         android:layout_marginTop="45dp"/>
 
     <ImageView
+        android:id="@+id/checkMarkImageView"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_check"
+        android:visibility="invisible"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="2dp" />
+
+    <ImageView
         android:id="@+id/back_button"
         android:layout_width="45dp"
         android:layout_height="45dp"
@@ -94,6 +106,7 @@ android:background="@drawable/gradient_background">
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 
+
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:id="@+id/textInputUserName"
@@ -103,15 +116,11 @@ android:background="@drawable/gradient_background">
                         android:layout_marginTop="42dp"
                         android:textColorHint="@color/grey"
                         app:boxBackgroundColor="#00FFFFFF"
-                        app:boxStrokeColor="@color/black"
+                        app:boxStrokeColor="@color/coral"
                         app:boxStrokeWidth="2dp"
                         app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                         android:layout_marginEnd="32dp"
                         android:hint="Organizer"
-                        app:endIconMode="clear_text"
-                        app:counterEnabled="false"
-                        app:counterMaxLength="50"
-                        app:helperTextTextColor="@color/red"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
@@ -123,10 +132,11 @@ android:background="@drawable/gradient_background">
                             android:maxLength="50"
                             android:focusable="false"
                             android:cursorVisible="false"
-                            android:textColor="@color/black" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:textColor="@color/coral" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputLayout
+
+            <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:id="@+id/textInputEmail"
                         android:layout_width="match_parent"
@@ -140,10 +150,6 @@ android:background="@drawable/gradient_background">
                         app:boxStrokeColor="@color/black"
                         app:boxStrokeWidth="2dp"
                         app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-                        app:endIconMode="clear_text"
-                        app:counterEnabled="false"
-                        app:counterMaxLength="100"
-                        app:helperTextTextColor="@color/red"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/textInputUserName">
@@ -171,10 +177,6 @@ android:background="@drawable/gradient_background">
                         app:boxStrokeColor="@color/black"
                         app:boxStrokeWidth="2dp"
                         app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-                        app:endIconMode="clear_text"
-                        app:counterEnabled="false"
-                        app:counterMaxLength="100"
-                        app:helperTextTextColor="@color/red"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/textInputMaxAttendees">
@@ -202,10 +204,6 @@ android:background="@drawable/gradient_background">
                         app:boxStrokeColor="@color/black"
                         app:boxStrokeWidth="2dp"
                         app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-                        app:endIconMode="clear_text"
-                        app:counterEnabled="false"
-                        app:counterMaxLength="100"
-                        app:helperTextTextColor="@color/red"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/textInputLocation">
@@ -236,10 +234,6 @@ android:background="@drawable/gradient_background">
                         app:boxStrokeColor="@color/black"
                         app:boxStrokeWidth="2dp"
                         app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-                        app:endIconMode="clear_text"
-                        app:counterEnabled="false"
-                        app:counterMaxLength="100"
-                        app:helperTextTextColor="@color/red"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/textInputAddress">
@@ -268,10 +262,6 @@ android:background="@drawable/gradient_background">
                         app:boxStrokeColor="@color/black"
                         app:boxStrokeWidth="2dp"
                         app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-                        app:endIconMode="clear_text"
-                        app:counterEnabled="false"
-                        app:counterMaxLength="100"
-                        app:helperTextTextColor="@color/red"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/textInputPhoneNumber">
@@ -299,10 +289,6 @@ android:background="@drawable/gradient_background">
                         app:boxStrokeColor="@color/black"
                         app:boxStrokeWidth="2dp"
                         app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-                        app:endIconMode="clear_text"
-                        app:counterEnabled="false"
-                        app:counterMaxLength="100"
-                        app:helperTextTextColor="@color/red"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/textInputEmail">
@@ -331,10 +317,6 @@ android:background="@drawable/gradient_background">
                         app:boxStrokeColor="@color/black"
                         app:boxStrokeWidth="2dp"
                         app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-                        app:endIconMode="clear_text"
-                        app:counterEnabled="false"
-                        app:counterMaxLength="100"
-                        app:helperTextTextColor="@color/red"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/textInputAnnouncements">

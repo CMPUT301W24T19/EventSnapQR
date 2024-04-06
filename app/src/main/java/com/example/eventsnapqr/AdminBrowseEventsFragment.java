@@ -94,7 +94,7 @@ public class AdminBrowseEventsFragment extends Fragment {
                                     data.put("id", event.getEventID());
                                     eventData.add(data);
                                 }
-                                if (i[0] == value.size()) {
+                                if (i[0] == value.size() - 1) {
                                     eventData.sort(new Comparator<HashMap<String, Object>>() {
                                         @Override
                                         public int compare(HashMap<String, Object> o1, HashMap<String, Object> o2) {

@@ -14,7 +14,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -36,6 +41,8 @@ public class EventDetailFragment extends Fragment {
     private String eventId;
     private String androidId;
     private ImageView eventPosterImage;
+    private ImageView backButton;
+    private ImageView checkMarkImageView;
     private TextView eventName;
     private TextInputEditText eventOrganizer;
     private TextInputEditText eventDescription;
@@ -103,6 +110,8 @@ public class EventDetailFragment extends Fragment {
         eventAddress = view.findViewById(R.id.editTextAddress);
         signUpButton = view.findViewById(R.id.sign_up_button);
         signUpMessage = view.findViewById(R.id.sign_up_message);
+        backButton = view.findViewById(R.id.back_button);
+        checkMarkImageView = view.findViewById(R.id.checkMarkImageView);
 
         FirebaseController.getInstance().isUserSignedUp(androidId, eventId, new FirebaseController.OnSignUpCheckListener() {
             @Override
@@ -115,8 +124,13 @@ public class EventDetailFragment extends Fragment {
                         public void onSuccess(int checkins) {
                             if (checkins == 1) {
                                 signUpMessage.setText("Checked in 1 time!");
+                                checkMarkImageView.setVisibility(View.VISIBLE);
+                                checkMarkImageView.setColorFilter(ContextCompat.getColor(getContext(), R.color.coral));
                             } else if (checkins > 0) {
-                                signUpMessage.setText("Checked in " + checkins + "times!");
+                                signUpMessage.setText("Checked in " + checkins + " times!");
+                                checkMarkImageView.setVisibility(View.VISIBLE);
+                                checkMarkImageView.setColorFilter(ContextCompat.getColor(getContext(), R.color.coral));
+
                             } else if (checkins == -1) {
                                 signUpMessage.setText("You are signed-up to attend this event!");
                             }
@@ -132,7 +146,7 @@ public class EventDetailFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(toMain){
@@ -195,6 +209,13 @@ public class EventDetailFragment extends Fragment {
                         }
                     }
                 });
+            }
+        });
+
+        eventOrganizer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // navigate to the view user profile fragment to view organizer
             }
         });
 

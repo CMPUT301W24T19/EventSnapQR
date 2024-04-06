@@ -38,13 +38,17 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         ImageView eventImage = itemView.findViewById(R.id.eventImage);
         TextView eventName = itemView.findViewById(R.id.eventName);
-        TextView eventOrganizer = itemView.findViewById(R.id.eventOrganizer);
+        TextView eventAddress = itemView.findViewById(R.id.eventAddress);
+        TextView eventStartDateTime = itemView.findViewById(R.id.eventDateTime);
 
         Event event = getItem(position);
         eventName.setText(event.getEventName());
-        eventOrganizer.setText(event.getOrganizer().getName());
+        eventAddress.setText(event.getAddress());
 
-        // Load image using Glide
+        if (event.getEventStartDateTime() != null) {
+            eventStartDateTime.setText(event.getEventStartDateTime().toString());
+        }
+
         Glide.with(getContext())
                 .load(event.getPosterURI())
                 .placeholder(R.drawable.place_holder_img)

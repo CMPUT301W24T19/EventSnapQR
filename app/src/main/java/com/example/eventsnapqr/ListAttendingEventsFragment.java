@@ -21,6 +21,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -30,6 +31,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -96,7 +98,7 @@ public class ListAttendingEventsFragment extends Fragment {
                                 db.collection("events").document(eventId).get()
                                         .addOnSuccessListener(eventDocument -> {
                                             if (eventDocument.exists()) {
-                                                Long maxAttendeesLong = document.getLong("maxAttendees");
+                                                Long maxAttendeesLong = eventDocument.getLong("maxAttendees");
                                                 int maxAttendees = (maxAttendeesLong != null) ? maxAttendeesLong.intValue() : 0;
                                                 String eventName = eventDocument.getString("eventName");
                                                 String organizerId = eventDocument.getString("organizerID");
@@ -104,6 +106,18 @@ public class ListAttendingEventsFragment extends Fragment {
 
                                                 FirebaseController.getInstance().getUser(organizerId, user -> {
                                                     if (user != null) {
+                                                        Date startDateTime = null;
+                                                        Date endDateTime = null;
+                                                        Timestamp startTimestamp = eventDocument.getTimestamp("eventStartDateTime");
+                                                        Timestamp endTimestamp = eventDocument.getTimestamp("eventEndDateTime");
+
+                                                        if (startTimestamp != null) {
+                                                            startDateTime = startTimestamp.toDate();
+                                                        }
+                                                        if (endTimestamp != null) {
+                                                            endDateTime = endTimestamp.toDate();
+                                                        }
+
                                                         Event event = new Event(
                                                                 user,
                                                                 eventName,
@@ -111,23 +125,14 @@ public class ListAttendingEventsFragment extends Fragment {
                                                                 posterURI,
                                                                 maxAttendees,
                                                                 eventId,
-                                                                eventDocument.getDate("eventStartDateTime"),
-                                                                eventDocument.getDate("eventEndDateTime"),
+                                                                startDateTime,
+                                                                endDateTime,
                                                                 eventDocument.getString("address"),
                                                                 eventDocument.getBoolean("active")
                                                         );
                                                         attendingEvents.add(event);
                                                         if (i[0] == documents.size() - 1) {
-                                                            attendingEvents.sort(new Comparator<Event>() {
-                                                                @Override
-                                                                public int compare(Event o1, Event o2) {
-                                                                    String event1 = o1.getEventName();
-                                                                    event1 = event1.toLowerCase();
-                                                                    String event2 = o2.getEventName();
-                                                                    event2 = event2.toLowerCase();
-                                                                    return event1.compareTo(event2);
-                                                                }
-                                                            });
+                                                            attendingEvents.sort(Comparator.comparing(o -> o.getEventName().toLowerCase()));
                                                             eventListView.setVisibility(View.VISIBLE);
                                                             loadingProgressBar.setVisibility(View.GONE);
                                                             eventAdapter.notifyDataSetChanged();

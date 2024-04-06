@@ -1,8 +1,6 @@
 package com.example.eventsnapqr;
 
 import static android.app.PendingIntent.getActivity;
-import static androidx.camera.core.CameraXThreads.TAG;
-import static androidx.core.content.ContentProviderCompat.requireContext;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -170,7 +169,7 @@ public class ManageEventActivity extends AppCompatActivity {
             }
         });
 
-        eventAdapter = new ArrayAdapter<String>(this, R.layout.list_attendees_layout, R.id.attendee_name, attendeeNames) {
+        eventAdapter = new ArrayAdapter<String>(this, R.layout.list_attendees, R.id.attendee_name, attendeeNames) {
             @NonNull
             @Override
             public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -181,6 +180,7 @@ public class ManageEventActivity extends AppCompatActivity {
 
                 if (attendeeCheckedIn.get(position) >= 1) {
                     checkMarkImageView.setVisibility(View.VISIBLE);
+                    checkMarkImageView.setColorFilter(ContextCompat.getColor(getContext(), R.color.coral));
                 } else {
                     checkMarkImageView.setVisibility(View.GONE);
                 }
