@@ -116,9 +116,15 @@ public class ManageEventActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // ensure the previous activity is restarted for any change in data
+                Intent intent = new Intent(getApplicationContext(), BrowseEventsActivity.class);
+                intent.putExtra("position", 2);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 finish();
             }
         });
+
 
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override

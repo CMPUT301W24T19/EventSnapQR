@@ -15,8 +15,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -95,13 +93,13 @@ public class EventDetailFragment extends Fragment {
 
         eventPosterImage = view.findViewById(R.id.eventPosterImageView);
         eventName = view.findViewById(R.id.eventNameTextView);
-        eventOrganizer = view.findViewById(R.id.editTextOrganizerName);
-        eventDescription = view.findViewById(R.id.editTextDescription);
+        eventOrganizer = view.findViewById(R.id.editTextUserName);
+        eventDescription = view.findViewById(R.id.editTextEmail);
         eventLocation = view.findViewById(R.id.editTextLocation);
         eventMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
         eventAnnouncements = view.findViewById(R.id.editTextAnnouncements);
-        eventStartDateTime = view.findViewById(R.id.editTextStartDateTime);
-        eventEndDateTime = view.findViewById(R.id.editTextEndDateTime);
+        eventStartDateTime = view.findViewById(R.id.editTextPhoneNumber);
+        eventEndDateTime = view.findViewById(R.id.editTextHomepage);
         eventAddress = view.findViewById(R.id.editTextAddress);
         signUpButton = view.findViewById(R.id.sign_up_button);
         signUpMessage = view.findViewById(R.id.sign_up_message);
