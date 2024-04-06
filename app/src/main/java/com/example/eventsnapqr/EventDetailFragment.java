@@ -17,14 +17,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -39,27 +36,19 @@ import java.util.List;
  * however, the data is only uploaded to the database once
  */
 public class EventDetailFragment extends Fragment {
-    private String eventId;
-    private String androidId;
-    private ImageView eventPosterImage;
-    private ImageView backButton;
-    private ImageView checkMarkImageView;
-    private TextView eventName;
-    private TextInputEditText eventOrganizer;
-    private TextInputEditText eventDescription;
-    private TextInputEditText eventLocation;
-    private TextInputEditText eventMaxAttendees;
-    private TextInputEditText eventAnnouncements;
-    private TextInputEditText eventStartDateTime;
-    private TextInputEditText eventEndDateTime;
-    private TextInputEditText eventAddress;
-    private ExtendedFloatingActionButton signUpButton;
+    private String eventId, androidId, organizerId;
+    private ImageView eventPosterImage, backButton, checkMarkImageView;
     private TextView signUpMessage;
+    private TextInputEditText eventName, eventOrganizer, eventDescription, eventLocation, eventMaxAttendees,
+            eventAnnouncements, eventStartDateTime, eventEndDateTime, eventAddress;
+    private TextInputLayout nameTextInputLayout, organizerTextInputLayout, descTextInputLayout,
+            locationTextInputLayout, maxTextInputLayout, announceTextInputLayout, startTextInputLayout,
+            endTextInputLayout, addressTextInputLayout;
+    private ExtendedFloatingActionButton signUpButton;
     private Integer position;
     private Boolean toMain;
     private ProgressBar progressBar;
-    private boolean checkedIn;
-    private boolean signedUp;
+    private boolean checkedIn, signedUp;
 
     /**
      * What should be executed when the fragment is created
@@ -93,14 +82,14 @@ public class EventDetailFragment extends Fragment {
         );
 
         eventPosterImage = view.findViewById(R.id.eventPosterImageView);
-        eventName = view.findViewById(R.id.eventNameTextView);
-        eventOrganizer = view.findViewById(R.id.editTextUserName);
-        eventDescription = view.findViewById(R.id.editTextEmail);
+        eventName = view.findViewById(R.id.editTextEventName);
+        eventOrganizer = view.findViewById(R.id.editTextUserOrganizer);
+        eventDescription = view.findViewById(R.id.editTextDescription);
         eventLocation = view.findViewById(R.id.editTextLocation);
         eventMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
         eventAnnouncements = view.findViewById(R.id.editTextAnnouncements);
-        eventStartDateTime = view.findViewById(R.id.editTextPhoneNumber);
-        eventEndDateTime = view.findViewById(R.id.editTextHomepage);
+        eventStartDateTime = view.findViewById(R.id.editTextStartDateTime);
+        eventEndDateTime = view.findViewById(R.id.editTextEndDateTime);
         eventAddress = view.findViewById(R.id.editTextAddress);
         signUpButton = view.findViewById(R.id.sign_up_button);
         signUpMessage = view.findViewById(R.id.sign_up_message);
@@ -108,18 +97,18 @@ public class EventDetailFragment extends Fragment {
         checkMarkImageView = view.findViewById(R.id.checkMarkImageView);
         progressBar = view.findViewById(R.id.loadingProgressBar);
 
+        nameTextInputLayout = view.findViewById(R.id.textInputEventName);
+        organizerTextInputLayout = view.findViewById(R.id.textInputOrganizer);
+        descTextInputLayout = view.findViewById(R.id.textInputDescription);
+        locationTextInputLayout = view.findViewById(R.id.textInputLocation);
+        maxTextInputLayout = view.findViewById(R.id.textInputMaxAttendees);
+        announceTextInputLayout = view.findViewById(R.id.textInputAnnouncements);
+        startTextInputLayout = view.findViewById(R.id.textInputStartDateTime);
+        endTextInputLayout = view.findViewById(R.id.textInputEndDateTime);
+        addressTextInputLayout = view.findViewById(R.id.textInputAddress);
+
+
         progressBar.setVisibility(View.VISIBLE);
-        eventPosterImage.setVisibility(View.INVISIBLE);
-        eventName.setVisibility(View.INVISIBLE);
-        eventOrganizer.setVisibility(View.INVISIBLE);
-        eventDescription.setVisibility(View.INVISIBLE);
-        eventLocation.setVisibility(View.INVISIBLE);
-        eventMaxAttendees.setVisibility(View.INVISIBLE);
-        eventAnnouncements.setVisibility(View.INVISIBLE);
-        eventStartDateTime.setVisibility(View.INVISIBLE);
-        eventEndDateTime.setVisibility(View.INVISIBLE);
-        eventAddress.setVisibility(View.INVISIBLE);
-        signUpButton.setVisibility(View.INVISIBLE);
 
         signUpMessage.setText("You are signed up for this event!");
         signUpMessage.setVisibility(View.INVISIBLE);
@@ -239,10 +228,13 @@ public class EventDetailFragment extends Fragment {
             }
         });
 
+        // handle navigation to the organizers profile
         eventOrganizer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // navigate to the view user profile fragment to view organizer
+                Intent intent = new Intent(requireContext(), ViewUserProfileActivity.class);
+                intent.putExtra("userId", organizerId);
+                startActivity(intent);
             }
         });
 
@@ -282,7 +274,7 @@ public class EventDetailFragment extends Fragment {
             @Override
             public void onEventRetrieved(Event event) {
                 if (event != null) {
-                    // Event details retrieved successfully, update UI with event details
+                    organizerId = event.getOrganizer().getDeviceID();
                     displayEventDetails(event);
                 } else {
                     Toast.makeText(requireContext(), "Failed to retrieve event details", Toast.LENGTH_SHORT).show();
@@ -322,7 +314,12 @@ public class EventDetailFragment extends Fragment {
                 .placeholder(R.drawable.place_holder_img)
                 .into(eventPosterImage);
 
-        eventName.setText(event.getEventName() != null ? event.getEventName() : "N/A");
+        String eventNameText = event.getEventName() != null ? event.getEventName() : "N/A";
+        if (eventNameText.length() > 16) {
+            eventNameText = eventNameText.substring(0, 14) + "...";
+        }
+        eventName.setText(eventNameText);
+
         eventOrganizer.setText(event.getOrganizer() != null && event.getOrganizer().getName() != null ? event.getOrganizer().getName() : "N/A");
         eventDescription.setText(event.getDescription() != null ? event.getDescription() : "N/A");
 
@@ -371,6 +368,17 @@ public class EventDetailFragment extends Fragment {
         eventStartDateTime.setVisibility(View.VISIBLE);
         eventEndDateTime.setVisibility(View.VISIBLE);
         eventAddress.setVisibility(View.VISIBLE);
+
+        nameTextInputLayout.setVisibility(View.VISIBLE);
+        organizerTextInputLayout.setVisibility(View.VISIBLE);
+        descTextInputLayout.setVisibility(View.VISIBLE);
+        locationTextInputLayout.setVisibility(View.VISIBLE);
+        maxTextInputLayout.setVisibility(View.VISIBLE);
+        announceTextInputLayout.setVisibility(View.VISIBLE);
+        startTextInputLayout.setVisibility(View.VISIBLE);
+        endTextInputLayout.setVisibility(View.VISIBLE);
+        addressTextInputLayout.setVisibility(View.VISIBLE);
+
         if (!signedUp) {
             signUpButton.setVisibility(View.VISIBLE);
         }

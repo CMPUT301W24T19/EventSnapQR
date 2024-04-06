@@ -43,7 +43,7 @@ android:background="@drawable/gradient_background">
         android:id="@+id/eventNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
+        android:text="Event Details"
         android:textSize="22sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -83,6 +83,7 @@ android:background="@drawable/gradient_background">
                         android:layout_marginBottom="15dp"
                         android:layout_width="250dp"
                         android:layout_height="250dp"
+                        android:visibility="invisible"
                         android:background="@drawable/rounded_corner_shape"
                         android:src="@drawable/place_holder_img"
                         android:clipToOutline="true"
@@ -98,84 +99,166 @@ android:background="@drawable/gradient_background">
                         android:id="@+id/sign_up_message"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:text=""
                         android:textSize="16sp"
-                        android:layout_marginTop="8dp"
                         android:visibility="invisible"
-                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
-
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputEventName"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:id="@+id/textInputUserName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
-                        android:layout_marginTop="42dp"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginEnd="32dp"
+                        android:hint="Event Name"
+                        android:visibility="invisible"
                         android:textColorHint="@color/grey"
                         app:boxBackgroundColor="#00FFFFFF"
-                        app:boxStrokeColor="@color/coral"
                         app:boxStrokeWidth="2dp"
-                        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-                        android:layout_marginEnd="32dp"
-                        android:hint="Organizer"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextUserName"
+                            android:id="@+id/editTextEventName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:cursorVisible="false"
+                            android:visibility="invisible"
+                            android:focusable="false" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputOrganizer"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginEnd="32dp"
+                        android:hint="Organizer"
+                        android:visibility="invisible"
+                        android:textColorHint="@color/grey"
+                        app:boxBackgroundColor="#00FFFFFF"
+                        app:boxStrokeColor="@color/coral"
+                        app:boxStrokeWidth="2dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/textInputEventName">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editTextUserOrganizer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:cursorVisible="false"
+                            android:visibility="invisible"
                             android:focusable="false"
                             android:textColor="@color/coral" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-
-            <com.google.android.material.textfield.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputDescription"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:id="@+id/textInputEmail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
                         android:layout_marginTop="12dp"
                         android:layout_marginEnd="32dp"
                         android:hint="Description"
+                        android:visibility="invisible"
                         android:textColorHint="@color/grey"
                         app:boxBackgroundColor="#00FFFFFF"
                         app:boxStrokeColor="@color/black"
                         app:boxStrokeWidth="2dp"
-                        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/textInputUserName">
+                        app:layout_constraintTop_toBottomOf="@id/textInputOrganizer">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextEmail"
+                            android:id="@+id/editTextDescription"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:focusable="false"
                             android:cursorVisible="false"
+                            android:focusable="false"
                             android:textColor="@color/black" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputAnnouncements"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginEnd="32dp"
+                        android:hint="Announcements"
+                        android:visibility="invisible"
+                        android:textColorHint="@color/grey"
+                        app:boxBackgroundColor="#00FFFFFF"
+                        app:boxStrokeColor="@color/black"
+                        app:boxStrokeWidth="2dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/textInputDescription">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editTextAnnouncements"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:cursorVisible="false"
+                            android:focusable="false"
+                            android:gravity="top|start"
+                            android:textColor="@color/black" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputMaxAttendees"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginEnd="32dp"
+                        android:hint="Max Attendees"
+                        android:visibility="invisible"
+                        android:textColorHint="@color/grey"
+                        app:boxBackgroundColor="#00FFFFFF"
+                        app:boxStrokeColor="@color/black"
+                        app:boxStrokeWidth="2dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/textInputAnnouncements">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editTextMaxAttendees"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:cursorVisible="false"
+                            android:visibility="invisible"
+                            android:focusable="false"
+                            android:textColor="@color/black" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/textInputLocation"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
                         android:layout_marginTop="12dp"
                         android:layout_marginEnd="32dp"
                         android:hint="Location"
+                        android:visibility="invisible"
                         android:textColorHint="@color/grey"
                         app:boxBackgroundColor="#00FFFFFF"
                         app:boxStrokeColor="@color/black"
                         app:boxStrokeWidth="2dp"
-                        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/textInputMaxAttendees">
@@ -184,14 +267,15 @@ android:background="@drawable/gradient_background">
                             android:id="@+id/editTextLocation"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:focusable="false"
                             android:cursorVisible="false"
+                            android:visibility="invisible"
+                            android:focusable="false"
                             android:textColor="@color/black" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:id="@+id/textInputAddress"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
@@ -201,8 +285,8 @@ android:background="@drawable/gradient_background">
                         android:textColorHint="@color/grey"
                         app:boxBackgroundColor="#00FFFFFF"
                         app:boxStrokeColor="@color/black"
+                        android:visibility="invisible"
                         app:boxStrokeWidth="2dp"
-                        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/textInputLocation">
@@ -211,45 +295,45 @@ android:background="@drawable/gradient_background">
                             android:id="@+id/editTextAddress"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:focusable="false"
                             android:cursorVisible="false"
+                            android:focusable="false"
                             android:textColor="@color/black" />
                     </com.google.android.material.textfield.TextInputLayout>
 
 
-
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputStartDateTime"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:id="@+id/inputTextPhoneNumber"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
                         android:layout_marginTop="12dp"
                         android:layout_marginEnd="32dp"
                         android:hint="Start Date / Time"
-                        android:textColorHint="@color/grey"
+                        android:visibility="invisible"
                         android:inputType="phone"
+                        android:textColorHint="@color/grey"
                         app:boxBackgroundColor="#00FFFFFF"
                         app:boxStrokeColor="@color/black"
                         app:boxStrokeWidth="2dp"
-                        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/textInputAddress">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextPhoneNumber"
+                            android:id="@+id/editTextStartDateTime"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:focusable="false"
+                            android:visibility="invisible"
                             android:cursorVisible="false"
+                            android:focusable="false"
                             android:textColor="@color/black" />
                     </com.google.android.material.textfield.TextInputLayout>
 
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputEndDateTime"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:id="@+id/textInputHomepage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
@@ -258,74 +342,20 @@ android:background="@drawable/gradient_background">
                         android:hint="End Date / Time"
                         android:textColorHint="@color/grey"
                         app:boxBackgroundColor="#00FFFFFF"
+                        android:visibility="invisible"
                         app:boxStrokeColor="@color/black"
                         app:boxStrokeWidth="2dp"
-                        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/inputTextPhoneNumber">
+                        app:layout_constraintTop_toBottomOf="@id/textInputStartDateTime">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextHomepage"
+                            android:id="@+id/editTextEndDateTime"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:focusable="false"
+                            android:visibility="invisible"
                             android:cursorVisible="false"
-                            android:textColor="@color/black" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:id="@+id/textInputAnnouncements"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="32dp"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginEnd="32dp"
-                        android:hint="Announcements"
-                        android:textColorHint="@color/grey"
-                        app:boxBackgroundColor="#00FFFFFF"
-                        app:boxStrokeColor="@color/black"
-                        app:boxStrokeWidth="2dp"
-                        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/textInputEmail">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextAnnouncements"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
                             android:focusable="false"
-                            android:cursorVisible="false"
-                            android:gravity="top|start"
-                            android:textColor="@color/black" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:id="@+id/textInputMaxAttendees"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="32dp"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginEnd="32dp"
-                        android:hint="Max Attendees"
-                        android:textColorHint="@color/grey"
-                        app:boxBackgroundColor="#00FFFFFF"
-                        app:boxStrokeColor="@color/black"
-                        app:boxStrokeWidth="2dp"
-                        app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/textInputAnnouncements">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextMaxAttendees"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:focusable="false"
-                            android:cursorVisible="false"
                             android:textColor="@color/black" />
                     </com.google.android.material.textfield.TextInputLayout>
 
