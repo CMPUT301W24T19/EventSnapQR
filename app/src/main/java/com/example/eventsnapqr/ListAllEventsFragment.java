@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -38,6 +39,7 @@ public class ListAllEventsFragment extends Fragment {
     private EventAdapter eventAdapter;
     private List<Event> events;
     private FirebaseFirestore db; // database instance
+    private TextView noEventsText; // empty list message
 
     /**
      * Setup actions to be taken upon view creation and when the views are interacted with
@@ -60,6 +62,7 @@ public class ListAllEventsFragment extends Fragment {
         eventAdapter = new EventAdapter(requireContext(), events);
         eventListView.setAdapter(eventAdapter);
         db = FirebaseFirestore.getInstance();
+        noEventsText = view.findViewById(R.id.noEventsTextView);
 
         ProgressBar loadingProgressBar = view.findViewById(R.id.loadingProgressBar);
 
@@ -86,7 +89,8 @@ public class ListAllEventsFragment extends Fragment {
                         events.clear();
                         int[] i = {0};
                         QuerySnapshot documents = task.getResult();
-                        if (documents.size() != 0) {
+                        if (documents.size() > 0) {
+                            noEventsText.setVisibility(View.INVISIBLE);
                             for (DocumentSnapshot document : documents) {
                                 if (Boolean.TRUE.equals(document.getBoolean("active"))) {
                                     Long maxAttendeesLong = document.getLong("maxAttendees");
@@ -161,6 +165,9 @@ public class ListAllEventsFragment extends Fragment {
                         } else {
                             eventListView.setVisibility(View.VISIBLE);
                             loadingProgressBar.setVisibility(View.GONE);
+                            noEventsText.setVisibility(View.VISIBLE);
+                            noEventsText.setText("There are no upcoming events");
+                            eventAdapter.notifyDataSetChanged();
                         }
                     } else {
                         Toast.makeText(requireContext(), "Error loading events", Toast.LENGTH_SHORT).show();

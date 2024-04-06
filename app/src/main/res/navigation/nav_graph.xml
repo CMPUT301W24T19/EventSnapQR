@@ -175,7 +175,7 @@
         android:id="@+id/viewUserProfileFragment"
         android:name="com.example.eventsnapqr.ViewUserProfileFragment"
         android:label="View User Profile"
-        tools:layout="@layout/fragment_view_user_profile">
+        tools:layout="@layout/activity_view_user_profile">
     </fragment>
 
 
