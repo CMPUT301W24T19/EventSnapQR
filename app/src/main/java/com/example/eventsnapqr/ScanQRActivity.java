@@ -28,6 +28,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
@@ -71,6 +72,7 @@ public class ScanQRActivity extends AppCompatActivity {
     private ImageView backButton;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final int PERMISSION_REQUEST_LOCATION = 2;
+    private ProgressBar progressBar;
 
     /**
      * What should be executed when the fragment is created
@@ -95,6 +97,7 @@ public class ScanQRActivity extends AppCompatActivity {
         miscButton = findViewById(R.id.miscButton);
         backButton = findViewById(R.id.button_back);
         scanButton = findViewById(R.id.scan_qr_button);
+        progressBar = findViewById(R.id.loadingProgressBar);
 
         backButton.setOnClickListener(view -> finish());
 
@@ -102,6 +105,7 @@ public class ScanQRActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = getIntent();
+                Log.d("TAG", "true");
                 finish();
                 startActivity(intent);
             }
@@ -244,9 +248,13 @@ public class ScanQRActivity extends AppCompatActivity {
                             Log.d("ScanQRActivity", "Latitude: " + latitudeNow + ", Longitude: " + longitudeNow);
 
                             qrMessageTextView.setText("Checked into " + event.getEventName() + " for the " + count + getSuffix(count) + " time!");
+                            qrMessageTextView.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.GONE);
 
                         } else {
                             qrMessageTextView.setText("Failed to retrieve event details.");
+                            qrMessageTextView.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
                 });
@@ -274,6 +282,8 @@ public class ScanQRActivity extends AppCompatActivity {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        progressBar.setVisibility(View.VISIBLE);
+        qrMessageTextView.setVisibility(View.INVISIBLE);
         IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (intentResult != null) {
             String contents = intentResult.getContents();
@@ -326,9 +336,9 @@ public class ScanQRActivity extends AppCompatActivity {
      */
     private void notSignedUp(String eventId) {
         qrMessageTextView.setText("Not signed up for this event.");
-
-        miscButton.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
         miscButton.setText("View Event Details");
+        miscButton.setVisibility(View.VISIBLE);
         miscButton.setOnClickListener(view -> {
             Intent intent = new Intent(ScanQRActivity.this, BrowseEventsActivity.class);
             intent.putExtra("eventID", eventId);
