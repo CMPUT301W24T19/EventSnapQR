@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -43,6 +44,7 @@ public class ListAttendingEventsFragment extends Fragment {
     private List<Event> attendingEvents;
     private FirebaseFirestore db;
     private String userId;
+    private TextView noEventsText; // empty list message
 
 
     /**
@@ -60,6 +62,7 @@ public class ListAttendingEventsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_browse_events, container, false);
+
         ProgressBar loadingProgressBar = view.findViewById(R.id.loadingProgressBar);
         eventListView = view.findViewById(R.id.events);
         attendingEvents = new ArrayList<>();
@@ -68,6 +71,7 @@ public class ListAttendingEventsFragment extends Fragment {
         userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         db = FirebaseFirestore.getInstance();
         eventListView.setVisibility(View.INVISIBLE);
+        noEventsText = view.findViewById(R.id.noEventsTextView);
         loadAttendingEvents(userId, loadingProgressBar);
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
@@ -92,7 +96,8 @@ public class ListAttendingEventsFragment extends Fragment {
                         attendingEvents.clear();
                         int[] i = {0};
                         QuerySnapshot documents = task.getResult();
-                        if (documents.size() != 0) {
+                        if (documents.size() > 0) {
+                            noEventsText.setVisibility(View.INVISIBLE);
                             for (QueryDocumentSnapshot document : documents) {
                                 String eventId = document.getId();
                                 db.collection("events").document(eventId).get()
@@ -152,6 +157,8 @@ public class ListAttendingEventsFragment extends Fragment {
                         } else {
                             eventListView.setVisibility(View.VISIBLE);
                             loadingProgressBar.setVisibility(View.GONE);
+                            noEventsText.setVisibility(View.VISIBLE);
+                            noEventsText.setText("You are not signed-up to attend any events");
                             eventAdapter.notifyDataSetChanged();
                         }
                     } else {
