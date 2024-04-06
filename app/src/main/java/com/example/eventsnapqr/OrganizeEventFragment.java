@@ -332,9 +332,6 @@ public class OrganizeEventFragment extends Fragment {
                         .build());
             }
         });
-        editTextLocation.setOnClickListener(v -> {
-            requestCurrentLocation();
-        });
 
         reuseQRButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -344,8 +341,19 @@ public class OrganizeEventFragment extends Fragment {
                         .build());
             }
         });
+        editTextLocation.setOnClickListener(v -> {
+            requestCurrentLocation();
+        });
         return view;
     }
+    /**
+     * Requests continuous updates of the device's current location. If location permissions are not granted,
+     * requests the user for the necessary permissions. Sets up a LocationRequest to define the desired
+     * accuracy and frequency of location updates. Uses a LocationCallback to handle received location updates.
+     * Upon receiving a location update, attempts to geocode the current address based on the location's latitude
+     * and longitude, appending the city and country to the user's input from editTextLocation.
+     * If a valid location is found, navigates to the map fragment with the geocoded location.
+     */
     private void requestCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Request permission
@@ -390,7 +398,7 @@ public class OrganizeEventFragment extends Fragment {
                                     bundle.putDouble("longitude", address.getLongitude());
 
                                     NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-                                    navController.navigate(R.id.action_organizeEventFragment_to_mapFragment, bundle);
+                                    navController.navigate(R.id.global_action_to_mapFragmentOrganize, bundle);
                                 } else {
                                     Toast.makeText(getContext(), "Location not found. Please try a different address.", Toast.LENGTH_LONG).show();
                                 }
@@ -408,7 +416,12 @@ public class OrganizeEventFragment extends Fragment {
 
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
-
+    /**
+     * Requests the last known location of the device. If location permissions are not granted,
+     * requests the user for the necessary permissions. Upon receiving the location, updates
+     * the global latitude and longitude variables with the current location's coordinates.
+     * This method is best used when a single, last-known location is sufficient for your needs.
+     */
     private void requestLocation() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
@@ -422,6 +435,15 @@ public class OrganizeEventFragment extends Fragment {
                         longitude = location.getLongitude();
                     }
                 });
+    }
+    public void updateLocationText(double latitude, double longitude) {
+        String latString = Double.toString(latitude);
+        String longString = Double.toString(longitude);
+        Log.d(latString, longString);
+        if (editTextLocation != null) {
+            String locationText = String.format(Locale.getDefault(), "%.5f, %.5f", latitude, longitude);
+            editTextLocation.setText(locationText);
+        }
     }
 
     /**

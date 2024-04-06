@@ -4,6 +4,12 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/mainPageFragment">
 
+    <action android:id="@+id/action_global_viewUserProfileFragment"
+        app:destination="@id/viewUserProfileFragment" />
+
+    <action android:id="@+id/global_action_to_mapFragmentOrganize"
+        app:destination="@id/MapFragmentOrganize" />
+
     <fragment
         android:id="@+id/mainPageFragment"
         android:name="com.example.eventsnapqr.MainPageFragment"
@@ -173,8 +179,7 @@
     </fragment>
 
 
-    <action android:id="@+id/action_global_viewUserProfileFragment"
-        app:destination="@id/viewUserProfileFragment" />
+
 
 
 </navigation>

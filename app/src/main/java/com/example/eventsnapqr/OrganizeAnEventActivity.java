@@ -14,7 +14,7 @@ import android.view.WindowManager;
 /**
  * starting point for organizing an event, which immediately leads to
  */
-public class OrganizeAnEventActivity extends AppCompatActivity {
+public class OrganizeAnEventActivity extends AppCompatActivity implements MapFragmentOrganize.OnLocationPickedListener{
 
     /**
      * What should be executed when the fragment is created
@@ -35,5 +35,13 @@ public class OrganizeAnEventActivity extends AppCompatActivity {
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         navController.navigate(R.id.organizeEventFragment);
+    }
+    @Override
+    public void onLocationPicked(double latitude, double longitude) {
+        // Find OrganizeEventFragment by tag or any other method you prefer
+        OrganizeEventFragment fragment = (OrganizeEventFragment) getSupportFragmentManager().findFragmentByTag("YourFragmentTag");
+        if (fragment != null) {
+            fragment.updateLocationText(latitude, longitude);
+        }
     }
 }
