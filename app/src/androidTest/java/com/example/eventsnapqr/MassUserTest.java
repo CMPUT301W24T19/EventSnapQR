@@ -64,12 +64,27 @@ public class MassUserTest {
 
     @Before
     public void init() {
-        /*Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
         ContentResolver contentResolver = context.getContentResolver();
 
         CountDownLatch latch = new CountDownLatch(1);
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        firebaseFirestore.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot querySnapshot) {
+                for (QueryDocumentSnapshot doc : querySnapshot) {
+                    FirebaseController.getInstance().getUser(doc.getId(), new FirebaseController.OnUserRetrievedListener() {
+                        @Override
+                        public void onUserRetrieved(User user) {
+                            FirebaseController.getInstance().deleteUser(user);
+                        }
+                    });
+                }
+            }
+        });
+        Map<String, String> data = new HashMap<>();
+        data.put("path", "events");
 
         firebaseFirestore.collection("events").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -88,7 +103,6 @@ public class MassUserTest {
                         }
                     });
                 }
-
             }
         });
 
@@ -114,10 +128,14 @@ public class MassUserTest {
         try {
             latch.await(60, TimeUnit.SECONDS);
             Thread.sleep(6000);
+            latch.await(20, TimeUnit.SECONDS);
+            Thread.sleep(20000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+        List<User> userList = new ArrayList<>();
+        Random random = new Random();
         for (int i = 0; i < 50; i++) {
             String userID = FirebaseController.getInstance().getUniqueEventID();
             User newUser = new User(userID, userID, null, null, null);
@@ -138,7 +156,7 @@ public class MassUserTest {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
     @Test
@@ -167,5 +185,21 @@ public class MassUserTest {
              //       .perform(scrollTo(hasDescendant(withText("Hf1TIYBgqAIBqpnTW2P9"))));
             //onView(withText("Hf1TIYBgqAIBqpnTW2P9")).check(matches(isDisplayed()));
         //}
+
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        List<Event> eventList = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            String eventID = FirebaseController.getInstance().getUniqueEventID();
+            int randomEvent = random.nextInt(50);
+            Event newEvent = new Event(userList.get(randomEvent), eventID, "Test Event Number: " + i, null, null, eventID, new Date(), new Date(9223372036854775807L), String.valueOf(i), true);
+            FirebaseController.getInstance().addEvent(newEvent);
+
+        }
     }
 }

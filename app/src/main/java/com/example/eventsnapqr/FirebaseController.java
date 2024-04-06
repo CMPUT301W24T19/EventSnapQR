@@ -204,19 +204,7 @@ public class FirebaseController {
     public interface FirestoreOperationCallback {
         void onCompleted();
     }
-    public void addTestAnnouncement(String announcement, String eventID, FirestoreOperationCallback testCallBack){
 
-        FirebaseController firebaseControllerTwo = FirebaseController.getInstance();
-        CollectionReference announcementsRef = db.collection("events").document(eventID).collection("announcements");
-        Map<String, Object> announcementData = new HashMap<>();
-        announcementData.put("message", announcement);
-        announcementData.put("timestamp", new Date());
-        CountDownLatch latch = new CountDownLatch(1);
-
-        announcementsRef.add(announcementData)
-                .addOnSuccessListener(documentReference -> testCallBack.onCompleted())
-                .addOnFailureListener(e -> testCallBack.onCompleted());
-    }
 
     /**
      * deletes an event from the firestore database, and ensures data is consistent when this
@@ -1032,7 +1020,6 @@ public class FirebaseController {
     }
 
 
-
     public void removeAttendee(String eventId, String userId, RemoveAttendeeCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -1079,7 +1066,6 @@ public class FirebaseController {
             }
         });
     }
-
 
     public interface CheckAttendeeCheckinsCallback {
         void onSuccess(int checkins);

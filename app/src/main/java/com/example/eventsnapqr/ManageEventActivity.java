@@ -55,20 +55,16 @@ public class ManageEventActivity extends AppCompatActivity {
     private List<String> attendeeNames, milestoneList, attendeeIds, checkedInNames, checkedInIds;
     private List<Integer> attendeeCheckedIn;
     private FirebaseFirestore db;
-    private String eventId;
     private View menuButton;
     private ImageView backButton;
     private Event currentEvent;
     private Switch filterSwitch;
     private Uri imageUri;
-    private String uriString;
-    private TextView totalAttendeesTextView;
-    private TextView totalCheckedInTextView;
+    private String uriString, eventId;
+    private TextView totalAttendeesTextView, totalCheckedInTextView, eventNameTextView;
     private ActivityResultLauncher<PickVisualMediaRequest> choosePoster;
-    private int checkedInCount;
-    private int attendeeCount;
+    private int checkedInCount, attendeeCount;
     private ProgressBar loadingProgressBar;
-    private TextView eventNameTextView;
     private ExtendedFloatingActionButton fab;
     private List<HashMap<String, Object>> attendees;
     @Override
@@ -357,10 +353,8 @@ public class ManageEventActivity extends AppCompatActivity {
 
         builder.setMessage(attendeeName + " has checked-in " + timesCheckedIn + " " + timesString + ".")
                 .setPositiveButton("View Profile", (dialog, id) -> {
-                    Intent intent = new Intent(this, MainActivity.class);
-                    intent.putExtra("fragmentToLoad", "ViewUserProfileFragment");
-                    // optionally, pass the attendee ID or any other information
-                    intent.putExtra("attendeeId", attendeeIds.get(position));
+                    Intent intent = new Intent(this, ViewUserProfileActivity.class);
+                    intent.putExtra("userId", attendeeIds.get(position));
                     startActivity(intent);
                 })
                 .setNegativeButton("Remove Attendee", (dialog, id) -> {
@@ -409,8 +403,6 @@ public class ManageEventActivity extends AppCompatActivity {
                 .show();
     }
 
-
-
     /**
      * displays dialog for an organizer to make an announcement
      */
@@ -454,8 +446,6 @@ public class ManageEventActivity extends AppCompatActivity {
 
         builder.show();
     }
-
-
 
     /**
      * uploads selected image to the database
@@ -505,9 +495,6 @@ public class ManageEventActivity extends AppCompatActivity {
                 intent.putExtra("eventId", eventId);
                 intent.putExtra("destination", "manage");
                 startActivity(intent);
-                //QRActivity qrDialogFragment = new QRActivity();
-                //qrDialogFragment.setArguments(bundle);
-                //qrDialogFragment.show(getSupportFragmentManager(), "qr_dialog_fragment");
                 return true;
             } else if (itemId == R.id.upload_poster) { // modify the associated poster
                 choosePoster.launch(new PickVisualMediaRequest.Builder()

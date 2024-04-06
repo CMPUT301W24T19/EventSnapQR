@@ -25,8 +25,6 @@ import android.graphics.ImageDecoder;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -71,11 +69,7 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 
-
-import java.time.Instant;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -141,7 +135,7 @@ public class OrganizeEventFragment extends Fragment {
         backButton = view.findViewById(R.id.button_back_button);
         createEventButton = view.findViewById(R.id.extendedFabCreateEvent);
         editTextEventName = view.findViewById(R.id.editTextEventName);
-        editTextEventDesc = view.findViewById(R.id.edit_text_description);
+        editTextEventDesc = view.findViewById(R.id.editTextDescription);
         editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
 
         editTextLocation = view.findViewById(R.id.editTextLocation);
@@ -462,6 +456,7 @@ public class OrganizeEventFragment extends Fragment {
         String eventEndTime = editTextEndTime.getText().toString().trim();
         String eventEndDate = editTextEndDate.getText().toString().trim();
         String eventAddress = editTextAddress.getText().toString().trim();
+        String maxAttendeesString = editTextMaxAttendees.getText().toString().trim();
 
         if (eventName.isEmpty()) {
             editTextEventName.setError("Event Name Required");
@@ -474,8 +469,8 @@ public class OrganizeEventFragment extends Fragment {
         }
 
         if (eventAddress.isEmpty()) {
-             editTextAddress.setError("Event Address Required");
-             isValid = false;
+            editTextAddress.setError("Event Address Required");
+            isValid = false;
         }
 
         if (eventStartDate.isEmpty()) {
@@ -498,9 +493,17 @@ public class OrganizeEventFragment extends Fragment {
             isValid = false;
         }
 
-        // Return true if no errors were found, false otherwise
+        if (!maxAttendeesString.isEmpty()) {
+            int maxAttendees = Integer.parseInt(maxAttendeesString);
+            if (maxAttendees < 1) {
+                editTextMaxAttendees.setError("Minimum 1 Attendee");
+                isValid = false;
+            }
+        }
+
         return isValid;
     }
+
 
 
     /**
