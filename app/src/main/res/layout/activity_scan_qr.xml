@@ -24,6 +24,7 @@
         android:gravity="center"
         android:text="QR Scanner"
         android:layout_marginTop="6dp"
+        android:textColor="@color/black"
         android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

@@ -73,7 +73,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/browse_events_button"
-        android:layout_width="240dp"
+        android:layout_width="300dp"
         android:layout_height="80dp"
         android:layout_marginBottom="60dp"
         android:backgroundTint="@color/glaucous"
@@ -89,9 +89,9 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/organize_event_button"
-        android:layout_width="240dp"
+        android:layout_width="300dp"
         android:layout_height="80dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:backgroundTint="@color/glaucous"
         android:text="Organize Event"
         android:textSize="18sp"

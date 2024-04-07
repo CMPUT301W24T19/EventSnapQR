@@ -20,6 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:text="Admin Browse Profiles"
+        android:textColor="@color/black"
         android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

@@ -1,6 +1,8 @@
 package com.example.eventsnapqr;
 
 import static android.graphics.ImageDecoder.decodeBitmap;
+import static androidx.camera.core.impl.utils.ContextUtil.getApplicationContext;
+
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationCallback;
@@ -43,7 +45,9 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.fragment.app.Fragment;
@@ -87,13 +91,13 @@ import java.util.Locale;
  */
 public class OrganizeEventFragment extends Fragment {
     private FusedLocationProviderClient fusedLocationClient;
-    private ImageView backButton;
+    private ImageView backButton, imageViewPoster;
     private ExtendedFloatingActionButton createEventButton;
     private TextInputEditText editTextEventName, editTextEventDesc, editTextMaxAttendees, editTextStartDate,
-            editTextStartTime, editTextEndDate, editTextEndTime, uploadPosterButton, editTextAddress, editTextLocation;
+            editTextStartTime, editTextEndDate, editTextEndTime, editTextAddress, editTextLocation;
     private TextInputLayout inputTextLocation;
-    private TextView removePosterTextView;
-    private TextInputLayout posterBox;
+    private TextView removePosterTextView, uploadPosterHint;
+    private CardView cardViewPoster;
     private MaterialButton reuseQRButton;
     private String androidID, uriString, reusingQR;
     private FirebaseController firebaseController = new FirebaseController();
@@ -134,9 +138,10 @@ public class OrganizeEventFragment extends Fragment {
         inputTextLocation = view.findViewById(R.id.inputTextLocation);
 
         reuseQRButton = view.findViewById(R.id.buttonReuseQR);
-        uploadPosterButton = view.findViewById(R.id.editTextPoster);
-        posterBox = view.findViewById(R.id.posterInput);
+        cardViewPoster = view.findViewById(R.id.posterCardView);
+        imageViewPoster = view.findViewById(R.id.imageViewPoster);
         removePosterTextView = view.findViewById(R.id.removePosterTextView);
+        uploadPosterHint = view.findViewById(R.id.textViewHint);
 
         editTextStartDate = view.findViewById(R.id.editTextStartDate);
         editTextStartDate.setOnClickListener(v -> showDatePickerDialog(editTextStartDate));
@@ -158,78 +163,58 @@ public class OrganizeEventFragment extends Fragment {
         removePosterTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadPosterButton.setText("");
                 removePosterTextView.setVisibility(View.INVISIBLE);
-                posterBox.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
-                posterBox.setStartIconDrawable(android.R.drawable.ic_menu_upload);
-                posterBox.setBackground(null);
-                posterBox.setHint("Upload Poster");
+                Drawable uploadIcon = ContextCompat.getDrawable(getContext(), android.R.drawable.ic_menu_upload);
+                imageViewPoster.setImageDrawable(uploadIcon);
+                uploadPosterHint.setText("Upload Poster");
                 imageUri = null;
                 uriString = null;
             }
         });
 
 
-        ActivityResultLauncher<PickVisualMediaRequest> choosePoster =
-                registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-                    if (uri != null) {
-                        try {
-                            InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
-                            Bitmap originalBitmap = BitmapFactory.decodeStream(inputStream);
-                            float scaleWidth = uploadPosterButton.getWidth() / (float) originalBitmap.getWidth();
-                            float scaleHeight = uploadPosterButton.getHeight() / (float) originalBitmap.getHeight();
-                            Matrix matrix = new Matrix();
-                            matrix.setScale(scaleWidth, scaleHeight);
-                            BitmapShader shader = new BitmapShader(originalBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-                            shader.setLocalMatrix(matrix);
-                            ShapeDrawable shapeDrawable = new ShapeDrawable(new RoundRectShape(new float[] {
-                                    50, 50, 50, 50, 50, 50, 50, 50 }, null, null));
-                            shapeDrawable.getPaint().setShader(shader);
-                            int shapeDrawableWidth = Math.min(uploadPosterButton.getWidth(), uploadPosterButton.getWidth());
-                            int shapeDrawableHeight = Math.min(uploadPosterButton.getHeight(), uploadPosterButton.getHeight());
-                            shapeDrawable.setBounds(0, 0, shapeDrawableWidth, shapeDrawableHeight);
-                            removePosterTextView.setVisibility(View.VISIBLE);
-                            uploadPosterButton.setBackground(shapeDrawable);
-                            posterBox.setStartIconDrawable(null);
-                            posterBox.setHint(null);
-                            posterBox.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_NONE);
-                            posterBox.setBackground(shapeDrawable);
 
-                            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), originalBitmap);
-                            roundedBitmapDrawable.setCornerRadius(getResources().getDimension(R.dimen.corner_radius));
-                            roundedBitmapDrawable.setAntiAlias(true);
 
-                            ViewTreeObserver vto = uploadPosterButton.getViewTreeObserver();
-                            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                                @Override
-                                public void onGlobalLayout() {
-                                    uploadPosterButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        ActivityResultLauncher<PickVisualMediaRequest> choosePoster = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+            if (uri != null) {
+                try {
+                    uploadPosterHint.setText(null);
+                    int targetW = imageViewPoster.getWidth();
+                    int targetH = imageViewPoster.getHeight();
 
-                                    int buttonWidth = uploadPosterButton.getWidth();
-                                    int buttonHeight = uploadPosterButton.getHeight();
-                                    Log.d("TAG", "Button dimensions: " + buttonWidth + "x" + buttonHeight);
-                                    roundedBitmapDrawable.setBounds(0, 0, buttonWidth, buttonHeight);
+                    BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                    bmOptions.inJustDecodeBounds = true;
+                    InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
+                    BitmapFactory.decodeStream(inputStream, null, bmOptions);
+                    inputStream.close();
 
-                                    uploadPosterButton.setBackground(roundedBitmapDrawable);
-                                    uploadPosterButton.setHint(null);
-                                    removePosterTextView.setVisibility(View.VISIBLE);
+                    int photoW = bmOptions.outWidth;
+                    int photoH = bmOptions.outHeight;
 
-                                    Drawable backgroundDrawable = uploadPosterButton.getBackground();
-                                    if (backgroundDrawable != null) {
-                                        Log.d("TAG", "Background Drawable set: " + backgroundDrawable.toString());
-                                    } else {
-                                        Log.d("TAG", "Background Drawable is null");
-                                    }
-                                }
-                            });
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                        imageUri = uri;
-                    } else {
-                        Log.d("TAG", "No media selected");
-                    }
-                });
+                    int scaleFactor = Math.max(1, Math.min(photoW/targetW, photoH/targetH));
+
+                    bmOptions.inJustDecodeBounds = false;
+                    bmOptions.inSampleSize = scaleFactor;
+                    bmOptions.inPurgeable = true;
+
+                    inputStream = requireContext().getContentResolver().openInputStream(uri);
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream, null, bmOptions);
+                    inputStream.close();
+
+                    imageViewPoster.post(() -> imageViewPoster.setImageBitmap(bitmap));
+
+                    removePosterTextView.setVisibility(View.VISIBLE);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                imageUri = uri;
+            } else {
+                Log.d("TAG", "No media selected");
+            }
+        });
+
 
         /**
          * Credits: https://stackoverflow.com/questions/55427308/scaning-qrcode-from-image-not-from-camera-using-zxing
@@ -310,7 +295,7 @@ public class OrganizeEventFragment extends Fragment {
             }
         });
 
-        uploadPosterButton.setOnClickListener(new View.OnClickListener() {
+        cardViewPoster.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 choosePoster.launch(new PickVisualMediaRequest.Builder()
