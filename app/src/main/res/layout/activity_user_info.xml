@@ -245,14 +245,14 @@
                         android:maxLength="30"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Switch
+                <Button
                     android:id="@+id/switchLocation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Location Services"
+                    android:text="Location Settings"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="16dp"
-                    android:textColor="#4c4943"
+                    android:textColor="#FFFFFF"
                     android:layout_marginBottom="16dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/inputTextPhoneNumber" />
