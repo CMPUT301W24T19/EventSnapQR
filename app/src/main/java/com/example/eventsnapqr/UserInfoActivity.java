@@ -12,7 +12,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -53,8 +52,8 @@ public class UserInfoActivity extends AppCompatActivity {
     private ExtendedFloatingActionButton saveButton;
     private boolean editMode = false;
     private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
-    private MaterialButton locationSwitch;
-    private Switch notificationSwitch;
+    private MaterialButton locationButton;
+    private Button notificationButton;
     private boolean showSwitches;
     private final int PERMISSION_REQUEST_CODE = 100;
     String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
@@ -97,30 +96,21 @@ public class UserInfoActivity extends AppCompatActivity {
         homepageLayout = findViewById(R.id.textInputHomepage);
         saveButton = findViewById(R.id.saveButton);
         editButton = findViewById(R.id.button_edit_profile_button);
-        locationSwitch = findViewById(R.id.switchLocation);
-        notificationSwitch = findViewById(R.id.switchNotifications);
+        locationButton = findViewById(R.id.locationButton);
+        notificationButton = findViewById(R.id.notificationButton);
 
-        if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(notificationPermissions)){
-            notificationSwitch.setChecked(false);
-        }
-        else{
-            notificationSwitch.setChecked(true);
-        }
-        notificationSwitch.setOnClickListener(new View.OnClickListener() {
+
+        notificationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(notificationPermissions)){
-                    PermissionClient.getInstance(UserInfoActivity.this).askPermissions(UserInfoActivity.this,notificationPermissions, PERMISSION_REQUEST_CODE);
-                }
-                else{
-                    Toast.makeText(UserInfoActivity.this, "Permission already granted", Toast.LENGTH_LONG).show();
-                    notificationSwitch.setChecked(true);
-                }
+                Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                startActivity(intent);
             }
         });
 
 
-        locationSwitch.setOnClickListener(new View.OnClickListener() {
+        locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -146,8 +136,8 @@ public class UserInfoActivity extends AppCompatActivity {
         showSwitches = extra.getBoolean("showSwitches");
 
         if (!showSwitches) {
-            locationSwitch.setVisibility(View.INVISIBLE);
-            notificationSwitch.setVisibility(View.INVISIBLE);
+            locationButton.setVisibility(View.INVISIBLE);
+            notificationButton.setVisibility(View.INVISIBLE);
         }
 
         FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {

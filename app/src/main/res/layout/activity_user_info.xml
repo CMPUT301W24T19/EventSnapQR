@@ -242,50 +242,52 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/switchLocation"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/locationButton"
+                    android:layout_width="150dp"
                     android:layout_height="wrap_content"
-                    android:text="Location Settings"
-                    android:layout_marginStart="32dp"
+                    android:text="Location"
                     android:backgroundTint="@color/glaucous"
                     android:layout_marginTop="16dp"
                     android:textColor="@color/black"
                     android:layout_marginBottom="16dp"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/inputTextPhoneNumber"
                     app:layout_constraintTop_toBottomOf="@id/inputTextPhoneNumber"
                     app:strokeColor="@color/black"
                     app:strokeWidth="1dp"/>
 
-                <Switch
-                    android:id="@+id/switchNotifications"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/notificationButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="@color/glaucous"
                     android:text="Notifications"
-                    android:layout_marginStart="32dp"
-                    android:textColor="#4c4943"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="8dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/switchLocation" />
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="@id/inputTextPhoneNumber"
+                    app:layout_constraintTop_toBottomOf="@id/locationButton"
+                    app:strokeColor="@color/black"
+                    app:strokeWidth="1dp" />
 
                 <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                     android:id="@+id/saveButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Save Changes"
+                    android:text="Save"
                     android:textColor="@color/black"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="36dp"
+                    android:layout_marginBottom="30dp"
                     android:backgroundTint="@color/coral"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginBottom="12dp"
-                    app:strokeColor="@color/black"
-                    app:strokeWidth="1dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:gravity="center"
+                    app:strokeColor="@color/black"
+                    app:strokeWidth="1dp" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
     </ScrollView>
+
+
 
 </LinearLayout>
