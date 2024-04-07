@@ -26,6 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="User Information"
+            android:textColor="@color/black"
             android:textSize="22sp" />
     </RelativeLayout>
 
