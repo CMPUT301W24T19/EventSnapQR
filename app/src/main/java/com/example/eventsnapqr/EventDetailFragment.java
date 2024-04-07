@@ -288,7 +288,6 @@ public class EventDetailFragment extends Fragment {
                     eventStartDateTime.setVisibility(View.VISIBLE);
                     eventEndDateTime.setVisibility(View.VISIBLE);
                     eventAddress.setVisibility(View.VISIBLE);
-                    signUpButton.setVisibility(View.VISIBLE);
 
                     if (!signedUp) {
                         signUpButton.setVisibility(View.VISIBLE);
@@ -369,7 +368,6 @@ public class EventDetailFragment extends Fragment {
         eventStartDateTime.setVisibility(View.VISIBLE);
         eventEndDateTime.setVisibility(View.VISIBLE);
         eventAddress.setVisibility(View.VISIBLE);
-        signUpButton.setVisibility(View.VISIBLE);
 
         nameTextInputLayout.setVisibility(View.VISIBLE);
         organizerTextInputLayout.setVisibility(View.VISIBLE);
