@@ -3,6 +3,7 @@ package com.example.eventsnapqr;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -16,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
@@ -30,8 +32,8 @@ import java.io.FileOutputStream;
  */
 public class QRActivity extends AppCompatActivity {
     private ImageView imageQR;
-    private Button buttonExit;
-    private Button buttonSaveQR;
+    private ImageView buttonExit;
+    private MaterialButton buttonSaveQR;
     private Bitmap qrBitmap;
     private String eventId;
 
@@ -74,7 +76,7 @@ public class QRActivity extends AppCompatActivity {
             Log.e("QRActivity", "Bitmap is null");
         }
 
-        buttonExit = findViewById(R.id.button_exit);
+        buttonExit = findViewById(R.id.button_back);
         buttonExit.setOnClickListener(new View.OnClickListener() {
             String destination = bundle.getString("destination");
             @Override

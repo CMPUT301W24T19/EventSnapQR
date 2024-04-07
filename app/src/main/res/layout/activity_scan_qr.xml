@@ -11,7 +11,7 @@
         android:id="@+id/horizontal_line"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="@color/grey"
+        android:background="@color/black"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -77,6 +77,8 @@
         android:text="Scan QR"
         android:textColor="@color/black"
         app:iconGravity="textStart"
+        app:strokeColor="@color/black"
+        app:strokeWidth="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
