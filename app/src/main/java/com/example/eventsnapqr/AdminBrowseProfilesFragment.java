@@ -118,7 +118,6 @@ public class AdminBrowseProfilesFragment extends Fragment {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 profileList.clear();
-                int i = 0;
                 for (QueryDocumentSnapshot doc: value) {
                     String deviceID = (String) doc.getId();
                     String userName = (String) doc.getData().get("name");
@@ -144,10 +143,8 @@ public class AdminBrowseProfilesFragment extends Fragment {
                     User user = new User(userName, deviceID, homePage, phoneNumber, email);
                     user.setProfilePicture(profilePicture);
                     profileList.add(user);
-                    if (i == value.size() - 1) {
-                        profileList.sort(Comparator.comparing(o -> o.getName().toLowerCase()));
-                    }
                 }
+                profileList.sort(Comparator.comparing(o -> o.getName().toLowerCase()));
                 adapter.notifyDataSetChanged();
                 if (initial) {
                     progressBar.setVisibility(View.GONE);
