@@ -137,7 +137,8 @@ public class AdminTests {
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseFirestore.collection("admin").document(androidId).delete();
-        firebaseFirestore.collection("users").document(androidId).delete();
+        User user = new User(androidId, androidId, null, null, null);
+        FirebaseController.getInstance().deleteUser(user);
     }
 
     @Test
@@ -180,7 +181,7 @@ public class AdminTests {
         User testUser = new User("TestUser", androidId, "testHomePage", "testNumber", "testEmail");
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseFirestore.collection("users").document(androidId).set(testUser);
+        FirebaseController.getInstance().addUser(testUser);
         firebaseFirestore.collection("admin").document(androidId).set(testUser);
 
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(

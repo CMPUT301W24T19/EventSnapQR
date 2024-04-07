@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,6 +30,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -38,6 +40,8 @@ public class AdminBrowseImagesFragment extends Fragment {
     private RecyclerView recyclerView;
     private ImageView buttonBackToAdminMain;
     private List<Object> posters;
+    private ProgressBar progressBar;
+    private boolean initial;
 
     /**
      * What should be executed when the fragment is created
@@ -68,8 +72,14 @@ public class AdminBrowseImagesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_admin_browse_images, container, false);
         buttonBackToAdminMain = view.findViewById(R.id.button_back_button);
         recyclerView = view.findViewById(R.id.rv_event_posters);
+        progressBar = view.findViewById(R.id.loadingProgressBar);
 
         posters = new ArrayList<>();
+        initial = true;
+
+        recyclerView.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         ImageAdapter adapter = new ImageAdapter(posters); // Change the adapter type
         recyclerView.setAdapter(adapter);
@@ -79,6 +89,7 @@ public class AdminBrowseImagesFragment extends Fragment {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 posters.clear();
+                int i = 0;
                 for (QueryDocumentSnapshot doc : value) {
                     String eventID = doc.getId();
                     boolean eventActivity = doc.getBoolean("active");
@@ -91,7 +102,34 @@ public class AdminBrowseImagesFragment extends Fragment {
                         }
                     }
                 }
+                posters.sort(new Comparator<Object>() {
+                    @Override
+                    public int compare(Object o1, Object o2) {
+                        String name1;
+                        String name2;
+                        if (o1 instanceof Event) {
+                            name1 = ((Event) o1).getEventName();
+                        }
+                        else {
+                            name1 = ((User) o1).getName();
+                        }
+
+                        if (o2 instanceof Event) {
+                            name2 = ((Event) o2).getEventName();
+                        }
+                        else {
+                            name2 = ((User) o2).getName();
+                        }
+                        name1 = name1.toLowerCase();
+                        name2 = name2.toLowerCase();
+                        return name1.compareTo(name2);
+                    }
+                });
                 adapter.notifyDataSetChanged();
+                if (initial) {
+                    progressBar.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -108,6 +146,29 @@ public class AdminBrowseImagesFragment extends Fragment {
                         posters.add(user);
                     }
                 }
+                posters.sort(new Comparator<Object>() {
+                    @Override
+                    public int compare(Object o1, Object o2) {
+                        String name1;
+                        String name2;
+                        if (o1 instanceof Event) {
+                            name1 = ((Event) o1).getEventName();
+                        }
+                        else {
+                            name1 = ((User) o1).getName();
+                        }
+
+                        if (o2 instanceof Event) {
+                            name2 = ((Event) o2).getEventName();
+                        }
+                        else {
+                            name2 = ((User) o2).getName();
+                        }
+                        name1 = name1.toLowerCase();
+                        name2 = name2.toLowerCase();
+                        return name1.compareTo(name2);
+                    }
+                });
                 adapter.notifyDataSetChanged();
             }
         });
