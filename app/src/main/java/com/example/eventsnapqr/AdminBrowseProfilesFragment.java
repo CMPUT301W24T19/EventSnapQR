@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -27,6 +28,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Objects;
 
 /**
@@ -38,6 +40,8 @@ public class AdminBrowseProfilesFragment extends Fragment {
     private ProfileAdapter adapter;
     private ArrayList<User> profileList;
     private ImageView buttonBackToAdminMain;
+    private ProgressBar progressBar;
+    private boolean initial;
     public AdminBrowseProfilesFragment() {
         // Required empty public constructor
     }
@@ -99,16 +103,22 @@ public class AdminBrowseProfilesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin_browse_profiles, container, false);
-
+        initial = true;
         recyclerView = view.findViewById(R.id.user_profile_pictures);
+        progressBar = view.findViewById(R.id.loadingProgressBar);
+
+        recyclerView.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         recyclerView.setAdapter(adapter);
+
         String androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         FirebaseFirestore.getInstance().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 profileList.clear();
-                Log.d("TAG", "Snapshot");
+                int i = 0;
                 for (QueryDocumentSnapshot doc: value) {
                     String deviceID = (String) doc.getId();
                     String userName = (String) doc.getData().get("name");
@@ -133,11 +143,17 @@ public class AdminBrowseProfilesFragment extends Fragment {
 
                     User user = new User(userName, deviceID, homePage, phoneNumber, email);
                     user.setProfilePicture(profilePicture);
-                    Log.d("TAG", "Profile: " + userName);
                     profileList.add(user);
+                    if (i == value.size() - 1) {
+                        profileList.sort(Comparator.comparing(o -> o.getName().toLowerCase()));
+                    }
                 }
-
                 adapter.notifyDataSetChanged();
+                if (initial) {
+                    progressBar.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                    initial = false;
+                }
             }
         });
 

@@ -153,10 +153,24 @@ public class MassUserTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+        User testUser = new User(androidId, androidId, null, null, null);
+        firebaseFirestore.collection("admin").document(androidId).set(testUser);
+
+        try {
+            latch.await(5, TimeUnit.SECONDS);
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @After
     public void after() {
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        ContentResolver contentResolver = context.getContentResolver();
+
         eventList.clear();
         userList.clear();
         CountDownLatch latch = new CountDownLatch(1);
@@ -205,6 +219,9 @@ public class MassUserTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+        firebaseFirestore.collection("admin").document(androidId);
     }
 
     @Test
@@ -239,5 +256,13 @@ public class MassUserTest {
     }
 
     @Test
-    public void
+    public void browseUserTest() {
+        CountDownLatch latch = new CountDownLatch(1);
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }
