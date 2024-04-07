@@ -55,30 +55,34 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <RelativeLayout
-            android:id="@+id/markerLayout"
+        <LinearLayout
+            android:id="@+id/searchLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="16dp"
+            android:layout_gravity="top|center_horizontal">
 
-            <ImageView
-                android:id="@+id/markerImage"
+            <EditText
+                android:id="@+id/search_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Search for a place"
+                android:inputType="text"
+                android:maxLines="1"
+                android:padding="10dp"
+                android:textColor="#000000"
+                android:background="#FFFFFF" />
+
+
+            <Button
+                android:id="@+id/search_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_location_on"
-                android:layout_centerInParent="true" />
+                android:text="Search" />
+        </LinearLayout>
 
-            <TextView
-                android:id="@+id/latLongText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@id/markerImage"
-                android:paddingTop="8dp" />
-        </RelativeLayout>
     </FrameLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
