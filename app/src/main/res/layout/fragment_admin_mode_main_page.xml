@@ -1,79 +1,88 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/adminMainPage"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="3"
-    android:id="@+id/adminMainPage">
+    android:weightSum="3">
 
-    <ImageView
-        android:id="@+id/button_back"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:src="?attr/actionModeCloseDrawable"
-        android:padding="5dp"
-        android:clickable="true" />
-
-    <LinearLayout
+    <View
+        android:id="@+id/horizontal_line"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.2"
-        android:orientation="horizontal"
-        android:gravity="start"
-        android:paddingStart="16dp"
-        android:paddingTop="16dp">
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            tools:ignore="NestedWeights" />
-    </LinearLayout>
+        android:layout_height="1dp"
+        android:background="@color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="45dp"/>
 
     <TextView
-        android:id="@+id/main_page_textview"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.2"
-        android:gravity="center"
+        android:id="@+id/pageName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
         android:text="Admin Mode"
-        android:textSize="30sp" />
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:weightSum="3"
-        android:paddingTop="60dp"
-        android:paddingBottom="16dp">
+    <ImageView
+        android:id="@+id/button_back_button"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:clickable="true"
+        android:src="?attr/actionModeCloseDrawable"
+        android:padding="5dp"
+        android:backgroundTint="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/buttonBrowseUserProfiles"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/glaucous"
-            android:text="Browse Profiles" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonBrowseUserProfiles"
+        android:layout_width="270dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="220dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/glaucous"
+        android:text="Browse Profiles"
+        android:textColor="@color/black"
+        app:strokeColor="@color/black"
+        app:strokeWidth="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/horizontal_line"/>
 
-        <Button
-            android:id="@+id/buttonBrowseImages"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/glaucous"
-            android:text="Browse Images" />
 
-        <Button
-            android:id="@+id/buttonBrowseEvents"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:backgroundTint="@color/glaucous"
-            android:text="Browse Events" />
-    </LinearLayout>
-</LinearLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonBrowseImages"
+        android:layout_width="270dp"
+        android:layout_height="100dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="22dp"
+        android:backgroundTint="@color/glaucous"
+        android:text="Browse Images"
+        android:textColor="@color/black"
+        app:strokeColor="@color/black"
+        app:strokeWidth="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonBrowseUserProfiles" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonBrowseEvents"
+        android:layout_width="270dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="22dp"
+        android:backgroundTint="@color/glaucous"
+        android:text="Browse Events"
+        android:textColor="@color/black"
+        app:strokeColor="@color/black"
+        app:strokeWidth="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonBrowseImages" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

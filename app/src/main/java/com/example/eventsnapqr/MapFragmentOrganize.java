@@ -158,7 +158,7 @@ public class MapFragmentOrganize extends Fragment {
 
         view.findViewById(R.id.button_back_button).setOnClickListener(v -> requireActivity().onBackPressed());
         setupMap();
-        view.findViewById(R.id.saveLocationButton).setOnClickListener(v -> {
+        view.findViewById(R.id.saveButton).setOnClickListener(v -> {
             if (lastMarker != null) {
                 // Log the saved location
                 double savedLatitude = lastMarker.getPosition().getLatitude();

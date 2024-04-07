@@ -32,7 +32,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/grey" />
+        android:background="@color/black" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -115,11 +115,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="24dp"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
-                    app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                     android:layout_marginEnd="32dp"
                     android:hint="Name"
                     android:textColorHint="@color/grey"
@@ -149,7 +148,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Email"
                     android:textColorHint="@color/grey"
@@ -157,7 +156,6 @@
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
-                    app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                     app:counterMaxLength="50"
                     app:endIconMode="clear_text"
                     app:helperTextTextColor="@color/grey"
@@ -182,7 +180,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Phone Number"
                     android:textColorHint="@color/grey"
@@ -194,7 +192,6 @@
                     app:boxStrokeWidth="2dp"
                     app:endIconMode="clear_text"
                     app:cursorErrorColor="@color/black"
-                    app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                     app:helperTextTextColor="@color/grey"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -218,14 +215,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Homepage"
                     app:boxBackgroundColor="#00FFFFFF"
                     android:textColorHint="@color/grey"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
-                    app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                     app:counterEnabled="false"
                     app:counterMaxLength="30"
                     app:endIconMode="clear_text"
@@ -245,46 +241,53 @@
                         android:maxLength="30"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Switch
-                    android:id="@+id/switchLocation"
-                    android:layout_width="wrap_content"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/locationButton"
+                    android:layout_width="150dp"
                     android:layout_height="wrap_content"
-                    android:text="Location Services"
-                    android:layout_marginStart="32dp"
+                    android:text="Location"
+                    android:backgroundTint="@color/glaucous"
                     android:layout_marginTop="16dp"
-                    android:textColor="#4c4943"
+                    android:textColor="@color/black"
                     android:layout_marginBottom="16dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/inputTextPhoneNumber" />
+                    app:layout_constraintStart_toStartOf="@id/inputTextPhoneNumber"
+                    app:layout_constraintTop_toBottomOf="@id/inputTextPhoneNumber"
+                    app:strokeColor="@color/black"
+                    app:strokeWidth="1dp"/>
 
-                <Switch
-                    android:id="@+id/switchNotifications"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/notificationButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="@color/glaucous"
                     android:text="Notifications"
-                    android:layout_marginStart="32dp"
-                    android:textColor="#4c4943"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="8dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/switchLocation" />
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="@id/inputTextPhoneNumber"
+                    app:layout_constraintTop_toBottomOf="@id/locationButton"
+                    app:strokeColor="@color/black"
+                    app:strokeWidth="1dp" />
 
                 <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                     android:id="@+id/saveButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Save Changes"
+                    android:text="Save"
                     android:textColor="@color/black"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="36dp"
+                    android:layout_marginBottom="30dp"
                     android:backgroundTint="@color/coral"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginBottom="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:gravity="center"
+                    app:strokeColor="@color/black"
+                    app:strokeWidth="1dp" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
     </ScrollView>
+
+
 
 </LinearLayout>
