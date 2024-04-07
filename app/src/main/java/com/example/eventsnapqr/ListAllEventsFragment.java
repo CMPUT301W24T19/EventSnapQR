@@ -127,16 +127,7 @@ public class ListAllEventsFragment extends Fragment {
                                             Toast.makeText(requireContext(), "Organizer not found for event: " + document.getId(), Toast.LENGTH_SHORT).show();
                                         }
                                         if (i[0] == documents.size() - 1) {
-                                            events.sort(new Comparator<Event>() {
-                                                @Override
-                                                public int compare(Event o1, Event o2) {
-                                                    String event1 = o1.getEventName();
-                                                    event1 = event1.toLowerCase();
-                                                    String event2 = o2.getEventName();
-                                                    event2 = event2.toLowerCase();
-                                                    return event1.compareTo(event2);
-                                                }
-                                            });
+                                            events.sort(Comparator.comparing(o -> o.getEventName().toLowerCase()));
                                             eventListView.setVisibility(View.VISIBLE);
                                             loadingProgressBar.setVisibility(View.GONE);
                                             eventAdapter.notifyDataSetChanged();
