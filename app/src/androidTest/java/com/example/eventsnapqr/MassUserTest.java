@@ -91,7 +91,6 @@ public class MassUserTest {
             @Override
             public void onSuccess(QuerySnapshot querySnapshot) {
                 for (QueryDocumentSnapshot doc : querySnapshot) {
-                    Log.d("TAG", "ID: " + doc.getId());
                     FirebaseController.getInstance().getEvent(doc.getId(), new FirebaseController.OnEventRetrievedListener() {
                         @Override
                         public void onEventRetrieved(Event event) {

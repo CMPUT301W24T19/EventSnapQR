@@ -111,7 +111,7 @@ public class ScanQRActivity extends AppCompatActivity {
             }
         });
 
-        // Define location listener
+        // Defining location listener
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -145,7 +145,8 @@ public class ScanQRActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted, request it
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_LOCATION);
+            // ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_LOCATION);
+            Log.e("ScanQR Activity", "Location is not enabled");
         } else {
             // Permission is granted, request location updates
             if (provider != null) {
@@ -187,7 +188,8 @@ public class ScanQRActivity extends AppCompatActivity {
             }
         } else {
             // Permission not granted, request it
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            Log.e("Scan QR ", "Location services (GPS) are not enabled");
         }
     }
 
