@@ -63,7 +63,7 @@ public class UserInfoActivity extends AppCompatActivity {
     private ImageView editButton;
     private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
     private Button locationSwitch;
-    private Switch notificationSwitch;
+    private Button notificationSwitch;
     private boolean showSwitches;
     private final int PERMISSION_REQUEST_CODE = 100;
     String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
@@ -110,22 +110,13 @@ public class UserInfoActivity extends AppCompatActivity {
         locationSwitch = findViewById(R.id.switchLocation);
         notificationSwitch = findViewById(R.id.switchNotifications);
 
-        if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(notificationPermissions)){
-            notificationSwitch.setChecked(false);
-        }
-        else{
-            notificationSwitch.setChecked(true);
-        }
+
         notificationSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(notificationPermissions)){
-                    PermissionClient.getInstance(UserInfoActivity.this).askPermissions(UserInfoActivity.this,notificationPermissions, PERMISSION_REQUEST_CODE);
-                }
-                else{
-                    Toast.makeText(UserInfoActivity.this, "Permission already granted", Toast.LENGTH_LONG).show();
-                    notificationSwitch.setChecked(true);
-                }
+                Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                startActivity(intent);
             }
         });
 
