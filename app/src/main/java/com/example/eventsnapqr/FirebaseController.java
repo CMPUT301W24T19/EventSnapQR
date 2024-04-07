@@ -213,6 +213,9 @@ public class FirebaseController {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         Event event = documentSnapshot.toObject(Event.class);
+                        String userID = documentSnapshot.getString("organizerID");
+                        User user = new User(userID, userID, null, null, null);
+                        event.setOrganizer(user);
                         if (event != null) {
                             event.setEventID(documentSnapshot.getId());
                             deleteEvent(event, () -> {
@@ -252,6 +255,7 @@ public class FirebaseController {
             deleteImage(event.getPosterURI(), event, null);
         }
 
+        // deleting subcollections
         Task<QuerySnapshot> getMilestones = db.collection("events").document(eventId).collection("milestones").get();
         Task<QuerySnapshot> getAttendees = db.collection("events").document(eventId).collection("attendees").get();
         Task<QuerySnapshot> getPromisedAttendees = db.collection("events").document(eventId).collection("promisedAttendees").get();
