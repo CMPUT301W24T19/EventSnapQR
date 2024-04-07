@@ -26,6 +26,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
@@ -76,6 +77,7 @@ import org.junit.runners.JUnit4;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -275,8 +277,79 @@ public class AdminTests {
                 "settings put global animator_duration_scale 1");
     }
 
+    Context context = InstrumentationRegistry.getInstrumentation().getContext();
+    ContentResolver contentResolver = context.getContentResolver();
+    String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+    boolean gotEvent = false;
+    boolean eventDeleted = false;
+    boolean eventsFound = false;
+    Event retrievedEvent;
+    ArrayList<Event> foundEvents = new ArrayList<>();
 
+    /**
+     * US 04.01.01 test
+     */
+    @Test
+    public void removeEvent(){
+        FirebaseController firebaseController = FirebaseController.getInstance();
+        String eventId = firebaseController.getUniqueEventID();
+        Event newEvent = new Event(new User(androidId), "testEvent", "testEventDescription", null, 5,eventId, new Date(), new Date(), "123 Spooner St.",true);
+        firebaseController.addEvent(newEvent);
+        firebaseController.getEvent(eventId, new FirebaseController.OnEventRetrievedListener() {
+            @Override
+            public void onEventRetrieved(Event event) {
+                retrievedEvent = event;
+                gotEvent = true;
 
+            }
+        });
+        while(!gotEvent){}
+        assertEquals(retrievedEvent.getEventID(), eventId); // to ensure it is same event we added
+        CountDownLatch latch = new CountDownLatch(10);
+        firebaseController.deleteEvent(newEvent, new FirebaseController.FirestoreOperationCallback() {
+            @Override
+            public void onCompleted() {
+                eventDeleted = true;
+                latch.countDown();
+            }
+        });
+
+        while(!eventDeleted){}
+        try {
+            latch.await(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        firebaseController.getAllEvents(new FirebaseController.OnEventsLoadedListener() {
+            @Override
+            public void onEventsLoaded(ArrayList<Event> events) {
+                foundEvents.addAll(events);
+                eventsFound = true;
+
+            }
+        });
+        while(!eventsFound){}
+        try{
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        boolean eventNotFound = true;
+        ArrayList<Event> activeEvents = new ArrayList<>();
+        for (Event event : foundEvents) {
+            if(event.isActive()){
+                activeEvents.add(event);
+            }
+
+        }
+        for(Event activeEvent: activeEvents){
+            if (activeEvent.getEventID().equals(eventId)) {
+                eventNotFound = false;
+                break;
+            }
+        }
+        assertTrue("The event should not be found in the list",eventNotFound);
+    }
     @Test
     public void deleteUserTest() {
         Context context = InstrumentationRegistry.getInstrumentation().getContext();
@@ -370,7 +443,7 @@ public class AdminTests {
         Log.d("TAG", "Making event");
         Log.d("TAG", "Event URI: " + result[0].toString());
         //Event testEvent = new Event(testUser, "testEvent", "testDescription", result[0].toString(), 5, "eventID", null, null, true);
-Event testEvent = null;
+        Event testEvent = null;
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseFirestore.collection("users").document(androidId).set(testUser);
         firebaseFirestore.collection("admin").document(androidId).set(testUser);
@@ -424,7 +497,8 @@ Event testEvent = null;
 
     @Test
     public void adminBrowseAndDeleteEvent(){
-        // Disable animations
+            // Disable animations
+
             Context context = InstrumentationRegistry.getInstrumentation().getContext();
             ContentResolver contentResolver = context.getContentResolver();
             String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
@@ -443,7 +517,7 @@ Event testEvent = null;
                     "settings put global animator_duration_scale 0");
             FirebaseController firebaseController = new FirebaseController();
 
-            firebaseController.addUser(testUser);
+
             Event event = new Event();
             event.setEventName(androidId);
             event.setEventID("1234345");
