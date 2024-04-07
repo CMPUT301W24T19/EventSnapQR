@@ -12,6 +12,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * fragment for admin to browse all profiles currently in the database
@@ -72,6 +74,15 @@ public class AdminBrowseProfilesFragment extends Fragment {
                 .show();
     }
 
+    private void showUnableToDeleteDialog() {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Cannot Delete")
+                .setMessage("You cannot delete yourself.")
+                .setPositiveButton("Okay", null)
+                .create()
+                .show();
+    }
+
     /**
      * Setup actions to be taken upon view creation and when the views are interacted with
      *
@@ -92,6 +103,7 @@ public class AdminBrowseProfilesFragment extends Fragment {
         recyclerView = view.findViewById(R.id.user_profile_pictures);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         recyclerView.setAdapter(adapter);
+        String androidId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         FirebaseFirestore.getInstance().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -145,7 +157,11 @@ public class AdminBrowseProfilesFragment extends Fragment {
                             startActivity(intent);
                         })
                         .setNegativeButton("Delete", (dialog, which) -> {
-                            showDeleteConfirmationDialog(user);
+                            if (Objects.equals(user.getDeviceID(), androidId)) {
+                                showUnableToDeleteDialog();
+                            } else {
+                                showDeleteConfirmationDialog(user);
+                            }
                         })
                         .setNeutralButton("Cancel", null)
                         .create()

@@ -52,6 +52,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -85,20 +86,16 @@ public class MassUserTest {
         eventList = new ArrayList<>();
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-
         firebaseFirestore.collection("events").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot querySnapshot) {
                 for (QueryDocumentSnapshot doc : querySnapshot) {
-                    Log.d("TAG", "ID: " + doc.getId());
                     FirebaseController.getInstance().getEvent(doc.getId(), new FirebaseController.OnEventRetrievedListener() {
                         @Override
                         public void onEventRetrieved(Event event) {
-                            Log.d("TAG", "" + event);
                             FirebaseController.getInstance().deleteEvent(event, new FirebaseController.FirestoreOperationCallback() {
                                 @Override
                                 public void onCompleted() {
-                                    Log.d("TAG", "deleting event");
                                     firebaseFirestore.collection("events").document(doc.getId()).delete();
                                 }
                             });
@@ -134,7 +131,6 @@ public class MassUserTest {
             e.printStackTrace();
         }
 
-        List<User> userList = new ArrayList<>();
         Random random = new Random();
         for (int i = 0; i < 50; i++) {
             String userID = FirebaseController.getInstance().getUniqueEventID();
@@ -159,6 +155,58 @@ public class MassUserTest {
         }
     }
 
+    @After
+    public void after() {
+        eventList.clear();
+        userList.clear();
+        CountDownLatch latch = new CountDownLatch(1);
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        firebaseFirestore.collection("events").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot querySnapshot) {
+                for (QueryDocumentSnapshot doc : querySnapshot) {
+                    FirebaseController.getInstance().getEvent(doc.getId(), new FirebaseController.OnEventRetrievedListener() {
+                        @Override
+                        public void onEventRetrieved(Event event) {
+                            FirebaseController.getInstance().deleteEvent(event, new FirebaseController.FirestoreOperationCallback() {
+                                @Override
+                                public void onCompleted() {
+                                    firebaseFirestore.collection("events").document(doc.getId()).delete();
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+
+        try {
+            latch.await(30, TimeUnit.SECONDS);
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        firebaseFirestore.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot querySnapshot) {
+                for (QueryDocumentSnapshot doc : querySnapshot) {
+                    FirebaseController.getInstance().getUser(doc.getId(), new FirebaseController.OnUserRetrievedListener() {
+                        @Override
+                        public void onUserRetrieved(User user) {
+                            FirebaseController.getInstance().deleteUser(user);
+                        }
+                    });
+                }
+            }
+        });
+        try {
+            latch.await(30, TimeUnit.SECONDS);
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Test
     public void browseEventTest() {
         CountDownLatch latch = new CountDownLatch(1);
@@ -170,27 +218,17 @@ public class MassUserTest {
         }
         eventList.sort(Comparator.comparing(o -> o.getEventName().toLowerCase()));
         onView(withId(R.id.browse_events_button)).perform(click());
-        //for (Event event: eventList) {
-        //Log.d("TAG", event.getEventID());
-        //onView(withText("Attending")).perform(click());
         try {
             latch.await(10, TimeUnit.SECONDS);
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //onData(anything()).inAdapterView(allOf(withId(R.id.events), isDisplayed())).perform(scrollTo(hasDescendant(withText("Hf1TIYBgqAIBqpnTW2P9"))));
         int i = 0;
         for (Event event: eventList) {
             onData(anything()).inAdapterView(allOf(withId(R.id.events), isDisplayed())).atPosition(i).onChildView(withId(R.id.eventName)).check(matches(withText(event.getEventName())));
             i++;
         }
-        //onView(withText("Hf1TIYBgqAIBqpnTW2P9")).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
-        //onData(anything()).inAdapterView(allOf(withId(R.id.events), withParentIndex(0))).atPosition(0).perform(click());
-        //onView(allOf(withId(R.id.events)));
-        //onView(allOf(withId(R.id.events), isDisplayingAtLeast(1))).perform(scrollTo(hasDescendant(withText("Hf1TIYBgqAIBqpnTW2P9"))));
-        //onView(withText("Hf1TIYBgqAIBqpnTW2P9")).check(matches(isDisplayed()));
-        //}
 
         try {
             latch.await(10, TimeUnit.SECONDS);
@@ -199,4 +237,7 @@ public class MassUserTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void
 }
