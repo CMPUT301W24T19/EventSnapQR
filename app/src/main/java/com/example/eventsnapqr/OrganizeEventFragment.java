@@ -474,11 +474,6 @@ public class OrganizeEventFragment extends Fragment {
             isValid = false;
         }
 
-        if (eventAddress.isEmpty()) {
-             editTextAddress.setError("Event Address Required");
-             isValid = false;
-        }
-
         if (eventStartDate.isEmpty()) {
             editTextStartDate.setError("Start Date Required");
             isValid = false;
