@@ -1,13 +1,16 @@
 package com.example.eventsnapqr;
 import android.Manifest;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -59,7 +62,7 @@ public class UserInfoActivity extends AppCompatActivity {
     private boolean editMode = false;
     private ImageView editButton;
     private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
-    private Switch locationSwitch;
+    private Button locationSwitch;
     private Switch notificationSwitch;
     private boolean showSwitches;
     private final int PERMISSION_REQUEST_CODE = 100;
@@ -125,22 +128,13 @@ public class UserInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(locationPermissions)){
-            locationSwitch.setChecked(false);
-        }
-        else{
-            locationSwitch.setChecked(true);
-        }
+
+
         locationSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(locationPermissions)){
-                    PermissionClient.getInstance(UserInfoActivity.this).askPermissions(UserInfoActivity.this,locationPermissions, PERMISSION_REQUEST_CODE);
-                }
-                else{
-                    Toast.makeText(UserInfoActivity.this, "Permission already granted", Toast.LENGTH_LONG).show();
-                    locationSwitch.setChecked(true);
-                }
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(intent);
             }
         });
 
