@@ -26,13 +26,14 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="User Information"
+            android:textColor="@color/black"
             android:textSize="22sp" />
     </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/grey" />
+        android:background="@color/black" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -106,7 +107,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1">
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -115,18 +116,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="24dp"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
-                    app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                     android:layout_marginEnd="32dp"
                     android:hint="Name"
-                    app:endIconMode="clear_text"
                     android:textColorHint="@color/grey"
-                    app:counterEnabled="false"
+                    app:cursorErrorColor="@color/black"
+                    app:helperTextTextColor="@color/grey"
                     app:counterMaxLength="20"
-                    app:helperTextTextColor="@color/red"
+                    app:endIconMode="clear_text"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -134,9 +134,13 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextUserName"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:focusable="true"
+                        android:enabled="true"
+                        android:focusableInTouchMode="true"
+                        android:layout_height="match_parent"
                         android:maxLength="20"
-                        android:textColor="@color/black"/>
+                        android:textColor="@color/black"
+                        app:errorIconDrawable="@drawable/baseline_error_outline_24"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -145,18 +149,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Email"
                     android:textColorHint="@color/grey"
+                    app:cursorErrorColor="@color/black"
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
-                    app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
+                    app:counterMaxLength="50"
                     app:endIconMode="clear_text"
-                    app:counterEnabled="false"
-                    app:counterMaxLength="20"
-                    app:helperTextTextColor="@color/red"
+                    app:helperTextTextColor="@color/grey"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textInputUserName">
@@ -164,18 +167,21 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextEmail"
                         android:layout_width="match_parent"
-                        android:maxLength="20"
                         android:layout_height="wrap_content"
+                        android:focusable="true"
+                        android:enabled="true"
+                        android:focusableInTouchMode="true"
+                        android:maxLength="50"
                         android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:id="@+id/textInputPhoneNumber"
+                    android:id="@+id/inputTextPhoneNumber"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Phone Number"
                     android:textColorHint="@color/grey"
@@ -183,11 +189,11 @@
                     app:boxBackgroundColor="#00FFFFFF"
                     app:boxStrokeColor="@color/black"
                     app:counterEnabled="false"
-                    app:counterMaxLength="10"
+                    app:counterMaxLength="12"
                     app:boxStrokeWidth="2dp"
-                    app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                     app:endIconMode="clear_text"
-                    app:helperTextTextColor="@color/red"
+                    app:cursorErrorColor="@color/black"
+                    app:helperTextTextColor="@color/grey"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textInputHomepage">
@@ -196,8 +202,11 @@
                         android:id="@+id/editTextPhoneNumber"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:focusable="true"
+                        android:enabled="true"
+                        android:focusableInTouchMode="true"
                         android:inputType="phone"
-                        android:maxLength="10"
+                        android:maxLength="12"
                         android:textColor="@color/black" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -207,18 +216,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Homepage"
                     app:boxBackgroundColor="#00FFFFFF"
                     android:textColorHint="@color/grey"
                     app:boxStrokeColor="@color/black"
                     app:boxStrokeWidth="2dp"
-                    app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
-                    app:endIconMode="clear_text"
                     app:counterEnabled="false"
                     app:counterMaxLength="30"
-                    app:helperTextTextColor="@color/red"
+                    app:endIconMode="clear_text"
+                    app:helperTextTextColor="@color/grey"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textInputEmail">
@@ -228,49 +236,59 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
+                        android:focusable="true"
+                        android:enabled="true"
+                        android:focusableInTouchMode="true"
                         android:maxLength="30"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Switch
-                    android:id="@+id/switchLocation"
-                    android:layout_width="wrap_content"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/locationButton"
+                    android:layout_width="150dp"
                     android:layout_height="wrap_content"
-                    android:text="Location Services"
-                    android:layout_marginStart="32dp"
+                    android:text="Location"
+                    android:backgroundTint="@color/glaucous"
                     android:layout_marginTop="16dp"
-                    android:textColor="#4c4943"
+                    android:textColor="@color/black"
                     android:layout_marginBottom="16dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textInputPhoneNumber" />
+                    app:layout_constraintStart_toStartOf="@id/inputTextPhoneNumber"
+                    app:layout_constraintTop_toBottomOf="@id/inputTextPhoneNumber"
+                    app:strokeColor="@color/black"
+                    app:strokeWidth="1dp"/>
 
-                <Switch
-                    android:id="@+id/switchNotifications"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/notificationButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="@color/glaucous"
                     android:text="Notifications"
-                    android:layout_marginStart="32dp"
-                    android:textColor="#4c4943"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="8dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/switchLocation" />
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="@id/inputTextPhoneNumber"
+                    app:layout_constraintTop_toBottomOf="@id/locationButton"
+                    app:strokeColor="@color/black"
+                    app:strokeWidth="1dp" />
 
                 <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                     android:id="@+id/saveButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Save Changes"
+                    android:text="Save"
                     android:textColor="@color/black"
-                    android:layout_marginEnd="16dp"
-                    android:backgroundTint="@color/ochre"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="36dp"
+                    android:layout_marginBottom="30dp"
+                    android:backgroundTint="@color/coral"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:gravity="center"
+                    app:strokeColor="@color/black"
+                    app:strokeWidth="1dp" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
     </ScrollView>
+
+
 
 </LinearLayout>

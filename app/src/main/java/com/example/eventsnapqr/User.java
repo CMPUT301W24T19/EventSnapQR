@@ -18,7 +18,6 @@ import java.util.List;
  * organizer and attendee
  */
 public class User implements Attendee, Organizer {
-//public class User implements Attendee, Organizer {
     private String name; // name of the user
     private String homepage; // users website
     private String phoneNumber; // users phone number
@@ -27,7 +26,6 @@ public class User implements Attendee, Organizer {
     private List<Event> createdEvents = new ArrayList<>(); // Events created by the user as an organizer
     private List<Event> signedUpEvents = new ArrayList<>();
     private String profilePicture;
-
     /**
      * empty constructor for firebase usage
      */

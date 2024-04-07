@@ -1,225 +1,151 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainPageFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/mainPageFragment">
+    android:background="@drawable/gradient_background"
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:weightSum="3"
-        tools:context=".MainPageFragment">
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/admin_button"
+        android:layout_width="110dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/glaucous"
+        android:text="ADMIN"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="@color/black"
+        app:strokeWidth="1dp" />
 
-        <LinearLayout
-            android:id="@+id/user_layout"
-            android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/admin_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upcoming Events"
+        android:textSize="20dp"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toStartOf="@id/carouselCardView"
+        app:layout_constraintBottom_toTopOf="@id/carouselCardView"
+        app:layout_constraintTop_toBottomOf="@id/admin_button"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginStart="12dp"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/view_user_card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="14dp"
+        app:cardCornerRadius="120dp"
+        app:cardElevation="5dp"
+        app:cardPreventCornerOverlap="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_weight="1"
-            android:background="@drawable/main_page_toolbar_backgorund"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="20dp"
-            android:paddingEnd="30dp">
+            android:layout_gravity="center">
 
-            <Button
-                android:id="@+id/admin_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:textColor="@color/black"
-                android:backgroundTint="@color/glaucous"
-                android:text="ADMIN"
-
-                android:textSize="12sp"
-                android:visibility="visible" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/view_user_button"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/profile_pic" />
 
             <View
-                android:layout_width="0dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:background="#70000000" />
+
+        </FrameLayout>
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/browse_events_button"
+        android:layout_width="300dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="60dp"
+        android:backgroundTint="@color/glaucous"
+        android:text="Browse Events"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:layout_marginTop="40dp"
+        app:layout_constraintTop_toBottomOf="@id/carouselCardView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:strokeColor="@color/black"
+        app:strokeWidth="1dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/organize_event_button"
+        android:layout_width="300dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="30dp"
+        android:backgroundTint="@color/glaucous"
+        android:text="Organize Event"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@id/browse_events_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:strokeColor="@color/black"
+        app:strokeWidth="1dp" />
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/carouselCardView"
+        android:layout_width="360dp"
+        android:layout_height="280dp"
+        android:layout_marginBottom="30dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="80dp"
+        app:strokeColor="@color/black"
+        app:strokeWidth="2dp"
+        app:layout_constraintTop_toBottomOf="@id/admin_button"
+        app:layout_constraintBottom_toTopOf="@+id/browse_events_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewCarousel"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1" />
+                android:background="@drawable/place_holder_img"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                app:cardCornerRadius="200dp"
-                app:cardElevation="5dp"
-                app:cardPreventCornerOverlap="false">
-
-                <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center">
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/view_user_button"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:layout_gravity="center"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:src="@drawable/profile_pic" />
-
-                    <View
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:layout_gravity="center"
-                        android:background="#70000000" />
-
-                </FrameLayout>
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:cardCornerRadius="2dp"
-            app:cardElevation="5dp">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ViewFlipper
-                    android:id="@+id/viewFlipperOrganizers"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:autoStart="true"
-                    android:flipInterval="5000"
-                    android:inAnimation="@android:anim/fade_in"
-                    android:outAnimation="@android:anim/fade_out">
-
-                </ViewFlipper>
-
-                <TextView
-                    android:id="@+id/main_page_textview_carousel_organizers"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="bottom"
-                    android:background="#A0000000"
-                    android:gravity="bottom|left"
-                    android:padding="8dp"
-                    android:shadowColor="#34757E"
-                    android:shadowDx="1"
-                    android:shadowDy="1"
-                    android:shadowRadius="10"
-                    android:text="Popular Organizers.."
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                    android:textColor="#FFFFFF"
-                    android:textSize="15dp" />
-            </FrameLayout>
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="2dp"
-            app:cardElevation="5dp"
-            android:layout_weight="1">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ViewFlipper
-                    android:id="@+id/viewFlipper"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:autoStart="true"
-                    android:flipInterval="5000"
-                    android:inAnimation="@android:anim/slide_in_left"
-                    android:outAnimation="@android:anim/slide_out_right">
-
-                </ViewFlipper>
-
-                <TextView
-                    android:id="@+id/main_page_textview_carousel"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="bottom"
-                    android:background="#A0000000"
-                    android:gravity="left"
-                    android:padding="8dp"
-                    android:shadowColor="#34757E"
-                    android:shadowDx="1"
-                    android:shadowDy="1"
-                    android:shadowRadius="10"
-                    android:text="Events happening this week.."
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                    android:textColor="#FFFFFF"
-                    android:textSize="15dp" />
-            </FrameLayout>
-        </androidx.cardview.widget.CardView>
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 
 
-
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="left"
-            android:orientation="vertical"
-            android:paddingLeft="5dp"
-
-            android:weightSum="2">
-
-            <Button
-                android:layout_weight="2"
-                android:id="@+id/organize_event_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:backgroundTint="@color/glaucous"
-                android:layout_marginBottom="8dp"
-                android:text="Organize New Event" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="left"
-            android:orientation="vertical"
-            android:paddingLeft="5dp"
-
-            android:weightSum="2">
-
-            <Button
-                android:layout_weight="2"
-                android:id="@+id/browse_events_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:backgroundTint="@color/glaucous"
-                android:layout_marginBottom="8dp"
-                android:text="Browse Events" />
-
-
-        </LinearLayout>
-
-
-    </LinearLayout>
-
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/scan_qr_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp"
         android:text="Scan QR"
         android:textColor="@color/black"
-        android:backgroundTint="@color/ochre"
-        app:iconGravity="textStart"
-        android:gravity="center" />
-</RelativeLayout>
+        android:backgroundTint="@color/coral"
+        android:gravity="center"
+        app:strokeColor="@color/black"
+        app:strokeWidth="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

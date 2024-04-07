@@ -12,14 +12,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.google.android.material.button.MaterialButton;
+
 /**
  * Main navigation page for admin privileges
  */
 public class AdminModeMainPageFragment extends Fragment {
     private ImageView buttonBackToMain;
-    private Button browseEventsButton;
-    private Button browseProfilesButton;
-    private Button browseImagesButton;
+    private MaterialButton browseEventsButton, browseProfilesButton, browseImagesButton;
 
     /**
      * What should be executed when the fragment is created
@@ -47,7 +47,7 @@ public class AdminModeMainPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin_mode_main_page, container, false);
-        buttonBackToMain = view.findViewById(R.id.button_back);
+        buttonBackToMain = view.findViewById(R.id.button_back_button);
         browseEventsButton = view.findViewById(R.id.buttonBrowseEvents);
         browseProfilesButton = view.findViewById(R.id.buttonBrowseUserProfiles);
         browseImagesButton = view.findViewById(R.id.buttonBrowseImages);

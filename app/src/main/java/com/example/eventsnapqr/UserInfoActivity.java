@@ -1,15 +1,17 @@
 package com.example.eventsnapqr;
 import android.Manifest;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -22,6 +24,7 @@ import com.bumptech.glide.Glide;
 //import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -30,38 +33,30 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * activity where the user can view and edit their information. the geolocation and
  * notification switches have no yet been implemented
  */
 public class UserInfoActivity extends AppCompatActivity {
-    private ImageView buttonBackButton;
-    private ImageView buttonAddImage;
-    private ImageView buttonRemoveImage;
+    private ImageView buttonBackButton, buttonAddImage, buttonRemoveImage, profilePictureImage, editButton;
     private FirebaseStorage storage = FirebaseStorage.getInstance();
     private StorageReference storageRef = storage.getReference();
     private String androidID;
-    private ImageView profilePictureImage;
     private String profilePictureURI;
-    private TextInputEditText userName;
-    private TextInputLayout userNameLayout;
-    private TextInputEditText email;
-    private TextInputLayout emailLayout;
-    private TextInputEditText phoneNumber;
-    private TextInputLayout numberLayout;
-    private TextInputEditText homepage;
-    private TextInputLayout homepageLayout;
+    private TextInputEditText userName, email, phoneNumber, homepage;
+    private TextInputLayout userNameLayout, emailLayout, numberLayout,homepageLayout;
     private ExtendedFloatingActionButton saveButton;
     private boolean editMode = false;
-    private ImageView editButton;
     private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
-    private Switch locationSwitch;
-    private Switch notificationSwitch;
+    private MaterialButton locationButton;
+    private Button notificationButton;
     private boolean showSwitches;
     private final int PERMISSION_REQUEST_CODE = 100;
     String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
-    //String[] notificationPermissions = {Manifest.permission.ACCESS_NOTIFICATION_POLICY, Manifest.permission.POST_NOTIFICATIONS}; // might not need NOTIFCATION_POLICY
     String[] notificationPermissions = {Manifest.permission.POST_NOTIFICATIONS};
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
@@ -96,48 +91,30 @@ public class UserInfoActivity extends AppCompatActivity {
         email = findViewById(R.id.editTextEmail);
         emailLayout = findViewById(R.id.textInputEmail);
         phoneNumber = findViewById(R.id.editTextPhoneNumber);
-        numberLayout = findViewById(R.id.textInputPhoneNumber);
+        numberLayout = findViewById(R.id.inputTextPhoneNumber);
         homepage = findViewById(R.id.editTextHomepage);
         homepageLayout = findViewById(R.id.textInputHomepage);
         saveButton = findViewById(R.id.saveButton);
         editButton = findViewById(R.id.button_edit_profile_button);
-        locationSwitch = findViewById(R.id.switchLocation);
-        notificationSwitch = findViewById(R.id.switchNotifications);
+        locationButton = findViewById(R.id.locationButton);
+        notificationButton = findViewById(R.id.notificationButton);
 
-        if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(notificationPermissions)){
-            notificationSwitch.setChecked(false);
-        }
-        else{
-            notificationSwitch.setChecked(true);
-        }
-        notificationSwitch.setOnClickListener(new View.OnClickListener() {
+
+        notificationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(notificationPermissions)){
-                    PermissionClient.getInstance(UserInfoActivity.this).askPermissions(UserInfoActivity.this,notificationPermissions, PERMISSION_REQUEST_CODE);
-                }
-                else{
-                    Toast.makeText(UserInfoActivity.this, "Permission already granted", Toast.LENGTH_LONG).show();
-                    notificationSwitch.setChecked(true);
-                }
+                Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                startActivity(intent);
             }
         });
-        if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(locationPermissions)){
-            locationSwitch.setChecked(false);
-        }
-        else{
-            locationSwitch.setChecked(true);
-        }
-        locationSwitch.setOnClickListener(new View.OnClickListener() {
+
+
+        locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!PermissionClient.getInstance(UserInfoActivity.this).checkPermission(locationPermissions)){
-                    PermissionClient.getInstance(UserInfoActivity.this).askPermissions(UserInfoActivity.this,locationPermissions, PERMISSION_REQUEST_CODE);
-                }
-                else{
-                    Toast.makeText(UserInfoActivity.this, "Permission already granted", Toast.LENGTH_LONG).show();
-                    locationSwitch.setChecked(true);
-                }
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(intent);
             }
         });
 
@@ -159,8 +136,8 @@ public class UserInfoActivity extends AppCompatActivity {
         showSwitches = extra.getBoolean("showSwitches");
 
         if (!showSwitches) {
-            locationSwitch.setVisibility(View.INVISIBLE);
-            notificationSwitch.setVisibility(View.INVISIBLE);
+            locationButton.setVisibility(View.INVISIBLE);
+            notificationButton.setVisibility(View.INVISIBLE);
         }
 
         FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
@@ -236,21 +213,41 @@ public class UserInfoActivity extends AppCompatActivity {
                 String userPhoneNumber = phoneNumber.getText().toString().trim();
                 String userHomepage = homepage.getText().toString().trim();
 
+                List<String> errorMessages = new ArrayList<>();
+
                 if (name.isEmpty()) {
-                    userNameLayout.setError("Name cannot be empty");
-                    return; // Stop execution if name is empty
-                } else {
-                    userNameLayout.setError(null); // Clear any previous error
+                    errorMessages.add("Name cannot be empty");
                 }
 
-                // Validate phone number if not empty
-                if (!userPhoneNumber.isEmpty()) {
-                    if (!isValidPhoneNumber(userPhoneNumber)) {
-                        numberLayout.setError("Invalid phone number format");
-                        return; // Stop execution if phone number format is invalid
-                    } else {
-                        numberLayout.setError(null); // Clear any previous error
+                // validate phone number if not empty
+                if (!userPhoneNumber.isEmpty() && !isValidPhoneNumber(userPhoneNumber)) {
+                    errorMessages.add("Invalid phone number format");
+                }
+
+                // validate email format if not empty
+                if (!userEmail.isEmpty() && !isValidEmail(userEmail)) {
+                    errorMessages.add("Invalid email format");
+                }
+
+                // validate homepage if not empty
+                if (!userHomepage.isEmpty() && !isValidHomepage(userHomepage)) {
+                    errorMessages.add("Invalid homepage format");
+                }
+
+                // display the errors
+                if (!errorMessages.isEmpty()) {
+                    for (String errorMessage : errorMessages) {
+                        if (errorMessage.contains("Name cannot be empty")) {
+                            userName.setError(errorMessage);
+                        } else if (errorMessage.contains("Invalid phone number format")) {
+                            phoneNumber.setError(errorMessage);
+                        } else if (errorMessage.contains("Invalid homepage format")) {
+                            homepage.setError(errorMessage);
+                        } else if (errorMessage.contains("Invalid email format")) {
+                            email.setError(errorMessage);
+                        }
                     }
+                    return;
                 }
 
                 FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
@@ -262,19 +259,14 @@ public class UserInfoActivity extends AppCompatActivity {
                         user.setHomepage(userHomepage);
                         FirebaseController.getInstance().addUser(user);
 
-                        // Update UI or show a message indicating successful save
                         Toast.makeText(UserInfoActivity.this, "Information successfully updated!", Toast.LENGTH_SHORT).show();
 
-                        editMode = false;
-                        saveButton.setVisibility(View.INVISIBLE);
-                        userName.setEnabled(editMode);
-                        email.setEnabled(editMode);
-                        phoneNumber.setEnabled(editMode);
-                        homepage.setEnabled(editMode);
+                        saveButtonLayoutSwitch();
                     }
                 });
             }
         });
+
 
 
         editButton.setOnClickListener(new View.OnClickListener() {
@@ -292,6 +284,9 @@ public class UserInfoActivity extends AppCompatActivity {
                     emailLayout.setCounterEnabled(true);
                     numberLayout.setCounterEnabled(true);
                     homepageLayout.setCounterEnabled(true);
+
+                    userNameLayout.setHelperText("* Required");
+                    numberLayout.setHelperText("Format: ***-***-****");
                 }
                 else {
                     saveButton.setVisibility(View.INVISIBLE);
@@ -299,6 +294,9 @@ public class UserInfoActivity extends AppCompatActivity {
                     emailLayout.setCounterEnabled(false);
                     numberLayout.setCounterEnabled(false);
                     homepageLayout.setCounterEnabled(false);
+
+                    userNameLayout.setHelperTextEnabled(false);
+                    numberLayout.setHelperTextEnabled(false);
                 }
 
 
@@ -333,6 +331,11 @@ public class UserInfoActivity extends AppCompatActivity {
                                     userName.setText(user.getName());
                                     Bitmap initialsImageBitmap = user.generateInitialsImage(userName.getText().toString());
                                     profilePictureImage.setImageBitmap(initialsImageBitmap);
+                                    // set tag for testing
+                                    profilePictureImage.setTag(userName.getText().toString().substring(0,2).toUpperCase());
+
+
+
                                 }
                             }
                         }
@@ -342,14 +345,69 @@ public class UserInfoActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * after the save button is pressed these layout properties must be flipped
+     */
+    private void saveButtonLayoutSwitch() {
+        userName.setError(null);
+        email.setError(null);
+        homepage.setError(null);
+        phoneNumber.setError(null);
+
+        userNameLayout.setCounterEnabled(false);
+        emailLayout.setCounterEnabled(false);
+        numberLayout.setCounterEnabled(false);
+        homepageLayout.setCounterEnabled(false);
+
+        userNameLayout.setHelperTextEnabled(false);
+        emailLayout.setHelperTextEnabled(false);
+        numberLayout.setHelperTextEnabled(false);
+        homepageLayout.setCounterEnabled(false);
+
+        editMode = false;
+        saveButton.setVisibility(View.INVISIBLE);
+        userName.setEnabled(editMode);
+        email.setEnabled(editMode);
+        phoneNumber.setEnabled(editMode);
+        homepage.setEnabled(editMode);
+    }
+
+    /**
+     * determines if a given string is formatted as a phone number
+     * @param phoneNumber
+     * @return
+     */
     private boolean isValidPhoneNumber(String phoneNumber) {
-        if (!phoneNumber.matches("[0-9]+")) {
+        if (!phoneNumber.matches("\\d{3}-\\d{3}-\\d{4}")) {
             return false;
         }
-        if (phoneNumber.length() != 10) {
+
+        String digitsOnly = phoneNumber.replaceAll("-", "");
+
+        if (digitsOnly.length() != 10) {
             return false;
         }
+
         return true;
     }
 
+    /**
+     * determines if a given string resembles an email address
+     * @param email string to be checked
+     * @return true if the string resembles an email address, otherwise false
+     */
+    private boolean isValidEmail(String email) {
+        String emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+        return email.matches(emailPattern);
+    }
+
+    /**
+     * determines if a given string resembles a homepage
+     * @param homepage string to be checked
+     * @return true if the string resembles a homepage, otherwise false
+     */
+    private boolean isValidHomepage(String homepage) {
+        String homepagePattern = ".*\\..*";
+        return homepage.matches(homepagePattern);
+    }
 }

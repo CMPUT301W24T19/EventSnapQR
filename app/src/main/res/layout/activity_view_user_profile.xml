@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/userInfoActivity"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@drawable/gradient_background"
+tools:context=".UserInfoActivity">
+
+    <ImageView
+        android:id="@+id/back_button"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:clickable="true"
+        android:padding="5dp"
+        android:src="?attr/actionModeCloseDrawable"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/horizontal_line"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/grey"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="45dp"/>
+
+    <TextView
+        android:id="@+id/page_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:textColor="@color/black"
+        android:text="User Information"
+        app:layout_constraintStart_toEndOf="@id/back_button"
+        app:layout_constraintTop_toTopOf="@id/back_button"
+        app:layout_constraintBottom_toBottomOf="@id/back_button"
+        android:layout_marginStart="78dp"/>
+
+    <ImageView
+        android:id="@+id/iv_profile_pic"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_corner_shape"
+        android:src="@drawable/profile_pic"
+        android:clipToOutline="true"
+        app:layout_constraintTop_toBottomOf="@+id/back_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputName"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Name"
+        app:boxBackgroundColor="#00FFFFFF"
+        app:boxStrokeColor="@color/black"
+        app:boxStrokeWidth="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_profile_pic">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:cursorVisible="false"
+            android:textColor="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputEmail"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Email"
+        app:boxBackgroundColor="#00FFFFFF"
+        app:boxStrokeColor="@color/black"
+        app:boxStrokeWidth="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textInputName">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:cursorVisible="false"
+            android:gravity="top|start"
+            android:textColor="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputHomepage"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Homepage"
+        app:boxBackgroundColor="#00FFFFFF"
+        app:boxStrokeColor="@color/black"
+        app:boxStrokeWidth="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textInputEmail">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextHomepage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:cursorVisible="false"
+            android:textColor="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/inputTextPhoneNumber"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Phone Number"
+        android:inputType="phone"
+        app:boxBackgroundColor="#00FFFFFF"
+        app:boxStrokeColor="@color/black"
+        app:boxStrokeWidth="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textInputHomepage">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextPhoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:cursorVisible="false"
+            android:textColor="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

@@ -170,9 +170,40 @@ public class FirebaseController {
      * @param userId
      */
     private void deleteUserFinalStep(FirebaseFirestore db, String userId) {
-        db.collection("users").document(userId).delete()
-                .addOnSuccessListener(aVoid -> Log.d("Delete User", "User successfully deleted: " + userId))
-                .addOnFailureListener(e -> Log.e("Delete User", "Error deleting user: " + userId, e));
+        CollectionReference notificationReference = db.collection("users").document(userId).collection("notifications");
+        notificationReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot snapshot = task.getResult();
+                    if (snapshot.size() > 0) {
+                        int[] i = {0};
+                        for (QueryDocumentSnapshot doc : snapshot) {
+                            notificationReference.document(doc.getId()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (i[0] == snapshot.size() - 1) {
+                                        db.collection("users").document(userId).delete()
+                                                .addOnSuccessListener(aVoid -> Log.d("Delete User", "User successfully deleted: " + userId))
+                                                .addOnFailureListener(e -> Log.e("Delete User", "Error deleting user: " + userId, e));
+                                    }
+                                    i[0]++;
+                                }
+                            });
+                        }
+                    }
+                    else {
+                        db.collection("users").document(userId).delete()
+                                .addOnSuccessListener(aVoid -> Log.d("Delete User", "User successfully deleted: " + userId))
+                                .addOnFailureListener(e -> Log.e("Delete User", "Error deleting user: " + userId, e));
+                    }
+                } else {
+                    db.collection("users").document(userId).delete()
+                            .addOnSuccessListener(aVoid -> Log.d("Delete User", "User successfully deleted: " + userId))
+                            .addOnFailureListener(e -> Log.e("Delete User", "Error deleting user: " + userId, e));
+                }
+            }
+        });
     }
 
     private Task<Void> fetchAndDeleteEvent(FirebaseFirestore db, String eventId) {
@@ -182,6 +213,9 @@ public class FirebaseController {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         Event event = documentSnapshot.toObject(Event.class);
+                        String userID = documentSnapshot.getString("organizerID");
+                        User user = new User(userID, userID, null, null, null);
+                        event.setOrganizer(user);
                         if (event != null) {
                             event.setEventID(documentSnapshot.getId());
                             deleteEvent(event, () -> {
@@ -204,19 +238,7 @@ public class FirebaseController {
     public interface FirestoreOperationCallback {
         void onCompleted();
     }
-    public void addTestAnnouncement(String announcement, String eventID, FirestoreOperationCallback testCallBack){
 
-        FirebaseController firebaseControllerTwo = FirebaseController.getInstance();
-        CollectionReference announcementsRef = db.collection("events").document(eventID).collection("announcements");
-        Map<String, Object> announcementData = new HashMap<>();
-        announcementData.put("message", announcement);
-        announcementData.put("timestamp", new Date());
-        CountDownLatch latch = new CountDownLatch(1);
-
-        announcementsRef.add(announcementData)
-                .addOnSuccessListener(documentReference -> testCallBack.onCompleted())
-                .addOnFailureListener(e -> testCallBack.onCompleted());
-    }
 
     /**
      * deletes an event from the firestore database, and ensures data is consistent when this
@@ -233,6 +255,7 @@ public class FirebaseController {
             deleteImage(event.getPosterURI(), event, null);
         }
 
+        // deleting subcollections
         Task<QuerySnapshot> getMilestones = db.collection("events").document(eventId).collection("milestones").get();
         Task<QuerySnapshot> getAttendees = db.collection("events").document(eventId).collection("attendees").get();
         Task<QuerySnapshot> getPromisedAttendees = db.collection("events").document(eventId).collection("promisedAttendees").get();
@@ -519,18 +542,30 @@ public class FirebaseController {
                                 case ADDED:
                                     String announcementID = dc.getDocument().getId();
                                     ContentResolver contentResolver = context.getContentResolver();
-                                    markSeenNotification(announcementID, Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID), new NotificationSeenCallback() {
-                                        @Override
-                                        public void onSeen(boolean seen) {
-                                            if(!seen){
-                                                if(!event.getOrganizer().getDeviceID().equals(Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID))){
-                                                    String announcementMessage = dc.getDocument().getString("message");
-                                                    makeNotification(context, announcementMessage, event);
-                                                }
+                                    Boolean toNotify = (Boolean)dc.getDocument().get("notify");
 
+                                    if(toNotify){
+                                        markSeenNotification(announcementID, Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID), new NotificationSeenCallback() {
+                                            @Override
+                                            public void onSeen(boolean seen) {
+                                                if(!seen){
+                                                    if(!event.getOrganizer().getDeviceID().equals(Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID))){
+                                                        String announcementMessage = dc.getDocument().getString("message");
+                                                        makeNotification(context, announcementMessage, event);
+                                                    }
+
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
+                                    }else{
+                                        markSeenNotification(announcementID, Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID), new NotificationSeenCallback() {
+                                            @Override
+                                            public void onSeen(boolean seen) {
+                                                // Do nothing but we still meed to call mark seen
+                                            }
+                                        });
+                                    }
+
                                     break;
                                 case MODIFIED:
                                 case REMOVED:
@@ -1032,7 +1067,6 @@ public class FirebaseController {
     }
 
 
-
     public void removeAttendee(String eventId, String userId, RemoveAttendeeCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -1079,7 +1113,6 @@ public class FirebaseController {
             }
         });
     }
-
 
     public interface CheckAttendeeCheckinsCallback {
         void onSuccess(int checkins);

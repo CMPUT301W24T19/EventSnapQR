@@ -4,6 +4,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -20,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.bumptech.glide.Glide;
@@ -30,7 +35,9 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
@@ -48,7 +55,7 @@ public class MainPageFragment extends Fragment {
     private ExtendedFloatingActionButton buttonScanQR;
     private ImageView buttonViewProfile;
     private String androidId;
-    private ViewFlipper viewFlipper, viewFlipperOrganizers;
+    private ViewFlipper viewFlipper;
 
     /**
      * What should be executed when the fragment is created
@@ -77,7 +84,7 @@ public class MainPageFragment extends Fragment {
                 if(exists && !buttonAdminMainPage.isShown()){
                     buttonAdminMainPage.setVisibility(View.VISIBLE);
                 }else{
-                    buttonAdminMainPage.setVisibility(View.GONE);
+                    buttonAdminMainPage.setVisibility(View.INVISIBLE);
                 }
             }
         };
@@ -108,6 +115,7 @@ public class MainPageFragment extends Fragment {
             }
         });
     }
+    public List<String> eventImages;
     /**
      * handles button presses throughout the fragment
      * @param inflater The LayoutInflater object that can be used to inflate
@@ -132,56 +140,42 @@ public class MainPageFragment extends Fragment {
         buttonScanQR = view.findViewById(R.id.scan_qr_button);
         buttonViewProfile = view.findViewById(R.id.view_user_button);
         updateProfilePicture();
-
-        getImageUris(new ImageUriCallback() { // *** not done have too hook up popular event organizers view flipper images ***
+        eventImages = new ArrayList<>();
+        getImageUris(new ImageUriCallback() {
             @Override
             public void onImageUrisLoaded(List<String> imageUris) {
-                Context context = getContext(); // get the context once and reuse it
+                Context context = getContext();
+                eventImages.clear();
+                eventImages.addAll(imageUris);
+
                 if (context == null) {
-                    // context is not available --> handle
                     return;
                 }
 
-                viewFlipper = view.findViewById(R.id.viewFlipper);
-                viewFlipperOrganizers = view.findViewById(R.id.viewFlipperOrganizers);
-                if (viewFlipper == null || viewFlipperOrganizers == null) {
-                    // viewFlipper not found --> handle
+                RecyclerView recyclerView = view.findViewById(R.id.recyclerViewCarousel);
+
+                if (recyclerView == null) {
                     return;
                 }
 
-                viewFlipper.removeAllViews();
-                viewFlipperOrganizers.removeAllViews();
+                ImageCarouselAdapter adapter = new ImageCarouselAdapter(context, imageUris);
+                adapter.setOnItemClickListener(new ImageCarouselAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(String imageUri) {
 
-                for (String uriString : imageUris) {
-                    ImageView imageView = new ImageView(context);
+                         String uriComponents[] = Uri.parse(imageUri).getPath().split("/");
+                         String eventId = uriComponents[uriComponents.length - 1];
+                         Log.d("clicked event id", eventId);
+                        Intent intent = new Intent(getActivity(), BrowseEventsActivity.class);
+                        intent.putExtra("eventID", eventId);
+                        startActivity(intent);
 
-                    imageView.setLayoutParams(new ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT));
-                    imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-                    ImageView imageViewOrganizers = new ImageView(context);
 
-                    imageViewOrganizers.setLayoutParams(new ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT));
-                    imageViewOrganizers.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    // load the image from URI using the obtained context
-                    Glide.with(context)
-                            .load(uriString)
-                            .into(imageView);
-                    Glide.with(context)
-                            .load(uriString)
-                            .into(imageViewOrganizers);
 
-                    viewFlipper.addView(imageView);
-                    viewFlipperOrganizers.addView(imageViewOrganizers);
-                }
-
-                if (!viewFlipperOrganizers.isFlipping() && !viewFlipper.isFlipping() && imageUris.size() > 1) {
-                    viewFlipper.startFlipping();
-                    viewFlipperOrganizers.startFlipping();
-                }
+                    }
+                });
+                recyclerView.setAdapter(adapter);
             }
         });
 
@@ -245,4 +239,66 @@ public class MainPageFragment extends Fragment {
             }
         });
 }
+}
+class ImageCarouselAdapter extends RecyclerView.Adapter<ImageCarouselAdapter.ViewHolder> {
+    private List<String> imageUris;
+    private Context context;
+    private ImageCarouselAdapter.OnItemClickListener listener;
+    public ImageCarouselAdapter(Context context, List<String> imageUris) {
+        this.context = context;
+        this.imageUris = imageUris;
+    }
+    public interface OnItemClickListener {
+        void onItemClick(String imageUri);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        ImageView imageView = new ImageView(context);
+        imageView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        return new ViewHolder(imageView);
+    }
+
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        String imageUri = imageUris.get(position);
+        Glide.with(context)
+                .load(imageUri)
+                .into(holder.imageView);
+        holder.bind(imageUri, listener); // Call the bind method here
+    }
+
+    @Override
+    public int getItemCount() {
+        return imageUris.size();
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView imageView;
+
+        ViewHolder(ImageView itemView) {
+            super(itemView);
+            imageView = itemView;
+        }
+
+        void bind(final String imageUri, final ImageCarouselAdapter.OnItemClickListener listener) {
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        listener.onItemClick(imageUri);
+                    }
+                }
+            });
+        }
+    }
+
 }

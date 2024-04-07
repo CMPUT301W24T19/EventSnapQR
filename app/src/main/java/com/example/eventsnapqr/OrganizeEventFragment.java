@@ -1,6 +1,8 @@
 package com.example.eventsnapqr;
 
 import static android.graphics.ImageDecoder.decodeBitmap;
+import static androidx.camera.core.impl.utils.ContextUtil.getApplicationContext;
+
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationCallback;
@@ -25,8 +27,6 @@ import android.graphics.ImageDecoder;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -45,7 +45,9 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.fragment.app.Fragment;
@@ -53,7 +55,9 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
@@ -71,11 +75,7 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 
-
-import java.time.Instant;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -91,32 +91,22 @@ import java.util.Locale;
  */
 public class OrganizeEventFragment extends Fragment {
     private FusedLocationProviderClient fusedLocationClient;
-    private ImageView backButton;
+    private ImageView backButton, imageViewPoster;
     private ExtendedFloatingActionButton createEventButton;
-    private TextInputEditText editTextEventName;
-    private TextInputEditText editTextEventDesc;
-    private TextInputEditText editTextMaxAttendees;
-    private TextInputEditText editTextStartDate;
-    private TextInputEditText editTextStartTime;
-    private TextInputEditText editTextEndDate;
-    private TextInputEditText editTextEndTime;
-    private TextInputEditText uploadPosterButton;
-    private TextInputEditText editTextAddress;
-    private TextInputEditText editTextLocation;
+    private TextInputEditText editTextEventName, editTextEventDesc, editTextMaxAttendees, editTextStartDate,
+            editTextStartTime, editTextEndDate, editTextEndTime, editTextAddress, editTextLocation;
     private TextInputLayout inputTextLocation;
-    private Button locationButton;
-    private TextView removePosterTextView;
-    private TextInputLayout posterBox;
-    private Button reuseQRButton;
-    private String androidID;
+    private TextView removePosterTextView, uploadPosterHint;
+    private CardView cardViewPoster;
+    private MaterialButton reuseQRButton;
+    private String androidID, uriString, reusingQR;
     private FirebaseController firebaseController = new FirebaseController();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
     private Uri imageUri;
-    private String uriString;
-    private String reusingQR;
     private double latitude = 0.0;
     private double longitude = 0.0;
     private boolean eventCreated = false;
+    private boolean getLocation;
 
 
     /**
@@ -141,19 +131,18 @@ public class OrganizeEventFragment extends Fragment {
         backButton = view.findViewById(R.id.button_back_button);
         createEventButton = view.findViewById(R.id.extendedFabCreateEvent);
         editTextEventName = view.findViewById(R.id.editTextEventName);
-        editTextEventDesc = view.findViewById(R.id.edit_text_description);
+        editTextEventDesc = view.findViewById(R.id.editTextDescription);
         editTextMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
 
         editTextLocation = view.findViewById(R.id.editTextLocation);
         inputTextLocation = view.findViewById(R.id.inputTextLocation);
 
         reuseQRButton = view.findViewById(R.id.buttonReuseQR);
-        uploadPosterButton = view.findViewById(R.id.editTextPoster);
-        posterBox = view.findViewById(R.id.posterInput);
+        cardViewPoster = view.findViewById(R.id.posterCardView);
+        imageViewPoster = view.findViewById(R.id.imageViewPoster);
         removePosterTextView = view.findViewById(R.id.removePosterTextView);
+        uploadPosterHint = view.findViewById(R.id.textViewHint);
 
-
-        // set up date and time picker dialogs
         editTextStartDate = view.findViewById(R.id.editTextStartDate);
         editTextStartDate.setOnClickListener(v -> showDatePickerDialog(editTextStartDate));
 
@@ -165,85 +154,73 @@ public class OrganizeEventFragment extends Fragment {
 
         editTextEndTime = view.findViewById(R.id.editTextEndTime);
         editTextEndTime.setOnClickListener(v -> showTimePickerDialog(editTextEndTime));
+
         editTextAddress = view.findViewById(R.id.editTextAddress);
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         requestLocation();
+        getLocation = false;
 
         removePosterTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadPosterButton.setText("");
                 removePosterTextView.setVisibility(View.INVISIBLE);
-                posterBox.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
-                posterBox.setStartIconDrawable(android.R.drawable.ic_menu_upload);
-                posterBox.setBackground(null);
-                posterBox.setHint("Upload Poster");
+                Drawable uploadIcon = ContextCompat.getDrawable(getContext(), android.R.drawable.ic_menu_upload);
+                imageViewPoster.setImageDrawable(uploadIcon);
+                uploadPosterHint.setText("Upload Poster");
                 imageUri = null;
                 uriString = null;
             }
         });
 
+        imageViewPoster.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (imageUri != null) {
+                    try {
+                        uploadPosterHint.setText(null);
+                        int targetW = imageViewPoster.getWidth();
+                        int targetH = imageViewPoster.getHeight();
+                        Log.d("TAG", "run");
 
-        ActivityResultLauncher<PickVisualMediaRequest> choosePoster =
-                registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-                    if (uri != null) {
-                        try {
-                            InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
-                            Bitmap originalBitmap = BitmapFactory.decodeStream(inputStream);
-                            float scaleWidth = uploadPosterButton.getWidth() / (float) originalBitmap.getWidth();
-                            float scaleHeight = uploadPosterButton.getHeight() / (float) originalBitmap.getHeight();
-                            Matrix matrix = new Matrix();
-                            matrix.setScale(scaleWidth, scaleHeight);
-                            BitmapShader shader = new BitmapShader(originalBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-                            shader.setLocalMatrix(matrix);
-                            ShapeDrawable shapeDrawable = new ShapeDrawable(new RoundRectShape(new float[] {
-                                    50, 50, 50, 50, 50, 50, 50, 50 }, null, null));
-                            shapeDrawable.getPaint().setShader(shader);
-                            int shapeDrawableWidth = Math.min(uploadPosterButton.getWidth(), uploadPosterButton.getWidth());
-                            int shapeDrawableHeight = Math.min(uploadPosterButton.getHeight(), uploadPosterButton.getHeight());
-                            shapeDrawable.setBounds(0, 0, shapeDrawableWidth, shapeDrawableHeight);
-                            removePosterTextView.setVisibility(View.VISIBLE);
-                            uploadPosterButton.setBackground(shapeDrawable);
-                            posterBox.setStartIconDrawable(null);
-                            posterBox.setHint(null);
-                            posterBox.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_NONE);
-                            posterBox.setBackground(shapeDrawable);
+                        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                        bmOptions.inJustDecodeBounds = true;
+                        InputStream inputStream = requireContext().getContentResolver().openInputStream(imageUri);
+                        BitmapFactory.decodeStream(inputStream, null, bmOptions);
+                        inputStream.close();
 
-                            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), originalBitmap);
-                            roundedBitmapDrawable.setCornerRadius(getResources().getDimension(R.dimen.corner_radius));
-                            roundedBitmapDrawable.setAntiAlias(true);
+                        int photoW = bmOptions.outWidth;
+                        int photoH = bmOptions.outHeight;
 
-                            ViewTreeObserver vto = uploadPosterButton.getViewTreeObserver();
-                            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                                @Override
-                                public void onGlobalLayout() {
-                                    uploadPosterButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        int scaleFactor = Math.max(1, Math.min(photoW / targetW, photoH / targetH));
 
-                                    int buttonWidth = uploadPosterButton.getWidth();
-                                    int buttonHeight = uploadPosterButton.getHeight();
-                                    Log.d("TAG", "Button dimensions: " + buttonWidth + "x" + buttonHeight);
-                                    roundedBitmapDrawable.setBounds(0, 0, buttonWidth, buttonHeight);
+                        bmOptions.inJustDecodeBounds = false;
+                        bmOptions.inSampleSize = scaleFactor;
+                        bmOptions.inPurgeable = true;
 
-                                    uploadPosterButton.setBackground(roundedBitmapDrawable);
-                                    uploadPosterButton.setHint(null);
-                                    removePosterTextView.setVisibility(View.VISIBLE);
+                        inputStream = requireContext().getContentResolver().openInputStream(imageUri);
+                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream, null, bmOptions);
+                        inputStream.close();
+                        imageViewPoster.setImageBitmap(bitmap);
+                        //imageViewPoster.post(() -> imageViewPoster.setImageBitmap(bitmap));
 
-                                    Drawable backgroundDrawable = uploadPosterButton.getBackground();
-                                    if (backgroundDrawable != null) {
-                                        Log.d("TAG", "Background Drawable set: " + backgroundDrawable.toString());
-                                    } else {
-                                        Log.d("TAG", "Background Drawable is null");
-                                    }
-                                }
-                            });
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                        imageUri = uri;
-                    } else {
-                        Log.d("TAG", "No media selected");
+                        removePosterTextView.setVisibility(View.VISIBLE);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                });
+                }
+            }
+        });
+
+        ActivityResultLauncher<PickVisualMediaRequest> choosePoster = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+            if (uri != null) {
+                imageUri = uri;
+                imageViewPoster.setImageURI(uri);
+            }
+        });
+
 
         /**
          * Credits: https://stackoverflow.com/questions/55427308/scaning-qrcode-from-image-not-from-camera-using-zxing
@@ -318,13 +295,13 @@ public class OrganizeEventFragment extends Fragment {
 
         backButton.setOnClickListener(v -> getActivity().finish());
         createEventButton.setOnClickListener(v -> {
-            if (validateInput() && !eventCreated) {
+            if (validateInput(view) && !eventCreated) {
                 eventCreated = true;
                 createEvent();
             }
         });
 
-        uploadPosterButton.setOnClickListener(new View.OnClickListener() {
+        cardViewPoster.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 choosePoster.launch(new PickVisualMediaRequest.Builder()
@@ -342,7 +319,10 @@ public class OrganizeEventFragment extends Fragment {
             }
         });
         editTextLocation.setOnClickListener(v -> {
-            requestCurrentLocation();
+            if (!getLocation) {
+                getLocation = true;
+                requestCurrentLocation();
+            }
         });
         return view;
     }
@@ -442,6 +422,7 @@ public class OrganizeEventFragment extends Fragment {
         Log.d(latString, longString);
         if (editTextLocation != null) {
             String locationText = String.format(Locale.getDefault(), "%.5f, %.5f", latitude, longitude);
+            Log.d("TAG", "true");
             editTextLocation.setText(locationText);
         }
     }
@@ -450,11 +431,8 @@ public class OrganizeEventFragment extends Fragment {
      * validate each input field before creating an event
      * @return
      */
-    private boolean validateInput() {
+    private boolean validateInput(View view) {
         boolean isValid = true;
-
-        // Initialize your EditText variables if not already done
-        // Assuming editTextEventName, editTextEventDesc, etc. are already defined
 
         String eventName = editTextEventName.getText().toString().trim();
         String eventDesc = editTextEventDesc.getText().toString().trim();
@@ -463,6 +441,7 @@ public class OrganizeEventFragment extends Fragment {
         String eventEndTime = editTextEndTime.getText().toString().trim();
         String eventEndDate = editTextEndDate.getText().toString().trim();
         String eventAddress = editTextAddress.getText().toString().trim();
+        String maxAttendeesString = editTextMaxAttendees.getText().toString().trim();
 
         if (eventName.isEmpty()) {
             editTextEventName.setError("Event Name Required");
@@ -474,6 +453,14 @@ public class OrganizeEventFragment extends Fragment {
             isValid = false;
         }
 
+<<<<<<< HEAD
+=======
+        if (eventAddress.isEmpty()) {
+            editTextAddress.setError("Event Address Required");
+            isValid = false;
+        }
+
+>>>>>>> 8510e57ed77c607e4b0983a088f4df5c68992373
         if (eventStartDate.isEmpty()) {
             editTextStartDate.setError("Start Date Required");
             isValid = false;
@@ -494,9 +481,17 @@ public class OrganizeEventFragment extends Fragment {
             isValid = false;
         }
 
-        // Return true if no errors were found, false otherwise
+        if (!maxAttendeesString.isEmpty()) {
+            int maxAttendees = Integer.parseInt(maxAttendeesString);
+            if (maxAttendees < 1) {
+                editTextMaxAttendees.setError("Minimum 1 Attendee");
+                isValid = false;
+            }
+        }
+
         return isValid;
     }
+
 
 
     /**

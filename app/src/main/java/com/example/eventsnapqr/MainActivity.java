@@ -48,22 +48,8 @@ public class MainActivity extends AppCompatActivity {
         }
         FirebaseController.checkUserExists(androidId, listener);
         FirebaseController firebaseController = new FirebaseController();
-        FirebaseController.AttendeeCheckCallback attendeeCheckCallback = new FirebaseController.AttendeeCheckCallback() {
-            @Override
-            public void onChecked(boolean isAttendee, Event event) {
-                if(isAttendee){
-                    firebaseController.listenForAnnouncements(getApplicationContext(), event);
-                }
-            }
-        };
-        firebaseController.getAllEvents(new FirebaseController.OnEventsLoadedListener() {
-            @Override
-            public void onEventsLoaded(ArrayList<Event> events) {
-                for(Event event: events){
-                    firebaseController.isAttendee(androidId, event, attendeeCheckCallback);
-                }
-            }
-        });
+
+
     }
 
     /**
@@ -83,7 +69,23 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
-
+        FirebaseController firebaseController = new FirebaseController();
+        FirebaseController.AttendeeCheckCallback attendeeCheckCallback = new FirebaseController.AttendeeCheckCallback() {
+            @Override
+            public void onChecked(boolean isAttendee, Event event) {
+                if(isAttendee){
+                    firebaseController.listenForAnnouncements(getApplicationContext(), event);
+                }
+            }
+        };
+        firebaseController.getAllEvents(new FirebaseController.OnEventsLoadedListener() {
+            @Override
+            public void onEventsLoaded(ArrayList<Event> events) {
+                for(Event event: events){
+                    firebaseController.isAttendee(androidId, event, attendeeCheckCallback);
+                }
+            }
+        });
         ContentResolver contentResolver = getBaseContext().getContentResolver();
         androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
         listener = new FirebaseController.Authenticator() {

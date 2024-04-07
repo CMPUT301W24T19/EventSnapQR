@@ -1,15 +1,10 @@
 package com.example.eventsnapqr;
 
-import static androidx.core.content.ContentProviderCompat.requireContext;
-import static androidx.fragment.app.FragmentManager.TAG;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -21,8 +16,8 @@ import android.os.Bundle;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -30,11 +25,13 @@ import com.google.zxing.integration.android.IntentResult;
 import android.Manifest;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,11 +64,15 @@ public class ScanQRActivity extends AppCompatActivity {
     private String eventId;
     private LocationManager locationManager;
     private LocationListener locationListener;
-
     private double latitudeNow;
     private double longitudeNow;
+    private TextView qrMessageTextView;
+    private Button miscButton;
+    private ExtendedFloatingActionButton scanButton;
+    private ImageView backButton;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final int PERMISSION_REQUEST_LOCATION = 2;
+    private ProgressBar progressBar;
 
     /**
      * What should be executed when the fragment is created
@@ -82,7 +83,7 @@ public class ScanQRActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_scan_qr);
         userId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
 
         // Initialize LocationManager
@@ -92,7 +93,25 @@ public class ScanQRActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
-        // Define location listener
+        qrMessageTextView = findViewById(R.id.qrMessage);
+        miscButton = findViewById(R.id.miscButton);
+        backButton = findViewById(R.id.button_back);
+        scanButton = findViewById(R.id.scan_qr_button);
+        progressBar = findViewById(R.id.loadingProgressBar);
+
+        backButton.setOnClickListener(view -> finish());
+
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = getIntent();
+                Log.d("TAG", "true");
+                finish();
+                startActivity(intent);
+            }
+        });
+
+        // Defining location listener
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -126,7 +145,8 @@ public class ScanQRActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted, request it
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_LOCATION);
+            // ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_LOCATION);
+            Log.e("ScanQR Activity", "Location is not enabled");
         } else {
             // Permission is granted, request location updates
             if (provider != null) {
@@ -168,7 +188,8 @@ public class ScanQRActivity extends AppCompatActivity {
             }
         } else {
             // Permission not granted, request it
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            Log.e("Scan QR ", "Location services (GPS) are not enabled");
         }
     }
 
@@ -185,44 +206,9 @@ public class ScanQRActivity extends AppCompatActivity {
         integrator.initiateScan();
     }
 
-    /**
-     * if the user has not signed up scanned event, give them the option to view the event details
-     * or to return to the main page
-     *
-     * @param eventId identifier of the given event
-     */
-    private void notSignedUpDialog(String eventId) {
-        if (!isFinishing()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-            builder.setTitle("Not Signed-Up for Event")
-                    .setPositiveButton("View Event Details", (dialog, which) -> {
-
-                        Intent intent = new Intent(ScanQRActivity.this, BrowseEventsActivity.class);
-                        intent.putExtra("eventID", eventId);
-                        startActivity(intent);
-
-                    })
-                    .setNegativeButton("Return", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            finish();
-                        }
-                    })
-                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                        @Override
-                        public void onDismiss(DialogInterface dialog) {
-                            // finish activity if dialog is dismissed without button press
-                            finish();
-                        }
-                    })
-                    .create()
-                    .show();
-        }
-    }
-
 
     /**
-     * display an alert dialog notifying the user they have successfully checked into the event
-     * and return to the main page
+     * update the user if they have successfully checked into the event
      *
      * @param eventId the unique identifier of the given event
      */
@@ -263,36 +249,14 @@ public class ScanQRActivity extends AppCompatActivity {
                             // Use latitude and longitude variables here
                             Log.d("ScanQRActivity", "Latitude: " + latitudeNow + ", Longitude: " + longitudeNow);
 
+                            qrMessageTextView.setText("Checked into " + event.getEventName() + " for the " + count + getSuffix(count) + " time!");
+                            qrMessageTextView.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.GONE);
 
-                            AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-                            builder.setTitle("Checked into " + event.getEventName() + " for the " + count + getSuffix(count) + " time!")
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            finish();
-                                        }
-                                    })
-                                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                        @Override
-                                        public void onDismiss(DialogInterface dialog) {
-                                            finish();
-                                        }
-                                    });
-                            builder.create().show();
                         } else {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-                            builder.setMessage("Failed to retrieve event details.")
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            finish();
-                                        }
-                                    })
-                                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                        @Override
-                                        public void onDismiss(DialogInterface dialog) {
-                                            finish();
-                                        }
-                                    });
-                            builder.create().show();
+                            qrMessageTextView.setText("Failed to retrieve event details.");
+                            qrMessageTextView.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
                 });
@@ -300,28 +264,109 @@ public class ScanQRActivity extends AppCompatActivity {
 
             @Override
             public void onCheckInFailure(Exception e) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-                builder.setMessage("Failed to increment check-in count.")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                finish();
-                            }
-                        })
-                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                            @Override
-                            public void onDismiss(DialogInterface dialog) {
-                                // Finish activity if dialog is dismissed without user interaction
-                                finish();
-                            }
-                        });
-                builder.create().show();
+                qrMessageTextView.setText("Failed to increment check-in count.");
             }
         });
     }
 
+
+
+    /**
+     * handles what to do with the content of the QR code
+     *
+     * @param requestCode The integer request code originally supplied to
+     *                    startActivityForResult(), allowing you to identify who this
+     *                    result came from.
+     * @param resultCode  The integer result code returned by the child activity
+     *                    through its setResult().
+     * @param data        An Intent, which can return result data to the caller
+     *                    (various data can be attached to Intent "extras").
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        progressBar.setVisibility(View.VISIBLE);
+        qrMessageTextView.setVisibility(View.INVISIBLE);
+        IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (intentResult != null) {
+            String contents = intentResult.getContents();
+            if (contents != null) {
+
+                Log.d("ScanQR", "QR code content: " + contents); // Log the content of the QR code
+
+                eventId = contents.trim();
+                contents = contents.trim();
+
+                if (!contents.startsWith("eventsnapqr/")) { // if a invalid qr is scanned
+                    invalidQR();
+                    return;
+                } else if (contents.startsWith("eventsnapqr/")) { // if a valied qr is scanned
+                    eventId = contents.substring("eventsnapqr/".length());
+
+                    FirebaseController.getInstance().checkUserInAttendees(eventId, userId, new FirebaseController.OnUserInAttendeesListener() {
+                        @Override
+                        public void onUserInAttendees(boolean isInAttendees) {
+                            if (isInAttendees) {
+                                Log.d("Scan QR Activity", "User is in attendees");
+                                checkIn(eventId);
+                            } else {
+                                Log.d("Scan QR Activity", "User is not in attendees");
+                                notSignedUp(eventId);
+                            }
+                        }
+
+                        @Override
+                        public void onCheckFailed(Exception e) {
+                            Log.e("Scan QR Activity", "User in Event attendees check failed: " + e.getMessage());
+                            invalidQR();
+                        }
+                    });
+                } else { // case when no QR code was scanned before camera closed
+                    Log.d("Scan QR Activity", "No QR code scanned before camera closed");
+                    finish();
+                }
+            } else {
+                progressBar.setVisibility(View.GONE);
+                qrMessageTextView.setVisibility(View.VISIBLE);
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+    }
+
+    /**
+     * if the user has not signed up scanned event, give them the option to view the event details
+     * or to return to the main page
+     *
+     * @param eventId identifier of the given event
+     */
+    private void notSignedUp(String eventId) {
+        qrMessageTextView.setText("Not signed up for this event.");
+        qrMessageTextView.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
+        miscButton.setText("View Event Details");
+        miscButton.setVisibility(View.VISIBLE);
+        miscButton.setOnClickListener(view -> {
+            Intent intent = new Intent(ScanQRActivity.this, BrowseEventsActivity.class);
+            intent.putExtra("eventID", eventId);
+            startActivity(intent);
+        });
+
+        backButton.setOnClickListener(view -> finish());
+    }
+
+    /**
+     * handles case where a qrcode is scanned, but not generated by EventSnapQR
+     */
+    private void invalidQR() {
+        if (!isFinishing()) {
+            qrMessageTextView.setText("Invalid QR Code");
+            qrMessageTextView.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            backButton.setOnClickListener(view -> finish());
+        }
+    }
+
     /**
      * returns the correct suffix for the given integer
-     *
      * @param n the number in which to retrieve the suffix
      */
     public String getSuffix(Integer n) {
@@ -338,86 +383,6 @@ public class ScanQRActivity extends AppCompatActivity {
                 default:
                     return "th";
             }
-        }
-    }
-
-    /**
-     * handles what to do with the content of the QR code
-     *
-     * @param requestCode The integer request code originally supplied to
-     *                    startActivityForResult(), allowing you to identify who this
-     *                    result came from.
-     * @param resultCode  The integer result code returned by the child activity
-     *                    through its setResult().
-     * @param data        An Intent, which can return result data to the caller
-     *                    (various data can be attached to Intent "extras").
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (intentResult != null) {
-            String contents = intentResult.getContents();
-            if (contents != null) {
-
-                Log.d("ScanQR", "QR code content: " + contents); // Log the content of the QR code
-
-                eventId = contents.trim();
-                contents = contents.trim();
-
-                if (!contents.startsWith("eventsnapqr/")) { // if a invalid qr is scanned
-                    showInvalidQRContentDialog();
-                    return;
-                } else if (contents.startsWith("eventsnapqr/")) { // if a valied qr is scanned
-                    eventId = contents.substring("eventsnapqr/".length());
-
-                    FirebaseController.getInstance().checkUserInAttendees(eventId, userId, new FirebaseController.OnUserInAttendeesListener() {
-                        @Override
-                        public void onUserInAttendees(boolean isInAttendees) {
-                            if (isInAttendees) {
-                                Log.d("Scan QR Activity", "User is in attendees");
-                                checkIn(eventId);
-                            } else {
-                                Log.d("Scan QR Activity", "User is not in attendees");
-                                notSignedUpDialog(eventId);
-                            }
-                        }
-
-                        @Override
-                        public void onCheckFailed(Exception e) {
-                            Log.e("Scan QR Activity", "User in Event attendees check failed: " + e.getMessage());
-                            showInvalidQRContentDialog();
-                        }
-                    });
-                } else { // case when no QR code was scanned before camera closed
-                    Log.d("Scan QR Activity", "No QR code scanned before camera closed");
-                    finish();
-                }
-            } else {
-                super.onActivityResult(requestCode, resultCode, data);
-            }
-        }
-    }
-    /**
-     * Displays a dialog to inform the user about the invalid QR code content.
-     */
-    private void showInvalidQRContentDialog () {
-        if (!isFinishing()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ScanQRActivity.this);
-            builder.setTitle("Invalid QR Code Content")
-                    .setMessage("The scanned QR code contains an invalid content.")
-                    .setPositiveButton("Scan Another QR Code", (dialog, which) -> {
-                        Intent intent = getIntent();
-                        finish();
-                        startActivity(intent);
-                    })
-                    .setNegativeButton("Return", (dialog, which) -> {
-                        finish();
-                    })
-                    .setOnDismissListener(dialog -> {
-                        finish();
-                    })
-                    .create()
-                    .show();
         }
     }
 }

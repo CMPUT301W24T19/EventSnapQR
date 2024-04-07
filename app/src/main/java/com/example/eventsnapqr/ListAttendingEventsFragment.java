@@ -12,19 +12,27 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,6 +44,7 @@ public class ListAttendingEventsFragment extends Fragment {
     private List<Event> attendingEvents;
     private FirebaseFirestore db;
     private String userId;
+    private TextView noEventsText; // empty list message
 
 
     /**
@@ -61,6 +70,8 @@ public class ListAttendingEventsFragment extends Fragment {
         eventListView.setAdapter(eventAdapter);
         userId = Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         db = FirebaseFirestore.getInstance();
+        eventListView.setVisibility(View.INVISIBLE);
+        noEventsText = view.findViewById(R.id.noEventsTextView);
         loadAttendingEvents(userId, loadingProgressBar);
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
@@ -81,45 +92,74 @@ public class ListAttendingEventsFragment extends Fragment {
         db.collection("users").document(userId).collection("promisedEvents")
                 .get()
                 .addOnCompleteListener(task -> {
-                    loadingProgressBar.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
                         attendingEvents.clear();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String eventId = document.getId();
-                            db.collection("events").document(eventId).get()
-                                    .addOnSuccessListener(eventDocument -> {
-                                        if (eventDocument.exists()) {
-                                            Long maxAttendeesLong = document.getLong("maxAttendees");
-                                            int maxAttendees = (maxAttendeesLong != null) ? maxAttendeesLong.intValue() : 0;
-                                            String eventName = eventDocument.getString("eventName");
-                                            String organizerId = eventDocument.getString("organizerID");
-                                            String posterURI = eventDocument.getString("posterURI");
+                        int[] i = {0};
+                        QuerySnapshot documents = task.getResult();
+                        if (documents.size() > 0) {
+                            noEventsText.setVisibility(View.INVISIBLE);
+                            for (QueryDocumentSnapshot document : documents) {
+                                String eventId = document.getId();
+                                db.collection("events").document(eventId).get()
+                                        .addOnSuccessListener(eventDocument -> {
+                                            if (eventDocument.exists()) {
+                                                Long maxAttendeesLong = eventDocument.getLong("maxAttendees");
+                                                int maxAttendees = (maxAttendeesLong != null) ? maxAttendeesLong.intValue() : 0;
+                                                String eventName = eventDocument.getString("eventName");
+                                                String organizerId = eventDocument.getString("organizerID");
+                                                String posterURI = eventDocument.getString("posterURI");
 
-                                            FirebaseController.getInstance().getUser(organizerId, user -> {
-                                                if (user != null) {
-                                                    Event event = new Event(
-                                                            user,
-                                                            eventName,
-                                                            eventDocument.getString("description"),
-                                                            posterURI,
-                                                            maxAttendees,
-                                                            eventId,
-                                                            eventDocument.getDate("eventStartDateTime"),
-                                                            eventDocument.getDate("eventEndDateTime"),
-                                                            eventDocument.getString("address"),
-                                                            eventDocument.getBoolean("active")
-                                                    );
-                                                    attendingEvents.add(event);
-                                                    eventAdapter.notifyDataSetChanged();
-                                                } else {
-                                                    Toast.makeText(requireContext(), "Organizer not found for event: " + eventId, Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
-                                        } else {
-                                            Log.e("Error", "Event document doesn't exist");
-                                        }
-                                    })
-                                    .addOnFailureListener(e -> Log.e("Error", "Error getting event details: ", e));
+                                                FirebaseController.getInstance().getUser(organizerId, user -> {
+                                                    if (user != null) {
+                                                        Date startDateTime = null;
+                                                        Date endDateTime = null;
+                                                        Timestamp startTimestamp = eventDocument.getTimestamp("eventStartDateTime");
+                                                        Timestamp endTimestamp = eventDocument.getTimestamp("eventEndDateTime");
+
+                                                        if (startTimestamp != null) {
+                                                            startDateTime = startTimestamp.toDate();
+                                                        }
+                                                        if (endTimestamp != null) {
+                                                            endDateTime = endTimestamp.toDate();
+                                                        }
+
+                                                        Event event = new Event(
+                                                                user,
+                                                                eventName,
+                                                                eventDocument.getString("description"),
+                                                                posterURI,
+                                                                maxAttendees,
+                                                                eventId,
+                                                                startDateTime,
+                                                                endDateTime,
+                                                                eventDocument.getString("address"),
+                                                                eventDocument.getBoolean("active")
+                                                        );
+                                                        attendingEvents.add(event);
+                                                        if (i[0] == documents.size() - 1) {
+                                                            attendingEvents.sort(Comparator.comparing(o -> o.getEventName().toLowerCase()));
+                                                            eventListView.setVisibility(View.VISIBLE);
+                                                            loadingProgressBar.setVisibility(View.GONE);
+                                                            eventAdapter.notifyDataSetChanged();
+                                                        }
+                                                    } else {
+                                                        Toast.makeText(requireContext(), "Organizer not found for event: " + eventId, Toast.LENGTH_SHORT).show();
+                                                    }
+                                                    i[0]++;
+                                                });
+                                            } else {
+                                                Log.e("Error", "Event document doesn't exist");
+                                                i[0]++;
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> Log.e("Error", "Error getting event details: ", e));
+                            }
+                        } else {
+                            eventListView.setVisibility(View.VISIBLE);
+                            loadingProgressBar.setVisibility(View.GONE);
+                            noEventsText.setVisibility(View.VISIBLE);
+                            noEventsText.setText("You are not signed-up to attend any events");
+                            eventAdapter.notifyDataSetChanged();
                         }
                     } else {
                         Log.e("Error", "Error getting attending events: ", task.getException());

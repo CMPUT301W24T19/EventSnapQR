@@ -1,8 +1,6 @@
 package com.example.eventsnapqr;
 
 import static android.app.PendingIntent.getActivity;
-import static androidx.camera.core.CameraXThreads.TAG;
-import static androidx.core.content.ContentProviderCompat.requireContext;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -56,26 +55,24 @@ public class ManageEventActivity extends AppCompatActivity {
     private List<String> attendeeNames, milestoneList, attendeeIds, checkedInNames, checkedInIds;
     private List<Integer> attendeeCheckedIn;
     private FirebaseFirestore db;
-    private String eventId;
     private View menuButton;
     private ImageView backButton;
     private Event currentEvent;
     private Switch filterSwitch;
     private Uri imageUri;
-    private String uriString;
-    private TextView totalAttendeesTextView;
-    private TextView totalCheckedInTextView;
+    private String uriString, eventId;
+    private TextView totalAttendeesTextView, totalCheckedInTextView, eventNameTextView,
+            milestonesLabel, attendeesLabel;
     private ActivityResultLauncher<PickVisualMediaRequest> choosePoster;
-    private int checkedInCount;
-    private int attendeeCount;
+    private int checkedInCount, attendeeCount;
     private ProgressBar loadingProgressBar;
-    private TextView eventNameTextView;
     private ExtendedFloatingActionButton fab;
     private List<HashMap<String, Object>> attendees;
     @Override
     public void onBackPressed() {
         if (isMapFragmentVisible()) {
             fab.setVisibility(View.VISIBLE);
+            menuButton.setVisibility(View.VISIBLE );
         }
         super.onBackPressed();
     }
@@ -108,6 +105,8 @@ public class ManageEventActivity extends AppCompatActivity {
         backButton = findViewById(R.id.button_back_button);
         totalAttendeesTextView = findViewById(R.id.total_attendees_label);
         totalCheckedInTextView = findViewById(R.id.total_checked_in_label);
+        attendeesLabel = findViewById(R.id.attendees_label);
+        milestonesLabel = findViewById(R.id.milestones_label);
         filterSwitch = findViewById(R.id.filter_switch);
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
         eventNameTextView = findViewById(R.id.page_name);
@@ -170,7 +169,7 @@ public class ManageEventActivity extends AppCompatActivity {
             }
         });
 
-        eventAdapter = new ArrayAdapter<String>(this, R.layout.list_attendees_layout, R.id.attendee_name, attendeeNames) {
+        eventAdapter = new ArrayAdapter<String>(this, R.layout.list_attendees, R.id.attendee_name, attendeeNames) {
             @NonNull
             @Override
             public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -181,6 +180,7 @@ public class ManageEventActivity extends AppCompatActivity {
 
                 if (attendeeCheckedIn.get(position) >= 1) {
                     checkMarkImageView.setVisibility(View.VISIBLE);
+                    checkMarkImageView.setColorFilter(ContextCompat.getColor(getContext(), R.color.coral));
                 } else {
                     checkMarkImageView.setVisibility(View.GONE);
                 }
@@ -193,7 +193,6 @@ public class ManageEventActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                attendeeListView.setVisibility(View.INVISIBLE);
                 if (filterSwitch.isChecked()) {
                     fetchAttendeeData(false, false);
                 } else {
@@ -357,10 +356,8 @@ public class ManageEventActivity extends AppCompatActivity {
 
         builder.setMessage(attendeeName + " has checked-in " + timesCheckedIn + " " + timesString + ".")
                 .setPositiveButton("View Profile", (dialog, id) -> {
-                    Intent intent = new Intent(this, MainActivity.class);
-                    intent.putExtra("fragmentToLoad", "ViewUserProfileFragment");
-                    // optionally, pass the attendee ID or any other information
-                    intent.putExtra("attendeeId", attendeeIds.get(position));
+                    Intent intent = new Intent(this, ViewUserProfileActivity.class);
+                    intent.putExtra("userId", attendeeIds.get(position));
                     startActivity(intent);
                 })
                 .setNegativeButton("Remove Attendee", (dialog, id) -> {
@@ -409,8 +406,6 @@ public class ManageEventActivity extends AppCompatActivity {
                 .show();
     }
 
-
-
     /**
      * displays dialog for an organizer to make an announcement
      */
@@ -428,19 +423,15 @@ public class ManageEventActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String announcement = editTextAnnouncement.getText().toString();
-
-                // Always update the event's announcements regardless of the switch's state
                 CollectionReference announcementsRef = db.collection("events").document(currentEvent.getEventID()).collection("announcements");
                 Map<String, Object> announcementData = new HashMap<>();
                 announcementData.put("message", announcement);
                 announcementData.put("timestamp", new Date());
-
+                announcementData.put("notify", switchEnableNotifications.isChecked()); // whether to notify
                 announcementsRef.add(announcementData)
                         .addOnSuccessListener(documentReference -> {
                             Toast.makeText(getApplicationContext(), "Announcement updated successfully", Toast.LENGTH_SHORT).show();
-                            if (switchEnableNotifications.isChecked()) {
-                                Toast.makeText(getApplicationContext(), "Notifications sent", Toast.LENGTH_SHORT).show();
-                            }
+
                         })
                         .addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Failed to update announcement", Toast.LENGTH_SHORT).show());
             }
@@ -454,8 +445,6 @@ public class ManageEventActivity extends AppCompatActivity {
 
         builder.show();
     }
-
-
 
     /**
      * uploads selected image to the database
@@ -505,9 +494,6 @@ public class ManageEventActivity extends AppCompatActivity {
                 intent.putExtra("eventId", eventId);
                 intent.putExtra("destination", "manage");
                 startActivity(intent);
-                //QRActivity qrDialogFragment = new QRActivity();
-                //qrDialogFragment.setArguments(bundle);
-                //qrDialogFragment.show(getSupportFragmentManager(), "qr_dialog_fragment");
                 return true;
             } else if (itemId == R.id.upload_poster) { // modify the associated poster
                 choosePoster.launch(new PickVisualMediaRequest.Builder()
@@ -525,6 +511,7 @@ public class ManageEventActivity extends AppCompatActivity {
                 return true;
             } else if (itemId == R.id.view_map) { // view map
                 fab.setVisibility(View.GONE);
+                menuButton.setVisibility(View.GONE);
                 String eventName = currentEvent.getEventName();
                 MapFragment mapFragment = new MapFragment(eventName);
                 FragmentManager fragmentManager = getSupportFragmentManager();
@@ -545,13 +532,13 @@ public class ManageEventActivity extends AppCompatActivity {
         loadingProgressBar.setVisibility(View.VISIBLE);
         attendeeListView.setVisibility(View.INVISIBLE);
         milestoneListView.setVisibility(View.INVISIBLE);
-        menuButton.setVisibility(View.INVISIBLE);
-        backButton.setVisibility(View.INVISIBLE);
         filterSwitch.setVisibility(View.INVISIBLE);
         totalAttendeesTextView.setVisibility(View.INVISIBLE);
         totalCheckedInTextView.setVisibility(View.INVISIBLE);
         eventNameTextView.setVisibility(View.INVISIBLE);
         fab.setVisibility(View.INVISIBLE);
+        attendeesLabel.setVisibility(View.INVISIBLE);
+        milestonesLabel.setVisibility(View.INVISIBLE);
     }
 
     private void turnOffLoading() {
@@ -565,5 +552,7 @@ public class ManageEventActivity extends AppCompatActivity {
         totalCheckedInTextView.setVisibility(View.VISIBLE);
         eventNameTextView.setVisibility(View.VISIBLE);
         fab.setVisibility(View.VISIBLE);
+        attendeesLabel.setVisibility(View.VISIBLE);
+        milestonesLabel.setVisibility(View.VISIBLE);
     }
 }
