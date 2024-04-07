@@ -34,6 +34,7 @@ import android.view.ViewParent;
 import androidx.annotation.NonNull;
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -93,12 +94,15 @@ public class MassUserTest {
                     FirebaseController.getInstance().getEvent(doc.getId(), new FirebaseController.OnEventRetrievedListener() {
                         @Override
                         public void onEventRetrieved(Event event) {
-                            FirebaseController.getInstance().deleteEvent(event, new FirebaseController.FirestoreOperationCallback() {
-                                @Override
-                                public void onCompleted() {
-                                    firebaseFirestore.collection("events").document(doc.getId()).delete();
-                                }
-                            });
+                            Log.d("TAG", "" + event);
+                            if (event != null) {
+                                FirebaseController.getInstance().deleteEvent(event, new FirebaseController.FirestoreOperationCallback() {
+                                    @Override
+                                    public void onCompleted() {
+                                        firebaseFirestore.collection("events").document(doc.getId()).delete();
+                                    }
+                                });
+                            }
                         }
                     });
                 }
@@ -118,7 +122,9 @@ public class MassUserTest {
                     FirebaseController.getInstance().getUser(doc.getId(), new FirebaseController.OnUserRetrievedListener() {
                         @Override
                         public void onUserRetrieved(User user) {
-                            FirebaseController.getInstance().deleteUser(user);
+                            if (user != null) {
+                                FirebaseController.getInstance().deleteUser(user);
+                            }
                         }
                     });
                 }
@@ -258,6 +264,30 @@ public class MassUserTest {
     @Test
     public void browseUserTest() {
         CountDownLatch latch = new CountDownLatch(1);
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        userList.sort(Comparator.comparing(o -> o.getName().toLowerCase()));
+        onView(withId(R.id.admin_button)).perform(click());
+        onView(withId(R.id.buttonBrowseUserProfiles)).perform(click());
+        //onView(withId(R.id.user_profile_pictures))
+        //        .check(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        onData(anything()).inAdapterView(withId(R.id.user_profile_pictures)).atPosition(0).onChildView(withId(R.id.text_user_name)).check(matches(withText(userList.get(0).getName())));
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void manyAttendeeTest() {
+        CountDownLatch latch = new CountDownLatch(1);
+
         try {
             latch.await(10, TimeUnit.SECONDS);
             Thread.sleep(1000);
