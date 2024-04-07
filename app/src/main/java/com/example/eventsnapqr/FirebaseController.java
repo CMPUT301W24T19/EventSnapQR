@@ -507,18 +507,23 @@ public class FirebaseController {
                                 case ADDED:
                                     String announcementID = dc.getDocument().getId();
                                     ContentResolver contentResolver = context.getContentResolver();
-                                    markSeenNotification(announcementID, Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID), new NotificationSeenCallback() {
-                                        @Override
-                                        public void onSeen(boolean seen) {
-                                            if(!seen){
-                                                if(!event.getOrganizer().getDeviceID().equals(Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID))){
-                                                    String announcementMessage = dc.getDocument().getString("message");
-                                                    makeNotification(context, announcementMessage, event);
-                                                }
+                                    Boolean toNotify = (Boolean)dc.getDocument().get("notify");
 
+                                    if(toNotify){
+                                        markSeenNotification(announcementID, Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID), new NotificationSeenCallback() {
+                                            @Override
+                                            public void onSeen(boolean seen) {
+                                                if(!seen){
+                                                    if(!event.getOrganizer().getDeviceID().equals(Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID))){
+                                                        String announcementMessage = dc.getDocument().getString("message");
+                                                        makeNotification(context, announcementMessage, event);
+                                                    }
+
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
+                                    }
+
                                     break;
                                 case MODIFIED:
                                 case REMOVED:
