@@ -12,7 +12,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -25,6 +24,7 @@ import com.bumptech.glide.Glide;
 //import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -42,32 +42,21 @@ import java.util.List;
  * notification switches have no yet been implemented
  */
 public class UserInfoActivity extends AppCompatActivity {
-    private ImageView buttonBackButton;
-    private ImageView buttonAddImage;
-    private ImageView buttonRemoveImage;
+    private ImageView buttonBackButton, buttonAddImage, buttonRemoveImage, profilePictureImage, editButton;
     private FirebaseStorage storage = FirebaseStorage.getInstance();
     private StorageReference storageRef = storage.getReference();
     private String androidID;
-    private ImageView profilePictureImage;
     private String profilePictureURI;
-    private TextInputEditText userName;
-    private TextInputLayout userNameLayout;
-    private TextInputEditText email;
-    private TextInputLayout emailLayout;
-    private TextInputEditText phoneNumber;
-    private TextInputLayout numberLayout;
-    private TextInputEditText homepage;
-    private TextInputLayout homepageLayout;
+    private TextInputEditText userName, email, phoneNumber, homepage;
+    private TextInputLayout userNameLayout, emailLayout, numberLayout,homepageLayout;
     private ExtendedFloatingActionButton saveButton;
     private boolean editMode = false;
-    private ImageView editButton;
     private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
-    private Button locationSwitch;
-    private Button notificationSwitch;
+    private MaterialButton locationButton;
+    private Button notificationButton;
     private boolean showSwitches;
     private final int PERMISSION_REQUEST_CODE = 100;
     String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
-    //String[] notificationPermissions = {Manifest.permission.ACCESS_NOTIFICATION_POLICY, Manifest.permission.POST_NOTIFICATIONS}; // might not need NOTIFCATION_POLICY
     String[] notificationPermissions = {Manifest.permission.POST_NOTIFICATIONS};
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
@@ -107,11 +96,11 @@ public class UserInfoActivity extends AppCompatActivity {
         homepageLayout = findViewById(R.id.textInputHomepage);
         saveButton = findViewById(R.id.saveButton);
         editButton = findViewById(R.id.button_edit_profile_button);
-        locationSwitch = findViewById(R.id.switchLocation);
-        notificationSwitch = findViewById(R.id.switchNotifications);
+        locationButton = findViewById(R.id.locationButton);
+        notificationButton = findViewById(R.id.notificationButton);
 
 
-        notificationSwitch.setOnClickListener(new View.OnClickListener() {
+        notificationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
@@ -121,7 +110,7 @@ public class UserInfoActivity extends AppCompatActivity {
         });
 
 
-        locationSwitch.setOnClickListener(new View.OnClickListener() {
+        locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -147,8 +136,8 @@ public class UserInfoActivity extends AppCompatActivity {
         showSwitches = extra.getBoolean("showSwitches");
 
         if (!showSwitches) {
-            locationSwitch.setVisibility(View.INVISIBLE);
-            notificationSwitch.setVisibility(View.INVISIBLE);
+            locationButton.setVisibility(View.INVISIBLE);
+            notificationButton.setVisibility(View.INVISIBLE);
         }
 
         FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
@@ -342,6 +331,11 @@ public class UserInfoActivity extends AppCompatActivity {
                                     userName.setText(user.getName());
                                     Bitmap initialsImageBitmap = user.generateInitialsImage(userName.getText().toString());
                                     profilePictureImage.setImageBitmap(initialsImageBitmap);
+                                    // set tag for testing
+                                    profilePictureImage.setTag(userName.getText().toString().substring(0,2).toUpperCase());
+
+
+
                                 }
                             }
                         }

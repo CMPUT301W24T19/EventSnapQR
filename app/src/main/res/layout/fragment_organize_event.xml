@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background">
 
     <View
         android:id="@+id/horizontal_line"
@@ -28,7 +29,8 @@
         android:id="@+id/page_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Organize New Event"
+        android:text="Organize Event"
+        android:textColor="@color/black"
         android:textSize="22sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,40 +55,49 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:id="@+id/posterInput"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/posterCardView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
-                android:maxHeight="260dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginStart="32dp"
-                android:hint="Upload Poster"
-                android:textColorHint="@color/grey"
-                app:boxBackgroundColor="#00FFFFFF"
-                app:boxStrokeColor="@color/black"
-                app:boxStrokeWidth="2dp"
+                app:cardElevation="4dp"
+                android:backgroundTint="@color/greyer"
+                app:cardCornerRadius="4dp"
+                app:strokeColor="@color/black"
+                app:strokeWidth="1dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/inputTextPhoneNumber"
                 app:layout_constraintTop_toTopOf="parent"
                 android:clickable="true"
-                android:focusable="true"
-                app:endIconMode="custom"
-                app:startIconDrawable="@android:drawable/ic_menu_upload"
-                app:startIconContentDescription="Upload Poster"
-                app:startIconTint="@null">
+                android:focusable="true">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextPoster"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="260dp"
-                    android:focusable="false"
-                    android:cursorVisible="false"
-                    android:textColor="@color/black"
-                    android:gravity="center"
-                    android:inputType="none"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/imageViewPoster"
+                        android:layout_width="match_parent"
+                        android:layout_height="260dp"
+                        android:scaleType="center"
+                        android:src="@android:drawable/ic_menu_upload"
+                        android:contentDescription="Upload Poster"
+                        android:gravity="center"/>
+
+                    <TextView
+                        android:id="@+id/textViewHint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start|center"
+                        android:layout_marginLeft="17dp"
+                        android:text="Upload Poster"
+                        android:textColor="@color/black"
+                        android:textSize="17dp"
+                        android:visibility="visible"/>
+
+                </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:id="@+id/removePosterTextView"
@@ -100,7 +111,7 @@
                 app:layout_constraintBottom_toTopOf="@id/textInputUserName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/posterInput" />
+                app:layout_constraintTop_toBottomOf="@id/posterCardView" />
 
 
             <com.google.android.material.textfield.TextInputLayout
@@ -108,28 +119,27 @@
                 android:id="@+id/textInputUserName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginStart="32dp"
                 android:hint="Event Name"
                 app:boxBackgroundColor="#00FFFFFF"
                 app:boxStrokeColor="@color/black"
                 app:boxStrokeWidth="2dp"
-
                 app:counterEnabled="true"
                 app:counterMaxLength="65"
-                android:textColorHint="@color/grey"
+                android:textColorHint="@color/black"
                 app:endIconMode="clear_text"
                 app:helperTextTextColor="@color/red"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/inputTextPhoneNumber"
-                app:layout_constraintTop_toBottomOf="@id/posterInput">
+                app:layout_constraintTop_toBottomOf="@id/posterCardView">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextEventName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"
-                    android:maxLength="65"/>
+                    android:maxLength="65" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -140,17 +150,16 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
                 android:hint="Description"
-                android:textColorHint="@color/grey"
                 app:counterEnabled="true"
                 app:counterMaxLength="100"
                 app:boxBackgroundColor="#00FFFFFF"
                 app:boxStrokeColor="@color/black"
                 app:boxStrokeWidth="2dp"
-                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                 app:endIconMode="clear_text"
                 app:helperTextTextColor="@color/red"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:textColorHint="@color/black"
                 app:layout_constraintTop_toBottomOf="@id/textInputUserName">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -159,7 +168,8 @@
                     android:layout_height="match_parent"
                     android:textColor="@color/black"
                     android:maxLength="100"
-                    android:gravity="top|start"/>
+                    android:gravity="top|start"
+                    />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -169,16 +179,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
-                android:textColorHint="@color/grey"
                 app:boxBackgroundColor="#00FFFFFF"
                 app:counterEnabled="true"
                 app:counterMaxLength="65"
                 app:boxStrokeColor="@color/black"
                 app:boxStrokeWidth="2dp"
-                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                 android:hint="Address"
                 app:endIconMode="clear_text"
                 app:helperTextTextColor="@color/red"
+                android:textColorHint="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/inputTextMaxAttendees">
@@ -201,14 +210,13 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="6dp"
                 android:layout_marginEnd="8dp"
-                android:textColorHint="@color/grey"
                 android:hint="Start Date"
                 app:boxBackgroundColor="#00FFFFFF"
                 app:boxStrokeColor="@color/black"
                 app:endIconDrawable="@drawable/baseline_calendar_month_24"
                 app:boxStrokeWidth="2dp"
-                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                 app:endIconMode="clear_text"
+                android:textColorHint="@color/black"
                 app:helperTextTextColor="@color/red"
                 app:layout_constraintTop_toBottomOf="@id/inputTextLocation"
                 app:layout_constraintEnd_toStartOf="@+id/inputTextStartTime"
@@ -232,12 +240,11 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="6dp"
                 android:layout_marginEnd="32dp"
-                android:textColorHint="@color/grey"
                 app:boxBackgroundColor="#00FFFFFF"
                 app:boxStrokeColor="@color/black"
                 app:boxStrokeWidth="2dp"
-                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                 android:hint="Start Time"
+                android:textColorHint="@color/black"
                 app:endIconMode="clear_text"
                 app:helperTextTextColor="@color/red"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -261,14 +268,12 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="6dp"
                 android:layout_marginEnd="8dp"
-                android:textColorHint="@color/grey"
+                android:textColorHint="@color/black"
                 app:boxBackgroundColor="#00FFFFFF"
                 app:boxStrokeColor="@color/black"
                 app:boxStrokeWidth="2dp"
-                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                 android:hint="End Date"
                 app:endIconMode="clear_text"
-                app:helperTextTextColor="@color/red"
                 app:layout_constraintEnd_toStartOf="@+id/inputTextEndTime"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/inputTextStartDate">
@@ -291,11 +296,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="6dp"
                 android:layout_marginEnd="32dp"
-                android:textColorHint="@color/grey"
+                android:textColorHint="@color/black"
                 app:boxBackgroundColor="#00FFFFFF"
                 app:boxStrokeColor="@color/black"
                 app:boxStrokeWidth="2dp"
-                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                 android:hint="End Time"
                 app:endIconMode="clear_text"
                 app:helperTextTextColor="@color/red"
@@ -319,11 +323,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
-                android:textColorHint="@color/grey"
                 app:boxBackgroundColor="#00FFFFFF"
                 app:boxStrokeColor="@color/black"
                 app:boxStrokeWidth="2dp"
-                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
+                android:cursorVisible="false"
+                android:inputType="none"
+                android:textColorHint="@color/black"
+                android:focusable="true"
                 app:endIconMode="clear_text"
                 app:helperTextTextColor="@color/red"
                 android:hint="Location"
@@ -335,6 +341,7 @@
                     android:id="@+id/editTextLocation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="none"
                     android:focusable="false"
                     android:cursorVisible="false"
                     android:textColor="@color/black" />
@@ -347,18 +354,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="32dp"
                 android:hint="Max Attendees"
-                android:textColorHint="@color/grey"
+                android:textColorHint="@color/black"
                 app:boxBackgroundColor="#00FFFFFF"
                 app:counterEnabled="true"
                 app:counterMaxLength="4"
                 app:boxStrokeColor="@color/black"
                 app:boxStrokeWidth="2dp"
                 app:helperText="* Optional"
-                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/inputTextPhoneNumber"
                 app:layout_constraintStart_toEndOf="@+id/inputTextLocation"
-                app:layout_constraintTop_toBottomOf="@id/inputTextPhoneNumber">
+                app:layout_constraintTop_toBottomOf="@id/inputTextPhoneNumber"
+                >
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextMaxAttendees"
@@ -400,8 +407,9 @@
         android:text="Create Event"
         android:gravity="center"
         android:textColor="@color/black"
+        android:layout_marginEnd="12dp"
         app:backgroundTint="@color/coral"
-        android:layout_marginBottom="-4dp"
+        android:layout_marginBottom="-2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.95"
