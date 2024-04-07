@@ -84,7 +84,7 @@ public class MainPageFragment extends Fragment {
                 if(exists && !buttonAdminMainPage.isShown()){
                     buttonAdminMainPage.setVisibility(View.VISIBLE);
                 }else{
-                    buttonAdminMainPage.setVisibility(View.GONE);
+                    buttonAdminMainPage.setVisibility(View.INVISIBLE);
                 }
             }
         };
