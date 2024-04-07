@@ -92,7 +92,6 @@ public class MapFragmentOrganize extends Fragment {
         db = FirebaseFirestore.getInstance();
         if (getArguments() != null) {
             eventName = getArguments().getString("eventName");
-
             // Receive latitude and longitude if provided
             targetLatitude = getArguments().getDouble("latitude", 0.0);
             targetLongitude = getArguments().getDouble("longitude", 0.0);
