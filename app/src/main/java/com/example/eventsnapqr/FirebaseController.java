@@ -132,7 +132,12 @@ public class FirebaseController {
         String userId = user.getDeviceID();
 
         deleteOrganizedEvents(db, userId, () -> {
-            deleteUserFinalStep(db, userId);
+            deleteUserFinalStep(db, userId, new UserDeletedCallback() {
+                @Override
+                public void userDeleted() {
+                    // do nothing
+                }
+            });
         });
     }
 
@@ -163,13 +168,15 @@ public class FirebaseController {
                     }
                 });
     }
-
+    interface UserDeletedCallback{
+        void userDeleted();
+    }
     /**
      *
      * @param db
      * @param userId
      */
-    private void deleteUserFinalStep(FirebaseFirestore db, String userId) {
+    public void deleteUserFinalStep(FirebaseFirestore db, String userId, UserDeletedCallback callback) {
         CollectionReference notificationReference = db.collection("users").document(userId).collection("notifications");
         notificationReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -184,7 +191,7 @@ public class FirebaseController {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (i[0] == snapshot.size() - 1) {
                                         db.collection("users").document(userId).delete()
-                                                .addOnSuccessListener(aVoid -> Log.d("Delete User", "User successfully deleted: " + userId))
+                                                .addOnSuccessListener(aVoid -> {Log.d("Delete User", "User successfully deleted: " + userId); callback.userDeleted();})
                                                 .addOnFailureListener(e -> Log.e("Delete User", "Error deleting user: " + userId, e));
                                     }
                                     i[0]++;
@@ -194,12 +201,12 @@ public class FirebaseController {
                     }
                     else {
                         db.collection("users").document(userId).delete()
-                                .addOnSuccessListener(aVoid -> Log.d("Delete User", "User successfully deleted: " + userId))
+                                .addOnSuccessListener(aVoid -> {Log.d("Delete User", "User successfully deleted: " + userId); callback.userDeleted();})
                                 .addOnFailureListener(e -> Log.e("Delete User", "Error deleting user: " + userId, e));
                     }
                 } else {
                     db.collection("users").document(userId).delete()
-                            .addOnSuccessListener(aVoid -> Log.d("Delete User", "User successfully deleted: " + userId))
+                            .addOnSuccessListener(aVoid -> {Log.d("Delete User", "User successfully deleted: " + userId); callback.userDeleted();})
                             .addOnFailureListener(e -> Log.e("Delete User", "Error deleting user: " + userId, e));
                 }
             }
