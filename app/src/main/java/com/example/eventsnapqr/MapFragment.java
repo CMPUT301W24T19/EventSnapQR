@@ -101,6 +101,8 @@ public class MapFragment extends Fragment {
         Log.e("MapFragment", "Map clicked. Plotting attendees for event: " + eventName);
         plotEventAttendees(eventName);
 
+        // y do I need it
+
         // Request location permission
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // Permission granted, start requesting location updates
@@ -190,7 +192,7 @@ public class MapFragment extends Fragment {
                                                 Long checkINLong = document.getLong("checkedIn");
                                                 Log.e("MapFragment", "Found checkIN:  " + checkINLong);
 
-                                                if (checkINLong != null && !latitudeStr.isEmpty() && latitudeStr!=null && !longitudeStr.isEmpty() && longitudeStr!=null) {
+                                                if (checkINLong != null && !latitudeStr.isEmpty() && latitudeStr!=null && !longitudeStr.isEmpty() && longitudeStr!=null && latitudeStr != "0.0" && longitudeStr != "0.0") {
                                                     int checkIN = checkINLong.intValue();
 
                                                     // Convert latitude and longitude from strings to doubles

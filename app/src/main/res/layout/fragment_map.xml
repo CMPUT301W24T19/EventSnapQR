@@ -1,55 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
-    android:orientation="vertical"
-    android:padding="16dp"
-    tools:context=".MainActivity2">
+    tools:context=".OrganizeMapActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <View
+        android:id="@+id/horizontal_line"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="45dp"/>
+
+    <ImageView
+        android:id="@+id/button_back_button"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="?attr/actionModeCloseDrawable"
+        android:padding="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/page_name"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
-
-        <ImageView
-            android:id="@+id/button_back_button"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_gravity="center"
-            android:clickable="true"
-            android:src="?attr/actionModeCloseDrawable"
-            android:padding="5dp"/>
-
-        <TextView
-            android:id="@+id/page_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="16dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:text="Map of event"
-            android:textSize="20sp"/>
-
-    </LinearLayout>
+        android:text="Map"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/button_back_button"
+        app:layout_constraintBottom_toBottomOf="@id/button_back_button"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintHorizontal_bias="0.5"/>
 
     <FrameLayout
         android:id="@+id/mapContainer"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="16dp">
+        app:layout_constraintTop_toBottomOf="@+id/horizontal_line"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <org.osmdroid.views.MapView
             android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <!-- Marker layout -->
         <RelativeLayout
             android:id="@+id/markerLayout"
             android:layout_width="match_parent"
@@ -73,15 +78,22 @@
                 android:layout_centerHorizontal="true"
                 android:layout_below="@id/markerImage"
                 android:paddingTop="8dp" />
-
         </RelativeLayout>
-        <Button
-            android:id="@+id/saveLocationButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Save Location"
-            android:layout_marginTop="16dp"/>
     </FrameLayout>
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:textColor="@color/black"
+        android:backgroundTint="@color/coral"
+        app:strokeColor="@color/black"
+        app:strokeWidth="1dp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,9 +15,11 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ZoomControls;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -57,6 +59,9 @@ public class MapFragmentOrganize extends Fragment {
     private double targetLongitude = 0.0;
     private Marker lastMarker = null;
     private Marker initialMarker = null;
+
+    EditText addressTextBox;
+
 
     public MapFragmentOrganize() {
         // Required empty public constructor
@@ -99,6 +104,27 @@ public class MapFragmentOrganize extends Fragment {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
         mapView = view.findViewById(R.id.mapView);
+//        addressTextBox = view.findViewById(R.id.search_bar);
+//
+//        ZoomControls zoomControls = view.findViewById(R.id.zoomControls);
+//
+//        // Set listeners for zoom in and zoom out buttons
+//        zoomControls.setOnZoomInClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mapView.getController().zoomIn();
+//            }
+//        });
+//        zoomControls.setOnZoomOutClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mapView.getController().zoomOut();
+//            }
+//        });
+//
+//
+//
+
         mapContainer = view.findViewById(R.id.mapContainer);
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setMultiTouchControls(true);
@@ -120,6 +146,10 @@ public class MapFragmentOrganize extends Fragment {
                         // Update UI on UI thread
                         getActivity().runOnUiThread(() -> {
                             GeoPoint startPoint = new GeoPoint(latitude, longitude);
+
+//                            // Execute ReverseGeocodingTask
+//                            new ReverseGeocodingTask(addressTextBox).execute(startPoint);
+
                             mapController.setCenter(startPoint);
                             Marker startMarker = new Marker(mapView);
                             startMarker.setPosition(startPoint);
@@ -158,7 +188,43 @@ public class MapFragmentOrganize extends Fragment {
 
         view.findViewById(R.id.button_back_button).setOnClickListener(v -> requireActivity().onBackPressed());
         setupMap();
-        view.findViewById(R.id.saveLocationButton).setOnClickListener(v -> {
+//        view.findViewById(R.id.search_button).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // Perform search using the text entered in the search bar
+//                String searchString = addressTextBox.getText().toString();
+//                if (!searchString.isEmpty()) {
+//                    // Start a new thread for geocoding to avoid blocking the UI thread
+//                    new Thread(() -> {
+//                        try {
+//                            Geocoder geocoder = new Geocoder(getContext());
+//                            List<Address> addresses = geocoder.getFromLocationName(searchString, 1);
+//                            if (!addresses.isEmpty()) {
+//                                Address address = addresses.get(0);
+//                                double latitude = address.getLatitude();
+//                                double longitude = address.getLongitude();
+//
+//                                // Update UI on UI thread
+//                                getActivity().runOnUiThread(() -> {
+//                                    GeoPoint searchPoint = new GeoPoint(latitude, longitude);
+//                                    mapController.setCenter(searchPoint);
+//                                    Marker searchMarker = new Marker(mapView);
+//                                    searchMarker.setPosition(searchPoint);
+//                                    searchMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+//                                    mapView.getOverlays().add(searchMarker);
+//                                    lastMarker = searchMarker;
+//                                    mapView.invalidate(); // Refresh the map
+//                                });
+//                            }
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }).start();
+//                }
+//            }
+//        });
+
+        view.findViewById(R.id.saveButton).setOnClickListener(v -> {
             if (lastMarker != null) {
                 // Log the saved location
                 double savedLatitude = lastMarker.getPosition().getLatitude();
