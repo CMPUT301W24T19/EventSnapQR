@@ -43,16 +43,17 @@
         android:id="@+id/buttonBrowseUserProfiles"
         android:layout_width="270dp"
         android:layout_height="100dp"
-        android:layout_marginTop="220dp"
+        android:layout_marginTop="22dp"
         android:layout_marginBottom="8dp"
         android:backgroundTint="@color/glaucous"
-        android:text="Browse Profiles"
+        android:text="BROWSE PROFILES"
         android:textColor="@color/black"
         app:strokeColor="@color/black"
         app:strokeWidth="1dp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/horizontal_line"/>
+        app:layout_constraintTop_toBottomOf="@id/buttonBrowseEvents"/>
 
 
     <com.google.android.material.button.MaterialButton
@@ -62,7 +63,8 @@
         android:layout_marginBottom="8dp"
         android:layout_marginTop="22dp"
         android:backgroundTint="@color/glaucous"
-        android:text="Browse Images"
+        android:text="BROWSE IMAGES"
+        android:textSize="18sp"
         android:textColor="@color/black"
         app:strokeColor="@color/black"
         app:strokeWidth="1dp"
@@ -74,15 +76,16 @@
         android:id="@+id/buttonBrowseEvents"
         android:layout_width="270dp"
         android:layout_height="100dp"
-        android:layout_marginTop="22dp"
+        android:layout_marginTop="210dp"
         android:backgroundTint="@color/glaucous"
-        android:text="Browse Events"
+        android:text="BROWSE EVENTS"
         android:textColor="@color/black"
         app:strokeColor="@color/black"
+        android:textSize="18sp"
         app:strokeWidth="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonBrowseImages" />
+        app:layout_constraintTop_toBottomOf="@+id/horizontal_line" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
