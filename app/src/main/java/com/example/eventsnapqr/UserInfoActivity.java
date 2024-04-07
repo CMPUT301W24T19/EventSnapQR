@@ -331,6 +331,11 @@ public class UserInfoActivity extends AppCompatActivity {
                                     userName.setText(user.getName());
                                     Bitmap initialsImageBitmap = user.generateInitialsImage(userName.getText().toString());
                                     profilePictureImage.setImageBitmap(initialsImageBitmap);
+                                    // set tag for testing
+                                    profilePictureImage.setTag(userName.getText().toString().substring(0,2).toUpperCase());
+
+
+
                                 }
                             }
                         }

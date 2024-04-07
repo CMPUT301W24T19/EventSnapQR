@@ -522,6 +522,13 @@ public class FirebaseController {
                                                 }
                                             }
                                         });
+                                    }else{
+                                        markSeenNotification(announcementID, Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID), new NotificationSeenCallback() {
+                                            @Override
+                                            public void onSeen(boolean seen) {
+                                                // Do nothing but we still meed to call mark seen
+                                            }
+                                        });
                                     }
 
                                     break;
