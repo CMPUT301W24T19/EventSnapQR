@@ -107,7 +107,6 @@ public class EventDetailFragment extends Fragment {
         endTextInputLayout = view.findViewById(R.id.textInputEndDateTime);
         addressTextInputLayout = view.findViewById(R.id.textInputAddress);
 
-
         progressBar.setVisibility(View.VISIBLE);
 
         signUpMessage.setText("You are signed up for this event!");
@@ -289,6 +288,8 @@ public class EventDetailFragment extends Fragment {
                     eventStartDateTime.setVisibility(View.VISIBLE);
                     eventEndDateTime.setVisibility(View.VISIBLE);
                     eventAddress.setVisibility(View.VISIBLE);
+                    signUpButton.setVisibility(View.VISIBLE);
+
                     if (!signedUp) {
                         signUpButton.setVisibility(View.VISIBLE);
                     }
@@ -368,6 +369,7 @@ public class EventDetailFragment extends Fragment {
         eventStartDateTime.setVisibility(View.VISIBLE);
         eventEndDateTime.setVisibility(View.VISIBLE);
         eventAddress.setVisibility(View.VISIBLE);
+        signUpButton.setVisibility(View.VISIBLE);
 
         nameTextInputLayout.setVisibility(View.VISIBLE);
         organizerTextInputLayout.setVisibility(View.VISIBLE);

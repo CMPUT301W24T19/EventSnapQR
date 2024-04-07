@@ -61,7 +61,8 @@ public class ManageEventActivity extends AppCompatActivity {
     private Switch filterSwitch;
     private Uri imageUri;
     private String uriString, eventId;
-    private TextView totalAttendeesTextView, totalCheckedInTextView, eventNameTextView;
+    private TextView totalAttendeesTextView, totalCheckedInTextView, eventNameTextView,
+            milestonesLabel, attendeesLabel;
     private ActivityResultLauncher<PickVisualMediaRequest> choosePoster;
     private int checkedInCount, attendeeCount;
     private ProgressBar loadingProgressBar;
@@ -103,6 +104,8 @@ public class ManageEventActivity extends AppCompatActivity {
         backButton = findViewById(R.id.button_back_button);
         totalAttendeesTextView = findViewById(R.id.total_attendees_label);
         totalCheckedInTextView = findViewById(R.id.total_checked_in_label);
+        attendeesLabel = findViewById(R.id.attendees_label);
+        milestonesLabel = findViewById(R.id.milestones_label);
         filterSwitch = findViewById(R.id.filter_switch);
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
         eventNameTextView = findViewById(R.id.page_name);
@@ -189,7 +192,6 @@ public class ManageEventActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                attendeeListView.setVisibility(View.INVISIBLE);
                 if (filterSwitch.isChecked()) {
                     fetchAttendeeData(false, false);
                 } else {
@@ -532,13 +534,13 @@ public class ManageEventActivity extends AppCompatActivity {
         loadingProgressBar.setVisibility(View.VISIBLE);
         attendeeListView.setVisibility(View.INVISIBLE);
         milestoneListView.setVisibility(View.INVISIBLE);
-        menuButton.setVisibility(View.INVISIBLE);
-        backButton.setVisibility(View.INVISIBLE);
         filterSwitch.setVisibility(View.INVISIBLE);
         totalAttendeesTextView.setVisibility(View.INVISIBLE);
         totalCheckedInTextView.setVisibility(View.INVISIBLE);
         eventNameTextView.setVisibility(View.INVISIBLE);
         fab.setVisibility(View.INVISIBLE);
+        attendeesLabel.setVisibility(View.INVISIBLE);
+        milestonesLabel.setVisibility(View.INVISIBLE);
     }
 
     private void turnOffLoading() {
@@ -552,5 +554,7 @@ public class ManageEventActivity extends AppCompatActivity {
         totalCheckedInTextView.setVisibility(View.VISIBLE);
         eventNameTextView.setVisibility(View.VISIBLE);
         fab.setVisibility(View.VISIBLE);
+        attendeesLabel.setVisibility(View.VISIBLE);
+        milestonesLabel.setVisibility(View.VISIBLE);
     }
 }

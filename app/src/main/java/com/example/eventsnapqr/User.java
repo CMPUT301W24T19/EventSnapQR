@@ -18,7 +18,6 @@ import java.util.List;
  * organizer and attendee
  */
 public class User implements Attendee, Organizer {
-//public class User implements Attendee, Organizer {
     private String name; // name of the user
     private String homepage; // users website
     private String phoneNumber; // users phone number
