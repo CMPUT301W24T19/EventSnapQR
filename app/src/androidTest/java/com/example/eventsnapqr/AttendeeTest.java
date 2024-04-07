@@ -92,6 +92,7 @@ public class AttendeeTest {
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global animator_duration_scale 0");
     }
+
     /**
      * US 02.02.03 Test
      */
@@ -103,6 +104,7 @@ public class AttendeeTest {
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), UserInfoActivity.class);
         intent.putExtra("androidId", androidId);
         ActivityScenario<UserInfoActivity> scenario = ActivityScenario.launch(intent);
+
         try {
 
             Thread.sleep(7000);
@@ -124,6 +126,7 @@ public class AttendeeTest {
 
         FirebaseController firebaseController = new FirebaseController();
         idlingResource.setIdleState(false);
+
         firebaseController.getUser(androidId, user -> {
             assertNotNull(user);
             assertEquals(testEmail, user.getEmail());
