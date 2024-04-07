@@ -102,6 +102,7 @@ android:background="@drawable/gradient_background">
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text=""
+                        android:textColor="@color/black"
                         android:textSize="16sp"
                         android:visibility="invisible"
                         app:layout_constraintEnd_toEndOf="parent"
