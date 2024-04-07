@@ -7,13 +7,17 @@ import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
+import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.withParentIndex;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.is;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -21,6 +25,8 @@ import android.provider.Settings;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import androidx.annotation.NonNull;
 import androidx.test.espresso.ViewAssertion;
@@ -39,7 +45,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,7 +72,7 @@ public class MassUserTest {
 
     @Before
     public void init() {
-        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        /*Context context = InstrumentationRegistry.getInstrumentation().getContext();
         ContentResolver contentResolver = context.getContentResolver();
 
         CountDownLatch latch = new CountDownLatch(1);
@@ -156,7 +164,7 @@ public class MassUserTest {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     @Test
@@ -170,20 +178,20 @@ public class MassUserTest {
         }
         onView(withId(R.id.browse_events_button)).perform(click());
         //for (Event event: eventList) {
-            //Log.d("TAG", event.getEventID());
-        Log.d("TAG", "" + R.id.events);
+        //Log.d("TAG", event.getEventID());
         //onView(withText("Attending")).perform(click());
-        onData(anything()).inAdapterView(withId(R.id.viewPager)).atPosition(0).atPosition(0).perform(click());
         try {
             latch.await(10, TimeUnit.SECONDS);
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //onView(allOf(withId(R.id.events), isDisplayingAtLeast(1))).check(matches(hasDescendant(withText("Hf1TIYBgqAIBqpnTW2P9"))));
-            //onView(allOf(withId(R.id.events), isDisplayingAtLeast(1)))
-             //       .perform(scrollTo(hasDescendant(withText("Hf1TIYBgqAIBqpnTW2P9"))));
-            //onView(withText("Hf1TIYBgqAIBqpnTW2P9")).check(matches(isDisplayed()));
+        onData(anything()).inAdapterView(allOf(withId(R.id.events), isDisplayed())).perform(scrollTo(hasDescendant(withText("Hf1TIYBgqAIBqpnTW2P9"))));
+        onView(withText("Hf1TIYBgqAIBqpnTW2P9")).check(matches(isDisplayed()));
+        //onData(anything()).inAdapterView(allOf(withId(R.id.events), withParentIndex(0))).atPosition(0).perform(click());
+        //onView(allOf(withId(R.id.events)));
+        //onView(allOf(withId(R.id.events), isDisplayingAtLeast(1))).perform(scrollTo(hasDescendant(withText("Hf1TIYBgqAIBqpnTW2P9"))));
+        //onView(withText("Hf1TIYBgqAIBqpnTW2P9")).check(matches(isDisplayed()));
         //}
 
         try {

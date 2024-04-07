@@ -111,6 +111,7 @@ public class OrganizeEventFragment extends Fragment {
     private double latitude = 0.0;
     private double longitude = 0.0;
     private boolean eventCreated = false;
+    private boolean getLocation = false;
 
 
     /**
@@ -338,7 +339,10 @@ public class OrganizeEventFragment extends Fragment {
             }
         });
         editTextLocation.setOnClickListener(v -> {
-            requestCurrentLocation();
+            if (!getLocation) {
+                getLocation = true;
+                requestCurrentLocation();
+            }
         });
         return view;
     }
@@ -367,6 +371,7 @@ public class OrganizeEventFragment extends Fragment {
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult == null) {
                     Toast.makeText(getContext(), "Current location not available.", Toast.LENGTH_LONG).show();
+                    getLocation = false;
                     return;
                 }
                 for (Location location : locationResult.getLocations()) {
@@ -411,6 +416,7 @@ public class OrganizeEventFragment extends Fragment {
         };
 
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        getLocation = false;
     }
     /**
      * Requests the last known location of the device. If location permissions are not granted,
