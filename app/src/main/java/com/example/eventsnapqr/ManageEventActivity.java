@@ -72,6 +72,7 @@ public class ManageEventActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (isMapFragmentVisible()) {
             fab.setVisibility(View.VISIBLE);
+            menuButton.setVisibility(View.VISIBLE );
         }
         super.onBackPressed();
     }
@@ -514,6 +515,7 @@ public class ManageEventActivity extends AppCompatActivity {
                 return true;
             } else if (itemId == R.id.view_map) { // view map
                 fab.setVisibility(View.GONE);
+                menuButton.setVisibility(View.GONE);
                 String eventName = currentEvent.getEventName();
                 MapFragment mapFragment = new MapFragment(eventName);
                 FragmentManager fragmentManager = getSupportFragmentManager();

@@ -51,7 +51,9 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.FirebaseStorage;
@@ -87,27 +89,16 @@ public class OrganizeEventFragment extends Fragment {
     private FusedLocationProviderClient fusedLocationClient;
     private ImageView backButton;
     private ExtendedFloatingActionButton createEventButton;
-    private TextInputEditText editTextEventName;
-    private TextInputEditText editTextEventDesc;
-    private TextInputEditText editTextMaxAttendees;
-    private TextInputEditText editTextStartDate;
-    private TextInputEditText editTextStartTime;
-    private TextInputEditText editTextEndDate;
-    private TextInputEditText editTextEndTime;
-    private TextInputEditText uploadPosterButton;
-    private TextInputEditText editTextAddress;
-    private TextInputEditText editTextLocation;
+    private TextInputEditText editTextEventName, editTextEventDesc, editTextMaxAttendees, editTextStartDate,
+            editTextStartTime, editTextEndDate, editTextEndTime, uploadPosterButton, editTextAddress, editTextLocation;
     private TextInputLayout inputTextLocation;
-    private Button locationButton;
     private TextView removePosterTextView;
     private TextInputLayout posterBox;
-    private Button reuseQRButton;
-    private String androidID;
+    private MaterialButton reuseQRButton;
+    private String androidID, uriString, reusingQR;
     private FirebaseController firebaseController = new FirebaseController();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
     private Uri imageUri;
-    private String uriString;
-    private String reusingQR;
     private double latitude = 0.0;
     private double longitude = 0.0;
     private boolean eventCreated = false;
@@ -146,8 +137,6 @@ public class OrganizeEventFragment extends Fragment {
         posterBox = view.findViewById(R.id.posterInput);
         removePosterTextView = view.findViewById(R.id.removePosterTextView);
 
-
-        // set up date and time picker dialogs
         editTextStartDate = view.findViewById(R.id.editTextStartDate);
         editTextStartDate.setOnClickListener(v -> showDatePickerDialog(editTextStartDate));
 

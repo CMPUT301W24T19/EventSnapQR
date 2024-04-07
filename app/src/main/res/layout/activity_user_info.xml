@@ -241,17 +241,20 @@
                         android:maxLength="30"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/switchLocation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Location Settings"
                     android:layout_marginStart="32dp"
+                    android:backgroundTint="@color/glaucous"
                     android:layout_marginTop="16dp"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/black"
                     android:layout_marginBottom="16dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/inputTextPhoneNumber" />
+                    app:layout_constraintTop_toBottomOf="@id/inputTextPhoneNumber"
+                    app:strokeColor="@color/black"
+                    app:strokeWidth="1dp"/>
 
                 <Switch
                     android:id="@+id/switchNotifications"
@@ -271,10 +274,10 @@
                     android:layout_height="wrap_content"
                     android:text="Save Changes"
                     android:textColor="@color/black"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:backgroundTint="@color/coral"
                     android:layout_marginTop="32dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginBottom="12dp"
                     app:strokeColor="@color/black"
                     app:strokeWidth="1dp"
                     app:layout_constraintBottom_toBottomOf="parent"

@@ -25,6 +25,7 @@ import com.bumptech.glide.Glide;
 //import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -42,32 +43,21 @@ import java.util.List;
  * notification switches have no yet been implemented
  */
 public class UserInfoActivity extends AppCompatActivity {
-    private ImageView buttonBackButton;
-    private ImageView buttonAddImage;
-    private ImageView buttonRemoveImage;
+    private ImageView buttonBackButton, buttonAddImage, buttonRemoveImage, profilePictureImage, editButton;
     private FirebaseStorage storage = FirebaseStorage.getInstance();
     private StorageReference storageRef = storage.getReference();
     private String androidID;
-    private ImageView profilePictureImage;
     private String profilePictureURI;
-    private TextInputEditText userName;
-    private TextInputLayout userNameLayout;
-    private TextInputEditText email;
-    private TextInputLayout emailLayout;
-    private TextInputEditText phoneNumber;
-    private TextInputLayout numberLayout;
-    private TextInputEditText homepage;
-    private TextInputLayout homepageLayout;
+    private TextInputEditText userName, email, phoneNumber, homepage;
+    private TextInputLayout userNameLayout, emailLayout, numberLayout,homepageLayout;
     private ExtendedFloatingActionButton saveButton;
     private boolean editMode = false;
-    private ImageView editButton;
     private StorageTask<UploadTask.TaskSnapshot> uploadSuccess;
-    private Button locationSwitch;
+    private MaterialButton locationSwitch;
     private Switch notificationSwitch;
     private boolean showSwitches;
     private final int PERMISSION_REQUEST_CODE = 100;
     String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION};
-    //String[] notificationPermissions = {Manifest.permission.ACCESS_NOTIFICATION_POLICY, Manifest.permission.POST_NOTIFICATIONS}; // might not need NOTIFCATION_POLICY
     String[] notificationPermissions = {Manifest.permission.POST_NOTIFICATIONS};
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {

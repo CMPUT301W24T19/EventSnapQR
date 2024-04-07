@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background">
 
     <View
         android:id="@+id/horizontal_line"
@@ -323,7 +324,9 @@
                 app:boxBackgroundColor="#00FFFFFF"
                 app:boxStrokeColor="@color/black"
                 app:boxStrokeWidth="2dp"
-                app:hintTextAppearance="@style/TextAppearance.AppCompat.Title"
+                android:cursorVisible="false"
+                android:inputType="none"
+                android:focusable="true"
                 app:endIconMode="clear_text"
                 app:helperTextTextColor="@color/red"
                 android:hint="Location"
@@ -335,6 +338,7 @@
                     android:id="@+id/editTextLocation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="none"
                     android:focusable="false"
                     android:cursorVisible="false"
                     android:textColor="@color/black" />
@@ -400,8 +404,9 @@
         android:text="Create Event"
         android:gravity="center"
         android:textColor="@color/black"
+        android:layout_marginEnd="12dp"
         app:backgroundTint="@color/coral"
-        android:layout_marginBottom="-4dp"
+        android:layout_marginBottom="-2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.95"
