@@ -526,7 +526,7 @@ public class FirebaseController {
                                         markSeenNotification(announcementID, Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID), new NotificationSeenCallback() {
                                             @Override
                                             public void onSeen(boolean seen) {
-                                                // do nothing but we still call the method because mark seen still needs to be executed
+                                                // Do nothing but we still meed to call mark seen
                                             }
                                         });
                                     }

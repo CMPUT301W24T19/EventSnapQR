@@ -11,6 +11,7 @@ import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static junit.framework.Assert.assertTrue;
@@ -20,12 +21,14 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.Assert.assertNotNull;
 
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
@@ -34,6 +37,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.hamcrest.CoreMatchers;
@@ -49,6 +53,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  *  Test class for testing Attendee
@@ -94,7 +99,7 @@ public class AttendeeTest {
     }
 
     /**
-     * US 02.02.03 Test
+     * US 02.02.03 Test, US 02.05.01 Test
      */
     @Test
     public void updateContactInfoTest() {
@@ -103,14 +108,29 @@ public class AttendeeTest {
 
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), UserInfoActivity.class);
         intent.putExtra("androidId", androidId);
-        ActivityScenario<UserInfoActivity> scenario = ActivityScenario.launch(intent);
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("users").document(androidId);
+        String testname = "TESTNAME";
+        userRef.update("name", testname)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Update", "DocumentSnapshot successfully updated!");
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("Update", "Error updating document", e);
+                });
+
+
+        ActivityScenario<UserInfoActivity> scenario = ActivityScenario.launch(intent);
         try {
 
             Thread.sleep(7000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        // US US 02.05.01 check
+        onView(withId(R.id.iv_profile_pic))
+                .check(matches(withTagValue(is( "TE"))));
         onView(withId(R.id.button_edit_profile_button)).perform(click());
         String testName = "TestName";
 
