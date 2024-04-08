@@ -133,9 +133,12 @@ public class ListAttendingEventsFragment extends Fragment {
                                                                 startDateTime,
                                                                 endDateTime,
                                                                 eventDocument.getString("address"),
+
                                                                 eventDocument.getBoolean("active"),
                                                                 document.getDouble("latitude"),
                                                                 document.getDouble("longitude")
+                                                                eventDocument.getString("QR")
+
                                                         );
                                                         attendingEvents.add(event);
                                                         if (i[0] == documents.size() - 1) {

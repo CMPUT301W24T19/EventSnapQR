@@ -11,11 +11,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * fragment where a user can view another users profile when view event details (organizer)
+ * or when managing an event (attendees)
+ */
 public class ViewUserProfileActivity extends AppCompatActivity {
 
     private ImageView imageViewProfilePic, backButton;
     private TextView textViewName, textViewEmail, textViewPhone, textViewHomepage;
 
+    /**
+     * What should be executed when the fragment is created
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     *                           a previous saved state, this is the state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +62,10 @@ public class ViewUserProfileActivity extends AppCompatActivity {
                     String phone = user.getPhoneNumber();
                     String homepage = user.getHomepage();
                     String profilePicUri = user.getProfilePicture();
+
+                    if (name == null || name.isEmpty()) {
+                        name = "N/A";
+                    }
 
                     if (email == null || email.isEmpty()) {
                         email = "N/A";

@@ -34,7 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Fragment for an admin to browse and delete all images in the database
+ * fragment for an admin to browse and delete all images in the database
  */
 public class AdminBrowseImagesFragment extends Fragment {
     private RecyclerView recyclerView;
@@ -44,7 +44,7 @@ public class AdminBrowseImagesFragment extends Fragment {
     private boolean initial;
 
     /**
-     * What should be executed when the fragment is created
+     * what should be executed when the fragment is created
      *
      * @param savedInstanceState If the fragment is being re-created from
      *                           a previous saved state, this is the state.
@@ -84,7 +84,7 @@ public class AdminBrowseImagesFragment extends Fragment {
         ImageAdapter adapter = new ImageAdapter(posters); // Change the adapter type
         recyclerView.setAdapter(adapter);
 
-        // fetch both events and users from Firestore and populate the posters list
+        // fetch both events from Firestore and populate the posters list
         FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -92,6 +92,7 @@ public class AdminBrowseImagesFragment extends Fragment {
                 int i = 0;
                 for (QueryDocumentSnapshot doc : value) {
                     String eventID = doc.getId();
+
                     boolean eventActivity = doc.getBoolean("active");
                     if (eventActivity) {
                         String eventName = doc.getString("eventName");
@@ -100,6 +101,7 @@ public class AdminBrowseImagesFragment extends Fragment {
                             Event event = new Event(null, eventName, null, posterUri, null, eventID, null, null, null, true,0.0,0.0);
                             posters.add(event);
                         }
+
                     }
                 }
                 posters.sort(new Comparator<Object>() {
@@ -133,6 +135,7 @@ public class AdminBrowseImagesFragment extends Fragment {
             }
         });
 
+        // fetch users from Firestore
         FirebaseFirestore.getInstance().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -174,6 +177,7 @@ public class AdminBrowseImagesFragment extends Fragment {
         });
 
 
+        // back button navigation
         buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -258,13 +262,14 @@ public class AdminBrowseImagesFragment extends Fragment {
                     if (item instanceof Event) {
                         Event event = (Event) item;
                         if (itemID != null) {
-                            FirebaseController.getInstance().deleteImage(event.getPosterURI(), event, getContext());
+                            // use firebase controller method to delete the image entirely
+                            FirebaseController.getInstance().deleteImage(event.getPosterURI(), event, getContext(), false);
                             posters.remove(event);
                         }
                     } else if (item instanceof User) {
                         User user = (User) item;
                         if (itemID != null) {
-                            FirebaseController.getInstance().deleteImage(user.getProfilePicture(), user, getContext());
+                            FirebaseController.getInstance().deleteImage(user.getProfilePicture(), user, getContext(), false);
                             posters.remove(user);
                         }
                     }

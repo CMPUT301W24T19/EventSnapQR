@@ -44,8 +44,12 @@ import java.util.List;
  *
  * I used OpenAI: chatGPT to get the structure of how to plot the coordinates
  * using osmdroid. Prompt "How can I plot a set of coordinated using osmdroid."
+ * Prompt "Initialize OSMDroid configuration"
+ * also had prompts where I entered errors I received on the way to ask for the
+ * reason and possible solution.
+ *
  * The startLocationUpdates, onProvider, onLocation change, onResume, onPause
- * permission check and request is taken from chatgpt.
+ * permission check and request is taken from OpenAI: chatgpt directly.
  *
  * Along with that I used this video to get run time permissions:
  * "https://www.youtube.com/watch?v=KeuV6cjVh6c"
@@ -67,31 +71,42 @@ public class MapFragment extends Fragment {
     }
     public MapFragment(String eventName) {
         this.eventName = eventName;
-        //plotEventAttendees(eventName);
     }
 
-
-
+    /**
+     * What should be executed when the fragment is created
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Initialize OSMDroid configuration
         Configuration.getInstance().load(getContext(), getActivity().getSharedPreferences("osmdroid", 0));
         db = FirebaseFirestore.getInstance();
         if (getArguments() != null) {
-
             eventName = getArguments().getString("eventName");
         }
     }
 
+    /**
+     * Setup actions to be taken upon view creation and when the views are interacted with
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.  The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     * @return the final view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_attendee_map, container, false);
         TextView text = view.findViewById(R.id.page_name);
         text.setText("Map of " + eventName + " Attendees");
-
         mapView = view.findViewById(R.id.mapView);
-        mapContainer = view.findViewById(R.id.mapContainer); // Reference to the parent layout
+        mapContainer = view.findViewById(R.id.mapContainer);
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setMultiTouchControls(true);
         IMapController mapController = mapView.getController();
@@ -125,30 +140,34 @@ public class MapFragment extends Fragment {
         return view;
     }
 
-
+    /**
+     * This method is pasted from chat gpt as mentioned above
+     * it gets the user location and deals with when permissions are
+     * given or disabled and manges the status of the user. On location
+     * change, the map is also refreshed by the new location.
+     *
+     * cite: OpenAI: chatgpt for this method, prompt given in the header
+     * and the 3 videos mentioned in the header
+     */
     private void startLocationUpdates() {
         LocationManager locationManager = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                mapView.invalidate(); // Refresh the map view
+                mapView.invalidate();
             }
-
             @Override
             public void onProviderDisabled(String provider) {
             }
-
             @Override
             public void onProviderEnabled(String provider) {
             }
-
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
             }
         };
 
         try {
-            // Request location updates
             locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
             locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
         } catch (SecurityException e) {
@@ -156,8 +175,17 @@ public class MapFragment extends Fragment {
             Toast.makeText(requireContext(), "Error getting location: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
+    /**
+     * The method takes in event name as the parameter and goes on firebase
+     * and gets the collection/document with that event name, queries the
+     * attendee list attending the event and plots them on the map
+     *
+     * Did use chat gpt to consult the errors I received and asked for solutions
+     *
+     * @param eventName passing the event name as reference to which
+     * event attendee's list to fetch.
+     */
     private void plotEventAttendees(String eventName) {
-        // Query Firestore to find the event document based on the event name
         db.collection("events")
                 .whereEqualTo("eventName", eventName)
                 .get()
@@ -165,10 +193,7 @@ public class MapFragment extends Fragment {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            // Get the event document ID
                             String eventId = document.getId();
-
-                            // Query the "attendees" subcollection to get the list of attendees
                             db.collection("events").document(eventId)
                                     .collection("attendees")
                                     .get()
@@ -177,7 +202,6 @@ public class MapFragment extends Fragment {
                                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                                             List<GeoPoint> points = new ArrayList<>();
                                             for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                                                // Extract latitude and longitude values as strings
                                                 String latitudeStr = document.getString("latitude");
                                                 String longitudeStr = document.getString("longitude");
                                                 Log.e("MapFragment", "Found latitude " + latitudeStr);
@@ -186,55 +210,45 @@ public class MapFragment extends Fragment {
 
                                                 if (checkINLong != null && !latitudeStr.isEmpty() && latitudeStr!=null && !longitudeStr.isEmpty() && longitudeStr!=null && latitudeStr != "0.0" && longitudeStr != "0.0") {
                                                     int checkIN = checkINLong.intValue();
-
-                                                    // Convert latitude and longitude from strings to doubles
-
                                                     double latitude = Double.parseDouble(latitudeStr);
                                                     double longitude = Double.parseDouble(longitudeStr);
                                                     Log.e("MapFragment", "Found latitude " + latitude);
 
                                                     if(checkIN>0) {
-                                                        points.add(new GeoPoint(latitude, longitude));
-                                                        Marker marker = new Marker(mapView);
-                                                        marker.setPosition(new GeoPoint(latitude, longitude));
-                                                        // Getting the attendee ID
-                                                        String attendeeId = document.getId();
-
-                                                        // Retrieve user information using the attendee ID
-                                                        db.collection("users").document(attendeeId)
-                                                                .get()
-                                                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                                    @Override
-                                                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                        if (documentSnapshot.exists()) {
-                                                                            // Retrieve the user name
-                                                                            String userName = documentSnapshot.getString("name");
-                                                                            // Set marker title with user name
-                                                                            marker.setTitle("User name: " + userName);
-                                                                        } else {
-                                                                            Log.e("MapFragment", "User document does not exist for attendee ID: " + attendeeId);
+                                                        if (latitude != 0.0 && longitude != 0.0) {
+                                                            points.add(new GeoPoint(latitude, longitude));
+                                                            Marker marker = new Marker(mapView);
+                                                            marker.setPosition(new GeoPoint(latitude, longitude));
+                                                            String attendeeId = document.getId();
+                                                            db.collection("users").document(attendeeId)
+                                                                    .get()
+                                                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                                        @Override
+                                                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                            if (documentSnapshot.exists()) {
+                                                                                String userName = documentSnapshot.getString("name");
+                                                                                marker.setTitle("User name: " + userName);
+                                                                            } else {
+                                                                                Log.e("MapFragment", "User document does not exist for attendee ID: " + attendeeId);
+                                                                            }
                                                                         }
-                                                                    }
-                                                                })
-                                                                .addOnFailureListener(new OnFailureListener() {
-                                                                    @Override
-                                                                    public void onFailure(@NonNull Exception e) {
-                                                                        Log.e("MapFragment", "Error getting user document: " + e.getMessage());
-                                                                    }
-                                                                });
-
-                                                        marker.setSnippet("Checked In: " + checkIN); // Include the check-in information in the snippet
-                                                        mapView.getOverlays().add(marker);
+                                                                    })
+                                                                    .addOnFailureListener(new OnFailureListener() {
+                                                                        @Override
+                                                                        public void onFailure(@NonNull Exception e) {
+                                                                            Log.e("MapFragment", "Error getting user document: " + e.getMessage());
+                                                                        }
+                                                                    });
+                                                            marker.setSnippet("Checked In: " + checkIN);
+                                                            mapView.getOverlays().add(marker);
+                                                        }
                                                     }
                                                 }
                                             }
                                             if (!points.isEmpty()) {
-                                                // update the map view to include all markers
                                                 if (points.size() == 1) {
-                                                    // if there's only one point, center the map on it
                                                     mapView.getController().setCenter(points.get(0));
                                                 } else {
-                                                    // calculate the bounding box and set the map view
                                                     BoundingBox boundingBox = BoundingBox.fromGeoPoints(points);
                                                     mapView.zoomToBoundingBox(boundingBox, true);
                                                 }

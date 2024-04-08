@@ -31,9 +31,6 @@ import java.util.List;
  * fragment to show the details of an event, including the name of the organizer,
  * the description, announcements and max attendees. gives the option for the user to
  * sign up for the event.
- *
- * currently a user can sign up for an event infinite times,
- * however, the data is only uploaded to the database once
  */
 public class EventDetailFragment extends Fragment {
     private String eventId, androidId, organizerId;
@@ -240,7 +237,6 @@ public class EventDetailFragment extends Fragment {
         return view;
     }
 
-
     /**
      * after the sign up button is pressed this dialog notifies the user
      * that they have signed up for the given event
@@ -392,7 +388,6 @@ public class EventDetailFragment extends Fragment {
 
     /**
      * returns the correct suffix for the given integer
-     *
      * @param n the number in which to retrieve the suffix
      */
     public String getSuffix(Integer n) {

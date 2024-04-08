@@ -1,17 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.EventSnapQR" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary colour -->
         <item name="colorPrimary">#568259</item>
         <item name="colorPrimaryVariant">#568259</item>
         <item name="colorOnPrimary">@color/white</item>
 
-        <!-- Secondary colour -->
         <item name="colorSecondary">#464E47</item>
         <item name="colorSecondaryVariant">#464E47</item>
         <item name="colorOnSecondary">@color/white</item>
 
-        <!-- Status bar-->
         <item name="android:statusBarColor">#568259</item>
     </style>
 

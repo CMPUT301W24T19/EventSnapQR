@@ -35,7 +35,7 @@ public class QRActivity extends AppCompatActivity {
     private ImageView buttonExit;
     private MaterialButton buttonSaveQR;
     private Bitmap qrBitmap;
-    private String eventId;
+    private String QR;
 
     /**
      * What should be executed when the fragment is created
@@ -48,16 +48,15 @@ public class QRActivity extends AppCompatActivity {
         setContentView(R.layout.activity_qr);
         // Retrieve data from the bundle
         Bundle bundle = getIntent().getExtras();
-        eventId = bundle.getString("eventId");
-        Log.d("EVENT ID QR DIALOG: ", eventId);
+        QR = bundle.getString("QR");
+        Log.d("EVENT ID QR DIALOG: ", QR);
         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
         try {
-            qrBitmap = barcodeEncoder.encodeBitmap("eventsnapqr/" + eventId, BarcodeFormat.QR_CODE, 400, 400);
+            qrBitmap = barcodeEncoder.encodeBitmap(QR, BarcodeFormat.QR_CODE, 400, 400);
             if (qrBitmap != null) {
                 Log.d("QR_CODE", "QR Code generated successfully");
             } else {
@@ -117,6 +116,9 @@ public class QRActivity extends AppCompatActivity {
 
     /**
      * implements and displays the ability to share the QR code
+     * To implement the share QR I used this video, it had a tutorial on
+     * how to share an image,
+     * "https://www.youtube.com/watch?v=eSi28xqGjbE" youtube channel "Android Tutorials"
      * @param bitmap
      */
     private void shareImage(Bitmap bitmap){
@@ -130,6 +132,7 @@ public class QRActivity extends AppCompatActivity {
     }
 
     /**
+     * Used the video mentioned above
      * fetch the URI of the QR code to share
      * @param bitmap bitmap that represents the QR code
      * @return URI of the resulting image

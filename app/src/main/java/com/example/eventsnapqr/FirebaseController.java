@@ -132,7 +132,12 @@ public class FirebaseController {
         String userId = user.getDeviceID();
 
         deleteOrganizedEvents(db, userId, () -> {
-            deleteUserFinalStep(db, userId);
+            deleteUserFinalStep(db, userId, new UserDeletedCallback() {
+                @Override
+                public void userDeleted() {
+                    // do nothing
+                }
+            });
         });
     }
 
@@ -165,11 +170,17 @@ public class FirebaseController {
     }
 
     /**
+     * callback listener for
+     */
+    interface UserDeletedCallback{
+        void userDeleted();
+    }
+    /**
      *
      * @param db
      * @param userId
      */
-    private void deleteUserFinalStep(FirebaseFirestore db, String userId) {
+    public void deleteUserFinalStep(FirebaseFirestore db, String userId, UserDeletedCallback callback) {
         CollectionReference notificationReference = db.collection("users").document(userId).collection("notifications");
         notificationReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -184,7 +195,7 @@ public class FirebaseController {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (i[0] == snapshot.size() - 1) {
                                         db.collection("users").document(userId).delete()
-                                                .addOnSuccessListener(aVoid -> Log.d("Delete User", "User successfully deleted: " + userId))
+                                                .addOnSuccessListener(aVoid -> {Log.d("Delete User", "User successfully deleted: " + userId); callback.userDeleted();})
                                                 .addOnFailureListener(e -> Log.e("Delete User", "Error deleting user: " + userId, e));
                                     }
                                     i[0]++;
@@ -194,18 +205,24 @@ public class FirebaseController {
                     }
                     else {
                         db.collection("users").document(userId).delete()
-                                .addOnSuccessListener(aVoid -> Log.d("Delete User", "User successfully deleted: " + userId))
+                                .addOnSuccessListener(aVoid -> {Log.d("Delete User", "User successfully deleted: " + userId); callback.userDeleted();})
                                 .addOnFailureListener(e -> Log.e("Delete User", "Error deleting user: " + userId, e));
                     }
                 } else {
                     db.collection("users").document(userId).delete()
-                            .addOnSuccessListener(aVoid -> Log.d("Delete User", "User successfully deleted: " + userId))
+                            .addOnSuccessListener(aVoid -> {Log.d("Delete User", "User successfully deleted: " + userId); callback.userDeleted();})
                             .addOnFailureListener(e -> Log.e("Delete User", "Error deleting user: " + userId, e));
                 }
             }
         });
     }
 
+    /**
+     * gets all of a users events and deletes them. used for user deletion
+     * @param db instance of db
+     * @param eventId the
+     * @return
+     */
     private Task<Void> fetchAndDeleteEvent(FirebaseFirestore db, String eventId) {
         TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
 
@@ -248,11 +265,10 @@ public class FirebaseController {
      */
     public void deleteEvent(Event event, FirestoreOperationCallback completionCallback) {
         String eventId = event.getEventID();
-        event.setActivity(false);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         if (event.getPosterURI() != null) {
-            deleteImage(event.getPosterURI(), event, null);
+            deleteImage(event.getPosterURI(), event, null, true);
         }
 
         // deleting subcollections
@@ -264,6 +280,7 @@ public class FirebaseController {
         Task<QuerySnapshot> getUsersTask = db.collection("users").get();
 
         Tasks.whenAll(getMilestones, getAttendees, getPromisedAttendees, getAnnouncements, getUsersTask).addOnSuccessListener(aVoid -> {
+
             List<Task<Void>> deletionTasks = new ArrayList<>();
             for (DocumentSnapshot userDoc : getUsersTask.getResult().getDocuments()) {
                 String userId = userDoc.getId();
@@ -272,18 +289,22 @@ public class FirebaseController {
                 deletionTasks.add(deleteOrganizedEventTask);
                 deletionTasks.add(deletePromisedEventTask);
             }
+
             for (DocumentSnapshot milestoneDoc : getMilestones.getResult().getDocuments()) {
                 Task<Void> deleteMileStoneTask = db.collection("events").document(eventId).collection("milestones").document(milestoneDoc.getId()).delete();
                 deletionTasks.add(deleteMileStoneTask);
             }
+
             for (DocumentSnapshot attendeeDoc : getAttendees.getResult().getDocuments()) {
                 Task<Void> deleteAttendeeTask = db.collection("events").document(eventId).collection("attendees").document(attendeeDoc.getId()).delete();
                 deletionTasks.add(deleteAttendeeTask);
             }
+
             for (DocumentSnapshot attendeeDoc : getPromisedAttendees.getResult().getDocuments()) {
                 Task<Void> deletePromisedAttendeeTask = db.collection("events").document(eventId).collection("promisedAttendees").document(attendeeDoc.getId()).delete();
                 deletionTasks.add(deletePromisedAttendeeTask);
             }
+
             for (DocumentSnapshot announcementDoc : getAnnouncements.getResult().getDocuments()) {
                 Task<Void> deleteAnnouncementTask = db.collection("events").document(eventId).collection("announcements").document(announcementDoc.getId()).delete();
                 deletionTasks.add(deleteAnnouncementTask);
@@ -291,29 +312,67 @@ public class FirebaseController {
 
             Tasks.whenAllSuccess(deletionTasks).addOnSuccessListener(tasks -> {
                 Log.d("Delete Event", "Event and related data successfully deleted: " + eventId);
-                if (completionCallback != null) {
-                    completionCallback.onCompleted();
-                }
+                db.collection("events").document(eventId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        if (completionCallback != null) {
+                            completionCallback.onCompleted();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("TAG", "Event deletion failure");
+                        if (completionCallback != null) {
+                            completionCallback.onCompleted();
+                        }
+                    }
+                });
             }).addOnFailureListener(e -> {
                 Log.e("Delete Event", "Error deleting event or related data: " + eventId, e);
-                if (completionCallback != null) {
-                    completionCallback.onCompleted();
-                }
+                db.collection("events").document(eventId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        if (completionCallback != null) {
+                            completionCallback.onCompleted();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("TAG", "Event deletion failure");
+                        if (completionCallback != null) {
+                            completionCallback.onCompleted();
+                        }
+                    }
+                });
             });
         }).addOnFailureListener(e -> {
             Log.e("Delete Event", "Error initializing deletion process: " + eventId, e);
-            if (completionCallback != null) {
-                completionCallback.onCompleted();
-            }
+            db.collection("events").document(eventId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    if (completionCallback != null) {
+                        completionCallback.onCompleted();
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d("TAG", "Event deletion failure");
+                    if (completionCallback != null) {
+                        completionCallback.onCompleted();
+                    }
+                }
+            });
         });
-        this.addEvent(event);
     }
 
     /**
      * adds a given user to the firestore database
      * @param user user object
      */
-    public void addUser(User user) {
+    public void addUser(User user, Runnable callback) {
         Map<String, Object> userData = new HashMap<>();
         userData.put("name", user.getName());
         if (user.getHomepage() != null) {
@@ -331,6 +390,9 @@ public class FirebaseController {
                     @Override
                     public void onSuccess(Void unused) {
                         Log.d("Added user success", "User added successfully!");
+                        if (callback != null) {
+                            callback.run();
+                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -342,9 +404,8 @@ public class FirebaseController {
     }
 
     /**
-     * uses an interface to return a list of all the attendees in an event
-     * @param event
-     * @param callback
+     *
+     * @param documents
      */
     public void getEventAttendees(Event event, User.AttendeesCallback callback) {
         db.collection("events").document(event.getEventID()).collection("attendees").get()
@@ -361,26 +422,35 @@ public class FirebaseController {
                 });
     }
 
-
+    /**
+     * Gets all the event documents, then turns each event document into an event object and adds it to an array
+     * @param documents, a list of event documents
+     */
     void parseDocuments(List<DocumentSnapshot> documents) {
         for(DocumentSnapshot doc: documents){
-
             Event event = new Event();
             event.setEventID(doc.getId());
             event.setOrganizer(new User(doc.getString("organizerID")));
-            //doc.get("attendees");
             event.setDescription(doc.getString("description"));
             event.setEventName(doc.getString("eventName"));
             event.setPosterURI(doc.getString("posterURL"));
+            event.setQR(doc.getString("QR"));
             events.add(event);
-            //Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees)
         }
     }
+
+    /**
+     * listener to return all the events for getAllEvents()
+     */
     public interface OnEventsLoadedListener {
         void onEventsLoaded(ArrayList<Event> events);
     }
     ArrayList<Event> events = new ArrayList<>();
 
+    /**
+     * Gets all the event documents, stores them into an array and add a callback with the new array
+     * @param listener, callback for when all event documents are converted into objects and stored into an array
+     */
     public void getAllEvents(final OnEventsLoadedListener listener) {
         eventReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -406,7 +476,7 @@ public class FirebaseController {
 
     /**
      * adds an event and its fields to the firestore database
-     * @param event The event to add
+     * @param event the event to add
      */
     public void addEvent(Event event) {
         Map<String, Object> eventData = new HashMap<>();
@@ -415,7 +485,7 @@ public class FirebaseController {
         eventData.put("description", event.getDescription());
         eventData.put("startDateTime", event.getEventStartDateTime());
         eventData.put("endDateTime", event.getEventEndDateTime());
-        eventData.put("active", event.isActive());
+        eventData.put("QR", event.getQR());
         eventData.put("address", event.getAddress());
         eventData.put("latitude", event.getLatitude());
         eventData.put("longitude", event.getLongitude());
@@ -446,6 +516,11 @@ public class FirebaseController {
     }
 
     ArrayList<User> users = new ArrayList<>();
+
+    /**
+     * Gets all the user documents, stores them into an array and add a callback with the new array
+     * @param listener, callback for when all user documents are converted into objects and stored into an array
+     */
     public void getAllUsers(OnAllUsersLoadedListener listener){
         userReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -461,6 +536,10 @@ public class FirebaseController {
 
     }
 
+    /**
+     * Gets all the user documents, then turns each user document into a user object and adds it to an array
+     * @param documents, a list of users documents
+     */
     void parseUsers(List<DocumentSnapshot> documents){
         for(DocumentSnapshot doc: documents){
             String phoneNumber = doc.getString("phoneNumber");
@@ -472,9 +551,20 @@ public class FirebaseController {
             users.add(user);
         }
     }
+
+    /**
+     * listener to return the list of users
+     */
     public interface OnAllUsersLoadedListener{
         void onUsersLoaded(List<User> users);
     }
+
+    /**
+     * create an notification in the firebase db
+     * @param context activity context
+     * @param announcement the contents of the announcement
+     * @param event the associated event
+     */
     private void makeNotification(Context context, String announcement, Event event) {
         Intent intent = new Intent(context, BrowseEventsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -499,6 +589,13 @@ public class FirebaseController {
         }
         notificationManager.notify(0, builder.build());
     }
+
+    /**
+     * checks if a given user is attending a given event
+     * @param androidId unique id of the user
+     * @param event
+     * @param callback
+     */
     public void isAttendee(String androidId, Event event, AttendeeCheckCallback callback){
         db.collection("events").document(event.getEventID()).collection("attendees").get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -518,9 +615,16 @@ public class FirebaseController {
     public interface AttendeeCheckCallback {
         void onChecked(boolean isAttendee, Event event);
     }
+
     public interface NotificationSeenCallback {
         void onSeen(boolean seen);
     }
+
+    /**
+     *
+     * @param context
+     * @param event
+     */
     public void listenForAnnouncements(Context context, Event event) {
         if (event == null || event.getEventID() == null) {
             Log.e("FirebaseController", "Event or Event ID is null");
@@ -579,6 +683,12 @@ public class FirebaseController {
                 });
     }
 
+    /**
+     *
+     * @param announcementID unique id of the announcement that the notification is attached to
+     * @param userID the userid receiving the notifications
+     * @param notificationSeenCallback
+     */
     private void markSeenNotification(String announcementID, String userID, NotificationSeenCallback notificationSeenCallback) {
         CollectionReference notificationsRef = db.collection("users").document(userID).collection("notifications");
 
@@ -673,8 +783,8 @@ public class FirebaseController {
                     double longitude = getDoubleFromDocument(document, "longitude", 0.0);
 
                     String eventId = eventRef.getId();
+                    String QR = document.getString("QR");
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
-                    boolean active = document.getBoolean("active");
 
                     db.collection("events").document(eventIdentifier).collection("announcements")
                             .get()
@@ -692,7 +802,9 @@ public class FirebaseController {
                                         @Override
                                         public void onUserRetrieved(User user) {
                                             if (user != null) {
+
                                                 Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, address, active, latitude, longitude);
+
                                                 event.setAnnouncements(announcements);
                                                 listener.onEventRetrieved(event);
                                             } else {
@@ -810,6 +922,12 @@ public class FirebaseController {
                     }
                 });
     }
+
+    /**
+     * add a string milestone to an events milestone collection in Firestone
+     * @param event the event in question
+     * @param milestone the string in question
+     */
     public void addMilestone(Event event, String milestone) {
         DocumentReference eventRef = eventReference.document(event.getEventID());
         final CollectionReference collectionReference = eventRef.collection("milestones");
@@ -856,9 +974,19 @@ public class FirebaseController {
             }
         });
     }
+
+    /**
+     * Listener that returns a list of milestone strings upon successful retrieval
+     */
     public interface MilestonesListener {
         void onMilestonesLoaded(List<String> milestones);
     }
+
+    /**
+     * retrieve all the event milestones of a given event
+     * @param eventId event in question
+     * @param listener MilestonesListener
+     */
     public void getMilestones(String eventId, MilestonesListener listener) {
         DocumentReference eventRef = eventReference.document(eventId);
         CollectionReference milestonesRef = eventRef.collection("milestones");
@@ -878,6 +1006,7 @@ public class FirebaseController {
             }
         });
     }
+
     /**
      * add an attendee to the specified events attendee subcollection
      * @param event the event to add the user to
@@ -886,9 +1015,9 @@ public class FirebaseController {
     public void addAttendeeToEvent(Event event, User user) {
         DocumentReference eventRef = eventReference.document(event.getEventID());
         Map<String, Object> attendeeData = new HashMap<>();
-        attendeeData.put("checkedIn", 0); // Set checkedIn field to 0
-        attendeeData.put("latitude",""); //set latitude to 0
-        attendeeData.put("longitude",""); //set longitude to 0
+        attendeeData.put("checkedIn", 0);
+        attendeeData.put("latitude","");
+        attendeeData.put("longitude","");
         eventRef.collection("attendees").document(user.getDeviceID())
                 .set(attendeeData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -940,6 +1069,9 @@ public class FirebaseController {
         void onCheckFailed(Exception e);
     }
 
+    /**
+     * returns the incremented value after check-in
+     */
     public interface CheckInListener {
         void onCheckInComplete(int count);
         void onCheckInFailure(Exception e);
@@ -996,54 +1128,62 @@ public class FirebaseController {
                 });
     }
 
-    public void deleteImage(String uri, Object object, Context context) {
+    /**
+     * entirely deletes an image from Firestore and all necessary documents.
+     * @param uri the image in question
+     * @param object event or user with an image URI
+     * @param context activity/fragment context
+     */
+    public void deleteImage(String uri, Object object, Context context, boolean deleteObject) {
         String[] firebaseImagePath = Uri.parse(uri).getPath().split("/");
         String imagePath = firebaseImagePath[firebaseImagePath.length - 2] + "/" + firebaseImagePath[firebaseImagePath.length - 1];
         FirebaseStorage.getInstance().getReference().child(imagePath).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) { // after deleting from storage, delete from event and uri documents
                 Log.d("TAG", "Picture successfully deleted");
-                if (object instanceof Event) {
-                    Event event = (Event) object;
-                    String eventId = event.getEventID();
-                    if (eventId != null) {
-                        FirebaseFirestore.getInstance().collection("events").document(eventId)
-                                .update("posterURI", null)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("TAG", "Event poster URI set to null");
-                                        Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.e("TAG", "Failed to update event poster URI", e);
-                                        Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
-                } else if (object instanceof User) {
-                    User user = (User) object;
-                    String userId = user.getDeviceID();
-                    if (userId != null) {
-                        FirebaseFirestore.getInstance().collection("users").document(userId)
-                                .update("profileURI", null)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("TAG", "User profile URI set to null");
-                                        Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.e("TAG", "Failed to update user profile URI", e);
-                                        Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                if (!deleteObject) {
+                    if (object instanceof Event) {
+                        Event event = (Event) object;
+                        String eventId = event.getEventID();
+                        if (eventId != null) {
+                            FirebaseFirestore.getInstance().collection("events").document(eventId)
+                                    .update("posterURI", null)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("TAG", "Event poster URI set to null");
+                                            Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.e("TAG", "Failed to update event poster URI", e);
+                                            Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+                    } else if (object instanceof User) {
+                        User user = (User) object;
+                        String userId = user.getDeviceID();
+                        if (userId != null) {
+                            FirebaseFirestore.getInstance().collection("users").document(userId)
+                                    .update("profileURI", null)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("TAG", "User profile URI set to null");
+                                            Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.e("TAG", "Failed to update user profile URI", e);
+                                            Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
                     }
                 }
             }
@@ -1056,6 +1196,12 @@ public class FirebaseController {
         });
     }
 
+    /**
+     * checks if a user is signed up to a given event or not
+     * @param userId user in question
+     * @param eventId event in question
+     * @param listener OnSignUpCheckListener
+     */
     public void isUserSignedUp(String userId, String eventId, OnSignUpCheckListener listener) {
         FirebaseFirestore.getInstance()
                 .collection("events")
@@ -1069,15 +1215,24 @@ public class FirebaseController {
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FirebaseController", "Error checking user signup", e);
-                    listener.onSignUpCheck(false); // Assume not signed up in case of failure
+                    listener.onSignUpCheck(false);
                 });
     }
 
+    /**
+     * listener for isUserSignedUp so it can return a boolean value
+     */
     public interface OnSignUpCheckListener {
         void onSignUpCheck(boolean isSignedUp);
     }
 
 
+    /**
+     * removes an attendee from an event in all necessary collections
+     * @param eventId event in question
+     * @param userId user in question
+     * @param callback Listener for isUserSignedUp so it can return a boolean value
+     */
     public void removeAttendee(String eventId, String userId, RemoveAttendeeCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -1095,11 +1250,20 @@ public class FirebaseController {
         });
     }
 
+    /**
+     * callback for removeAttendees denoting successful removal
+     */
     public interface RemoveAttendeeCallback {
         void onSuccess();
         void onFailure(Exception e);
     }
 
+    /**
+     * get the number of times given user has checked in to a given event, -1 otherwise
+     * @param eventId event in question
+     * @param userId user in question
+     * @param callback CheckAttendeeCheckinsCallback
+     */
     public void checkAttendeeCheckins(String eventId, String userId, CheckAttendeeCheckinsCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -1125,6 +1289,9 @@ public class FirebaseController {
         });
     }
 
+    /**
+     * listener for isUserSignedUp so it can return an int
+     */
     public interface CheckAttendeeCheckinsCallback {
         void onSuccess(int checkins);
         void onFailure(Exception e);

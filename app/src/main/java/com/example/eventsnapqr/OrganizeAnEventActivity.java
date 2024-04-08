@@ -37,11 +37,19 @@ public class OrganizeAnEventActivity extends AppCompatActivity implements MapFra
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         navController.navigate(R.id.organizeEventFragment);
     }
+
+    /**
+     * action to be taken when the location has been picked
+     * @param latitude chosen latitude
+     * @param longitude chosen longitude
+     */
     @Override
+
     public void onLocationPicked(double latitude, double longitude, String address) {
         Log.d("ADDRESS", address);
         OrganizeEventFragment fragment = (OrganizeEventFragment) getSupportFragmentManager().findFragmentByTag("organizeEventFragment");
         Log.d("ADDRESS2", address);
+
         if (fragment != null) {
             Log.d("ADDRESS3", address);
             fragment.updateLocationText(latitude, longitude, address);

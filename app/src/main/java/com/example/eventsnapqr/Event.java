@@ -44,12 +44,11 @@ public class Event {
         this.eventStartDateTime = eventStartDateTime;
         this.eventEndDateTime = eventEndDateTime;
         this.address = address;
-        this.active = active;
+        this.QR = QR;
         this.announcements = new ArrayList<>();
         this.latitude = latitude;
         this.longitude = longitude;
     }
-
 
     /**
      * empty constructor for firebase usage
@@ -201,19 +200,18 @@ public class Event {
     }
 
     /**
-     * check if the event is currently within its start and end date
+     * get the QR of the event
      * @return
      */
-    public boolean isActive() {
-        return this.active;
+    public String getQR() {
+        return QR;
     }
 
     /**
-     * set the event to active
-     * @param active
+     * set the QR of of the event
      */
-    public void setActivity(boolean active) {
-        this.active = active;
+    public void setQR(String QR) {
+        this.QR = QR;
     }
     public double getLatitude() {
         return latitude;

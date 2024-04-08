@@ -68,7 +68,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="Search for a place"
+                android:hint="Search"
                 android:inputType="text"
                 android:maxLines="1"
                 android:padding="10dp"
@@ -76,11 +76,17 @@
                 android:background="#FFFFFF" />
 
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/search_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Search" />
+                android:text="Search"
+                android:backgroundTint="@color/glaucous"
+                app:strokeColor="@color/black"
+                app:strokeWidth="1dp"
+                android:textColor="@color/black"
+                style="@style/Widget.MaterialComponents.Button" />
+
         </LinearLayout>
 
     </FrameLayout>
@@ -99,6 +105,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginEnd="12dp"
         android:layout_marginBottom="12dp" />
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

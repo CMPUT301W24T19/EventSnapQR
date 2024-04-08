@@ -40,8 +40,6 @@ public class AdminViewImageActivity extends AppCompatActivity {
             }
         });
 
-
-
         Bundle extra = getIntent().getExtras();
         if (extra != null) {
             Object uriObject = extra.get("uri");

@@ -86,69 +86,42 @@ public class MassUserTest {
         userList = new ArrayList<>();
         eventList = new ArrayList<>();
 
+        final boolean[] finishedFetching = {false};
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseFirestore.collection("events").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        FirebaseController.getInstance().getAllEvents(new FirebaseController.OnEventsLoadedListener() {
             @Override
-            public void onSuccess(QuerySnapshot querySnapshot) {
-                for (QueryDocumentSnapshot doc : querySnapshot) {
-                    FirebaseController.getInstance().getEvent(doc.getId(), new FirebaseController.OnEventRetrievedListener() {
-                        @Override
-                        public void onEventRetrieved(Event event) {
-                            Log.d("TAG", "" + event);
-                            if (event != null) {
-                                FirebaseController.getInstance().deleteEvent(event, new FirebaseController.FirestoreOperationCallback() {
-                                    @Override
-                                    public void onCompleted() {
-                                        firebaseFirestore.collection("events").document(doc.getId()).delete();
-                                    }
-                                });
-                            }
-                        }
-                    });
-                }
+            public void onEventsLoaded(ArrayList<Event> events) {
+                eventList = events;
+                finishedFetching[0] = true;
             }
         });
 
-        try {
-            latch.await(30, TimeUnit.SECONDS);
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        firebaseFirestore.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        while(!finishedFetching[0]) {}
+        finishedFetching[0] = false;
+
+        FirebaseController.getInstance().getAllUsers(new FirebaseController.OnAllUsersLoadedListener() {
             @Override
-            public void onSuccess(QuerySnapshot querySnapshot) {
-                for (QueryDocumentSnapshot doc : querySnapshot) {
-                    FirebaseController.getInstance().getUser(doc.getId(), new FirebaseController.OnUserRetrievedListener() {
-                        @Override
-                        public void onUserRetrieved(User user) {
-                            if (user != null) {
-                                FirebaseController.getInstance().deleteUser(user);
-                            }
-                        }
-                    });
-                }
+            public void onUsersLoaded(List<User> users) {
+                userList = users;
+                finishedFetching[0] = true;
             }
         });
-        try {
-            latch.await(30, TimeUnit.SECONDS);
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        while(!finishedFetching[0]) {}
+        finishedFetching[0] = false;
 
-        Random random = new Random();
+        
         for (int i = 0; i < 50; i++) {
             String userID = FirebaseController.getInstance().getUniqueEventID();
             User newUser = new User(userID, userID, null, null, null);
             userList.add(newUser);
-            FirebaseController.getInstance().addUser(newUser);
+            FirebaseController.getInstance().addUser(newUser, null);
         }
 
         for (int i = 0; i < 20; i++) {
             String eventID = FirebaseController.getInstance().getUniqueEventID();
             int randomEvent = random.nextInt(50);
             Event newEvent = new Event(userList.get(randomEvent), eventID, "Test Event Number: " + i, null, null, eventID, new Date(), new Date(999999999L), String.valueOf(i), true,0.0,0.0);
+
             eventList.add(newEvent);
             FirebaseController.getInstance().addEvent(newEvent);
         }
@@ -227,7 +200,12 @@ public class MassUserTest {
         }
 
         String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
-        firebaseFirestore.collection("admin").document(androidId);
+        firebaseFirestore.collection("admin").document(androidId);*/
+    }
+
+    @Test
+    public void foo() {
+        Log.d("TAG", "true");
     }
 
     @Test

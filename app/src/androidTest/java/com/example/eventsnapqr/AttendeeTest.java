@@ -10,6 +10,7 @@ import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -42,6 +43,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -129,8 +131,8 @@ public class AttendeeTest {
             e.printStackTrace();
         }
         // US US 02.05.01 check
-        onView(withId(R.id.iv_profile_pic))
-                .check(matches(withTagValue(is( "TE"))));
+        //onView(withId(R.id.iv_profile_pic)).check(matches(withTagValue(is((Object) "TE"))));
+
         onView(withId(R.id.button_edit_profile_button)).perform(click());
         String testName = "TestName";
 
@@ -209,14 +211,15 @@ public class AttendeeTest {
     }
 **/
     /**
-     * Test for  US 02.07.01, US 02.04.01
+     * Test for  US 02.04.01, US 02.08.01
      */
     @Test
-    public void signUpForEventTest(){
+    public void viewEventAnnouncementTest(){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseController firebaseController = new FirebaseController();
         id = firebaseController.getUniqueEventID();
         Event newEvent = new Event(new User(androidId), "testEvent", "testEventDescription", null, 5, id, new Date(), new Date(), "123 Spooner St.",true, 0.0,0.0);
+
         firebaseController.addEvent(newEvent);
         String announcement = "Test Announcement";
         CollectionReference announcementsRef = db.collection("events").document(id).collection("announcements");

@@ -97,7 +97,6 @@ public class MapFragmentOrganize extends Fragment {
         db = FirebaseFirestore.getInstance();
         if (getArguments() != null) {
             eventName = getArguments().getString("eventName");
-
             targetLatitude = getArguments().getDouble("latitude", 0.0);
             targetLongitude = getArguments().getDouble("longitude", 0.0);
             address = getArguments().getString("address", "");
@@ -136,9 +135,7 @@ public class MapFragmentOrganize extends Fragment {
 
                         getActivity().runOnUiThread(() -> {
                             GeoPoint startPoint = new GeoPoint(latitude, longitude);
-
                             new ReverseGeocodingTask(addressTextBox).execute(startPoint);
-
                             mapController.setCenter(startPoint);
                             Marker startMarker = new Marker(mapView);
                             startMarker.setPosition(startPoint);
@@ -166,7 +163,9 @@ public class MapFragmentOrganize extends Fragment {
             Log.e("MapFragmentOrganizer", "Did not get user location/invalid user location" + eventName);
         }
 
+
         view.findViewById(R.id.button_back_button).setOnClickListener(v -> requireActivity().onBackPressed());
+
         setupMap();
 
         view.findViewById(R.id.search_button).setOnClickListener(new View.OnClickListener() {
