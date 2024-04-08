@@ -1,19 +1,25 @@
 package com.example.eventsnapqr;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static androidx.test.espresso.contrib.PickerActions.setDate;
 import static androidx.test.espresso.contrib.PickerActions.setTime;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.equalTo; // Make sure it's imported from Hamcrest
 
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.contrib.PickerActions;
 
 import static org.junit.Assert.assertEquals;
@@ -21,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
+import android.content.Intent;
 import android.util.Log;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
@@ -34,6 +41,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -77,14 +85,12 @@ public class OrganizeEventTest {
         MockitoAnnotations.initMocks(this);
 
         db = mock(FirebaseFirestore.class);
-        firebaseController = new FirebaseController(); // Adjust your FirebaseController class to accept FirebaseFirestore as a parameter for testing
+        firebaseController = new FirebaseController();
 
-        // Setup your mock event and attendee
+
         eventId = "mockEventId";
-        newEvent = new Event(new User("mockOrganizerId"), "Mock Event", "This is a mock event.", null, 100, eventId, new Date(), new Date(), "123 Mock St.", true);
+        newEvent = new Event(new User("mockOrganizerId"), "Mock Event", "This is a mock event.", null, 100, eventId, new Date(), new Date(), "123 Mock St.", "QRLink");
 
-        // Initialize test environment
-        // e.g., request permissions, disable animations
     }
 
     //
@@ -117,13 +123,14 @@ public class OrganizeEventTest {
         boolean isActive = true;
 
         // Create an event object
-        Event event = new Event(organizer, eventName, eventDescription, posterUri, maxAttendees, null, startDateTime, endDateTime, address, isActive);
 
         CountDownLatch latch = new CountDownLatch(1);
         AtomicBoolean eventExists = new AtomicBoolean(false);
 
-        String eventId = firebaseController.getUniqueEventID();
-        event.setEventID(eventId);
+        eventId = firebaseController.getUniqueEventID();
+        Event event = new Event(organizer, eventName, eventDescription, posterUri, maxAttendees, eventId, startDateTime, endDateTime, address, "TestQR");
+
+
         firebaseController.addEvent(event);
 
         Integer expectedMaxAttendees = maxAttendees;
@@ -146,6 +153,20 @@ public class OrganizeEventTest {
 
         // Assert event was created successfully
         assertTrue("Event was not created successfully", eventExists.get());
+        // test notifications
+        Intent intentThree = new Intent(ApplicationProvider.getApplicationContext(), ManageEventActivity.class);
+        ActivityScenario<ManageEventActivity> scenarioThree = ActivityScenario.launch(intentThree);
+        Thread.sleep(5000);
+        onView(withText("Organized")).perform(click());
+        Thread.sleep(5000);
+
+        onData(anything())
+                .inAdapterView(Matchers.allOf(withId(R.id.events), isDisplayed()))
+                .atPosition(0)
+                .onChildView(withId(R.id.eventName))
+                .check(matches(withText("Test Event")))
+                .perform(click());
+
     }
 
 
@@ -164,8 +185,6 @@ public class OrganizeEventTest {
 
         String mockUserId = "mockUser123";
         firebaseController.addAttendeeToEvent(mockEvent, new User(mockUserId));
-
-        // Use a CountDownLatch to wait for async operations to complete
         CountDownLatch latch = new CountDownLatch(1);
         final AtomicBoolean isAttendeeAdded = new AtomicBoolean(false);
 
@@ -173,7 +192,7 @@ public class OrganizeEventTest {
             @Override
             public void onUserInAttendees(boolean isInAttendees) {
                 isAttendeeAdded.set(isInAttendees);
-                latch.countDown(); // Decrement the count of the latch, releasing the wait on the main thread
+                latch.countDown();
             }
 
             @Override
@@ -182,10 +201,7 @@ public class OrganizeEventTest {
             }
         });
 
-        // Wait for async operations to complete
         latch.await(10, TimeUnit.SECONDS);
-
-        // Assert that the user has been successfully added as an attendee
         assertTrue("User should have been added as an attendee", isAttendeeAdded.get());
     }
 
@@ -196,19 +212,15 @@ public class OrganizeEventTest {
      */
     @Test
     public void testAttendeeCheckin() throws InterruptedException {
-        // Assuming you've added methods in FirebaseController for adding events and attendees
 
-        // Add the mock event to Firestore
         firebaseController.addEvent(newEvent);
 
-        // Add a mock attendee to the event
+
         String mockAttendeeId = "mockAttendeeId";
         firebaseController.addAttendeeToEvent(newEvent, new User(mockAttendeeId));
 
-        // Wait for the async operations to complete (just an example, adjust according to your async handling)
-        Thread.sleep(1000); // Replace with proper async handling
+        Thread.sleep(1000);
 
-        // Now, check if the attendee was added successfully
         final AtomicBoolean isAttendeeAdded = new AtomicBoolean(false);
         CountDownLatch latch = new CountDownLatch(1);
 
@@ -225,25 +237,21 @@ public class OrganizeEventTest {
             }
         });
 
-        // Wait for the async check to complete
         latch.await(10, TimeUnit.SECONDS);
 
-        // Assert that the mock attendee was added to the event successfully
         assertTrue("Attendee should have been added to the event", isAttendeeAdded.get());
     }
 
     private Event createMockEvent() {
-        // Method to create a mock Event object
         User organizer = new User("organizerId", "Organizer", null, null, null);
-        return new Event(organizer, "Test Event", "This is a test event.", null, 100, "mockEvent123", new Date(), new Date(), "Test Location", true);
+        return new Event(organizer, "Test Event", "This is a test event.", null, 100, "mockEvent123", new Date(), new Date(), "Test Location", "TestQR");
     }
 
 
 
     @After
     public void tearDown() {
-        // Cleanup test environment
-        // e.g., delete test event
+
     }
     @Rule
     public ActivityScenarioRule<OrganizeAnEventActivity> scenario = new

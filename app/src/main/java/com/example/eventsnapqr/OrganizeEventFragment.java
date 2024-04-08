@@ -45,6 +45,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -60,6 +61,11 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.zxing.BinaryBitmap;
@@ -108,7 +114,10 @@ public class OrganizeEventFragment extends Fragment {
     private double latitude = 0.0;
     private double longitude = 0.0;
     private boolean eventCreated = false;
+    private List<String> eventQRs;
+    private List<String> eventIDs;
     private boolean getLocation;
+    private boolean reUsingQR = false;
 
 
     /**
@@ -159,8 +168,23 @@ public class OrganizeEventFragment extends Fragment {
         editTextAddress = view.findViewById(R.id.editTextAddress);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+
+        eventIDs = new ArrayList<>();
+        eventQRs = new ArrayList<>();
         requestLocation();
         getLocation = false;
+
+        FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                eventQRs.clear();
+                eventIDs.clear();
+                for (QueryDocumentSnapshot doc: value) {
+                    eventQRs.add(doc.getString("QR"));
+                    eventIDs.add(doc.getId());
+                }
+            }
+        });
 
         removePosterTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -225,6 +249,8 @@ public class OrganizeEventFragment extends Fragment {
 
         /**
          * Credits: https://stackoverflow.com/questions/55427308/scaning-qrcode-from-image-not-from-camera-using-zxing
+         * This helped me work with the zxing library, showing me the conversion from a URI to a binary bitmap and then decode it
+         * Author: Hugo Allexis Cardona
          */
         ActivityResultLauncher<PickVisualMediaRequest> reuseQR =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
@@ -272,11 +298,16 @@ public class OrganizeEventFragment extends Fragment {
                                         }
                                     });
                                     if (matching[0]) {
+                                        reUsingQR = false;
                                         QR = null;
-                                        Toast.makeText(getContext(), "This is not your QR code, you cannot use it", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getContext(), "This is QR code is currently in use.", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else {
+                                        Toast.makeText(getContext(), "QR code successfully applied.", Toast.LENGTH_SHORT).show();
+                                        reUsingQR = true;
                                     }
                                 } catch(Exception e) {
-                                    Toast.makeText(getContext(), "QR decoding failure", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "QR decoding failure.", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -517,16 +548,27 @@ public class OrganizeEventFragment extends Fragment {
             public void onUserRetrieved(User user) {
                 if (user != null) {
                     String eventID = FirebaseController.getInstance().getUniqueEventID();
-                    if (QR == null) {
+                    if (!reUsingQR) {
                         QR = eventID;
                     }
+                    while (eventIDs.contains(eventID)) {
+                        eventID = FirebaseController.getInstance().getUniqueEventID();
+                        if (!reUsingQR) {
+                            QR = eventID;
+                        }
+                    }
+                    while (eventQRs.contains(QR)) {
+                        QR = FirebaseController.getInstance().getUniqueEventID();
+                    }
+
                     if (imageUri != null) {
                         StorageReference userRef = storageRef.child("eventPosters/" + eventID); // specifies the path on the cloud storage
+                        String finalEventID = eventID;
                         userRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
                             userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                 imageUri = uri;
                                 uriString = imageUri.toString();
-                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, eventAddress, QR);
+                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, finalEventID, startDateTime, endDateTime, eventAddress, QR);
                                 Log.d("USER NAME", newEvent.getOrganizer().getName());
                                 firebaseController.addEvent(newEvent);
                                 firebaseController.addOrganizedEvent(user, newEvent);

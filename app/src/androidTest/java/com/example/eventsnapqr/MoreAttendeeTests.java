@@ -39,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import java.util.Date;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 
 @RunWith(AndroidJUnit4.class)
@@ -103,8 +104,13 @@ public class MoreAttendeeTests {
         FirebaseController fbc = FirebaseController.getInstance();
         String eventId = fbc.getUniqueEventID();
         User user = new User(androidId);
-        fbc.addUser(user);
-        Event newEvent = new Event(user, "testEvent", "testEventDescription", null, 5, eventId, new Date(), new Date(), "123 Spooner St.", true);
+        fbc.addUser(user, new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+        Event newEvent = new Event(user, "testEvent", "testEventDescription", null, 5, eventId, new Date(), new Date(), "123 Spooner St.", "QRLink");
         fbc.addEvent(newEvent);
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), BrowseEventsActivity.class);
         intent.putExtra("eventID", eventId);
@@ -122,12 +128,21 @@ public class MoreAttendeeTests {
             }
         });
         Intent intentTwo = new Intent(ApplicationProvider.getApplicationContext(), BrowseEventsActivity.class);
-        ActivityScenario.launch(intentTwo);
+        ActivityScenario<BrowseEventsActivity> scenarioTwo = ActivityScenario.launch(intentTwo);
 
         Thread.sleep(5000);
         onView(withText("Attending")).perform(click());
         Thread.sleep(5000);
-        onData(anything()).inAdapterView(Matchers.allOf(withId(R.id.events), isDisplayed())).atPosition(0).onChildView(withId(R.id.eventName)).check(matches(withText("testEvent")));
+        onData(anything())
+                .inAdapterView(Matchers.allOf(withId(R.id.events),
+                isDisplayed())).atPosition(0)
+                .onChildView(withId(R.id.eventName))
+                .check(matches(withText("testEvent")));
+        // now test notifications
+        scenarioTwo.close();
+        CountDownLatch latch = new CountDownLatch(1);
+
+
     }
 
 

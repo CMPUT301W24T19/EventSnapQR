@@ -268,7 +268,7 @@ public class FirebaseController {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         if (event.getPosterURI() != null) {
-            deleteImage(event.getPosterURI(), event, null);
+            deleteImage(event.getPosterURI(), event, null, true);
         }
 
         // deleting subcollections
@@ -277,11 +277,10 @@ public class FirebaseController {
         Task<QuerySnapshot> getPromisedAttendees = db.collection("events").document(eventId).collection("promisedAttendees").get();
         Task<QuerySnapshot> getAnnouncements = db.collection("events").document(eventId).collection("announcements").get();
 
-        Task<Void> deleteEventTask = db.collection("events").document(eventId).delete();
-
         Task<QuerySnapshot> getUsersTask = db.collection("users").get();
 
-        Tasks.whenAll(getMilestones, getAttendees, getPromisedAttendees, getAnnouncements, deleteEventTask, getUsersTask).addOnSuccessListener(aVoid -> {
+        Tasks.whenAll(getMilestones, getAttendees, getPromisedAttendees, getAnnouncements, getUsersTask).addOnSuccessListener(aVoid -> {
+
             List<Task<Void>> deletionTasks = new ArrayList<>();
             for (DocumentSnapshot userDoc : getUsersTask.getResult().getDocuments()) {
                 String userId = userDoc.getId();
@@ -290,18 +289,22 @@ public class FirebaseController {
                 deletionTasks.add(deleteOrganizedEventTask);
                 deletionTasks.add(deletePromisedEventTask);
             }
+
             for (DocumentSnapshot milestoneDoc : getMilestones.getResult().getDocuments()) {
                 Task<Void> deleteMileStoneTask = db.collection("events").document(eventId).collection("milestones").document(milestoneDoc.getId()).delete();
                 deletionTasks.add(deleteMileStoneTask);
             }
+
             for (DocumentSnapshot attendeeDoc : getAttendees.getResult().getDocuments()) {
                 Task<Void> deleteAttendeeTask = db.collection("events").document(eventId).collection("attendees").document(attendeeDoc.getId()).delete();
                 deletionTasks.add(deleteAttendeeTask);
             }
+
             for (DocumentSnapshot attendeeDoc : getPromisedAttendees.getResult().getDocuments()) {
                 Task<Void> deletePromisedAttendeeTask = db.collection("events").document(eventId).collection("promisedAttendees").document(attendeeDoc.getId()).delete();
                 deletionTasks.add(deletePromisedAttendeeTask);
             }
+
             for (DocumentSnapshot announcementDoc : getAnnouncements.getResult().getDocuments()) {
                 Task<Void> deleteAnnouncementTask = db.collection("events").document(eventId).collection("announcements").document(announcementDoc.getId()).delete();
                 deletionTasks.add(deleteAnnouncementTask);
@@ -309,20 +312,59 @@ public class FirebaseController {
 
             Tasks.whenAllSuccess(deletionTasks).addOnSuccessListener(tasks -> {
                 Log.d("Delete Event", "Event and related data successfully deleted: " + eventId);
-                if (completionCallback != null) {
-                    completionCallback.onCompleted();
-                }
+                db.collection("events").document(eventId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        if (completionCallback != null) {
+                            completionCallback.onCompleted();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("TAG", "Event deletion failure");
+                        if (completionCallback != null) {
+                            completionCallback.onCompleted();
+                        }
+                    }
+                });
             }).addOnFailureListener(e -> {
                 Log.e("Delete Event", "Error deleting event or related data: " + eventId, e);
-                if (completionCallback != null) {
-                    completionCallback.onCompleted();
-                }
+                db.collection("events").document(eventId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        if (completionCallback != null) {
+                            completionCallback.onCompleted();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("TAG", "Event deletion failure");
+                        if (completionCallback != null) {
+                            completionCallback.onCompleted();
+                        }
+                    }
+                });
             });
         }).addOnFailureListener(e -> {
             Log.e("Delete Event", "Error initializing deletion process: " + eventId, e);
-            if (completionCallback != null) {
-                completionCallback.onCompleted();
-            }
+            db.collection("events").document(eventId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    if (completionCallback != null) {
+                        completionCallback.onCompleted();
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d("TAG", "Event deletion failure");
+                    if (completionCallback != null) {
+                        completionCallback.onCompleted();
+                    }
+                }
+            });
         });
     }
 
@@ -348,7 +390,9 @@ public class FirebaseController {
                     @Override
                     public void onSuccess(Void unused) {
                         Log.d("Added user success", "User added successfully!");
-                        callback.run();
+                        if (callback != null) {
+                            callback.run();
+                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -1035,54 +1079,56 @@ public class FirebaseController {
      * @param object event or user with an image URI
      * @param context activity/fragment context
      */
-    public void deleteImage(String uri, Object object, Context context) {
+    public void deleteImage(String uri, Object object, Context context, boolean deleteObject) {
         String[] firebaseImagePath = Uri.parse(uri).getPath().split("/");
         String imagePath = firebaseImagePath[firebaseImagePath.length - 2] + "/" + firebaseImagePath[firebaseImagePath.length - 1];
         FirebaseStorage.getInstance().getReference().child(imagePath).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) { // after deleting from storage, delete from event and uri documents
                 Log.d("TAG", "Picture successfully deleted");
-                if (object instanceof Event) {
-                    Event event = (Event) object;
-                    String eventId = event.getEventID();
-                    if (eventId != null) {
-                        FirebaseFirestore.getInstance().collection("events").document(eventId)
-                                .update("posterURI", null)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("TAG", "Event poster URI set to null");
-                                        Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.e("TAG", "Failed to update event poster URI", e);
-                                        Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
-                } else if (object instanceof User) {
-                    User user = (User) object;
-                    String userId = user.getDeviceID();
-                    if (userId != null) {
-                        FirebaseFirestore.getInstance().collection("users").document(userId)
-                                .update("profileURI", null)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("TAG", "User profile URI set to null");
-                                        Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.e("TAG", "Failed to update user profile URI", e);
-                                        Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                if (!deleteObject) {
+                    if (object instanceof Event) {
+                        Event event = (Event) object;
+                        String eventId = event.getEventID();
+                        if (eventId != null) {
+                            FirebaseFirestore.getInstance().collection("events").document(eventId)
+                                    .update("posterURI", null)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("TAG", "Event poster URI set to null");
+                                            Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.e("TAG", "Failed to update event poster URI", e);
+                                            Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+                    } else if (object instanceof User) {
+                        User user = (User) object;
+                        String userId = user.getDeviceID();
+                        if (userId != null) {
+                            FirebaseFirestore.getInstance().collection("users").document(userId)
+                                    .update("profileURI", null)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("TAG", "User profile URI set to null");
+                                            Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.e("TAG", "Failed to update user profile URI", e);
+                                            Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
                     }
                 }
             }
