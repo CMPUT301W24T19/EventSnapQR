@@ -35,7 +35,7 @@ public class QRActivity extends AppCompatActivity {
     private ImageView buttonExit;
     private MaterialButton buttonSaveQR;
     private Bitmap qrBitmap;
-    private String eventId;
+    private String QR;
 
     /**
      * What should be executed when the fragment is created
@@ -48,8 +48,8 @@ public class QRActivity extends AppCompatActivity {
         setContentView(R.layout.activity_qr);
         // Retrieve data from the bundle
         Bundle bundle = getIntent().getExtras();
-        eventId = bundle.getString("eventId");
-        Log.d("EVENT ID QR DIALOG: ", eventId);
+        QR = bundle.getString("QR");
+        Log.d("EVENT ID QR DIALOG: ", QR);
         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
 
         if (getSupportActionBar() != null) {
@@ -57,7 +57,7 @@ public class QRActivity extends AppCompatActivity {
         }
 
         try {
-            qrBitmap = barcodeEncoder.encodeBitmap("eventsnapqr/" + eventId, BarcodeFormat.QR_CODE, 400, 400);
+            qrBitmap = barcodeEncoder.encodeBitmap(QR, BarcodeFormat.QR_CODE, 400, 400);
             if (qrBitmap != null) {
                 Log.d("QR_CODE", "QR Code generated successfully");
             } else {
