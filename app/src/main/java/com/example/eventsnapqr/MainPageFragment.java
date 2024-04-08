@@ -212,17 +212,12 @@ public class MainPageFragment extends Fragment {
                 adapter.setOnItemClickListener(new ImageCarouselAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(String imageUri) {
-
                          String uriComponents[] = Uri.parse(imageUri).getPath().split("/");
                          String eventId = uriComponents[uriComponents.length - 1];
                          Log.d("clicked event id", eventId);
                         Intent intent = new Intent(getActivity(), BrowseEventsActivity.class);
                         intent.putExtra("eventID", eventId);
                         startActivity(intent);
-
-
-
-
                     }
                 });
                 recyclerView.setAdapter(adapter);
