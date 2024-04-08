@@ -460,6 +460,9 @@ public class FirebaseController {
                     parseDocuments(queryDocumentSnapshots.getDocuments());
                     listener.onEventsLoaded(events);
                 }
+                else {
+                    listener.onEventsLoaded(new ArrayList<Event>());
+                }
 
             }
         });
@@ -525,6 +528,9 @@ public class FirebaseController {
                     users.clear();
                     parseUsers(queryDocumentSnapshots.getDocuments());
                     listener.onUsersLoaded(users);
+                }
+                else {
+                    listener.onUsersLoaded(new ArrayList<User>());
                 }
 
             }

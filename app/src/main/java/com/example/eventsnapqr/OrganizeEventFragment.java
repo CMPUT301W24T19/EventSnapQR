@@ -295,17 +295,17 @@ public class OrganizeEventFragment extends Fragment {
                                                     matching[0] = true;
                                                 }
                                             }
+                                            if (matching[0]) {
+                                                reUsingQR = false;
+                                                QR = null;
+                                                Toast.makeText(getContext(), "This is QR code is currently in use.", Toast.LENGTH_SHORT).show();
+                                            }
+                                            else {
+                                                Toast.makeText(getContext(), "QR code successfully applied.", Toast.LENGTH_SHORT).show();
+                                                reUsingQR = true;
+                                            }
                                         }
                                     });
-                                    if (matching[0]) {
-                                        reUsingQR = false;
-                                        QR = null;
-                                        Toast.makeText(getContext(), "This is QR code is currently in use.", Toast.LENGTH_SHORT).show();
-                                    }
-                                    else {
-                                        Toast.makeText(getContext(), "QR code successfully applied.", Toast.LENGTH_SHORT).show();
-                                        reUsingQR = true;
-                                    }
                                 } catch(Exception e) {
                                     Toast.makeText(getContext(), "QR decoding failure.", Toast.LENGTH_SHORT).show();
                                 }
