@@ -124,7 +124,7 @@ public class ListAllEventsFragment extends Fragment {
                                             );
                                             events.add(event);
                                         } else {
-                                            Toast.makeText(requireContext(), "Organizer not found for event: " + document.getId(), Toast.LENGTH_SHORT).show();
+                                           // Toast.makeText(requireContext(), "Organizer not found for event: " + document.getId(), Toast.LENGTH_SHORT).show();
                                         }
                                         if (i[0] == documents.size() - 1) {
                                             events.sort(Comparator.comparing(o -> o.getEventName().toLowerCase()));

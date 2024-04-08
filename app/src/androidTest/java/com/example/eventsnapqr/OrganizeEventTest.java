@@ -55,6 +55,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @FixMethodOrder(MethodSorters.JVM)
 public class OrganizeEventTest {
 
+
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseController firebaseController;
     private String eventId;
@@ -97,6 +98,7 @@ public class OrganizeEventTest {
      * US 01.01.01
      * @throws InterruptedException
      */
+
     @Test
     public void testCreateAndVerifyEvent() throws InterruptedException {
         // Initialize FirebaseController and Firestore
@@ -140,6 +142,7 @@ public class OrganizeEventTest {
         // Assert event was created successfully
         assertTrue("Event was not created successfully", eventExists.get());
     }
+
 
 
     /**
@@ -240,6 +243,7 @@ public class OrganizeEventTest {
     @Rule
     public ActivityScenarioRule<OrganizeAnEventActivity> scenario = new
             ActivityScenarioRule<OrganizeAnEventActivity>(OrganizeAnEventActivity.class);
+
 
 }
 
