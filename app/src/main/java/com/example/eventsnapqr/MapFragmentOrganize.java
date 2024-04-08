@@ -128,11 +128,9 @@ public class MapFragmentOrganize extends Fragment {
                         double latitude = address.getLatitude();
                         double longitude = address.getLongitude();
 
-                        // Update UI on UI thread
                         getActivity().runOnUiThread(() -> {
                             GeoPoint startPoint = new GeoPoint(latitude, longitude);
 
-//                            // Execute ReverseGeocodingTask
                             new ReverseGeocodingTask(addressTextBox).execute(startPoint);
 
                             mapController.setCenter(startPoint);
