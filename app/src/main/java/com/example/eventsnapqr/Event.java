@@ -204,7 +204,7 @@ public class Event {
     /**
      * set the QR of of the event
      */
-    public void setQR() {
+    public void setQR(String QR) {
         this.QR = QR;
     }
 }
