@@ -80,7 +80,6 @@ public class OrganizeEventTest {
 
 
 
-    @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
@@ -120,7 +119,7 @@ public class OrganizeEventTest {
         Date startDateTime = new Date();
         Date endDateTime = new Date(startDateTime.getTime() + 3600000);
         String address = "123 Test St.";
-        boolean isActive = true;
+
 
         // Create an event object
 
@@ -132,7 +131,6 @@ public class OrganizeEventTest {
 
 
         firebaseController.addEvent(event);
-
         Integer expectedMaxAttendees = maxAttendees;
         db.collection("events").document(eventId).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -150,7 +148,6 @@ public class OrganizeEventTest {
 
         // Wait for async operations to complete
         latch.await(10, TimeUnit.SECONDS); // Adjust the timeout as necessary
-
         // Assert event was created successfully
         assertTrue("Event was not created successfully", eventExists.get());
         // test notifications
