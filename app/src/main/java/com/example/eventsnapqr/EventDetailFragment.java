@@ -36,10 +36,10 @@ public class EventDetailFragment extends Fragment {
     private String eventId, androidId, organizerId;
     private ImageView eventPosterImage, backButton, checkMarkImageView;
     private TextView signUpMessage;
-    private TextInputEditText eventName, eventOrganizer, eventDescription, eventLocation, eventMaxAttendees,
+    private TextInputEditText eventName, eventOrganizer, eventDescription, eventMaxAttendees,
             eventAnnouncements, eventStartDateTime, eventEndDateTime, eventAddress;
     private TextInputLayout nameTextInputLayout, organizerTextInputLayout, descTextInputLayout,
-            locationTextInputLayout, maxTextInputLayout, announceTextInputLayout, startTextInputLayout,
+            maxTextInputLayout, announceTextInputLayout, startTextInputLayout,
             endTextInputLayout, addressTextInputLayout;
     private ExtendedFloatingActionButton signUpButton;
     private Integer position;
@@ -82,7 +82,6 @@ public class EventDetailFragment extends Fragment {
         eventName = view.findViewById(R.id.editTextEventName);
         eventOrganizer = view.findViewById(R.id.editTextUserOrganizer);
         eventDescription = view.findViewById(R.id.editTextDescription);
-        eventLocation = view.findViewById(R.id.editTextLocation);
         eventMaxAttendees = view.findViewById(R.id.editTextMaxAttendees);
         eventAnnouncements = view.findViewById(R.id.editTextAnnouncements);
         eventStartDateTime = view.findViewById(R.id.editTextStartDateTime);
@@ -97,7 +96,6 @@ public class EventDetailFragment extends Fragment {
         nameTextInputLayout = view.findViewById(R.id.textInputEventName);
         organizerTextInputLayout = view.findViewById(R.id.textInputOrganizer);
         descTextInputLayout = view.findViewById(R.id.textInputDescription);
-        locationTextInputLayout = view.findViewById(R.id.textInputLocation);
         maxTextInputLayout = view.findViewById(R.id.textInputMaxAttendees);
         announceTextInputLayout = view.findViewById(R.id.textInputAnnouncements);
         startTextInputLayout = view.findViewById(R.id.textInputStartDateTime);
@@ -186,6 +184,7 @@ public class EventDetailFragment extends Fragment {
                             FirebaseController.getInstance().getEvent(eventId, new FirebaseController.OnEventRetrievedListener() {
                                 @Override
                                 public void onEventRetrieved(Event event) {
+                                    Log.d("EVENTID", "Number of attendees: " + eventId);
                                     if (event != null) {
                                         String eventId = event.getEventID();
 
@@ -278,7 +277,6 @@ public class EventDetailFragment extends Fragment {
                     eventName.setVisibility(View.VISIBLE);
                     eventOrganizer.setVisibility(View.VISIBLE);
                     eventDescription.setVisibility(View.VISIBLE);
-                    eventLocation.setVisibility(View.VISIBLE);
                     eventMaxAttendees.setVisibility(View.VISIBLE);
                     eventAnnouncements.setVisibility(View.VISIBLE);
                     eventStartDateTime.setVisibility(View.VISIBLE);
@@ -331,8 +329,6 @@ public class EventDetailFragment extends Fragment {
             eventEndDateTime.setText("N/A");
         }
 
-        eventLocation.setText("N/A");
-
         if (event.getAddress() != null) {
             eventAddress.setText(event.getAddress());
         } else {
@@ -358,7 +354,6 @@ public class EventDetailFragment extends Fragment {
         eventName.setVisibility(View.VISIBLE);
         eventOrganizer.setVisibility(View.VISIBLE);
         eventDescription.setVisibility(View.VISIBLE);
-        eventLocation.setVisibility(View.VISIBLE);
         eventMaxAttendees.setVisibility(View.VISIBLE);
         eventAnnouncements.setVisibility(View.VISIBLE);
         eventStartDateTime.setVisibility(View.VISIBLE);
@@ -368,7 +363,6 @@ public class EventDetailFragment extends Fragment {
         nameTextInputLayout.setVisibility(View.VISIBLE);
         organizerTextInputLayout.setVisibility(View.VISIBLE);
         descTextInputLayout.setVisibility(View.VISIBLE);
-        locationTextInputLayout.setVisibility(View.VISIBLE);
         maxTextInputLayout.setVisibility(View.VISIBLE);
         announceTextInputLayout.setVisibility(View.VISIBLE);
         startTextInputLayout.setVisibility(View.VISIBLE);
