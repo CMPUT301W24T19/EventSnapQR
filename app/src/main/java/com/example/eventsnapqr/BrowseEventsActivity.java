@@ -13,12 +13,23 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+/**
+ * Activity for Organizers and Attendees to browse and manage active events.
+ * Has a tab layout that flips through 3 fragments. Tab layout has three fragments
+ * inside a viewpager to display the desired list
+ */
 public class BrowseEventsActivity extends AppCompatActivity {
-    private ViewPager2 viewPager;
-    private ViewPager2 fullscreenViewPager;
+    private ViewPager2 viewPager, fullscreenViewPager;
     private TabLayout tabLayout;
     private Integer position;
     private String eventId;
+
+
+    /**
+     * What should be executed when the fragment is created
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +100,11 @@ public class BrowseEventsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Hosts the EventDetailsFragment, making it fullscreen instead of inside the viewpage
+     * @param eventId the event being fetched
+     * @param toMain flag denoting whether or not to return to main (notifications)
+     */
     public void switchToFullscreenDetails(String eventId, Boolean toMain) {
         EventDetailFragment detailsFragment = new EventDetailFragment();
         Bundle bundle = new Bundle();

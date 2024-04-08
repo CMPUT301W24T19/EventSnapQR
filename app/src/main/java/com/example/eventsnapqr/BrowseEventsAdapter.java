@@ -13,6 +13,11 @@ public class BrowseEventsAdapter extends FragmentStateAdapter {
         super(fragmentActivity);
     }
 
+    /**
+     * create the respective fragment for the tab layout
+     * @param position tab index
+     * @return fragment associated with the position
+     */
     @NonNull
     @Override
     public Fragment createFragment(int position) {
@@ -31,8 +36,12 @@ public class BrowseEventsAdapter extends FragmentStateAdapter {
         }
     }
 
+    /**
+     * returns the number of tabs
+     * @return 3
+     */
     @Override
     public int getItemCount() {
-        return 3; // Number of tabs
+        return 3;
     }
 }

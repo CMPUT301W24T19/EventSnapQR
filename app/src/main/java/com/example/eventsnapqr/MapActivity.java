@@ -6,8 +6,16 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.views.MapView;
 
+/**
+ * activity that hosts the OSMaps, for viewing attendee check ins
+ */
 public class MapActivity extends AppCompatActivity {
 
+    /**
+     * What should be executed when the fragment is created
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +30,9 @@ public class MapActivity extends AppCompatActivity {
         mapView.setBuiltInZoomControls(true);
     }
 
+    /**
+     * what actions to be taken when the activity is resumed
+     */
     @Override
     protected void onResume() {
         super.onResume();
