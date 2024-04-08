@@ -20,7 +20,7 @@ public class Event {
     private Date eventStartDateTime;
     private Date eventEndDateTime;
     private String address;
-    private boolean active;
+    private String QR;
 
     /**
      * constructor for event requiring a user instance, QR code, event name, a description, a URL
@@ -32,7 +32,7 @@ public class Event {
      * @param maxAttendees maximum number of attendees
      */
     public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees,
-                 String eventID, Date eventStartDateTime, Date eventEndDateTime, String address, boolean active) {
+                 String eventID, Date eventStartDateTime, Date eventEndDateTime, String address, String QR) {
         this.organizer = organizer;
         this.eventName = eventName;
         this.description = description;
@@ -42,7 +42,7 @@ public class Event {
         this.eventStartDateTime = eventStartDateTime;
         this.eventEndDateTime = eventEndDateTime;
         this.address = address;
-        this.active = active;
+        this.QR = QR;
         this.announcements = new ArrayList<>();
     }
 
@@ -197,18 +197,17 @@ public class Event {
     }
 
     /**
-     * check if the event is currently within its start and end date
+     * get the QR of the event
      * @return
      */
-    public boolean isActive() {
-        return this.active;
+    public String getQR() {
+        return QR;
     }
 
     /**
-     * set the event to active
-     * @param active
+     * set the QR of of the event
      */
-    public void setActivity(boolean active) {
-        this.active = active;
+    public void setQR() {
+        this.QR = QR;
     }
 }

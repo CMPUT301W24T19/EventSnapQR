@@ -131,7 +131,7 @@ public class ListOrganizedEventsFragment extends Fragment {
                                                                 startDateTime,
                                                                 endDateTime,
                                                                 eventDocument.getString("address"),
-                                                                eventDocument.getBoolean("active")
+                                                                eventDocument.getString("QR")
                                                         );
                                                         organizedEvents.add(event);
                                                         if (i[0] == documents.size() - 1) {

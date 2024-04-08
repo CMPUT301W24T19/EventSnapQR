@@ -463,7 +463,7 @@ public class AdminTests {
                     "settings put global animator_duration_scale 0");
             FirebaseController firebaseController = new FirebaseController();
 
-            firebaseController.addUser(testUser);
+            firebaseController.addUser(testUser, null);
             Event event = new Event();
             event.setEventName(androidId);
             event.setEventID("1234345");

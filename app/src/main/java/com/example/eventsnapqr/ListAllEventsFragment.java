@@ -92,66 +92,47 @@ public class ListAllEventsFragment extends Fragment {
                         if (documents.size() > 0) {
                             noEventsText.setVisibility(View.INVISIBLE);
                             for (DocumentSnapshot document : documents) {
-                                if (Boolean.TRUE.equals(document.getBoolean("active"))) {
-                                    Long maxAttendeesLong = document.getLong("maxAttendees");
-                                    int maxAttendees = (maxAttendeesLong != null) ? maxAttendeesLong.intValue() : 0;
-                                    String organizerId = document.getString("organizerID");
-                                    FirebaseController.getInstance().getUser(organizerId, user -> {
-                                        if (user != null) {
-                                            Date startDateTime = null;
-                                            Date endDateTime = null;
-                                            Timestamp startTimestamp = document.getTimestamp("eventStartDateTime");
-                                            Timestamp endTimestamp = document.getTimestamp("eventEndDateTime");
+                                Long maxAttendeesLong = document.getLong("maxAttendees");
+                                int maxAttendees = (maxAttendeesLong != null) ? maxAttendeesLong.intValue() : 0;
+                                String organizerId = document.getString("organizerID");
+                                FirebaseController.getInstance().getUser(organizerId, user -> {
+                                    if (user != null) {
+                                        Date startDateTime = null;
+                                        Date endDateTime = null;
+                                        Timestamp startTimestamp = document.getTimestamp("eventStartDateTime");
+                                        Timestamp endTimestamp = document.getTimestamp("eventEndDateTime");
 
-                                            if (startTimestamp != null) {
-                                                startDateTime = startTimestamp.toDate();
-                                            }
-                                            if (endTimestamp != null) {
-                                                endDateTime = endTimestamp.toDate();
-                                            }
+                                        if (startTimestamp != null) {
+                                            startDateTime = startTimestamp.toDate();
+                                        }
+                                        if (endTimestamp != null) {
+                                            endDateTime = endTimestamp.toDate();
+                                        }
 
-                                            Event event = new Event(
-                                                    user,
-                                                    document.getString("eventName"),
-                                                    document.getString("description"),
-                                                    document.getString("posterURI"),
-                                                    maxAttendees,
-                                                    document.getId(),
-                                                    startDateTime,
-                                                    endDateTime,
-                                                    document.getString("address"),
-                                                    document.getBoolean("active")
-                                            );
-                                            events.add(event);
-                                        } else {
-                                            Toast.makeText(requireContext(), "Organizer not found for event: " + document.getId(), Toast.LENGTH_SHORT).show();
-                                        }
-                                        if (i[0] == documents.size() - 1) {
-                                            events.sort(Comparator.comparing(o -> o.getEventName().toLowerCase()));
-                                            eventListView.setVisibility(View.VISIBLE);
-                                            loadingProgressBar.setVisibility(View.GONE);
-                                            eventAdapter.notifyDataSetChanged();
-                                        }
-                                        i[0]++;
-                                    });
-                                } else {
+                                        Event event = new Event(
+                                                user,
+                                                document.getString("eventName"),
+                                                document.getString("description"),
+                                                document.getString("posterURI"),
+                                                maxAttendees,
+                                                document.getId(),
+                                                startDateTime,
+                                                endDateTime,
+                                                document.getString("address"),
+                                                document.getString("QR")
+                                        );
+                                        events.add(event);
+                                    } else {
+                                        Toast.makeText(requireContext(), "Organizer not found for event: " + document.getId(), Toast.LENGTH_SHORT).show();
+                                    }
                                     if (i[0] == documents.size() - 1) {
-                                        events.sort(new Comparator<Event>() {
-                                            @Override
-                                            public int compare(Event o1, Event o2) {
-                                                String event1 = o1.getEventName();
-                                                event1 = event1.toLowerCase();
-                                                String event2 = o2.getEventName();
-                                                event2 = event2.toLowerCase();
-                                                return event1.compareTo(event2);
-                                            }
-                                        });
+                                        events.sort(Comparator.comparing(o -> o.getEventName().toLowerCase()));
                                         eventListView.setVisibility(View.VISIBLE);
                                         loadingProgressBar.setVisibility(View.GONE);
                                         eventAdapter.notifyDataSetChanged();
                                     }
                                     i[0]++;
-                                }
+                                });
                             }
                         } else {
                             eventListView.setVisibility(View.VISIBLE);
