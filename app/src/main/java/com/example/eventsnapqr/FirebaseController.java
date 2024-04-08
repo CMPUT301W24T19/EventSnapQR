@@ -644,6 +644,11 @@ public class FirebaseController {
     public interface OnUserRetrievedListener {
         void onUserRetrieved(User user);
     }
+    public double getDoubleFromDocument(DocumentSnapshot document, String field, double defaultValue) {
+        Double value = document.getDouble(field);
+        return value != null ? value : defaultValue;
+    }
+
 
     /**
      * Method that retrieves event details based on the given event identifier.
@@ -664,8 +669,8 @@ public class FirebaseController {
                     Date startDateTime = document.getDate("startDateTime");
                     Date endDateTime = document.getDate("endDateTime");
                     String address = document.getString("address");
-                    Double latitude = document.getDouble("latitude");
-                    Double longitude = document.getDouble("longitude");
+                    double latitude = getDoubleFromDocument(document, "latitude", 0.0);
+                    double longitude = getDoubleFromDocument(document, "longitude", 0.0);
 
                     String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;

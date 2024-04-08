@@ -326,16 +326,25 @@ public class OrganizeEventFragment extends Fragment implements MapFragmentOrgani
         });
         return view;
     }
+
+
     @Override
-    public void onLocationPicked(double latitude, double longitude) {
+    public void onLocationPicked(double latitude, double longitude, String address) {
         this.latitude = latitude;
         this.longitude = longitude;
+        editTextAddress.setText(address);
+        if (editTextAddress != null) {
+            editTextAddress.setText(address);
+        }
+        editTextLocation.setText(address);
     }
+
 
 
     private void openMapFragment() {
         MapFragmentOrganize mapFragment = new MapFragmentOrganize();
         mapFragment.setOnLocationPickedListener(this);
+
     }
     /**
      * Requests continuous updates of the device's current location. If location permissions are not granted,
@@ -423,16 +432,22 @@ public class OrganizeEventFragment extends Fragment implements MapFragmentOrgani
                     }
                 });
     }
-    public void updateLocationText(double latitude, double longitude) {
+    public void updateLocationText(double latitude, double longitude, String address) {
         String latString = Double.toString(latitude);
         String longString = Double.toString(longitude);
+        String addressString = address;
         Log.d(latString, longString);
+        Log.d("ADDRESS", addressString);
+        editTextAddress.setText(addressString);
         if (editTextLocation != null) {
             String locationText = String.format(Locale.getDefault(), "%.5f, %.5f", latitude, longitude);
             Log.d("TAG", "true");
             editTextLocation.setText(locationText);
+            editTextAddress.setText(addressString);
         }
     }
+
+
 
     /**
      * validate each input field before creating an event
@@ -459,10 +474,10 @@ public class OrganizeEventFragment extends Fragment implements MapFragmentOrgani
             editTextEventDesc.setError("Event Description Required");
             isValid = false;
         }
-        if (eventAddress.isEmpty()) {
-            editTextAddress.setError("Event Address Required");
-            isValid = false;
-        }
+//        if (eventAddress.isEmpty()) {
+//            editTextAddress.setError("Event Address Required");
+//            isValid = false;
+//        }
         if (eventStartDate.isEmpty()) {
             editTextStartDate.setError("Start Date Required");
             isValid = false;

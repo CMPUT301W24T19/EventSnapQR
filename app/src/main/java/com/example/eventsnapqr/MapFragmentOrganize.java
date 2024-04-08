@@ -53,6 +53,7 @@ public class MapFragmentOrganize extends Fragment {
     private FirebaseFirestore db;
     private String eventName;
     private FrameLayout mapContainer;
+    private String address;
 
     private double targetLatitude = 0.0;
     private double targetLongitude = 0.0;
@@ -68,17 +69,19 @@ public class MapFragmentOrganize extends Fragment {
         this.eventName = eventName;
     }
     public interface OnLocationPickedListener {
-        void onLocationPicked(double latitude, double longitude);
+        void onLocationPicked(double latitude, double longitude, String address);
     }
     public void setOnLocationPickedListener(OnLocationPickedListener listener) {
         this.listener = listener;
     }
-    private void notifyLocationPicked(double latitude, double longitude) {
-        if (listener != null) {
-            listener.onLocationPicked(latitude, longitude);
-        }
+    private void notifyLocationPicked(double latitude, double longitude, String address) {
 
+        if (listener != null) {
+            listener.onLocationPicked(latitude, longitude, address);
+        }
     }
+
+
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
@@ -97,6 +100,7 @@ public class MapFragmentOrganize extends Fragment {
 
             targetLatitude = getArguments().getDouble("latitude", 0.0);
             targetLongitude = getArguments().getDouble("longitude", 0.0);
+            address = getArguments().getString("address", "");
         }
     }
 
@@ -140,7 +144,7 @@ public class MapFragmentOrganize extends Fragment {
                             startMarker.setPosition(startPoint);
                             startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
                             mapView.getOverlays().add(startMarker);
-                            mapView.invalidate(); // Refresh the map
+                            mapView.invalidate();
                         });
                     }
                 } catch (IOException e) {
@@ -208,15 +212,18 @@ public class MapFragmentOrganize extends Fragment {
             if (lastMarker != null) {
                 double savedLatitude = lastMarker.getPosition().getLatitude();
                 double savedLongitude = lastMarker.getPosition().getLongitude();
-                Log.d("MapFragment", "Saved location: Latitude = " + savedLatitude + ", Longitude = " + savedLongitude);
+                String savedAddress = addressTextBox.getText().toString();
 
+                Log.d("MapFragment", "Saved location: Latitude = " + savedLatitude + ", Longitude = " + savedLongitude + ", Address = " + savedAddress);
                 if (listener != null) {
-                    listener.onLocationPicked(savedLatitude, savedLongitude);
+                    listener.onLocationPicked(savedLatitude, savedLongitude, savedAddress);
                 }
+
                 if (getActivity() != null) {
                     getActivity().getSupportFragmentManager().popBackStack();
                 }
-                Toast.makeText(getContext(), "Location Saved: " + savedLatitude + ", " + savedLongitude, Toast.LENGTH_LONG).show();
+
+                Toast.makeText(getContext(), "Location Saved: " + savedAddress, Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(getContext(), "No location selected", Toast.LENGTH_SHORT).show();
             }
@@ -262,6 +269,7 @@ public class MapFragmentOrganize extends Fragment {
         }
         double markerLatitude = point.getLatitude();
         double markerLongitude = point.getLongitude();
+        String savedAddress = addressTextBox.getText().toString();
 
         String formattedLatitude = String.format("%.2f", markerLatitude);
         String formattedLongitude = String.format("%.2f", markerLongitude);
@@ -279,7 +287,7 @@ public class MapFragmentOrganize extends Fragment {
         }
 
         mapView.invalidate();
-        notifyLocationPicked(point.getLatitude(), point.getLongitude());
+        notifyLocationPicked(point.getLatitude(), point.getLongitude(), savedAddress);
     }
 
 
