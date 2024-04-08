@@ -16,11 +16,9 @@ public class Event {
     private String posterURI; // URL for the event poster image
     private Integer maxAttendees; // optional max attendees
     private List<String> announcements; //announcements related to the Event
-    private String eventID; // unique id
-    private Date eventStartDateTime;
-    private Date eventEndDateTime;
-    private String address;
-    private String QR;
+    private String eventID, address;
+    private Date eventStartDateTime, eventEndDateTime;
+    private boolean active;
 
     /**
      * constructor for event requiring a user instance, QR code, event name, a description, a URL
@@ -45,7 +43,6 @@ public class Event {
         this.QR = QR;
         this.announcements = new ArrayList<>();
     }
-
 
     /**
      * empty constructor for firebase usage

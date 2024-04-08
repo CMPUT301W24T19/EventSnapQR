@@ -48,6 +48,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * an activity where an organizer can manage their event. shows an attendee list of all users, with
+ * a filter switch which will display only users that are signed in. checkmarks denote checked in users.
+ * menu in top right gives further options including viewing the QR, poster edit and attendee maps
+ */
 public class ManageEventActivity extends AppCompatActivity {
     private FirebaseController firebaseController;
     private ListView attendeeListView, milestoneListView;
@@ -68,6 +73,10 @@ public class ManageEventActivity extends AppCompatActivity {
     private ProgressBar loadingProgressBar;
     private ExtendedFloatingActionButton fab;
     private List<HashMap<String, Object>> attendees;
+
+    /**
+     * handle back button
+     */
     @Override
     public void onBackPressed() {
         if (isMapFragmentVisible()) {
@@ -76,10 +85,21 @@ public class ManageEventActivity extends AppCompatActivity {
         }
         super.onBackPressed();
     }
+
+    /**
+     * navigate to mapFragment
+     * @return
+     */
     private boolean isMapFragmentVisible() {
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.your_event_constrained_layout);
         return currentFragment instanceof MapFragment;
     }
+
+    /**
+     * What should be executed when the fragment is created
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -206,6 +226,9 @@ public class ManageEventActivity extends AppCompatActivity {
         updateTexts();
     }
 
+    /**
+     * retrieve the milestones from the firestore database
+     */
     private void fetchMilestones() {
         firebaseController.getMilestones(eventId, new FirebaseController.MilestonesListener() {
             @Override
@@ -216,6 +239,10 @@ public class ManageEventActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * refresh milestones adapter
+     * @param milestones list of milestones
+     */
     private void processMilestones(List<String> milestones) {
         milestoneList.clear();
         milestoneList.addAll(milestones);
@@ -528,6 +555,9 @@ public class ManageEventActivity extends AppCompatActivity {
         popupMenu.show();
     }
 
+    /**
+     * set visibility of elements for loading screen
+     */
     private void turnOnLoading() {
         loadingProgressBar.setVisibility(View.VISIBLE);
         attendeeListView.setVisibility(View.INVISIBLE);
@@ -541,6 +571,9 @@ public class ManageEventActivity extends AppCompatActivity {
         milestonesLabel.setVisibility(View.INVISIBLE);
     }
 
+    /**
+     * set visibility of elements for loading screen
+     */
     private void turnOffLoading() {
         loadingProgressBar.setVisibility(View.INVISIBLE);
         attendeeListView.setVisibility(View.VISIBLE);

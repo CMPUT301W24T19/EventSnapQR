@@ -116,15 +116,18 @@ public class AdminBrowseEventsFragment extends Fragment {
 
         eventListView.setOnItemClickListener((parent, view1, position, id) -> {
             String eventId = eventIds.get(position);
-            showEventDetailsDialog(eventId, position);
+            showEventDetailsDialog(eventId);
         });
 
         return view;
     }
 
-    private void showEventDetailsDialog(String eventId, int position) {
+    /**
+     * alert dialog that gives the admin option to view an event details page or delete it
+     * @param eventId the eventId
+     */
+    private void showEventDetailsDialog(String eventId) {
         FirebaseController firebaseController = FirebaseController.getInstance();
-
         firebaseController.getEvent(eventId, new FirebaseController.OnEventRetrievedListener() {
             @Override
             public void onEventRetrieved(Event event) {
@@ -136,7 +139,7 @@ public class AdminBrowseEventsFragment extends Fragment {
                                     + "Organizer Name: " + event.getOrganizer().getName() + "\n"
                                     + "Organizer ID: " + event.getOrganizer().getDeviceID() + "\n"
                                     + "Description: " + event.getDescription())
-                            .setPositiveButton("View Page", (dialog, which) -> {
+                            .setPositiveButton("View Event Page", (dialog, which) -> {
                                 // Use the position parameter directly
                                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                                 Bundle bundle = new Bundle();

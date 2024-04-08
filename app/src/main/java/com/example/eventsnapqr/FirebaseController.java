@@ -168,6 +168,10 @@ public class FirebaseController {
                     }
                 });
     }
+
+    /**
+     * callback listener for
+     */
     interface UserDeletedCallback{
         void userDeleted();
     }
@@ -213,6 +217,12 @@ public class FirebaseController {
         });
     }
 
+    /**
+     *
+     * @param db
+     * @param eventId
+     * @return
+     */
     private Task<Void> fetchAndDeleteEvent(FirebaseFirestore db, String eventId) {
         TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
 
@@ -413,7 +423,6 @@ public class FirebaseController {
                 });
     }
 
-
     void parseDocuments(List<DocumentSnapshot> documents) {
         for(DocumentSnapshot doc: documents){
 
@@ -567,6 +576,7 @@ public class FirebaseController {
     public interface AttendeeCheckCallback {
         void onChecked(boolean isAttendee, Event event);
     }
+
     public interface NotificationSeenCallback {
         void onSeen(boolean seen);
     }
@@ -628,6 +638,12 @@ public class FirebaseController {
                 });
     }
 
+    /**
+     *
+     * @param announcementID unique id of the announcement that the notification is attached to
+     * @param userID the userid receiving the notifications
+     * @param notificationSeenCallback
+     */
     private void markSeenNotification(String announcementID, String userID, NotificationSeenCallback notificationSeenCallback) {
         CollectionReference notificationsRef = db.collection("users").document(userID).collection("notifications");
 
@@ -851,6 +867,12 @@ public class FirebaseController {
                     }
                 });
     }
+
+    /**
+     * add a string milestone to an events milestone collection in Firestone
+     * @param event the event in question
+     * @param milestone the string in question
+     */
     public void addMilestone(Event event, String milestone) {
         DocumentReference eventRef = eventReference.document(event.getEventID());
         final CollectionReference collectionReference = eventRef.collection("milestones");
@@ -897,9 +919,19 @@ public class FirebaseController {
             }
         });
     }
+
+    /**
+     * Listener that returns a list of milestone strings upon successful retrieval
+     */
     public interface MilestonesListener {
         void onMilestonesLoaded(List<String> milestones);
     }
+
+    /**
+     * retrieve all the event milestones of a given event
+     * @param eventId event in question
+     * @param listener MilestonesListener
+     */
     public void getMilestones(String eventId, MilestonesListener listener) {
         DocumentReference eventRef = eventReference.document(eventId);
         CollectionReference milestonesRef = eventRef.collection("milestones");
@@ -919,6 +951,7 @@ public class FirebaseController {
             }
         });
     }
+
     /**
      * add an attendee to the specified events attendee subcollection
      * @param event the event to add the user to
@@ -981,6 +1014,9 @@ public class FirebaseController {
         void onCheckFailed(Exception e);
     }
 
+    /**
+     * returns the incremented value after check-in
+     */
     public interface CheckInListener {
         void onCheckInComplete(int count);
         void onCheckInFailure(Exception e);
@@ -1037,6 +1073,12 @@ public class FirebaseController {
                 });
     }
 
+    /**
+     * entirely deletes an image from Firestore and all necessary documents.
+     * @param uri the image in question
+     * @param object event or user with an image URI
+     * @param context activity/fragment context
+     */
     public void deleteImage(String uri, Object object, Context context, boolean deleteObject) {
         String[] firebaseImagePath = Uri.parse(uri).getPath().split("/");
         String imagePath = firebaseImagePath[firebaseImagePath.length - 2] + "/" + firebaseImagePath[firebaseImagePath.length - 1];
@@ -1099,6 +1141,12 @@ public class FirebaseController {
         });
     }
 
+    /**
+     * checks if a user is signed up to a given event or not
+     * @param userId user in question
+     * @param eventId event in question
+     * @param listener OnSignUpCheckListener
+     */
     public void isUserSignedUp(String userId, String eventId, OnSignUpCheckListener listener) {
         FirebaseFirestore.getInstance()
                 .collection("events")
@@ -1116,11 +1164,20 @@ public class FirebaseController {
                 });
     }
 
+    /**
+     * listener for isUserSignedUp so it can return a boolean value
+     */
     public interface OnSignUpCheckListener {
         void onSignUpCheck(boolean isSignedUp);
     }
 
 
+    /**
+     * removes an attendee from an event in all necessary collections
+     * @param eventId event in question
+     * @param userId user in question
+     * @param callback Listener for isUserSignedUp so it can return a boolean value
+     */
     public void removeAttendee(String eventId, String userId, RemoveAttendeeCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -1138,11 +1195,20 @@ public class FirebaseController {
         });
     }
 
+    /**
+     * callback for removeAttendees denoting successful removal
+     */
     public interface RemoveAttendeeCallback {
         void onSuccess();
         void onFailure(Exception e);
     }
 
+    /**
+     * get the number of times given user has checked in to a given event, -1 otherwise
+     * @param eventId event in question
+     * @param userId user in question
+     * @param callback CheckAttendeeCheckinsCallback
+     */
     public void checkAttendeeCheckins(String eventId, String userId, CheckAttendeeCheckinsCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -1168,6 +1234,9 @@ public class FirebaseController {
         });
     }
 
+    /**
+     * listener for isUserSignedUp so it can return an int
+     */
     public interface CheckAttendeeCheckinsCallback {
         void onSuccess(int checkins);
         void onFailure(Exception e);
