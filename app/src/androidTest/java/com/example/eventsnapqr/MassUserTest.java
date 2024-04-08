@@ -199,12 +199,7 @@ public class MassUserTest {
         }
 
         String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
-        firebaseFirestore.collection("admin").document(androidId);*/
-    }
-
-    @Test
-    public void foo() {
-        Log.d("TAG", "true");
+        firebaseFirestore.collection("admin").document(androidId);
     }
 
     @Test
