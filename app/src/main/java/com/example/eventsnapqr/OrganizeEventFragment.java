@@ -142,7 +142,6 @@ public class OrganizeEventFragment extends Fragment {
         imageViewPoster = view.findViewById(R.id.imageViewPoster);
         removePosterTextView = view.findViewById(R.id.removePosterTextView);
         uploadPosterHint = view.findViewById(R.id.textViewHint);
-
         editTextStartDate = view.findViewById(R.id.editTextStartDate);
         editTextStartDate.setOnClickListener(v -> showDatePickerDialog(editTextStartDate));
 
@@ -452,15 +451,10 @@ public class OrganizeEventFragment extends Fragment {
             editTextEventDesc.setError("Event Description Required");
             isValid = false;
         }
-
-<<<<<<< HEAD
-=======
         if (eventAddress.isEmpty()) {
             editTextAddress.setError("Event Address Required");
             isValid = false;
         }
-
->>>>>>> 8510e57ed77c607e4b0983a088f4df5c68992373
         if (eventStartDate.isEmpty()) {
             editTextStartDate.setError("Start Date Required");
             isValid = false;
