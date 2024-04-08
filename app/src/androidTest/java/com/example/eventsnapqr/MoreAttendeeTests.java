@@ -4,29 +4,20 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.anything;
-import static java.util.EnumSet.allOf;
 
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
-import android.util.Log;
-import android.view.View;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -34,13 +25,11 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -50,12 +39,11 @@ import org.junit.runners.MethodSorters;
 
 import java.util.Date;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 @FixMethodOrder(MethodSorters.JVM)
-public class OrganizerTests {
+public class MoreAttendeeTests {
     Context context = InstrumentationRegistry.getInstrumentation().getContext();
     ContentResolver contentResolver = context.getContentResolver();
     String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
