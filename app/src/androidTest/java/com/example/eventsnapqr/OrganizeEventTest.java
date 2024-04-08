@@ -1,19 +1,25 @@
 package com.example.eventsnapqr;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static androidx.test.espresso.contrib.PickerActions.setDate;
 import static androidx.test.espresso.contrib.PickerActions.setTime;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.equalTo; // Make sure it's imported from Hamcrest
 
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.contrib.PickerActions;
 
 import static org.junit.Assert.assertEquals;
@@ -21,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
+import android.content.Intent;
 import android.util.Log;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
@@ -34,6 +41,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -146,6 +154,20 @@ public class OrganizeEventTest {
 
         // Assert event was created successfully
         assertTrue("Event was not created successfully", eventExists.get());
+        // test notifications
+        Intent intentThree = new Intent(ApplicationProvider.getApplicationContext(), ManageEventActivity.class);
+        ActivityScenario<ManageEventActivity> scenarioThree = ActivityScenario.launch(intentThree);
+        Thread.sleep(5000);
+        onView(withText("Organized")).perform(click());
+        Thread.sleep(5000);
+
+        onData(anything())
+                .inAdapterView(Matchers.allOf(withId(R.id.events), isDisplayed()))
+                .atPosition(0)
+                .onChildView(withId(R.id.eventName))
+                .check(matches(withText("Test Event")))
+                .perform(click());
+
     }
 
 
