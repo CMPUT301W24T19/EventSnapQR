@@ -255,16 +255,4 @@ public class MassUserTest {
             e.printStackTrace();
         }
     }
-
-    @Test
-    public void manyAttendeeTest() {
-        CountDownLatch latch = new CountDownLatch(1);
-
-        try {
-            latch.await(10, TimeUnit.SECONDS);
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 }
