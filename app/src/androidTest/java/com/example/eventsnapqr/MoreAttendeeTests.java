@@ -25,6 +25,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Firebase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -32,6 +33,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -41,6 +43,7 @@ import org.junit.runners.MethodSorters;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -49,6 +52,8 @@ public class MoreAttendeeTests {
     Context context = InstrumentationRegistry.getInstrumentation().getContext();
     ContentResolver contentResolver = context.getContentResolver();
     String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+    Event newEvent;
+    User user;
     @Before
     public void beforeTest(){
         // Disable animations
@@ -103,14 +108,14 @@ public class MoreAttendeeTests {
     public void viewAttendingEventsTest() throws InterruptedException {
         FirebaseController fbc = FirebaseController.getInstance();
         String eventId = fbc.getUniqueEventID();
-        User user = new User(androidId);
+        user = new User(androidId, androidId);
         fbc.addUser(user, new Runnable() {
             @Override
             public void run() {
 
             }
         });
-        Event newEvent = new Event(user, "testEvent", "testEventDescription", null, 5, eventId, new Date(), new Date(), "123 Spooner St.", "QRLink");
+        newEvent = new Event(user, "testEvent", "testEventDescription", null, 5, eventId, new Date(), new Date(), "123 Spooner St.", "QRLink");
         fbc.addEvent(newEvent);
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), BrowseEventsActivity.class);
         intent.putExtra("eventID", eventId);
@@ -145,5 +150,21 @@ public class MoreAttendeeTests {
 
     }
 
+    @After
+    public void deleteEvent() {
+        CountDownLatch latch = new CountDownLatch(1);
+        FirebaseController.getInstance().deleteEvent(newEvent, new FirebaseController.FirestoreOperationCallback() {
+            @Override
+            public void onCompleted() {
+                FirebaseController.getInstance().deleteUser(user);
+            }
+        });
+        try {
+            latch.await(20, TimeUnit.SECONDS);
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
