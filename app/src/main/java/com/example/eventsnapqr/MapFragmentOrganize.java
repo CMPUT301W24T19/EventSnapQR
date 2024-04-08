@@ -92,7 +92,6 @@ public class MapFragmentOrganize extends Fragment {
         db = FirebaseFirestore.getInstance();
         if (getArguments() != null) {
             eventName = getArguments().getString("eventName");
-
             // Receive latitude and longitude if provided
             targetLatitude = getArguments().getDouble("latitude", 0.0);
             targetLongitude = getArguments().getDouble("longitude", 0.0);
@@ -129,11 +128,9 @@ public class MapFragmentOrganize extends Fragment {
                         double latitude = address.getLatitude();
                         double longitude = address.getLongitude();
 
-                        // Update UI on UI thread
                         getActivity().runOnUiThread(() -> {
                             GeoPoint startPoint = new GeoPoint(latitude, longitude);
 
-//                            // Execute ReverseGeocodingTask
                             new ReverseGeocodingTask(addressTextBox).execute(startPoint);
 
                             mapController.setCenter(startPoint);
