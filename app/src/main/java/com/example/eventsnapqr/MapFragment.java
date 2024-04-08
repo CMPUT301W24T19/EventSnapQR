@@ -67,9 +67,7 @@ public class MapFragment extends Fragment {
     private String eventName;
     private FrameLayout mapContainer;
 
-    //constructor to get the passes EventName
     public MapFragment() {
-        // Required empty public constructor
     }
     public MapFragment(String eventName) {
         this.eventName = eventName;

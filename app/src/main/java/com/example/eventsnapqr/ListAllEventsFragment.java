@@ -102,8 +102,32 @@ public class ListAllEventsFragment extends Fragment {
                                         Timestamp startTimestamp = document.getTimestamp("eventStartDateTime");
                                         Timestamp endTimestamp = document.getTimestamp("eventEndDateTime");
 
-                                        if (startTimestamp != null) {
-                                            startDateTime = startTimestamp.toDate();
+
+                                            if (startTimestamp != null) {
+                                                startDateTime = startTimestamp.toDate();
+                                            }
+                                            if (endTimestamp != null) {
+                                                endDateTime = endTimestamp.toDate();
+                                            }
+
+                                            Event event = new Event(
+                                                    user,
+                                                    document.getString("eventName"),
+                                                    document.getString("description"),
+                                                    document.getString("posterURI"),
+                                                    maxAttendees,
+                                                    document.getId(),
+                                                    startDateTime,
+                                                    endDateTime,
+                                                    document.getString("address"),
+                                                    document.getBoolean("active"),
+                                                    document.getDouble("latitude"),
+                                                    document.getDouble("longitude")
+                                            );
+                                            events.add(event);
+                                        } else {
+                                            Toast.makeText(requireContext(), "Organizer not found for event: " + document.getId(), Toast.LENGTH_SHORT).show();
+
                                         }
                                         if (endTimestamp != null) {
                                             endDateTime = endTimestamp.toDate();

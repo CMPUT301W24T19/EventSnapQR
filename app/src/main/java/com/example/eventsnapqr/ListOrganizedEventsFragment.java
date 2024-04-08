@@ -106,6 +106,12 @@ public class ListOrganizedEventsFragment extends Fragment {
                                                 String eventName = eventDocument.getString("eventName");
                                                 String organizerId = eventDocument.getString("organizerID");
                                                 String posterURI = eventDocument.getString("posterURI");
+                                                Double latitudeObj = document.getDouble("latitude");
+                                                double latitude = latitudeObj != null ? latitudeObj : 0.0;
+
+                                                Double longitudeObj = document.getDouble("longitude");
+                                                double longitude = longitudeObj != null ? longitudeObj : 0.0;
+
 
                                                 FirebaseController.getInstance().getUser(organizerId, user -> {
                                                     if (user != null) {
@@ -131,7 +137,13 @@ public class ListOrganizedEventsFragment extends Fragment {
                                                                 startDateTime,
                                                                 endDateTime,
                                                                 eventDocument.getString("address"),
+
+                                                                eventDocument.getBoolean("active"),
+                                                                latitude,
+                                                                longitude
+
                                                                 eventDocument.getString("QR")
+
                                                         );
                                                         organizedEvents.add(event);
                                                         if (i[0] == documents.size() - 1) {

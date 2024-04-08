@@ -487,6 +487,9 @@ public class FirebaseController {
         eventData.put("endDateTime", event.getEventEndDateTime());
         eventData.put("QR", event.getQR());
         eventData.put("address", event.getAddress());
+        eventData.put("latitude", event.getLatitude());
+        eventData.put("longitude", event.getLongitude());
+
 
         if (event.getPosterURI() != null) {
             eventData.put("posterURI", event.getPosterURI());
@@ -751,6 +754,11 @@ public class FirebaseController {
     public interface OnUserRetrievedListener {
         void onUserRetrieved(User user);
     }
+    public double getDoubleFromDocument(DocumentSnapshot document, String field, double defaultValue) {
+        Double value = document.getDouble(field);
+        return value != null ? value : defaultValue;
+    }
+
 
     /**
      * Method that retrieves event details based on the given event identifier.
@@ -771,6 +779,9 @@ public class FirebaseController {
                     Date startDateTime = document.getDate("startDateTime");
                     Date endDateTime = document.getDate("endDateTime");
                     String address = document.getString("address");
+                    double latitude = getDoubleFromDocument(document, "latitude", 0.0);
+                    double longitude = getDoubleFromDocument(document, "longitude", 0.0);
+
                     String eventId = eventRef.getId();
                     String QR = document.getString("QR");
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
@@ -791,7 +802,9 @@ public class FirebaseController {
                                         @Override
                                         public void onUserRetrieved(User user) {
                                             if (user != null) {
-                                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, address, QR);
+
+                                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, address, active, latitude, longitude);
+
                                                 event.setAnnouncements(announcements);
                                                 listener.onEventRetrieved(event);
                                             } else {

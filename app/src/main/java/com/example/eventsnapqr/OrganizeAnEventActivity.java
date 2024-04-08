@@ -5,6 +5,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,10 +44,15 @@ public class OrganizeAnEventActivity extends AppCompatActivity implements MapFra
      * @param longitude chosen longitude
      */
     @Override
-    public void onLocationPicked(double latitude, double longitude) {
-        OrganizeEventFragment fragment = (OrganizeEventFragment) getSupportFragmentManager().findFragmentByTag("YourFragmentTag");
+
+    public void onLocationPicked(double latitude, double longitude, String address) {
+        Log.d("ADDRESS", address);
+        OrganizeEventFragment fragment = (OrganizeEventFragment) getSupportFragmentManager().findFragmentByTag("organizeEventFragment");
+        Log.d("ADDRESS2", address);
+
         if (fragment != null) {
-            fragment.updateLocationText(latitude, longitude);
+            Log.d("ADDRESS3", address);
+            fragment.updateLocationText(latitude, longitude, address);
         }
     }
 }

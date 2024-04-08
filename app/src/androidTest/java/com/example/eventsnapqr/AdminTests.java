@@ -333,7 +333,8 @@ public class AdminTests {
     public void removeEvent(){
         FirebaseController firebaseController = FirebaseController.getInstance();
         String eventId = firebaseController.getUniqueEventID();
-        Event newEvent = new Event(new User(androidId), "testEvent", "testEventDescription", null, 5,eventId, new Date(), new Date(), "123 Spooner St.","QRLink");
+        Event newEvent = new Event(new User(androidId), "testEvent", "testEventDescription", null, 5,eventId, new Date(), new Date(), "123 Spooner St.",true, 0.0, 0.0);
+
         firebaseController.addEvent(newEvent);
         firebaseController.getEvent(eventId, new FirebaseController.OnEventRetrievedListener() {
             @Override
