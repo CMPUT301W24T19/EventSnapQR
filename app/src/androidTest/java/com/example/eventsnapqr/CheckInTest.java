@@ -79,7 +79,10 @@ public class CheckInTest {
         });
 
         FirebaseController.getInstance().addUser(user, null);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1d184208755f7d609d85235ad1bbbab10550579b
         Log.d("TAG", "after addition");
         try {
             latch.await(10, TimeUnit.SECONDS);
@@ -90,13 +93,20 @@ public class CheckInTest {
 
         // adding checked in user
         checkedInUser = new User("checkedInUser", "checkedInUser", null, null, null);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1d184208755f7d609d85235ad1bbbab10550579b
         FirebaseController.getInstance().addUser(checkedInUser, new Runnable() {
             @Override
             public void run() {
 
             }
         });
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1d184208755f7d609d85235ad1bbbab10550579b
         FirebaseController.getInstance().addUser(checkedInUser, null);
 
         try {
@@ -117,6 +127,10 @@ public class CheckInTest {
         });
 
         FirebaseController.getInstance().addUser(notCheckedInUser, null);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1d184208755f7d609d85235ad1bbbab10550579b
         try {
             latch.await(10, TimeUnit.SECONDS);
             Thread.sleep(1000);
