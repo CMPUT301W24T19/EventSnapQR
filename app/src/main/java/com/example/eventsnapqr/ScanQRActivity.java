@@ -269,8 +269,6 @@ public class ScanQRActivity extends AppCompatActivity {
         });
     }
 
-
-
     /**
      * handles what to do with the content of the QR code
      *
