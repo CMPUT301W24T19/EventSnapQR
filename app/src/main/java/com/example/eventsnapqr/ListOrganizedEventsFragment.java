@@ -33,7 +33,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * fragment for organzers to browse any events that they have organized
+ * fragment for organizers to browse any events that they have organized
  */
 public class ListOrganizedEventsFragment extends Fragment {
     private ListView eventListView;
