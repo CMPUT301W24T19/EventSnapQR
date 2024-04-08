@@ -10,6 +10,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.helper.widget.Carousel;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -24,10 +26,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -56,6 +61,11 @@ public class MainPageFragment extends Fragment {
     private ImageView buttonViewProfile;
     private String androidId;
     private ViewFlipper viewFlipper;
+    private ProgressBar progressBar;
+    private MaterialCardView carouselCardView;
+    private CardView viewUserCard;
+    private TextView upComingEvent;
+    private List<View> views;
 
     /**
      * What should be executed when the fragment is created
@@ -72,12 +82,26 @@ public class MainPageFragment extends Fragment {
      * determines if the admin button is visible or not
      */
     private void authenticateUser(){
-        ContentResolver contentResolver = getContext().getContentResolver();
-        androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
         FirebaseController.Authenticator listener = new FirebaseController.Authenticator() {
             @Override
             public void onUserExistenceChecked(boolean exists) {
-                // do nothing
+                if (!exists) {
+                    User user = new User(androidId, androidId, null, null, null);
+                    FirebaseController.getInstance().addUser(user, new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.GONE);
+                            for (View view: views) {
+                                view.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
+                } else {
+                    progressBar.setVisibility(View.GONE);
+                    for (View view: views) {
+                        view.setVisibility(View.VISIBLE);
+                    }
+                }
             }
             @Override
             public void onAdminExistenceChecked(boolean exists) {
@@ -132,13 +156,35 @@ public class MainPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_page, container, false);
+
+        ContentResolver contentResolver = getContext().getContentResolver();
+        androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+
+        views = new ArrayList<>();
         buttonAdminMainPage = view.findViewById(R.id.admin_button);
         buttonAdminMainPage.setVisibility(View.INVISIBLE);
-        authenticateUser();
+        buttonViewProfile = view.findViewById(R.id.view_user_button);
+
         buttonOrganizeEvent = view.findViewById(R.id.organize_event_button);
         buttonBrowseEvent = view.findViewById(R.id.browse_events_button);
         buttonScanQR = view.findViewById(R.id.scan_qr_button);
-        buttonViewProfile = view.findViewById(R.id.view_user_button);
+        viewUserCard = view.findViewById(R.id.view_user_card);
+        carouselCardView = view.findViewById(R.id.carouselCardView);
+        upComingEvent = view.findViewById(R.id.admin_text);
+
+        views.add(buttonOrganizeEvent);
+        views.add(buttonBrowseEvent);
+        views.add(buttonScanQR);
+        views.add(viewUserCard);
+        views.add(carouselCardView);
+        views.add(upComingEvent);
+
+        progressBar = view.findViewById(R.id.loadingProgressBar);
+        progressBar.setVisibility(View.VISIBLE);
+
+        for (View view1: views) {
+            view1.setVisibility(View.INVISIBLE);
+        }
         updateProfilePicture();
         eventImages = new ArrayList<>();
         getImageUris(new ImageUriCallback() {
@@ -149,12 +195,14 @@ public class MainPageFragment extends Fragment {
                 eventImages.addAll(imageUris);
 
                 if (context == null) {
+                    authenticateUser();
                     return;
                 }
 
                 RecyclerView recyclerView = view.findViewById(R.id.recyclerViewCarousel);
 
                 if (recyclerView == null) {
+                    authenticateUser();
                     return;
                 }
 
@@ -176,6 +224,7 @@ public class MainPageFragment extends Fragment {
                     }
                 });
                 recyclerView.setAdapter(adapter);
+                authenticateUser();
             }
         });
 

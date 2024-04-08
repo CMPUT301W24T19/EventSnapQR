@@ -186,7 +186,7 @@ public class UserInfoActivity extends AppCompatActivity {
                                     @Override
                                     public void onUserRetrieved(User user) {
                                         user.setProfilePicture(profilePictureURI);
-                                        FirebaseController.getInstance().addUser(user);
+                                        FirebaseController.getInstance().addUser(user, null);
                                     }
                                 });
                             });
@@ -257,7 +257,7 @@ public class UserInfoActivity extends AppCompatActivity {
                         user.setEmail(userEmail);
                         user.setPhoneNumber(userPhoneNumber);
                         user.setHomepage(userHomepage);
-                        FirebaseController.getInstance().addUser(user);
+                        FirebaseController.getInstance().addUser(user, null);
 
                         Toast.makeText(UserInfoActivity.this, "Information successfully updated!", Toast.LENGTH_SHORT).show();
 
@@ -325,7 +325,7 @@ public class UserInfoActivity extends AppCompatActivity {
                                     }
                                 });
                                 user.setProfilePicture(null);
-                                FirebaseController.getInstance().addUser(user);
+                                FirebaseController.getInstance().addUser(user, null);
 
                                 if (profilePictureURI == null || profilePictureURI.isEmpty()) {
                                     userName.setText(user.getName());

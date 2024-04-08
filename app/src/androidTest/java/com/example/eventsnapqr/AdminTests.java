@@ -57,8 +57,10 @@ import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
+import com.beust.ah.A;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Firebase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -77,6 +79,7 @@ import org.junit.runners.JUnit4;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -88,6 +91,10 @@ import java.util.concurrent.TimeUnit;
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class AdminTests {
+    private User testUser;
+    private List<Event> eventList;
+    private List<User> userList;
+    private List<Object> eventsAndUsers;
 
     @Rule
     public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<MainActivity>(MainActivity.class);
@@ -99,33 +106,80 @@ public class AdminTests {
         String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        testUser = new User("testUser", androidId, "testHomePage", "testNumber", "testEmail");
+        firebaseFirestore.collection("admin").document(androidId).set(testUser);
+        FirebaseController.getInstance().addUser(testUser, null);
 
-        firebaseFirestore.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        eventsAndUsers = new ArrayList<>();
+        // getting all the events
+        eventList = new ArrayList<>();
+        FirebaseController.getInstance().getAllEvents(new FirebaseController.OnEventsLoadedListener() {
             @Override
-            public void onSuccess(QuerySnapshot querySnapshot) {
-                for (QueryDocumentSnapshot doc: querySnapshot) {
-                    firebaseFirestore.collection("users").document(doc.getId()).delete();
-
-                }
+            public void onEventsLoaded(ArrayList<Event> events) {
+                eventList = events;
+                eventsAndUsers.addAll(events);
+                eventList.sort(new Comparator<Event>() {
+                    @Override
+                    public int compare(Event o1, Event o2) {
+                        String event1 = (String) o1.getEventName();
+                        event1 = event1.toLowerCase();
+                        String event2 = (String) o2.getEventName();
+                        event2 = event2.toLowerCase();
+                        return event1.compareTo(event2);
+                    }
+                });
             }
         });
 
-        firebaseFirestore.collection("events").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        userList = new ArrayList<>();
+        FirebaseController.getInstance().getAllUsers(new FirebaseController.OnAllUsersLoadedListener() {
             @Override
-            public void onSuccess(QuerySnapshot querySnapshot) {
-                for (QueryDocumentSnapshot doc: querySnapshot) {
-                    firebaseFirestore.collection("events").document(doc.getId()).delete();
-                }
-
+            public void onUsersLoaded(List<User> users) {
+                userList = users;
+                eventsAndUsers.addAll(users);
+                userList.sort(new Comparator<User>() {
+                    @Override
+                    public int compare(User o1, User o2) {
+                        String event1 = (String) o1.getName();
+                        event1 = event1.toLowerCase();
+                        String event2 = (String) o2.getName();
+                        event2 = event2.toLowerCase();
+                        return event1.compareTo(event2);
+                    }
+                });
             }
         });
+
         CountDownLatch latch = new CountDownLatch(1);
         try {
-            latch.await(10, TimeUnit.SECONDS);
-            Thread.sleep(1000);
+            latch.await(20, TimeUnit.SECONDS);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        eventsAndUsers.sort(new Comparator<Object>() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                String name1;
+                String name2;
+                if (o1 instanceof Event) {
+                    name1 = ((Event) o1).getEventName();
+                }
+                else {
+                    name1 = ((User) o1).getName();
+                }
+
+                if (o2 instanceof Event) {
+                    name2 = ((Event) o2).getEventName();
+                }
+                else {
+                    name2 = ((User) o2).getName();
+                }
+                name1 = name1.toLowerCase();
+                name2 = name2.toLowerCase();
+                return name1.compareTo(name2);
+            }
+        });
 
     /**
      * US 02.06.01 ****user must not have account for test to work****
@@ -134,27 +188,23 @@ public class AdminTests {
 
     @After
     public void afterTest() {
-        Context context = InstrumentationRegistry.getInstrumentation().getContext();
-        ContentResolver contentResolver = context.getContentResolver();
-        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+        CountDownLatch latch = new CountDownLatch(1);
 
-        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseFirestore.collection("admin").document(androidId).delete();
-        User user = new User(androidId, androidId, null, null, null);
-        FirebaseController.getInstance().deleteUser(user);
+        //FirebaseController.getInstance().deleteUser(testUser);
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void noAdminMainPageTest() {
         Context context = InstrumentationRegistry.getInstrumentation().getContext();
         ContentResolver contentResolver = context.getContentResolver();
+
         String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
-
-        User testUser = new User("TestUser", androidId, "testHomePage", "testNumber", "testEmail");
-
-        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseFirestore.collection("users").document(androidId).set(testUser);
-
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global window_animation_scale 0");
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
@@ -162,15 +212,17 @@ public class AdminTests {
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global animator_duration_scale 0");
 
-        ActivityScenario.launch(MainActivity.class);
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        firebaseFirestore.collection("admin").document(androidId).delete();
+
         CountDownLatch latch = new CountDownLatch(1);
         try {
-            latch.await(10, TimeUnit.SECONDS);
-            Thread.sleep(5000);
+            latch.await(1, TimeUnit.SECONDS);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+        ActivityScenario.launch(MainActivity.class);
         onView(withId(R.id.admin_button)).check(matches(not(isDisplayed())));
     }
 
@@ -181,23 +233,16 @@ public class AdminTests {
         ContentResolver contentResolver = context.getContentResolver();
         String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
 
-        User testUser = new User("TestUser", androidId, "testHomePage", "testNumber", "testEmail");
-
-        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        FirebaseController.getInstance().addUser(testUser);
-        firebaseFirestore.collection("admin").document(androidId).set(testUser);
-
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global window_animation_scale 0");
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global transition_animation_scale 0");
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global animator_duration_scale 0");
-        ActivityScenario.launch(MainActivity.class);
         CountDownLatch latch = new CountDownLatch(1);
         try {
-            latch.await(10, TimeUnit.SECONDS);
-            Thread.sleep(5000);
+            latch.await(1, TimeUnit.SECONDS);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -210,8 +255,7 @@ public class AdminTests {
         onView(withId(R.id.buttonBrowseUserProfiles)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonBrowseImages)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonBrowseEvents)).check(matches(isDisplayed()));
-        onView(withId(R.id.button_back)).check(matches(isDisplayed()));
-        onView(withId(R.id.button_back)).perform(click());
+        onView(withId(R.id.button_back_button)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -220,11 +264,6 @@ public class AdminTests {
         ContentResolver contentResolver = context.getContentResolver();
         String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
 
-        User testUser = new User("TestUser", androidId, "testHomePage", "testNumber", "testEmail");
-
-        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseFirestore.collection("users").document(androidId).set(testUser);
-        firebaseFirestore.collection("admin").document(androidId).set(testUser);
         // Disable animations
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global window_animation_scale 0");
@@ -356,6 +395,22 @@ public class AdminTests {
     boolean userDeleted = false;
     ArrayList<User> listOfUsers = new ArrayList<>();
     User foundUser;
+    
+    /*@Test
+    public void deleteUserTest() {
+        Log.d("TAG", "true");
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        ContentResolver contentResolver = context.getContentResolver();
+        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+
+        // Disable animations
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 0");*/
+    
     @Test
     public void removeUserTest(){
         FirebaseController firebaseController = FirebaseController.getInstance();
@@ -409,11 +464,8 @@ public class AdminTests {
 
     @Test
     public void browsePicturesTest() {
-        Context context = InstrumentationRegistry.getInstrumentation().getContext();
-        ContentResolver contentResolver = context.getContentResolver();
-        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+        CountDownLatch latch = new CountDownLatch(1);
 
-        User testUser = new User("TestUser", androidId, "testHomePage", "testNumber", "testEmail");
         StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("test/testPoster");
         Bitmap testPoster = testUser.generateInitialsImage(testUser.getName().toString());
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -427,21 +479,23 @@ public class AdminTests {
                     @Override
                     public void onSuccess(Uri uri) {
                         result[0] = uri;
-                        Log.d("TAG", "URI registered");
-                        Log.d("TAG", "URI before event: " + result[0].toString());
+                        testUser.setProfilePicture(uri.toString());
+                        Log.d("TAG", "Add user");
+                        FirebaseController.getInstance().addUser(testUser, null);
                     }
                 });
             }
         });
 
-        CountDownLatch latch = new CountDownLatch(1);
-
         try {
-            latch.await(10, TimeUnit.SECONDS);
-            Thread.sleep(1000);
+            latch.await(30, TimeUnit.SECONDS);
+            Thread.sleep(30000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        Log.d("TAG", "end");
+        Event testEvent = new Event(testUser, "testEvent", "testDescription", result[0].toString(), 5, "eventID", new Date(), new Date(), "123", true);
         Log.d("TAG", "Making event");
         Log.d("TAG", "Event URI: " + result[0].toString());
         //Event testEvent = new Event(testUser, "testEvent", "testDescription", result[0].toString(), 5, "eventID", null, null, true);
@@ -494,6 +548,10 @@ public class AdminTests {
                 "settings put global transition_animation_scale 1");
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global animator_duration_scale 1");
+    }
+
+    @Test
+    public void deletePictureTest() {
 
     }
 
@@ -505,11 +563,6 @@ public class AdminTests {
             ContentResolver contentResolver = context.getContentResolver();
             String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
 
-            User testUser = new User("TestUser", androidId, "testHomePage", "testNumber", "testEmail");
-
-            FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-            firebaseFirestore.collection("users").document(androidId).set(testUser);
-            firebaseFirestore.collection("admin").document(androidId).set(testUser);
             // Disable animations
             InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                     "settings put global window_animation_scale 0");
@@ -530,7 +583,7 @@ public class AdminTests {
             Thread.sleep(1000);
             } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+            }
             onView(withId(R.id.admin_button)).perform(click());
             onView(withId(R.id.buttonBrowseEvents)).perform(click());
 
