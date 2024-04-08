@@ -407,6 +407,25 @@ public class FirebaseController {
      *
      * @param documents
      */
+    public void getEventAttendees(Event event, User.AttendeesCallback callback) {
+        db.collection("events").document(event.getEventID()).collection("attendees").get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<String> attendees = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot) {
+                        String androidId = document.getString("organizerID");
+                        attendees.add(androidId);
+                    }
+                    callback.onAttendeesLoaded(attendees); // Pass the attendees list to the callback
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure
+                });
+    }
+
+    /**
+     * Gets all the event documents, then turns each event document into an event object and adds it to an array
+     * @param documents, a list of event documents
+     */
     void parseDocuments(List<DocumentSnapshot> documents) {
         for(DocumentSnapshot doc: documents){
             Event event = new Event();
@@ -429,8 +448,8 @@ public class FirebaseController {
     ArrayList<Event> events = new ArrayList<>();
 
     /**
-     * retrieve every event in the firebase db as a list of events
-     * @param listener
+     * Gets all the event documents, stores them into an array and add a callback with the new array
+     * @param listener, callback for when all event documents are converted into objects and stored into an array
      */
     public void getAllEvents(final OnEventsLoadedListener listener) {
         eventReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -496,8 +515,8 @@ public class FirebaseController {
     ArrayList<User> users = new ArrayList<>();
 
     /**
-     * populate the users list with every user from the db
-     * @param listener used to return the list
+     * Gets all the user documents, stores them into an array and add a callback with the new array
+     * @param listener, callback for when all user documents are converted into objects and stored into an array
      */
     public void getAllUsers(OnAllUsersLoadedListener listener){
         userReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -515,8 +534,8 @@ public class FirebaseController {
     }
 
     /**
-     *
-     * @param documents
+     * Gets all the user documents, then turns each user document into a user object and adds it to an array
+     * @param documents, a list of users documents
      */
     void parseUsers(List<DocumentSnapshot> documents){
         for(DocumentSnapshot doc: documents){
