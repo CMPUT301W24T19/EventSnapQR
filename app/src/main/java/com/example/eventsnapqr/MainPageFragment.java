@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.Settings;
@@ -24,7 +25,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.ViewFlipper;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
@@ -51,12 +51,12 @@ public class MainPageFragment extends Fragment {
     private ExtendedFloatingActionButton buttonScanQR;
     private ImageView buttonViewProfile;
     private String androidId;
-    private ViewFlipper viewFlipper;
-    private ProgressBar progressBar;
+    private ProgressBar progressBar, carouselProgressBar;
     private MaterialCardView carouselCardView;
     private CardView viewUserCard;
     private TextView upComingEvent;
     private List<View> views;
+    private boolean isSnapHelperAttached = false;
 
     /**
      * What should be executed when the fragment is created
@@ -107,7 +107,7 @@ public class MainPageFragment extends Fragment {
 
     }
     public interface ImageUriCallback {
-        void onImageUrisLoaded(List<String> imageUris);
+        void onImageUrisLoaded(List<String> imageUris, List<String> eventNames);
     }
 
     public void getImageUris(ImageUriCallback callback) {
@@ -120,14 +120,20 @@ public class MainPageFragment extends Fragment {
                 }
 
                 List<String> imageUris = new ArrayList<>();
+                List<String> eventNames = new ArrayList<>();
+                int count = 0;
                 for (QueryDocumentSnapshot doc : value) {
+                    if (count >= 6) break;
                     String posterUri = (String) doc.getData().get("posterURI");
+                    String eventName = (String) doc.getString("eventName");
                     if (posterUri != null) {
                         imageUris.add(posterUri);
+                        eventNames.add(eventName);
+                        count++;
                     }
                 }
 
-                callback.onImageUrisLoaded(imageUris);
+                callback.onImageUrisLoaded(imageUris, eventNames);
             }
         });
     }
@@ -164,6 +170,8 @@ public class MainPageFragment extends Fragment {
         viewUserCard = view.findViewById(R.id.view_user_card);
         carouselCardView = view.findViewById(R.id.carouselCardView);
         upComingEvent = view.findViewById(R.id.admin_text);
+        progressBar = view.findViewById(R.id.loadingProgressBar);
+        carouselProgressBar = view.findViewById(R.id.progressBar);
 
 
         views.add(buttonOrganizeEvent);
@@ -183,8 +191,9 @@ public class MainPageFragment extends Fragment {
         updateProfilePicture();
         eventImages = new ArrayList<>();
         getImageUris(new ImageUriCallback() {
-            @Override
-            public void onImageUrisLoaded(List<String> imageUris) {
+            public void onImageUrisLoaded(List<String> imageUris, List<String> eventNames) {
+                carouselProgressBar.setVisibility(View.VISIBLE);
+
                 Context context = getContext();
                 eventImages.clear();
                 eventImages.addAll(imageUris);
@@ -194,30 +203,51 @@ public class MainPageFragment extends Fragment {
                     return;
                 }
 
-                RecyclerView recyclerView = view.findViewById(R.id.recyclerViewCarousel);
-
-                if (recyclerView == null) {
+                if (getView() == null) {
                     authenticateUser();
                     return;
+                }
+
+                RecyclerView recyclerView = getView().findViewById(R.id.recyclerViewCarousel);
+                TextView noEventsTextView = getView().findViewById(R.id.noEventsText);
+
+                if (recyclerView == null || noEventsTextView == null) {
+                    carouselProgressBar.setVisibility(View.GONE);
+                    return;
+                }
+
+                if (imageUris.isEmpty()) {
+                    noEventsTextView.setVisibility(View.VISIBLE);
+                } else {
+                    noEventsTextView.setVisibility(View.INVISIBLE);
                 }
 
                 LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
                 recyclerView.setLayoutManager(layoutManager);
 
-                ImageCarouselAdapter adapter = new ImageCarouselAdapter(context, imageUris);
+                ImageCarouselAdapter adapter = new ImageCarouselAdapter(context, imageUris, eventNames);
                 adapter.setOnItemClickListener(new ImageCarouselAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(String imageUri) {
-                         String uriComponents[] = Uri.parse(imageUri).getPath().split("/");
-                         String eventId = uriComponents[uriComponents.length - 1];
-                         Log.d("clicked event id", eventId);
-                         Intent intent = new Intent(getActivity(), BrowseEventsActivity.class);
-                         intent.putExtra("eventID", eventId);
-                         startActivity(intent);
+                        String uriComponents[] = Uri.parse(imageUri).getPath().split("/");
+                        String eventId = uriComponents[uriComponents.length - 1];
+                        Log.d("clicked event id", eventId);
+                        Intent intent = new Intent(getActivity(), BrowseEventsActivity.class);
+                        intent.putExtra("eventID", eventId);
+                        startActivity(intent);
                     }
                 });
                 recyclerView.setAdapter(adapter);
+
+                if (!isSnapHelperAttached) {
+                    PagerSnapHelper snapHelper = new PagerSnapHelper();
+                    snapHelper.attachToRecyclerView(recyclerView);
+                    isSnapHelperAttached = true;
+                }
+
+                carouselProgressBar.setVisibility(View.INVISIBLE);
             }
+
         });
         authenticateUser();
 
@@ -281,14 +311,22 @@ public class MainPageFragment extends Fragment {
         });
 }
 }
+
+/**
+ * adapter for the carousel to fill in the necesary details
+ */
 class ImageCarouselAdapter extends RecyclerView.Adapter<ImageCarouselAdapter.ViewHolder> {
     private List<String> imageUris;
+    private List<String> eventNames;
     private Context context;
     private ImageCarouselAdapter.OnItemClickListener listener;
-    public ImageCarouselAdapter(Context context, List<String> imageUris) {
+
+    public ImageCarouselAdapter(Context context, List<String> imageUris, List<String> eventNames) {
         this.context = context;
         this.imageUris = imageUris;
+        this.eventNames = eventNames;
     }
+
     public interface OnItemClickListener {
         void onItemClick(String imageUri);
     }
@@ -296,24 +334,33 @@ class ImageCarouselAdapter extends RecyclerView.Adapter<ImageCarouselAdapter.Vie
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
+
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ImageView imageView = new ImageView(context);
-        imageView.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        return new ViewHolder(imageView);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.carousel_item, parent, false);
+        return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String imageUri = imageUris.get(position);
+        String eventName = eventNames.get(position);
+
         Glide.with(context)
                 .load(imageUri)
                 .into(holder.imageView);
-        holder.bind(imageUri, listener);
+
+        holder.eventNameTextView.setText(eventName);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    listener.onItemClick(imageUri);
+                }
+            }
+        });
     }
 
     @Override
@@ -323,22 +370,13 @@ class ImageCarouselAdapter extends RecyclerView.Adapter<ImageCarouselAdapter.Vie
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
+        TextView eventNameTextView;
 
-        ViewHolder(ImageView itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView;
-        }
-
-        void bind(final String imageUri, final ImageCarouselAdapter.OnItemClickListener listener) {
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        listener.onItemClick(imageUri);
-                    }
-                }
-            });
+            imageView = itemView.findViewById(R.id.imageView);
+            eventNameTextView = itemView.findViewById(R.id.eventNameTextView);
         }
     }
-
 }
+

@@ -87,7 +87,6 @@ public class ScanQRActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scan_qr);
         userId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        // Initialize LocationManager
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         if (getSupportActionBar() != null) {
@@ -112,11 +111,9 @@ public class ScanQRActivity extends AppCompatActivity {
             }
         });
 
-        // Defining location listener
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                // Updating latitude and longitude
                 latitudeNow = location.getLatitude();
                 longitudeNow = location.getLongitude();
                 Log.d("ScanQRActivity", "Latitude: " + latitudeNow + ", Longitude: " + longitudeNow);
@@ -138,26 +135,20 @@ public class ScanQRActivity extends AppCompatActivity {
             }
         };
 
-        // Request location updates
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE); // Use fine accuracy for better location
         criteria.setPowerRequirement(Criteria.POWER_LOW);
         String provider = locationManager.getBestProvider(criteria, true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted, request it
-            // ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_LOCATION);
             Log.e("ScanQR Activity", "Location is not enabled");
         } else {
-            // Permission is granted, request location updates
             if (provider != null) {
                 locationManager.requestLocationUpdates(provider, 1000, 10, locationListener); // Update every 1 second or 10 meters
             } else {
                 Log.e("ScanQRActivity", "No suitable provider found");
             }
         }
-
-        // Check camera permission and initialize QR code scanner
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
@@ -173,15 +164,11 @@ public class ScanQRActivity extends AppCompatActivity {
      * Method to get the latitude and longitude.
      */
     private void getLatitudeAndLongitude() {
-        // Check if the location permission is granted
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // If permission is granted, get last known location
             Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if (lastKnownLocation != null) {
                 latitudeNow = lastKnownLocation.getLatitude();
                 longitudeNow = lastKnownLocation.getLongitude();
-
-                // Do whatever you need with latitude and longitude here
                 Log.d("ScanQRActivity", "Latitude: " + latitudeNow + ", Longitude: " + longitudeNow);
             } else {
                 // Handle case when last known location is not available

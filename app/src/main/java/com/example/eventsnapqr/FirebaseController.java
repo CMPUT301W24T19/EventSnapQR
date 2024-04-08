@@ -961,9 +961,9 @@ public class FirebaseController {
     public void addAttendeeToEvent(Event event, User user) {
         DocumentReference eventRef = eventReference.document(event.getEventID());
         Map<String, Object> attendeeData = new HashMap<>();
-        attendeeData.put("checkedIn", 0); // Set checkedIn field to 0
-        attendeeData.put("latitude",""); //set latitude to 0
-        attendeeData.put("longitude",""); //set longitude to 0
+        attendeeData.put("checkedIn", 0);
+        attendeeData.put("latitude","");
+        attendeeData.put("longitude","");
         eventRef.collection("attendees").document(user.getDeviceID())
                 .set(attendeeData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -1161,7 +1161,7 @@ public class FirebaseController {
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FirebaseController", "Error checking user signup", e);
-                    listener.onSignUpCheck(false); // Assume not signed up in case of failure
+                    listener.onSignUpCheck(false);
                 });
     }
 

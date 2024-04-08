@@ -44,7 +44,6 @@ public class OrganizeAnEventActivity extends AppCompatActivity implements MapFra
      */
     @Override
     public void onLocationPicked(double latitude, double longitude) {
-        // Find OrganizeEventFragment by tag or any other method you prefer
         OrganizeEventFragment fragment = (OrganizeEventFragment) getSupportFragmentManager().findFragmentByTag("YourFragmentTag");
         if (fragment != null) {
             fragment.updateLocationText(latitude, longitude);
