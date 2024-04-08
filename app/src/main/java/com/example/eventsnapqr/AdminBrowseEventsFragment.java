@@ -74,48 +74,33 @@ public class AdminBrowseEventsFragment extends Fragment {
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 eventIds.clear();
                 eventNames.clear();
+                eventDataList.clear();
                 final int[] i = {0};
-                if (value.size() != 0) {
-                    for (QueryDocumentSnapshot doc : value) {
-                        try {
-                            FirebaseController.getInstance().getEvent(doc.getId(), new FirebaseController.OnEventRetrievedListener() {
-                                @Override
-                                public void onEventRetrieved(Event event) {
-                                    HashMap<String, Object> data = new HashMap<>();
-                                    data.put("name", event.getEventName());
-                                    data.put("id", event.getEventID());
-                                    eventDataList.add(data);
-                                    if (i[0] == value.size() - 1) {
-                                        eventDataList.sort(new Comparator<HashMap<String, Object>>() {
-                                            @Override
-                                            public int compare(HashMap<String, Object> o1, HashMap<String, Object> o2) {
-                                                String event1 = (String) o1.get("name");
-                                                event1 = event1.toLowerCase();
-                                                String event2 = (String) o2.get("name");
-                                                event2 = event2.toLowerCase();
-                                                return event1.compareTo(event2);
-                                            }
-                                        });
-                                        for (HashMap<String, Object> dataItem : eventDataList) {
-                                            eventIds.add((String) dataItem.get("id"));
-                                            eventNames.add((String) dataItem.get("name"));
-                                        }
-                                        eventAdapter.notifyDataSetChanged();
-                                        loadingProgressBar.setVisibility(View.GONE);
-                                        eventListView.setVisibility(View.VISIBLE);
-                                    }
-                                    i[0]++;
-                                }
-                            });
-                        } catch (Exception e) {
-                            Log.d("TAG", "Event retrieval failure");
-                            i[0]++;
-                        }
-                    }
-                } else {
-                    loadingProgressBar.setVisibility(View.GONE);
-                    eventListView.setVisibility(View.VISIBLE);
+                Log.d("TAG", "snapshot");
+
+                for (QueryDocumentSnapshot doc : value) {
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put("name", doc.get("eventName"));
+                    data.put("id", doc.getId());
+                    eventDataList.add(data);
                 }
+                eventDataList.sort(new Comparator<HashMap<String, Object>>() {
+                    @Override
+                    public int compare(HashMap<String, Object> o1, HashMap<String, Object> o2) {
+                        String event1 = (String) o1.get("name");
+                        event1 = event1.toLowerCase();
+                        String event2 = (String) o2.get("name");
+                        event2 = event2.toLowerCase();
+                        return event1.compareTo(event2);
+                    }
+                });
+                for (HashMap<String, Object> dataItem : eventDataList) {
+                    eventIds.add((String) dataItem.get("id"));
+                    eventNames.add((String) dataItem.get("name"));
+                }
+                eventAdapter.notifyDataSetChanged();
+                loadingProgressBar.setVisibility(View.GONE);
+                eventListView.setVisibility(View.VISIBLE);
             }
         });
 
