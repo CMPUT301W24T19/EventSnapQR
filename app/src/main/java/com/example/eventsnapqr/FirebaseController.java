@@ -423,6 +423,10 @@ public class FirebaseController {
                 });
     }
 
+    /**
+     * Gets all the event documents, then turns each event document into an event object and adds it to an array
+     * @param documents, a list of event documents
+     */
     void parseDocuments(List<DocumentSnapshot> documents) {
         for(DocumentSnapshot doc: documents){
 
@@ -433,6 +437,7 @@ public class FirebaseController {
             event.setDescription(doc.getString("description"));
             event.setEventName(doc.getString("eventName"));
             event.setPosterURI(doc.getString("posterURL"));
+            event.setQR(doc.getString("QR"));
             events.add(event);
             //Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees)
         }
@@ -442,6 +447,10 @@ public class FirebaseController {
     }
     ArrayList<Event> events = new ArrayList<>();
 
+    /**
+     * Gets all the event documents, stores them into an array and add a callback with the new array
+     * @param listener, callback for when all event documents are converted into objects and stored into an array
+     */
     public void getAllEvents(final OnEventsLoadedListener listener) {
         eventReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -504,6 +513,10 @@ public class FirebaseController {
     }
 
     ArrayList<User> users = new ArrayList<>();
+    /**
+     * Gets all the user documents, stores them into an array and add a callback with the new array
+     * @param listener, callback for when all user documents are converted into objects and stored into an array
+     */
     public void getAllUsers(OnAllUsersLoadedListener listener){
         userReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -519,6 +532,10 @@ public class FirebaseController {
 
     }
 
+    /**
+     * Gets all the user documents, then turns each user document into a user object and adds it to an array
+     * @param documents, a list of users documents
+     */
     void parseUsers(List<DocumentSnapshot> documents){
         for(DocumentSnapshot doc: documents){
             String phoneNumber = doc.getString("phoneNumber");
@@ -960,9 +977,9 @@ public class FirebaseController {
     public void addAttendeeToEvent(Event event, User user) {
         DocumentReference eventRef = eventReference.document(event.getEventID());
         Map<String, Object> attendeeData = new HashMap<>();
-        attendeeData.put("checkedIn", 0); // Set checkedIn field to 0
-        attendeeData.put("latitude",""); //set latitude to 0
-        attendeeData.put("longitude",""); //set longitude to 0
+        attendeeData.put("checkedIn", 0);
+        attendeeData.put("latitude","");
+        attendeeData.put("longitude","");
         eventRef.collection("attendees").document(user.getDeviceID())
                 .set(attendeeData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -1160,7 +1177,7 @@ public class FirebaseController {
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FirebaseController", "Error checking user signup", e);
-                    listener.onSignUpCheck(false); // Assume not signed up in case of failure
+                    listener.onSignUpCheck(false);
                 });
     }
 

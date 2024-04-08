@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,7 +87,6 @@ public class ScanQRActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scan_qr);
         userId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        // Initialize LocationManager
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         if (getSupportActionBar() != null) {
@@ -111,11 +111,9 @@ public class ScanQRActivity extends AppCompatActivity {
             }
         });
 
-        // Defining location listener
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                // Updating latitude and longitude
                 latitudeNow = location.getLatitude();
                 longitudeNow = location.getLongitude();
                 Log.d("ScanQRActivity", "Latitude: " + latitudeNow + ", Longitude: " + longitudeNow);
@@ -137,26 +135,20 @@ public class ScanQRActivity extends AppCompatActivity {
             }
         };
 
-        // Request location updates
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE); // Use fine accuracy for better location
         criteria.setPowerRequirement(Criteria.POWER_LOW);
         String provider = locationManager.getBestProvider(criteria, true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted, request it
-            // ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_LOCATION);
             Log.e("ScanQR Activity", "Location is not enabled");
         } else {
-            // Permission is granted, request location updates
             if (provider != null) {
                 locationManager.requestLocationUpdates(provider, 1000, 10, locationListener); // Update every 1 second or 10 meters
             } else {
                 Log.e("ScanQRActivity", "No suitable provider found");
             }
         }
-
-        // Check camera permission and initialize QR code scanner
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
@@ -172,15 +164,11 @@ public class ScanQRActivity extends AppCompatActivity {
      * Method to get the latitude and longitude.
      */
     private void getLatitudeAndLongitude() {
-        // Check if the location permission is granted
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // If permission is granted, get last known location
             Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if (lastKnownLocation != null) {
                 latitudeNow = lastKnownLocation.getLatitude();
                 longitudeNow = lastKnownLocation.getLongitude();
-
-                // Do whatever you need with latitude and longitude here
                 Log.d("ScanQRActivity", "Latitude: " + latitudeNow + ", Longitude: " + longitudeNow);
             } else {
                 // Handle case when last known location is not available
@@ -289,39 +277,42 @@ public class ScanQRActivity extends AppCompatActivity {
             String contents = intentResult.getContents();
             if (contents != null) {
 
-                Log.d("ScanQR", "QR code content: " + contents); // Log the content of the QR code
-
-                eventId = contents.trim();
-                contents = contents.trim();
-
-                if (!contents.startsWith("eventsnapqr/")) { // if a invalid qr is scanned
-                    invalidQR();
-                    return;
-                } else if (contents.startsWith("eventsnapqr/")) { // if a valied qr is scanned
-                    eventId = contents.substring("eventsnapqr/".length());
-
-                    FirebaseController.getInstance().checkUserInAttendees(eventId, userId, new FirebaseController.OnUserInAttendeesListener() {
-                        @Override
-                        public void onUserInAttendees(boolean isInAttendees) {
-                            if (isInAttendees) {
-                                Log.d("Scan QR Activity", "User is in attendees");
-                                checkIn(eventId);
-                            } else {
-                                Log.d("Scan QR Activity", "User is not in attendees");
-                                notSignedUp(eventId);
+                Log.d("Scan QR Activity", "QR code content: " + contents); // Log the content of the QR code
+                FirebaseController.getInstance().getAllEvents(new FirebaseController.OnEventsLoadedListener() {
+                    @Override
+                    public void onEventsLoaded(ArrayList<Event> events) {
+                        for (Event event: events) {
+                            Log.d("TAG", "Event QR: " + event.getQR());
+                            if (contents.equals(event.getQR())) {
+                                eventId = event.getEventID();
+                                //Log.d("TAG", "true");
+                                Log.d("TAG", "Event ID: " + event.getEventID());
                             }
                         }
+                        if (eventId != null) { // if a valid qr is scanned
+                            FirebaseController.getInstance().checkUserInAttendees(eventId, userId, new FirebaseController.OnUserInAttendeesListener() {
+                                @Override
+                                public void onUserInAttendees(boolean isInAttendees) {
+                                    if (isInAttendees) {
+                                        Log.d("Scan QR Activity", "User is in attendees");
+                                        checkIn(eventId);
+                                    } else {
+                                        Log.d("Scan QR Activity", "User is not in attendees");
+                                        notSignedUp(eventId);
+                                    }
+                                }
 
-                        @Override
-                        public void onCheckFailed(Exception e) {
-                            Log.e("Scan QR Activity", "User in Event attendees check failed: " + e.getMessage());
-                            invalidQR();
+                                @Override
+                                public void onCheckFailed(Exception e) {
+                                    Log.e("Scan QR Activity", "User in Event attendees check failed: " + e.getMessage());
+                                    nonExistentEvent();
+                                }
+                            });
+                        } else { // case when no QR code was scanned before camera closed
+                            nonExistentEvent();
                         }
-                    });
-                } else { // case when no QR code was scanned before camera closed
-                    Log.d("Scan QR Activity", "No QR code scanned before camera closed");
-                    finish();
-                }
+                    }
+                });
             } else {
                 progressBar.setVisibility(View.GONE);
                 qrMessageTextView.setVisibility(View.VISIBLE);
@@ -354,9 +345,9 @@ public class ScanQRActivity extends AppCompatActivity {
     /**
      * handles case where a qrcode is scanned, but not generated by EventSnapQR
      */
-    private void invalidQR() {
+    private void nonExistentEvent() {
         if (!isFinishing()) {
-            qrMessageTextView.setText("Invalid QR Code");
+            qrMessageTextView.setText("No active event with QR code");
             qrMessageTextView.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
             backButton.setOnClickListener(view -> finish());

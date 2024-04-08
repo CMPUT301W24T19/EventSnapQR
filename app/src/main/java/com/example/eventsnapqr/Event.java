@@ -15,7 +15,7 @@ public class Event {
     private String description; // description of the event
     private String posterURI; // URL for the event poster image
     private Integer maxAttendees; // optional max attendees
-    private List<String> announcements; //announcements related to the Event
+    private List<String> announcements; // announcements related to the Event
     private String eventID, address;
     private Date eventStartDateTime, eventEndDateTime;
     private String QR;
@@ -204,7 +204,7 @@ public class Event {
     /**
      * set the QR of of the event
      */
-    public void setQR() {
+    public void setQR(String QR) {
         this.QR = QR;
     }
 }

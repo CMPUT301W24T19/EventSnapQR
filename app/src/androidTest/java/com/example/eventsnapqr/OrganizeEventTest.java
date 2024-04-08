@@ -83,10 +83,12 @@ public class OrganizeEventTest {
     private String endTime = "17:43";
 
 
+
     Context context = InstrumentationRegistry.getInstrumentation().getContext();
     ContentResolver contentResolver = context.getContentResolver();
     String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
     @Before
+
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
@@ -129,7 +131,7 @@ public class OrganizeEventTest {
         Date startDateTime = new Date();
         Date endDateTime = new Date(startDateTime.getTime() + 3600000);
         String address = "123 Test St.";
-        boolean isActive = true;
+
 
         // Create an event object
 
@@ -141,7 +143,6 @@ public class OrganizeEventTest {
 
         event.setEventID(eventId);
         firebaseController.addEvent(event);
-
         Integer expectedMaxAttendees = maxAttendees;
         db.collection("events").document(eventId).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -159,7 +160,6 @@ public class OrganizeEventTest {
 
         // Wait for async operations to complete
         latch.await(10, TimeUnit.SECONDS); // Adjust the timeout as necessary
-
         // Assert event was created successfully
         assertTrue("Event was not created successfully", eventExists.get());
 

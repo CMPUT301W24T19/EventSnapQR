@@ -518,7 +518,7 @@ public class ManageEventActivity extends AppCompatActivity {
 
             if (itemId == R.id.view_qr) { // view QR code again
                 Intent intent = new Intent(this, QRActivity.class);
-                intent.putExtra("eventId", eventId);
+                intent.putExtra("QR", currentEvent.getQR());
                 intent.putExtra("destination", "manage");
                 startActivity(intent);
                 return true;
