@@ -151,7 +151,8 @@ public class User implements Attendee, Organizer {
 
     /**
      * used to generate a unique profile image based on a users name
-     * @param name
+     * Cite: OpenAI: chatGPT: prompt "How to convert text to URI"
+     * @param name of the user
      * @return bitmap of the image
      */
     public Bitmap generateInitialsImage(String name) {
