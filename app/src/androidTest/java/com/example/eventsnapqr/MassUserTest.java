@@ -146,7 +146,7 @@ public class MassUserTest {
 
     @After
     public void after() {
-        /*Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
         ContentResolver contentResolver = context.getContentResolver();
 
         eventList.clear();
