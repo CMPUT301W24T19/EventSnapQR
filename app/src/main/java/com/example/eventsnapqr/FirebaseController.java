@@ -417,6 +417,9 @@ public class FirebaseController {
         eventData.put("endDateTime", event.getEventEndDateTime());
         eventData.put("active", event.isActive());
         eventData.put("address", event.getAddress());
+        eventData.put("latitude", event.getLatitude());
+        eventData.put("longitude", event.getLongitude());
+
 
         if (event.getPosterURI() != null) {
             eventData.put("posterURI", event.getPosterURI());
@@ -661,6 +664,9 @@ public class FirebaseController {
                     Date startDateTime = document.getDate("startDateTime");
                     Date endDateTime = document.getDate("endDateTime");
                     String address = document.getString("address");
+                    Double latitude = document.getDouble("latitude");
+                    Double longitude = document.getDouble("longitude");
+
                     String eventId = eventRef.getId();
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
                     boolean active = document.getBoolean("active");
@@ -681,7 +687,7 @@ public class FirebaseController {
                                         @Override
                                         public void onUserRetrieved(User user) {
                                             if (user != null) {
-                                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, address, active);
+                                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, address, active, latitude, longitude);
                                                 event.setAnnouncements(announcements);
                                                 listener.onEventRetrieved(event);
                                             } else {

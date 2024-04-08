@@ -234,8 +234,7 @@ public class OrganizeEventTest {
 
     @After
     public void tearDown() {
-        // Cleanup test environment
-        // e.g., delete test event
+
     }
     @Rule
     public ActivityScenarioRule<OrganizeAnEventActivity> scenario = new

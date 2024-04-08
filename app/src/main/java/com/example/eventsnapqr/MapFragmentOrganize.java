@@ -54,7 +54,6 @@ public class MapFragmentOrganize extends Fragment {
     private String eventName;
     private FrameLayout mapContainer;
 
-    // Added for receiving latitude and longitude
     private double targetLatitude = 0.0;
     private double targetLongitude = 0.0;
     private Marker lastMarker = null;
@@ -64,7 +63,6 @@ public class MapFragmentOrganize extends Fragment {
 
 
     public MapFragmentOrganize() {
-        // Required empty public constructor
     }
     public MapFragmentOrganize(String eventName) {
         this.eventName = eventName;
@@ -72,10 +70,14 @@ public class MapFragmentOrganize extends Fragment {
     public interface OnLocationPickedListener {
         void onLocationPicked(double latitude, double longitude);
     }
+    public void setOnLocationPickedListener(OnLocationPickedListener listener) {
+        this.listener = listener;
+    }
     private void notifyLocationPicked(double latitude, double longitude) {
         if (listener != null) {
             listener.onLocationPicked(latitude, longitude);
         }
+
     }
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -93,7 +95,6 @@ public class MapFragmentOrganize extends Fragment {
         if (getArguments() != null) {
             eventName = getArguments().getString("eventName");
 
-            // Receive latitude and longitude if provided
             targetLatitude = getArguments().getDouble("latitude", 0.0);
             targetLongitude = getArguments().getDouble("longitude", 0.0);
         }
@@ -150,7 +151,6 @@ public class MapFragmentOrganize extends Fragment {
             Log.e("MapFragmentOrganizer", "Cannot get user location: " + eventName);
         }
         if (targetLatitude != 0.0 && targetLongitude != 0.0 && initialMarker == null) {
-            // Only create the initial marker if it hasn't been created yet
             GeoPoint startPoint = new GeoPoint(targetLatitude, targetLongitude);
             initialMarker = new Marker(mapView);
             initialMarker.setPosition(startPoint);
@@ -162,31 +162,26 @@ public class MapFragmentOrganize extends Fragment {
             Log.e("MapFragmentOrganizer", "Did not get user location/invalid user location" + eventName);
         }
 
-
         view.findViewById(R.id.button_back_button).setOnClickListener(v -> requireActivity().onBackPressed());
         setupMap();
 
         view.findViewById(R.id.search_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Perform search using the text entered in the search bar
                 String searchString = addressTextBox.getText().toString();
                 if (!searchString.isEmpty()) {
-                    // Start a new thread for geocoding to avoid blocking the UI thread
                     new Thread(() -> {
                         try {
                             Geocoder geocoder = new Geocoder(getContext());
                             List<Address> addresses = geocoder.getFromLocationName(searchString, 1);
                             if (!addresses.isEmpty()) {
                                 if (lastMarker != null) {
-                                    // Remove only the last user-placed marker, not the initial marker
                                     mapView.getOverlays().remove(lastMarker);
                                 }
                                 Address address = addresses.get(0);
                                 double latitude = address.getLatitude();
                                 double longitude = address.getLongitude();
 
-                                // Update UI on UI thread
                                 getActivity().runOnUiThread(() -> {
                                     GeoPoint searchPoint = new GeoPoint(latitude, longitude);
                                     mapController.setCenter(searchPoint);
@@ -195,7 +190,7 @@ public class MapFragmentOrganize extends Fragment {
                                     searchMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
                                     mapView.getOverlays().add(searchMarker);
                                     lastMarker = searchMarker;
-                                    mapView.invalidate(); // Refresh the map
+                                    mapView.invalidate();
                                     placeMarker(searchPoint);
                                 });
                             }
@@ -211,13 +206,16 @@ public class MapFragmentOrganize extends Fragment {
 
         view.findViewById(R.id.saveButton).setOnClickListener(v -> {
             if (lastMarker != null) {
-                // Log the saved location
                 double savedLatitude = lastMarker.getPosition().getLatitude();
                 double savedLongitude = lastMarker.getPosition().getLongitude();
                 Log.d("MapFragment", "Saved location: Latitude = " + savedLatitude + ", Longitude = " + savedLongitude);
 
-                // Notify the listener
-                notifyLocationPicked(savedLatitude, savedLongitude);
+                if (listener != null) {
+                    listener.onLocationPicked(savedLatitude, savedLongitude);
+                }
+                if (getActivity() != null) {
+                    getActivity().getSupportFragmentManager().popBackStack();
+                }
                 Toast.makeText(getContext(), "Location Saved: " + savedLatitude + ", " + savedLongitude, Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(getContext(), "No location selected", Toast.LENGTH_SHORT).show();
@@ -232,7 +230,6 @@ public class MapFragmentOrganize extends Fragment {
         mapController.setZoom(15.0);
         mapView.setMultiTouchControls(true);
 
-        // Add tap listener to place a marker
         mapView.getOverlays().add(new Overlay() {
             @Override
             public void draw(Canvas canvas, MapView osmv, boolean shadow) {}
@@ -242,55 +239,46 @@ public class MapFragmentOrganize extends Fragment {
                 Projection projection = mapView.getProjection();
                 GeoPoint geoPoint = (GeoPoint) projection.fromPixels((int)e.getX(), (int)e.getY());
 
-                // Save coordinates for the dropped pin
                 double markerLatitude = geoPoint.getLatitude();
                 double markerLongitude = geoPoint.getLongitude();
                 performReverseGeocoding(geoPoint);
                 placeMarker(geoPoint);
 
-                // Optionally, save these coordinates or pass them to another component
-                // For example, save them to a database or pass them back to the previous Fragment
 
-                return true; // Return true to indicate we've handled this event
+                return true;
             }
         });
     }
     private void performReverseGeocoding(GeoPoint geoPoint) {
-        // Create an instance of ReverseGeocodingTask
         ReverseGeocodingTask reverseGeocodingTask = new ReverseGeocodingTask(addressTextBox);
 
 
-        // Execute ReverseGeocodingTask
         reverseGeocodingTask.execute(geoPoint);
     }
 
     private void placeMarker(GeoPoint point) {
         if (lastMarker != null) {
-            // Remove only the last user-placed marker, not the initial marker
             mapView.getOverlays().remove(lastMarker);
         }
-        // Fetch latitude and longitude from the GeoPoint
         double markerLatitude = point.getLatitude();
         double markerLongitude = point.getLongitude();
 
         String formattedLatitude = String.format("%.2f", markerLatitude);
         String formattedLongitude = String.format("%.2f", markerLongitude);
 
-        // Create and add the new marker
         Marker startMarker = new Marker(mapView);
         startMarker.setPosition(point);
         startMarker.setTitle("Latitude: " + formattedLatitude + ", Longitude: " + formattedLongitude);
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         mapView.getOverlays().add(startMarker);
-        lastMarker = startMarker; // Update the last marker reference
+        lastMarker = startMarker;
 
-        // Optionally remove the initial marker since a new place has been selected by the user
         if (initialMarker != null) {
             mapView.getOverlays().remove(initialMarker);
-            initialMarker = null; // Ensure the initial marker is no longer referenced
+            initialMarker = null;
         }
 
-        mapView.invalidate(); // Refresh the map
+        mapView.invalidate();
         notifyLocationPicked(point.getLatitude(), point.getLongitude());
     }
 
@@ -300,7 +288,7 @@ public class MapFragmentOrganize extends Fragment {
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                mapView.invalidate(); // Refresh the map view
+                mapView.invalidate();
             }
 
             @Override
@@ -317,7 +305,6 @@ public class MapFragmentOrganize extends Fragment {
         };
 
         try {
-            // Request location updates
             locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
             locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
         } catch (SecurityException e) {

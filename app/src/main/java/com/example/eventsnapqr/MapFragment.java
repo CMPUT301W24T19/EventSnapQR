@@ -63,9 +63,7 @@ public class MapFragment extends Fragment {
     private String eventName;
     private FrameLayout mapContainer;
 
-    //constructor to get the passes EventName
     public MapFragment() {
-        // Required empty public constructor
     }
     public MapFragment(String eventName) {
         this.eventName = eventName;
@@ -101,18 +99,12 @@ public class MapFragment extends Fragment {
         Log.e("MapFragment", "Map clicked. Plotting attendees for event: " + eventName);
         plotEventAttendees(eventName);
 
-        // y do I need it
-
-        // Request location permission
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // Permission granted, start requesting location updates
             startLocationUpdates();
         } else {
-            // Permission not granted, request it
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
 
-        // Set up the back button click listener
         view.findViewById(R.id.button_back_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

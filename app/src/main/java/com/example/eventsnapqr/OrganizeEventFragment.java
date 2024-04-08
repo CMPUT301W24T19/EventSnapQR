@@ -89,7 +89,7 @@ import java.util.Locale;
  * otherwise), a description and an optional max attendee. the option for reuse QR code is not yet
  * implemented
  */
-public class OrganizeEventFragment extends Fragment {
+public class OrganizeEventFragment extends Fragment implements MapFragmentOrganize.OnLocationPickedListener{
     private FusedLocationProviderClient fusedLocationClient;
     private ImageView backButton, imageViewPoster;
     private ExtendedFloatingActionButton createEventButton;
@@ -103,8 +103,8 @@ public class OrganizeEventFragment extends Fragment {
     private FirebaseController firebaseController = new FirebaseController();
     private StorageReference storageRef = FirebaseStorage.getInstance().getReference();
     private Uri imageUri;
-    private double latitude = 0.0;
-    private double longitude = 0.0;
+    private double latitude;
+    private double longitude;
     private boolean eventCreated = false;
     private boolean getLocation;
 
@@ -321,9 +321,21 @@ public class OrganizeEventFragment extends Fragment {
             if (!getLocation) {
                 getLocation = true;
                 requestCurrentLocation();
+                openMapFragment();
             }
         });
         return view;
+    }
+    @Override
+    public void onLocationPicked(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+
+    private void openMapFragment() {
+        MapFragmentOrganize mapFragment = new MapFragmentOrganize();
+        mapFragment.setOnLocationPickedListener(this);
     }
     /**
      * Requests continuous updates of the device's current location. If location permissions are not granted,
@@ -335,15 +347,14 @@ public class OrganizeEventFragment extends Fragment {
      */
     private void requestCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Request permission
             ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
             return;
         }
 
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(10000); // 10 seconds
-        locationRequest.setFastestInterval(5000); // 5 seconds
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
 
         LocationCallback locationCallback = new LocationCallback() {
             @Override
@@ -354,10 +365,8 @@ public class OrganizeEventFragment extends Fragment {
                 }
                 for (Location location : locationResult.getLocations()) {
                     if (location != null) {
-                        // Stop location updates
                         fusedLocationClient.removeLocationUpdates(this);
 
-                        // Now use the location to find the city, country, and then geocode the address
                         try {
                             Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
                             List<Address> currentAddresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
@@ -371,7 +380,6 @@ public class OrganizeEventFragment extends Fragment {
                                 if (addresses != null && !addresses.isEmpty()) {
                                     Address address = addresses.get(0);
 
-                                    // Create a bundle and add the latitude and longitude
                                     Bundle bundle = new Bundle();
                                     bundle.putDouble("latitude", address.getLatitude());
                                     bundle.putDouble("longitude", address.getLongitude());
@@ -514,7 +522,6 @@ public class OrganizeEventFragment extends Fragment {
         }
         Integer eventMaxAttendees = !maxAttendeesInput.isEmpty() ? Integer.valueOf(maxAttendeesInput) : null;
 
-        // retrieve user from the database based on the androidID, create a new user and event object
         FirebaseController.getInstance().getUser(androidID, new FirebaseController.OnUserRetrievedListener() {
             @Override
             public void onUserRetrieved(User user) {
@@ -533,7 +540,7 @@ public class OrganizeEventFragment extends Fragment {
                             userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                 imageUri = uri;
                                 uriString = imageUri.toString();
-                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, eventAddress, true);
+                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, eventAddress, true, latitude, longitude);
                                 Log.d("USER NAME", newEvent.getOrganizer().getName());
                                 firebaseController.addEvent(newEvent);
                                 firebaseController.addOrganizedEvent(user, newEvent);
@@ -555,7 +562,7 @@ public class OrganizeEventFragment extends Fragment {
                         });
                     } else {
                         uriString = null;
-                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, eventAddress, true);
+                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, eventAddress, true, latitude, longitude);
                         Log.d("USER NAME", " "+newEvent.getOrganizer().getName());
 
                         firebaseController.addEvent(newEvent);

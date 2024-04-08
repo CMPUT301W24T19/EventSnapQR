@@ -21,6 +21,8 @@ public class Event {
     private Date eventEndDateTime;
     private String address;
     private boolean active;
+    private double latitude;
+    private double longitude;
 
     /**
      * constructor for event requiring a user instance, QR code, event name, a description, a URL
@@ -32,7 +34,7 @@ public class Event {
      * @param maxAttendees maximum number of attendees
      */
     public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees,
-                 String eventID, Date eventStartDateTime, Date eventEndDateTime, String address, boolean active) {
+                 String eventID, Date eventStartDateTime, Date eventEndDateTime, String address, boolean active, double latitude, double longitude) {
         this.organizer = organizer;
         this.eventName = eventName;
         this.description = description;
@@ -44,6 +46,8 @@ public class Event {
         this.address = address;
         this.active = active;
         this.announcements = new ArrayList<>();
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
 
@@ -210,5 +214,32 @@ public class Event {
      */
     public void setActivity(boolean active) {
         this.active = active;
+    }
+    public double getLatitude() {
+        return latitude;
+    }
+
+    /**
+     * Sets the latitude of the event location.
+     * @param latitude The latitude to set.
+     */
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    /**
+     * Gets the longitude of the event location.
+     * @return The longitude.
+     */
+    public double getLongitude() {
+        return longitude;
+    }
+
+    /**
+     * Sets the longitude of the event location.
+     * @param longitude The longitude to set.
+     */
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }
