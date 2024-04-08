@@ -106,7 +106,7 @@ public class OrganizeEventFragment extends Fragment {
     private double latitude = 0.0;
     private double longitude = 0.0;
     private boolean eventCreated = false;
-    private boolean getLocation = false;
+    private boolean getLocation;
 
 
     /**
@@ -142,7 +142,6 @@ public class OrganizeEventFragment extends Fragment {
         imageViewPoster = view.findViewById(R.id.imageViewPoster);
         removePosterTextView = view.findViewById(R.id.removePosterTextView);
         uploadPosterHint = view.findViewById(R.id.textViewHint);
-
         editTextStartDate = view.findViewById(R.id.editTextStartDate);
         editTextStartDate.setOnClickListener(v -> showDatePickerDialog(editTextStartDate));
 
@@ -159,6 +158,7 @@ public class OrganizeEventFragment extends Fragment {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         requestLocation();
+        getLocation = false;
 
         removePosterTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -172,46 +172,51 @@ public class OrganizeEventFragment extends Fragment {
             }
         });
 
+        imageViewPoster.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (imageUri != null) {
+                    try {
+                        uploadPosterHint.setText(null);
+                        int targetW = imageViewPoster.getWidth();
+                        int targetH = imageViewPoster.getHeight();
+                        Log.d("TAG", "run");
 
+                        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                        bmOptions.inJustDecodeBounds = true;
+                        InputStream inputStream = requireContext().getContentResolver().openInputStream(imageUri);
+                        BitmapFactory.decodeStream(inputStream, null, bmOptions);
+                        inputStream.close();
 
+                        int photoW = bmOptions.outWidth;
+                        int photoH = bmOptions.outHeight;
+
+                        int scaleFactor = Math.max(1, Math.min(photoW / targetW, photoH / targetH));
+
+                        bmOptions.inJustDecodeBounds = false;
+                        bmOptions.inSampleSize = scaleFactor;
+                        bmOptions.inPurgeable = true;
+
+                        inputStream = requireContext().getContentResolver().openInputStream(imageUri);
+                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream, null, bmOptions);
+                        inputStream.close();
+                        imageViewPoster.setImageBitmap(bitmap);
+                        //imageViewPoster.post(() -> imageViewPoster.setImageBitmap(bitmap));
+
+                        removePosterTextView.setVisibility(View.VISIBLE);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
 
         ActivityResultLauncher<PickVisualMediaRequest> choosePoster = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
             if (uri != null) {
-                try {
-                    uploadPosterHint.setText(null);
-                    int targetW = imageViewPoster.getWidth();
-                    int targetH = imageViewPoster.getHeight();
-
-                    BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-                    bmOptions.inJustDecodeBounds = true;
-                    InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
-                    BitmapFactory.decodeStream(inputStream, null, bmOptions);
-                    inputStream.close();
-
-                    int photoW = bmOptions.outWidth;
-                    int photoH = bmOptions.outHeight;
-
-                    int scaleFactor = Math.max(1, Math.min(photoW/targetW, photoH/targetH));
-
-                    bmOptions.inJustDecodeBounds = false;
-                    bmOptions.inSampleSize = scaleFactor;
-                    bmOptions.inPurgeable = true;
-
-                    inputStream = requireContext().getContentResolver().openInputStream(uri);
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream, null, bmOptions);
-                    inputStream.close();
-
-                    imageViewPoster.post(() -> imageViewPoster.setImageBitmap(bitmap));
-
-                    removePosterTextView.setVisibility(View.VISIBLE);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
                 imageUri = uri;
-            } else {
-                Log.d("TAG", "No media selected");
+                imageViewPoster.setImageURI(uri);
             }
         });
 
@@ -345,7 +350,6 @@ public class OrganizeEventFragment extends Fragment {
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult == null) {
                     Toast.makeText(getContext(), "Current location not available.", Toast.LENGTH_LONG).show();
-                    getLocation = false;
                     return;
                 }
                 for (Location location : locationResult.getLocations()) {
@@ -390,7 +394,6 @@ public class OrganizeEventFragment extends Fragment {
         };
 
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-        getLocation = false;
     }
     /**
      * Requests the last known location of the device. If location permissions are not granted,
@@ -418,6 +421,7 @@ public class OrganizeEventFragment extends Fragment {
         Log.d(latString, longString);
         if (editTextLocation != null) {
             String locationText = String.format(Locale.getDefault(), "%.5f, %.5f", latitude, longitude);
+            Log.d("TAG", "true");
             editTextLocation.setText(locationText);
         }
     }
@@ -447,12 +451,10 @@ public class OrganizeEventFragment extends Fragment {
             editTextEventDesc.setError("Event Description Required");
             isValid = false;
         }
-
         if (eventAddress.isEmpty()) {
             editTextAddress.setError("Event Address Required");
             isValid = false;
         }
-
         if (eventStartDate.isEmpty()) {
             editTextStartDate.setError("Start Date Required");
             isValid = false;
