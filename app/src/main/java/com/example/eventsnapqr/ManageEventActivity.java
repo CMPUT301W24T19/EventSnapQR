@@ -504,7 +504,7 @@ public class ManageEventActivity extends AppCompatActivity {
                 if (currentEvent.getPosterURI() == null) {
                     Toast.makeText(ManageEventActivity.this, "No Poster to Remove", Toast.LENGTH_SHORT).show();
                 } else {
-                    FirebaseController.getInstance().deleteImage(currentEvent.getPosterURI(), currentEvent, ManageEventActivity.this);
+                    FirebaseController.getInstance().deleteImage(currentEvent.getPosterURI(), currentEvent, ManageEventActivity.this, false);
                     Toast.makeText(ManageEventActivity.this, "Poster Updated", Toast.LENGTH_SHORT).show();
                 }
 
