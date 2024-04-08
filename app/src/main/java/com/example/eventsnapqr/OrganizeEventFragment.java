@@ -117,6 +117,7 @@ public class OrganizeEventFragment extends Fragment {
     private List<String> eventQRs;
     private List<String> eventIDs;
     private boolean getLocation;
+    private boolean reUsingQR = false;
 
 
     /**
@@ -297,11 +298,16 @@ public class OrganizeEventFragment extends Fragment {
                                         }
                                     });
                                     if (matching[0]) {
+                                        reUsingQR = false;
                                         QR = null;
-                                        Toast.makeText(getContext(), "This is not your QR code, you cannot use it", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getContext(), "This is QR code is currently in use.", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else {
+                                        Toast.makeText(getContext(), "QR code successfully applied.", Toast.LENGTH_SHORT).show();
+                                        reUsingQR = true;
                                     }
                                 } catch(Exception e) {
-                                    Toast.makeText(getContext(), "QR decoding failure", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "QR decoding failure.", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -542,10 +548,14 @@ public class OrganizeEventFragment extends Fragment {
             public void onUserRetrieved(User user) {
                 if (user != null) {
                     String eventID = FirebaseController.getInstance().getUniqueEventID();
-                    QR = eventID;
+                    if (!reUsingQR) {
+                        QR = eventID;
+                    }
                     while (eventIDs.contains(eventID)) {
                         eventID = FirebaseController.getInstance().getUniqueEventID();
-                        QR = eventID;
+                        if (!reUsingQR) {
+                            QR = eventID;
+                        }
                     }
                     while (eventQRs.contains(QR)) {
                         QR = FirebaseController.getInstance().getUniqueEventID();
