@@ -16,10 +16,8 @@ public class Event {
     private String posterURI; // URL for the event poster image
     private Integer maxAttendees; // optional max attendees
     private List<String> announcements; //announcements related to the Event
-    private String eventID; // unique id
-    private Date eventStartDateTime;
-    private Date eventEndDateTime;
-    private String address;
+    private String eventID, address;
+    private Date eventStartDateTime, eventEndDateTime;
     private boolean active;
 
     /**
@@ -45,7 +43,6 @@ public class Event {
         this.active = active;
         this.announcements = new ArrayList<>();
     }
-
 
     /**
      * empty constructor for firebase usage

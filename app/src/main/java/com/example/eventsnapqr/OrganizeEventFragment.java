@@ -415,6 +415,12 @@ public class OrganizeEventFragment extends Fragment {
                     }
                 });
     }
+
+    /**
+     * fill the location text in with given parameters
+     * @param latitude latitiude in question
+     * @param longitude longitude in question
+     */
     public void updateLocationText(double latitude, double longitude) {
         String latString = Double.toString(latitude);
         String longString = Double.toString(longitude);
@@ -580,6 +586,10 @@ public class OrganizeEventFragment extends Fragment {
         });
     }
 
+    /**
+     * pull up a dialog picker for date input
+     * @param editText input field to fill in
+     */
     private void showDatePickerDialog(TextInputEditText editText) {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -596,6 +606,10 @@ public class OrganizeEventFragment extends Fragment {
         datePickerDialog.show();
     }
 
+    /**
+     * pull up a dialog picker for time input
+     * @param editText input field to fill in
+     */
     private void showTimePickerDialog(TextInputEditText editText) {
         Calendar calendar = Calendar.getInstance();
         int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);

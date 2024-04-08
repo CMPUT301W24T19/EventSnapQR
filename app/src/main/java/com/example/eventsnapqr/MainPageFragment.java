@@ -118,6 +118,7 @@ public class MainPageFragment extends Fragment {
     public interface ImageUriCallback {
         void onImageUrisLoaded(List<String> imageUris);
     }
+
     public void getImageUris(ImageUriCallback callback) {
         FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -139,6 +140,7 @@ public class MainPageFragment extends Fragment {
             }
         });
     }
+
     public List<String> eventImages;
     /**
      * handles button presses throughout the fragment
