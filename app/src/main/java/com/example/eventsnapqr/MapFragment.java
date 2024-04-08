@@ -217,31 +217,33 @@ public class MapFragment extends Fragment {
                                                     Log.e("MapFragment", "Found latitude " + latitude);
 
                                                     if(checkIN>0) {
-                                                        points.add(new GeoPoint(latitude, longitude));
-                                                        Marker marker = new Marker(mapView);
-                                                        marker.setPosition(new GeoPoint(latitude, longitude));
-                                                        String attendeeId = document.getId();
-                                                        db.collection("users").document(attendeeId)
-                                                                .get()
-                                                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                                    @Override
-                                                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                        if (documentSnapshot.exists()) {
-                                                                            String userName = documentSnapshot.getString("name");
-                                                                            marker.setTitle("User name: " + userName);
-                                                                        } else {
-                                                                            Log.e("MapFragment", "User document does not exist for attendee ID: " + attendeeId);
+                                                        if (latitude != 0.0 && longitude != 0.0) {
+                                                            points.add(new GeoPoint(latitude, longitude));
+                                                            Marker marker = new Marker(mapView);
+                                                            marker.setPosition(new GeoPoint(latitude, longitude));
+                                                            String attendeeId = document.getId();
+                                                            db.collection("users").document(attendeeId)
+                                                                    .get()
+                                                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                                        @Override
+                                                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                            if (documentSnapshot.exists()) {
+                                                                                String userName = documentSnapshot.getString("name");
+                                                                                marker.setTitle("User name: " + userName);
+                                                                            } else {
+                                                                                Log.e("MapFragment", "User document does not exist for attendee ID: " + attendeeId);
+                                                                            }
                                                                         }
-                                                                    }
-                                                                })
-                                                                .addOnFailureListener(new OnFailureListener() {
-                                                                    @Override
-                                                                    public void onFailure(@NonNull Exception e) {
-                                                                        Log.e("MapFragment", "Error getting user document: " + e.getMessage());
-                                                                    }
-                                                                });
-                                                        marker.setSnippet("Checked In: " + checkIN);
-                                                        mapView.getOverlays().add(marker);
+                                                                    })
+                                                                    .addOnFailureListener(new OnFailureListener() {
+                                                                        @Override
+                                                                        public void onFailure(@NonNull Exception e) {
+                                                                            Log.e("MapFragment", "Error getting user document: " + e.getMessage());
+                                                                        }
+                                                                    });
+                                                            marker.setSnippet("Checked In: " + checkIN);
+                                                            mapView.getOverlays().add(marker);
+                                                        }
                                                     }
                                                 }
                                             }
