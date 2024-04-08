@@ -6,6 +6,8 @@ import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.junit.Assert.assertEquals;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,11 +19,17 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+
+import java.util.Date;
+import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -40,16 +48,47 @@ public class OrganizerTests {
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global animator_duration_scale 0");
     }
+    Event newEvent;
+    User organizer = new User(androidId);
+    Event retrievedEvent;
     /**
      * US 01.11.01 Test
      */
     @Test
     public void limitAttendeesTest() throws InterruptedException {
-        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), UserInfoActivity.class);
-        ActivityScenario<BrowseEventsActivity> scenario = ActivityScenario.launch(intent);
+
+        FirebaseController fbc = FirebaseController.getInstance();
+        String eventId = fbc.getUniqueEventID();
+        int maxAttendees = 1;
+        newEvent = new Event(organizer, "EventName", "EventDesc", null, maxAttendees,eventId, new Date(), new Date(), "45 Test Address", "QRLink");
+        fbc.addEvent(newEvent);
         Thread.sleep(5000);
-        onView(withId(R.id.editTextMaxAttendees)).perform(scrollTo(), click(), typeText("1"));
+        CountDownLatch latch = new CountDownLatch(1);
+
+        fbc.getEvent(eventId, new FirebaseController.OnEventRetrievedListener() {
+            @Override
+            public void onEventRetrieved(Event event) {
+                retrievedEvent = event;
+                latch.countDown();
+            }
+        });
+        latch.await(5, TimeUnit.SECONDS);
+
+        assertEquals((int)retrievedEvent.getMaxAttendees(), maxAttendees);
+
+
+
+
 
     }
+    @After
+    public void deleteEvent(){
+        FirebaseController fbc = FirebaseController.getInstance();
+        fbc.deleteEvent(newEvent, new FirebaseController.FirestoreOperationCallback() {
+            @Override
+            public void onCompleted() {
 
+            }
+        });
+    }
 }

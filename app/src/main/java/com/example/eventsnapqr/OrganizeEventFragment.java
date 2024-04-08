@@ -400,6 +400,7 @@ public class OrganizeEventFragment extends Fragment {
 
                                     NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
                                     navController.navigate(R.id.global_action_to_mapFragmentOrganize, bundle);
+                                    MapFragmentOrganize mapFragmentOrganize = new MapFragmentOrganize();
                                 } else {
                                     Toast.makeText(getContext(), "Location not found. Please try a different address.", Toast.LENGTH_LONG).show();
                                 }
