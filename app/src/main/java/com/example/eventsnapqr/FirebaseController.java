@@ -803,7 +803,7 @@ public class FirebaseController {
                                         public void onUserRetrieved(User user) {
                                             if (user != null) {
 
-                                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, address, true, latitude, longitude, "");
+                                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, address, latitude, longitude, "");
 
                                                 event.setAnnouncements(announcements);
                                                 listener.onEventRetrieved(event);

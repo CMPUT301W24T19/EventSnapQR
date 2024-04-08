@@ -20,7 +20,6 @@ public class Event {
     private Date eventStartDateTime;
     private Date eventEndDateTime;
     private String address;
-    private boolean active;
     private double latitude;
     private double longitude;
     private String QR;
@@ -35,7 +34,7 @@ public class Event {
      * @param maxAttendees maximum number of attendees
      */
     public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees,
-                 String eventID, Date eventStartDateTime, Date eventEndDateTime, String address, boolean active, double latitude, double longitude, String QR) {
+                 String eventID, Date eventStartDateTime, Date eventEndDateTime, String address, double latitude, double longitude, String QR) {
         this.organizer = organizer;
         this.eventName = eventName;
         this.description = description;

@@ -137,8 +137,6 @@ public class ListOrganizedEventsFragment extends Fragment {
                                                                 startDateTime,
                                                                 endDateTime,
                                                                 eventDocument.getString("address"),
-
-                                                                eventDocument.getBoolean("active"),
                                                                 latitude,
                                                                 longitude,
 

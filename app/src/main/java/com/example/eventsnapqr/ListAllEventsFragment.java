@@ -120,7 +120,6 @@ public class ListAllEventsFragment extends Fragment {
                                                     startDateTime,
                                                     endDateTime,
                                                     document.getString("address"),
-                                                    document.getBoolean("active"),
                                                     document.getDouble("latitude"),
                                                     document.getDouble("longitude"),
                                                     document.getString("QR")
