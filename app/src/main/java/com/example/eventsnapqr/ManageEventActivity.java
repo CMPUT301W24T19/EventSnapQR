@@ -480,7 +480,7 @@ public class ManageEventActivity extends AppCompatActivity {
     private void uploadPoster(Uri uri) {
         Log.d("ManageEventFragment", "Current Poster URI before update: " + currentEvent.getPosterURI());
         if (uri != null) {
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("posters/" + currentEvent.getEventID() + ".jpg");
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("eventPosters/" + currentEvent.getEventID() + ".jpg");
             storageRef.putFile(uri)
                     .addOnSuccessListener(taskSnapshot -> {
                         storageRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
