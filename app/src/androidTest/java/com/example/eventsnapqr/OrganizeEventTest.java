@@ -16,6 +16,7 @@ import static androidx.test.espresso.contrib.PickerActions.setDate;
 import static androidx.test.espresso.contrib.PickerActions.setTime;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.anything;
+
 import static org.hamcrest.Matchers.equalTo; // Make sure it's imported from Hamcrest
 
 
@@ -37,6 +38,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -77,18 +79,21 @@ public class OrganizeEventTest {
     private String endDate = "20/4/2024";
     private String startTime = "17:43";
     private String endTime = "17:43";
+    double lat = 0.0;
+    double longitude = 0.0;
+    private FirebaseFirestore mockFirestore;
+    private CollectionReference mockCollection;
 
 
 
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-
+        mockFirestore = mock(FirebaseFirestore.class);
+        mockCollection = mock(CollectionReference.class);
         db = mock(FirebaseFirestore.class);
         firebaseController = new FirebaseController();
-
-
         eventId = "mockEventId";
-        newEvent = new Event(new User("mockOrganizerId"), "Mock Event", "This is a mock event.", null, 100, eventId, new Date(), new Date(), "123 Mock St.", "QRLink");
+        newEvent = new Event(new User("mockOrganizerId"), "Mock Event", "This is a mock event.", null, 100, eventId, new Date(), new Date(), "123 Mock St.", true, lat, longitude);
 
     }
 
@@ -119,9 +124,11 @@ public class OrganizeEventTest {
         Date startDateTime = new Date();
         Date endDateTime = new Date(startDateTime.getTime() + 3600000);
         String address = "123 Test St.";
+        boolean isActive = true;
+        double lat = 0.0;
+        double longitude = 0.0;
 
-
-        // Create an event object
+        Event event = new Event(organizer, eventName, eventDescription, posterUri, maxAttendees, null, startDateTime, endDateTime, address, isActive, lat, longitude);
 
         CountDownLatch latch = new CountDownLatch(1);
         AtomicBoolean eventExists = new AtomicBoolean(false);
@@ -143,12 +150,10 @@ public class OrganizeEventTest {
 
                 }
             }
-            latch.countDown(); // Decrement latch count to resume the test thread
+            latch.countDown();
         });
 
-        // Wait for async operations to complete
         latch.await(10, TimeUnit.SECONDS); // Adjust the timeout as necessary
-        // Assert event was created successfully
         assertTrue("Event was not created successfully", eventExists.get());
         // test notifications
         Intent intentThree = new Intent(ApplicationProvider.getApplicationContext(), ManageEventActivity.class);
@@ -179,7 +184,6 @@ public class OrganizeEventTest {
         Event mockEvent = createMockEvent();
 
         firebaseController.addEvent(mockEvent);
-
         String mockUserId = "mockUser123";
         firebaseController.addAttendeeToEvent(mockEvent, new User(mockUserId));
         CountDownLatch latch = new CountDownLatch(1);
@@ -211,12 +215,9 @@ public class OrganizeEventTest {
     public void testAttendeeCheckin() throws InterruptedException {
 
         firebaseController.addEvent(newEvent);
-
-
         String mockAttendeeId = "mockAttendeeId";
         firebaseController.addAttendeeToEvent(newEvent, new User(mockAttendeeId));
-
-        Thread.sleep(1000);
+        Thread.sleep(1000); 
 
         final AtomicBoolean isAttendeeAdded = new AtomicBoolean(false);
         CountDownLatch latch = new CountDownLatch(1);
@@ -241,10 +242,9 @@ public class OrganizeEventTest {
 
     private Event createMockEvent() {
         User organizer = new User("organizerId", "Organizer", null, null, null);
-        return new Event(organizer, "Test Event", "This is a test event.", null, 100, "mockEvent123", new Date(), new Date(), "Test Location", "TestQR");
+        return new Event(organizer, "Test Event", "This is a test event.", null, 100, "mockEvent123", new Date(), new Date(), "Test Location", true, 0.0, 0.0);
+
     }
-
-
 
     @After
     public void tearDown() {
@@ -256,5 +256,4 @@ public class OrganizeEventTest {
 
 
 }
-
 

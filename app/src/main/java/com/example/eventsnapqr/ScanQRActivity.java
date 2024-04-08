@@ -347,7 +347,7 @@ public class ScanQRActivity extends AppCompatActivity {
      */
     private void nonExistentEvent() {
         if (!isFinishing()) {
-            qrMessageTextView.setText("No active event with QR code");
+            qrMessageTextView.setText("No Active Event with this QR code");
             qrMessageTextView.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
             backButton.setOnClickListener(view -> finish());

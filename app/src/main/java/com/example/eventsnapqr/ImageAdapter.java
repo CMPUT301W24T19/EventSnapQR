@@ -13,10 +13,10 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 /**
- *
+ * adapter for image data in the admin browse images fragment
  */
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
-    private List<Object> itemList; // List containing both Event and User objects
+    private List<Object> itemList;
     private OnClickListener onClickListener;
 
     public ImageAdapter(List<Object> itemList) {
@@ -45,12 +45,17 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     }
 
     /**
-     *
+     * for when an image
      */
     public interface OnClickListener {
         void onClick(int position, Object item); // Object type to handle both Event and User objects
     }
 
+    /**
+     *
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         Object item = itemList.get(position);

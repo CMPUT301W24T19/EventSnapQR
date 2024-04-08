@@ -128,7 +128,9 @@ public class CheckInTest {
 
         // adding event
         String eventID = FirebaseController.getInstance().getUniqueEventID();
-        event = new Event(user, eventID, "test", null, null, eventID, new Date(), new Date(), "testAddress", "testQRLink");
+        event = new Event(user, eventID, "test", null, null, eventID, new Date(), new Date(), "testAddress", true, 0.0,0.0);
+        Log.d("TAG", "Event ID: " + eventID);
+
         FirebaseController.getInstance().addEvent(event);
         try {
             latch.await(10, TimeUnit.SECONDS);

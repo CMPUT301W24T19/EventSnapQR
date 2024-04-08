@@ -218,9 +218,9 @@ public class FirebaseController {
     }
 
     /**
-     *
-     * @param db
-     * @param eventId
+     * gets all of a users events and deletes them. used for user deletion
+     * @param db instance of db
+     * @param eventId the
      * @return
      */
     private Task<Void> fetchAndDeleteEvent(FirebaseFirestore db, String eventId) {
@@ -404,9 +404,8 @@ public class FirebaseController {
     }
 
     /**
-     * uses an interface to return a list of all the attendees in an event
-     * @param event
-     * @param callback
+     *
+     * @param documents
      */
     public void getEventAttendees(Event event, User.AttendeesCallback callback) {
         db.collection("events").document(event.getEventID()).collection("attendees").get()
@@ -429,19 +428,20 @@ public class FirebaseController {
      */
     void parseDocuments(List<DocumentSnapshot> documents) {
         for(DocumentSnapshot doc: documents){
-
             Event event = new Event();
             event.setEventID(doc.getId());
             event.setOrganizer(new User(doc.getString("organizerID")));
-            //doc.get("attendees");
             event.setDescription(doc.getString("description"));
             event.setEventName(doc.getString("eventName"));
             event.setPosterURI(doc.getString("posterURL"));
             event.setQR(doc.getString("QR"));
             events.add(event);
-            //Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees)
         }
     }
+
+    /**
+     * listener to return all the events for getAllEvents()
+     */
     public interface OnEventsLoadedListener {
         void onEventsLoaded(ArrayList<Event> events);
     }
@@ -476,7 +476,7 @@ public class FirebaseController {
 
     /**
      * adds an event and its fields to the firestore database
-     * @param event The event to add
+     * @param event the event to add
      */
     public void addEvent(Event event) {
         Map<String, Object> eventData = new HashMap<>();
@@ -487,6 +487,9 @@ public class FirebaseController {
         eventData.put("endDateTime", event.getEventEndDateTime());
         eventData.put("QR", event.getQR());
         eventData.put("address", event.getAddress());
+        eventData.put("latitude", event.getLatitude());
+        eventData.put("longitude", event.getLongitude());
+
 
         if (event.getPosterURI() != null) {
             eventData.put("posterURI", event.getPosterURI());
@@ -513,6 +516,7 @@ public class FirebaseController {
     }
 
     ArrayList<User> users = new ArrayList<>();
+
     /**
      * Gets all the user documents, stores them into an array and add a callback with the new array
      * @param listener, callback for when all user documents are converted into objects and stored into an array
@@ -547,9 +551,20 @@ public class FirebaseController {
             users.add(user);
         }
     }
+
+    /**
+     * listener to return the list of users
+     */
     public interface OnAllUsersLoadedListener{
         void onUsersLoaded(List<User> users);
     }
+
+    /**
+     * create an notification in the firebase db
+     * @param context activity context
+     * @param announcement the contents of the announcement
+     * @param event the associated event
+     */
     private void makeNotification(Context context, String announcement, Event event) {
         Intent intent = new Intent(context, BrowseEventsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -574,6 +589,13 @@ public class FirebaseController {
         }
         notificationManager.notify(0, builder.build());
     }
+
+    /**
+     * checks if a given user is attending a given event
+     * @param androidId unique id of the user
+     * @param event
+     * @param callback
+     */
     public void isAttendee(String androidId, Event event, AttendeeCheckCallback callback){
         db.collection("events").document(event.getEventID()).collection("attendees").get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -597,6 +619,12 @@ public class FirebaseController {
     public interface NotificationSeenCallback {
         void onSeen(boolean seen);
     }
+
+    /**
+     *
+     * @param context
+     * @param event
+     */
     public void listenForAnnouncements(Context context, Event event) {
         if (event == null || event.getEventID() == null) {
             Log.e("FirebaseController", "Event or Event ID is null");
@@ -726,6 +754,11 @@ public class FirebaseController {
     public interface OnUserRetrievedListener {
         void onUserRetrieved(User user);
     }
+    public double getDoubleFromDocument(DocumentSnapshot document, String field, double defaultValue) {
+        Double value = document.getDouble(field);
+        return value != null ? value : defaultValue;
+    }
+
 
     /**
      * Method that retrieves event details based on the given event identifier.
@@ -746,6 +779,9 @@ public class FirebaseController {
                     Date startDateTime = document.getDate("startDateTime");
                     Date endDateTime = document.getDate("endDateTime");
                     String address = document.getString("address");
+                    double latitude = getDoubleFromDocument(document, "latitude", 0.0);
+                    double longitude = getDoubleFromDocument(document, "longitude", 0.0);
+
                     String eventId = eventRef.getId();
                     String QR = document.getString("QR");
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
@@ -766,7 +802,9 @@ public class FirebaseController {
                                         @Override
                                         public void onUserRetrieved(User user) {
                                             if (user != null) {
-                                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, address, QR);
+
+                                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, address, true, latitude, longitude, "");
+
                                                 event.setAnnouncements(announcements);
                                                 listener.onEventRetrieved(event);
                                             } else {

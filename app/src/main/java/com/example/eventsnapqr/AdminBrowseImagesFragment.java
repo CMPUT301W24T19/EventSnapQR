@@ -92,11 +92,16 @@ public class AdminBrowseImagesFragment extends Fragment {
                 int i = 0;
                 for (QueryDocumentSnapshot doc : value) {
                     String eventID = doc.getId();
-                    String eventName = doc.getString("eventName");
-                    String posterUri = doc.getString("posterURI");
-                    if (posterUri != null) {
-                        Event event = new Event(null, eventName, null, posterUri, null, eventID, null, null, null, null);
-                        posters.add(event);
+
+                    boolean eventActivity = doc.getBoolean("active");
+                    if (eventActivity) {
+                        String eventName = doc.getString("eventName");
+                        String posterUri = doc.getString("posterURI");
+                        if (posterUri != null) {
+                            Event event = new Event(null, eventName, null, posterUri, null, eventID, null, null, null, true,0.0,0.0, "");
+                            posters.add(event);
+                        }
+
                     }
                 }
                 posters.sort(new Comparator<Object>() {
