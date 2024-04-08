@@ -5,6 +5,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertEquals;
 
@@ -76,7 +77,10 @@ public class OrganizerTests {
 
         assertEquals((int)retrievedEvent.getMaxAttendees(), maxAttendees);
 
-
+        Intent intentThree = new Intent(ApplicationProvider.getApplicationContext(), ManageEventActivity.class);
+        ActivityScenario<ManageEventActivity> scenarioThree = ActivityScenario.launch(intentThree);
+        Thread.sleep(5000);
+        onView(withText("Organized")).perform(click());
 
 
 
