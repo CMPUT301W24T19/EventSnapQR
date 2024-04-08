@@ -265,7 +265,6 @@ public class FirebaseController {
      */
     public void deleteEvent(Event event, FirestoreOperationCallback completionCallback) {
         String eventId = event.getEventID();
-        event.setActivity(false);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         if (event.getPosterURI() != null) {
@@ -278,9 +277,11 @@ public class FirebaseController {
         Task<QuerySnapshot> getPromisedAttendees = db.collection("events").document(eventId).collection("promisedAttendees").get();
         Task<QuerySnapshot> getAnnouncements = db.collection("events").document(eventId).collection("announcements").get();
 
+        Task<Void> deleteEventTask = db.collection("events").document(eventId).delete();
+
         Task<QuerySnapshot> getUsersTask = db.collection("users").get();
 
-        Tasks.whenAll(getMilestones, getAttendees, getPromisedAttendees, getAnnouncements, getUsersTask).addOnSuccessListener(aVoid -> {
+        Tasks.whenAll(getMilestones, getAttendees, getPromisedAttendees, getAnnouncements, deleteEventTask, getUsersTask).addOnSuccessListener(aVoid -> {
             List<Task<Void>> deletionTasks = new ArrayList<>();
             for (DocumentSnapshot userDoc : getUsersTask.getResult().getDocuments()) {
                 String userId = userDoc.getId();
@@ -323,7 +324,6 @@ public class FirebaseController {
                 completionCallback.onCompleted();
             }
         });
-        this.addEvent(event);
     }
 
     /**
@@ -432,7 +432,7 @@ public class FirebaseController {
         eventData.put("description", event.getDescription());
         eventData.put("startDateTime", event.getEventStartDateTime());
         eventData.put("endDateTime", event.getEventEndDateTime());
-        eventData.put("active", event.isActive());
+        eventData.put("QR", event.getQR());
         eventData.put("address", event.getAddress());
 
         if (event.getPosterURI() != null) {
@@ -686,8 +686,8 @@ public class FirebaseController {
                     Date endDateTime = document.getDate("endDateTime");
                     String address = document.getString("address");
                     String eventId = eventRef.getId();
+                    String QR = document.getString("QR");
                     Integer maxAttendees = document.getLong("maxAttendees") != null ? document.getLong("maxAttendees").intValue() : null;
-                    boolean active = document.getBoolean("active");
 
                     db.collection("events").document(eventIdentifier).collection("announcements")
                             .get()
@@ -705,7 +705,7 @@ public class FirebaseController {
                                         @Override
                                         public void onUserRetrieved(User user) {
                                             if (user != null) {
-                                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, address, active);
+                                                Event event = new Event(user, eventName, description, posterUri, maxAttendees, eventId, startDateTime, endDateTime, address, QR);
                                                 event.setAnnouncements(announcements);
                                                 listener.onEventRetrieved(event);
                                             } else {

@@ -3,18 +3,14 @@ package com.example.eventsnapqr;
 import android.app.AlertDialog;
 import android.os.Bundle;
 
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 //import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.Nullable;
@@ -22,9 +18,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -33,7 +26,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -48,7 +40,7 @@ public class AdminBrowseEventsFragment extends Fragment {
     private List<String> eventIds;
     private FirebaseFirestore db;
     ProgressBar loadingProgressBar;
-    private List<HashMap<String, Object>> eventData;
+    private List<HashMap<String, Object>> eventDataList;
 
     /**
      * Setup actions to be taken upon view creation and when the views are interacted with
@@ -68,7 +60,7 @@ public class AdminBrowseEventsFragment extends Fragment {
         eventListView = view.findViewById(R.id.events);
         eventNames = new ArrayList<>();
         eventIds = new ArrayList<>();
-        eventData = new ArrayList<>();
+        eventDataList = new ArrayList<>();
         backButton = view.findViewById(R.id.button_back_button);
         loadingProgressBar = view.findViewById(R.id.loadingProgressBar);
 
@@ -89,14 +81,12 @@ public class AdminBrowseEventsFragment extends Fragment {
                             FirebaseController.getInstance().getEvent(doc.getId(), new FirebaseController.OnEventRetrievedListener() {
                                 @Override
                                 public void onEventRetrieved(Event event) {
-                                    if (event.isActive()) {
-                                        HashMap<String, Object> data = new HashMap<>();
-                                        data.put("name", event.getEventName());
-                                        data.put("id", event.getEventID());
-                                        eventData.add(data);
-                                    }
+                                    HashMap<String, Object> data = new HashMap<>();
+                                    data.put("name", event.getEventName());
+                                    data.put("id", event.getEventID());
+                                    eventDataList.add(data);
                                     if (i[0] == value.size() - 1) {
-                                        eventData.sort(new Comparator<HashMap<String, Object>>() {
+                                        eventDataList.sort(new Comparator<HashMap<String, Object>>() {
                                             @Override
                                             public int compare(HashMap<String, Object> o1, HashMap<String, Object> o2) {
                                                 String event1 = (String) o1.get("name");
@@ -106,9 +96,9 @@ public class AdminBrowseEventsFragment extends Fragment {
                                                 return event1.compareTo(event2);
                                             }
                                         });
-                                        for (HashMap<String, Object> data : eventData) {
-                                            eventIds.add((String) data.get("id"));
-                                            eventNames.add((String) data.get("name"));
+                                        for (HashMap<String, Object> dataItem : eventDataList) {
+                                            eventIds.add((String) dataItem.get("id"));
+                                            eventNames.add((String) dataItem.get("name"));
                                         }
                                         eventAdapter.notifyDataSetChanged();
                                         loadingProgressBar.setVisibility(View.GONE);
