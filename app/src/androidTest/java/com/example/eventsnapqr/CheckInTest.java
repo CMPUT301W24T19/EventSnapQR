@@ -70,7 +70,7 @@ public class CheckInTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        FirebaseController.getInstance().addUser(user);
+        FirebaseController.getInstance().addUser(user, null);
         Log.d("TAG", "after addition");
         try {
             latch.await(10, TimeUnit.SECONDS);
@@ -81,7 +81,7 @@ public class CheckInTest {
 
         // adding checked in user
         checkedInUser = new User("checkedInUser", "checkedInUser", null, null, null);
-        FirebaseController.getInstance().addUser(checkedInUser);
+        FirebaseController.getInstance().addUser(checkedInUser, null);
         try {
             latch.await(10, TimeUnit.SECONDS);
             Thread.sleep(1000);
@@ -91,7 +91,7 @@ public class CheckInTest {
 
         // adding not checked in user
         notCheckedInUser = new User("notCheckedInUser", "notCheckedInUser", null, null, null);
-        FirebaseController.getInstance().addUser(notCheckedInUser);
+        FirebaseController.getInstance().addUser(notCheckedInUser, null);
         try {
             latch.await(10, TimeUnit.SECONDS);
             Thread.sleep(1000);

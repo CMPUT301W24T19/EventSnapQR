@@ -333,6 +333,7 @@ public class UserInfoActivity extends AppCompatActivity {
                                     profilePictureImage.setImageBitmap(initialsImageBitmap);
                                     // set tag for testing
                                     profilePictureImage.setTag(userName.getText().toString().substring(0,2).toUpperCase());
+                                    Log.d("TAG", "object: " + profilePictureImage.getTag());
 
 
 
