@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.equalTo; // Make sure it's imported from Ham
 
 import androidx.test.espresso.contrib.PickerActions;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -95,7 +96,7 @@ public class OrganizeEventTest {
 //        onView(withId(R.id.extendedFabCreateEvent)).perform(scrollTo(), click());
 
     /**
-     * US 01.01.01
+     * US 01.01.01 and US 01.11.01 Test
      * @throws InterruptedException
      */
 
@@ -125,12 +126,16 @@ public class OrganizeEventTest {
         event.setEventID(eventId);
         firebaseController.addEvent(event);
 
-
+        Integer expectedMaxAttendees = maxAttendees;
         db.collection("events").document(eventId).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
+                    Integer maximumAttendees = document.getLong("maxAttendees").intValue();
+                    // US 01.11.01 check
+                    assertEquals(expectedMaxAttendees, maximumAttendees);// US 01.11.01 check
                     eventExists.set(true);
+
                 }
             }
             latch.countDown(); // Decrement latch count to resume the test thread
