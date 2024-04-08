@@ -2,87 +2,66 @@ package com.example.eventsnapqr;
 
 
 import static android.app.PendingIntent.getActivity;
-import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.scrollTo;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParentIndex;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static junit.framework.TestCase.assertEquals;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ActivityScenario;
 
-import androidx.test.espresso.UiController;
- 
-import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.action.CloseKeyboardAction;
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.rule.ActivityTestRule;
 
-import com.beust.ah.A;
-import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Firebase;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 /**
@@ -95,6 +74,7 @@ public class AdminTests {
     private List<Event> eventList;
     private List<User> userList;
     private List<Object> eventsAndUsers;
+    private boolean isFinished = false;
 
     @Rule
     public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<MainActivity>(MainActivity.class);
@@ -107,12 +87,31 @@ public class AdminTests {
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         testUser = new User("testUser", androidId, "testHomePage", "testNumber", "testEmail");
-        firebaseFirestore.collection("admin").document(androidId).set(testUser);
-        FirebaseController.getInstance().addUser(testUser, null);
+
+        isFinished = false;
+        firebaseFirestore.collection("admin").document(androidId).set(testUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                isFinished = true;
+            }
+        });
+
+        while(!isFinished) {}
+        isFinished = false;
+
+        FirebaseController.getInstance().addUser(testUser, new Runnable() {
+            @Override
+            public void run() {
+                isFinished = true;
+            }
+        });
 
         eventsAndUsers = new ArrayList<>();
         // getting all the events
         eventList = new ArrayList<>();
+
+        while (!isFinished) {}
+        isFinished = false;
         FirebaseController.getInstance().getAllEvents(new FirebaseController.OnEventsLoadedListener() {
             @Override
             public void onEventsLoaded(ArrayList<Event> events) {
@@ -128,8 +127,12 @@ public class AdminTests {
                         return event1.compareTo(event2);
                     }
                 });
+                isFinished = true;
             }
         });
+
+        while (!isFinished) {}
+        isFinished = false;
 
         userList = new ArrayList<>();
         FirebaseController.getInstance().getAllUsers(new FirebaseController.OnAllUsersLoadedListener() {
@@ -140,23 +143,20 @@ public class AdminTests {
                 userList.sort(new Comparator<User>() {
                     @Override
                     public int compare(User o1, User o2) {
-                        String event1 = (String) o1.getName();
-                        event1 = event1.toLowerCase();
-                        String event2 = (String) o2.getName();
-                        event2 = event2.toLowerCase();
-                        return event1.compareTo(event2);
+                        String user1 = (String) o1.getName();
+                        user1 = user1.toLowerCase();
+                        String user2 = (String) o2.getName();
+                        user2 = user2.toLowerCase();
+                        return user1.compareTo(user2);
                     }
                 });
+                isFinished = true;
             }
         });
 
-        CountDownLatch latch = new CountDownLatch(1);
-        try {
-            latch.await(20, TimeUnit.SECONDS);
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        while(!isFinished) {}
+        isFinished = true;
+
         eventsAndUsers.sort(new Comparator<Object>() {
             @Override
             public int compare(Object o1, Object o2) {
@@ -181,6 +181,14 @@ public class AdminTests {
             }
         });
 
+        CountDownLatch latch = new CountDownLatch(1);
+        try {
+            latch.await(1, TimeUnit.SECONDS);
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     /**
      * US 02.06.01 ****user must not have account for test to work****
      */
@@ -190,7 +198,8 @@ public class AdminTests {
     public void afterTest() {
         CountDownLatch latch = new CountDownLatch(1);
 
-        //FirebaseController.getInstance().deleteUser(testUser);
+        while (!isFinished) {}
+        FirebaseController.getInstance().deleteUser(testUser);
         try {
             latch.await(10, TimeUnit.SECONDS);
             Thread.sleep(5000);
@@ -213,8 +222,16 @@ public class AdminTests {
                 "settings put global animator_duration_scale 0");
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseFirestore.collection("admin").document(androidId).delete();
 
+        isFinished = false;
+        firebaseFirestore.collection("admin").document(androidId).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                isFinished = true;
+            }
+        });
+
+        while (!isFinished) {}
         CountDownLatch latch = new CountDownLatch(1);
         try {
             latch.await(1, TimeUnit.SECONDS);
@@ -224,6 +241,8 @@ public class AdminTests {
         }
         ActivityScenario.launch(MainActivity.class);
         onView(withId(R.id.admin_button)).check(matches(not(isDisplayed())));
+
+        isFinished = true;
     }
 
 
@@ -247,6 +266,8 @@ public class AdminTests {
             e.printStackTrace();
         }
 
+        isFinished = false;
+
         onView(withId(R.id.admin_button)).check(matches(isDisplayed()));
         onView(withId(R.id.admin_button)).perform(click());
         onView(withId(R.id.adminMainPage)).check(matches(isDisplayed()));
@@ -256,10 +277,12 @@ public class AdminTests {
         onView(withId(R.id.buttonBrowseImages)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonBrowseEvents)).check(matches(isDisplayed()));
         onView(withId(R.id.button_back_button)).check(matches(isDisplayed()));
+
+        isFinished = true;
     }
 
     @Test
-    public void checkUserInfo() {
+    public void browseUserTest() {
         Context context = InstrumentationRegistry.getInstrumentation().getContext();
         ContentResolver contentResolver = context.getContentResolver();
         String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
@@ -281,6 +304,7 @@ public class AdminTests {
             e.printStackTrace();
         }
 
+        isFinished = false;
         onView(withId(R.id.admin_button)).perform(click());
         onView(withId(R.id.buttonBrowseUserProfiles)).perform(click());
         onView(withId(R.id.browseProfileFragment)).check(matches(isDisplayed()));
@@ -292,10 +316,19 @@ public class AdminTests {
         onView(withId(R.id.browseProfileFragment)).check(doesNotExist());
         onView(withId(R.id.buttonBrowseUserProfiles)).perform(click());
         onView(withId(R.id.user_profile_pictures)).check(matches(isDisplayed()));
-        onView(withText(testUser.getName())).check(matches(isDisplayed()));
-        onView(withId(R.id.userContent)).check(matches(isDisplayed()));
+
+        int testUserPos = 0;
+        for (int i = 0; i < userList.size(); i++) {
+            onView(withText(userList.get(i).getName())).check(matches(isDisplayed()));
+            onView(allOf(withId(R.id.userContent), withParentIndex(i))).check(matches(isDisplayed()));
+
+            if (Objects.equals(testUser.getName(), userList.get(i).getName())) {
+                testUserPos = i;
+            }
+        }
+
         onView(withId(R.id.user_profile_pictures))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+                .perform(RecyclerViewActions.actionOnItemAtPosition(testUserPos, click()));
         onView(withText("User information")).check(matches(isDisplayed()));
         onView(withText("Name: " + testUser.getName() + "\n" +
                         "Home Page: " + testUser.getHomepage() + "\n" +
@@ -307,6 +340,216 @@ public class AdminTests {
         onView(withText("View")).perform(click());
         onView(withId(R.id.userInfoActivity)).check(matches(isDisplayed()));
 
+        isFinished = true;
+
+        // Enable animations after the test is finished
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 1");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 1");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 1");
+    }
+
+    @Test
+    public void deleteUserTest() {
+        Log.d("TAG", "true");
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        ContentResolver contentResolver = context.getContentResolver();
+        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+
+        // Disable animations
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 0");
+        ActivityScenario.launch(MainActivity.class);
+        CountDownLatch latch = new CountDownLatch(1);
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        isFinished = false;
+        User user1 = new User("aaaaaaaaaa", "deleteUser", null, null, null);
+        User user2 = new User("aaaaaaaaab", "deleteUser2", null, null, null);
+        FirebaseController.getInstance().addUser(user1, new Runnable() {
+            @Override
+            public void run() {
+                isFinished = true;
+            }
+        });
+
+        while (!isFinished) {}
+        isFinished = false;
+
+        FirebaseController.getInstance().addUser(user2, new Runnable() {
+            @Override
+            public void run() {
+                isFinished = true;
+            }
+        });
+
+        while (!isFinished) {}
+        isFinished = false;
+
+        userList.add(user1);
+        userList.add(user2);
+        userList.sort(new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                String user1 = (String) o1.getName();
+                user1 = user1.toLowerCase();
+                String user2 = (String) o2.getName();
+                user2 = user2.toLowerCase();
+                return user1.compareTo(user2);
+            }
+        });
+
+        onView(withId(R.id.admin_button)).perform(click());
+        onView(withId(R.id.buttonBrowseUserProfiles)).perform(click());
+
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        int deleteUserPos = 0;
+        int testUserPos = 0;
+        for (int i = 0; i < userList.size(); i++) {
+            if (Objects.equals(user1.getName(), userList.get(i).getName())) {
+                deleteUserPos = i;
+            }
+            if (Objects.equals(testUser.getName(), userList.get(i).getName())) {
+                testUserPos = i;
+            }
+        }
+
+        onView(withId(R.id.user_profile_pictures))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(testUserPos, click()));
+        onView(withText("Delete")).perform(click());
+        onView(withText("Cannot Delete")).check(matches(isDisplayed()));
+        onView(withText("You cannot delete yourself.")).check(matches(isDisplayed()));
+        onView(withText("Okay")).perform(click());
+
+        onView(withId(R.id.user_profile_pictures))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(deleteUserPos, click()));
+        onView(withText("Delete")).perform(click());
+        onView(withText("Yes")).perform(click());
+
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("TAG", "before checking");
+        onView(withText(user1.getName())).check(doesNotExist());
+        onView(withText(user2.getName())).check(matches(isDisplayed()));
+        Log.d("TAG", "true");
+
+        FirebaseController.getInstance().deleteUser(user2);
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        isFinished = true;
+    }
+
+    @Test
+    public void browseEventTest() {
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        ContentResolver contentResolver = context.getContentResolver();
+        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+
+        // Disable animations
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 0");
+
+        ActivityScenario.launch(MainActivity.class);
+        CountDownLatch latch = new CountDownLatch(1);
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Event testEvent = new Event(testUser, "eventTest", "testDescription", null, null, "testEventID", new Date(), new Date(), "testAdress", "testQR");
+        FirebaseController.getInstance().addEvent(testEvent);
+        FirebaseController.getInstance().addOrganizedEvent(testUser, testEvent);
+        eventList.add(testEvent);
+        eventList.sort(new Comparator<Event>() {
+            @Override
+            public int compare(Event o1, Event o2) {
+                String event1 = (String) o1.getEventName();
+                event1 = event1.toLowerCase();
+                String event2 = (String) o2.getEventName();
+                event2 = event2.toLowerCase();
+                return event1.compareTo(event2);
+            }
+        });
+
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        isFinished = false;
+        onView(withId(R.id.admin_button)).perform(click());
+        onView(withId(R.id.buttonBrowseEvents)).perform(click());
+
+        int testUserPos = 0;
+        Log.d("TAG", "" + eventList.size());
+        for (int i = 0; i < eventList.size(); i++) {
+            onView(withText(eventList.get(i).getEventName())).check(matches(isDisplayed()));
+            onData(anything()).inAdapterView(withId(R.id.events)).atPosition(i).check(matches(isDisplayed()));
+
+            if (Objects.equals(testEvent.getEventName(), eventList.get(i).getEventName())) {
+                Log.d("TAG", "matched");
+                testUserPos = i;
+            }
+        }
+
+        onData(anything()).inAdapterView(withId(R.id.events)).atPosition(testUserPos).perform(click());
+        Log.d("TAG", "true0");
+        Log.d("TAG", "" + onView(withText("Event")).check(matches(isDisplayed())));
+        Log.d("TAG", "true1");
+        /*onView(withText("Event Name: " + testEvent.getEventName() + "\n" +
+                "Organizer Name: " + testEvent.getOrganizer().getName() + "\n" +
+                "Organizer ID: " + testEvent.getOrganizer().getDeviceID() + "\n" +
+                "Description: " + testEvent.getDescription())).check(matches(isDisplayed()));*/
+        Log.d("TAG", "true2");
+        onView(withText("View Event Page")).check(matches(isDisplayed()));
+        Log.d("TAG", "true3");
+        onView(withText("Delete")).check(matches(isDisplayed()));
+        Log.d("TAG", "true4");
+        onView(withText("Cancel")).check(matches(isDisplayed()));
+        Log.d("TAG", "true5");
+        onView(withText("View Event Page")).perform(click());
+        onView(withId(R.id.userInfoActivity)).check(matches(isDisplayed()));
+
+        FirebaseController.getInstance().deleteEvent(testEvent, new FirebaseController.FirestoreOperationCallback() {
+            @Override
+            public void onCompleted() {
+                isFinished = true;
+            }
+        });
 
         // Enable animations after the test is finished
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
@@ -390,81 +633,6 @@ public class AdminTests {
     boolean userDeleted = false;
     ArrayList<User> listOfUsers = new ArrayList<>();
     User foundUser;
-    
-    /*@Test
-    public void deleteUserTest() {
-        Log.d("TAG", "true");
-        Context context = InstrumentationRegistry.getInstrumentation().getContext();
-        ContentResolver contentResolver = context.getContentResolver();
-        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
-
-        // Disable animations
-        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                "settings put global window_animation_scale 0");
-        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                "settings put global transition_animation_scale 0");
-        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                "settings put global animator_duration_scale 0");*/
-    
-    @Test
-    public void removeUserTest(){
-        FirebaseController firebaseController = FirebaseController.getInstance();
-
-        firebaseController.addUser(new User(androidId), new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        });
-
-        firebaseController.addUser(new User(androidId), null);
-
-
-        firebaseController.getUser(androidId, new FirebaseController.OnUserRetrievedListener() {
-            @Override
-            public void onUserRetrieved(User user) {
-                foundUser = user;
-                userFound = true;
-            }
-        });
-        while(!userFound){}
-        assertEquals(foundUser.getDeviceID(), androidId); // to ensure it is same event we added
-        CountDownLatch latch = new CountDownLatch(10);
-        firebaseController.deleteUserFinalStep(FirebaseFirestore.getInstance(), foundUser.getDeviceID(), new FirebaseController.UserDeletedCallback() {
-            @Override
-            public void userDeleted() {
-                userDeleted = true;
-            }
-        });
-        while(!userDeleted){}
-        firebaseController.getAllUsers(new FirebaseController.OnAllUsersLoadedListener() {
-            @Override
-            public void onUsersLoaded(List<User> users) {
-                listOfUsers.addAll(users);
-                userListFound = true;
-
-            }
-        });
-
-        while(!userListFound){}
-        try{
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        boolean userNotFound = true;
-
-        for (User user : listOfUsers) {
-            if(user.getDeviceID().equals(androidId)){
-                userNotFound = false;
-            }
-
-        }
-
-        assertTrue("The user should not be found in the list",userNotFound);
-
-    }
-
 
     @Test
     public void browsePicturesTest() {
