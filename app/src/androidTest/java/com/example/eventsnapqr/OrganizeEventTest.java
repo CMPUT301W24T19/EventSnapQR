@@ -89,7 +89,7 @@ public class OrganizeEventTest {
 
         // Setup your mock event and attendee
         eventId = "mockEventId";
-        newEvent = new Event(new User("mockOrganizerId"), "Mock Event", "This is a mock event.", null, 100, eventId, new Date(), new Date(), "123 Mock St.", true);
+        newEvent = new Event(new User("mockOrganizerId"), "Mock Event", "This is a mock event.", null, 100, eventId, new Date(), new Date(), "123 Mock St.", "QRLink");
 
         // Initialize test environment
         // e.g., request permissions, disable animations
@@ -125,7 +125,7 @@ public class OrganizeEventTest {
         boolean isActive = true;
 
         // Create an event object
-        Event event = new Event(organizer, eventName, eventDescription, posterUri, maxAttendees, null, startDateTime, endDateTime, address, isActive);
+        Event event = new Event(organizer, eventName, eventDescription, posterUri, maxAttendees, null, startDateTime, endDateTime, address, "TestQR");
 
         CountDownLatch latch = new CountDownLatch(1);
         AtomicBoolean eventExists = new AtomicBoolean(false);
@@ -257,7 +257,7 @@ public class OrganizeEventTest {
     private Event createMockEvent() {
         // Method to create a mock Event object
         User organizer = new User("organizerId", "Organizer", null, null, null);
-        return new Event(organizer, "Test Event", "This is a test event.", null, 100, "mockEvent123", new Date(), new Date(), "Test Location", true);
+        return new Event(organizer, "Test Event", "This is a test event.", null, 100, "mockEvent123", new Date(), new Date(), "Test Location", "TestQR");
     }
 
 
