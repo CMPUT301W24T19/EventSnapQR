@@ -255,13 +255,13 @@ public class AdminBrowseImagesFragment extends Fragment {
                     if (item instanceof Event) {
                         Event event = (Event) item;
                         if (itemID != null) {
-                            FirebaseController.getInstance().deleteImage(event.getPosterURI(), event, getContext());
+                            FirebaseController.getInstance().deleteImage(event.getPosterURI(), event, getContext(), false);
                             posters.remove(event);
                         }
                     } else if (item instanceof User) {
                         User user = (User) item;
                         if (itemID != null) {
-                            FirebaseController.getInstance().deleteImage(user.getProfilePicture(), user, getContext());
+                            FirebaseController.getInstance().deleteImage(user.getProfilePicture(), user, getContext(), false);
                             posters.remove(user);
                         }
                     }
