@@ -414,7 +414,7 @@ public class AdminTests {
     @Test
     public void removeUserTest(){
         FirebaseController firebaseController = FirebaseController.getInstance();
-        firebaseController.addUser(new User(androidId));
+        firebaseController.addUser(new User(androidId), null);
 
         firebaseController.getUser(androidId, new FirebaseController.OnUserRetrievedListener() {
             @Override

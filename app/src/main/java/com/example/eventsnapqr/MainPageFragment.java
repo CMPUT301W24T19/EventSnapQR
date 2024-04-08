@@ -221,9 +221,9 @@ public class MainPageFragment extends Fragment {
                     }
                 });
                 recyclerView.setAdapter(adapter);
-                authenticateUser();
             }
         });
+        authenticateUser();
 
         buttonAdminMainPage.setOnClickListener(new View.OnClickListener() {
             @Override
