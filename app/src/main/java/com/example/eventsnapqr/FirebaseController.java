@@ -268,7 +268,7 @@ public class FirebaseController {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         if (event.getPosterURI() != null) {
-            deleteImage(event.getPosterURI(), event, null);
+            deleteImage(event.getPosterURI(), event, null, true);
         }
 
         // deleting subcollections
@@ -1079,54 +1079,56 @@ public class FirebaseController {
      * @param object event or user with an image URI
      * @param context activity/fragment context
      */
-    public void deleteImage(String uri, Object object, Context context) {
+    public void deleteImage(String uri, Object object, Context context, boolean deleteObject) {
         String[] firebaseImagePath = Uri.parse(uri).getPath().split("/");
         String imagePath = firebaseImagePath[firebaseImagePath.length - 2] + "/" + firebaseImagePath[firebaseImagePath.length - 1];
         FirebaseStorage.getInstance().getReference().child(imagePath).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) { // after deleting from storage, delete from event and uri documents
                 Log.d("TAG", "Picture successfully deleted");
-                if (object instanceof Event) {
-                    Event event = (Event) object;
-                    String eventId = event.getEventID();
-                    if (eventId != null) {
-                        FirebaseFirestore.getInstance().collection("events").document(eventId)
-                                .update("posterURI", null)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("TAG", "Event poster URI set to null");
-                                        Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.e("TAG", "Failed to update event poster URI", e);
-                                        Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
-                } else if (object instanceof User) {
-                    User user = (User) object;
-                    String userId = user.getDeviceID();
-                    if (userId != null) {
-                        FirebaseFirestore.getInstance().collection("users").document(userId)
-                                .update("profileURI", null)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("TAG", "User profile URI set to null");
-                                        Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.e("TAG", "Failed to update user profile URI", e);
-                                        Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                if (!deleteObject) {
+                    if (object instanceof Event) {
+                        Event event = (Event) object;
+                        String eventId = event.getEventID();
+                        if (eventId != null) {
+                            FirebaseFirestore.getInstance().collection("events").document(eventId)
+                                    .update("posterURI", null)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("TAG", "Event poster URI set to null");
+                                            Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.e("TAG", "Failed to update event poster URI", e);
+                                            Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+                    } else if (object instanceof User) {
+                        User user = (User) object;
+                        String userId = user.getDeviceID();
+                        if (userId != null) {
+                            FirebaseFirestore.getInstance().collection("users").document(userId)
+                                    .update("profileURI", null)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("TAG", "User profile URI set to null");
+                                            Toast.makeText(context, "Image removed successfully", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.e("TAG", "Failed to update user profile URI", e);
+                                            Toast.makeText(context, "Failed to remove image", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
                     }
                 }
             }
