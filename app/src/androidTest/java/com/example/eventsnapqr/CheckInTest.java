@@ -79,6 +79,7 @@ public class CheckInTest {
         });
 
         FirebaseController.getInstance().addUser(user, null);
+
         Log.d("TAG", "after addition");
         try {
             latch.await(10, TimeUnit.SECONDS);
@@ -89,6 +90,7 @@ public class CheckInTest {
 
         // adding checked in user
         checkedInUser = new User("checkedInUser", "checkedInUser", null, null, null);
+
         FirebaseController.getInstance().addUser(checkedInUser, new Runnable() {
             @Override
             public void run() {
@@ -126,7 +128,7 @@ public class CheckInTest {
 
         // adding event
         String eventID = FirebaseController.getInstance().getUniqueEventID();
-        event = new Event(user, eventID, "test", null, null, eventID, new Date(), new Date(), "testAddress", true);
+        event = new Event(user, eventID, "test", null, null, eventID, new Date(), new Date(), "testAddress", "testQRLink");
         FirebaseController.getInstance().addEvent(event);
         try {
             latch.await(10, TimeUnit.SECONDS);

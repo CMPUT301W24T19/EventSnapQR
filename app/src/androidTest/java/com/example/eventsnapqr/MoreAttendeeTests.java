@@ -110,7 +110,7 @@ public class MoreAttendeeTests {
 
             }
         });
-        Event newEvent = new Event(user, "testEvent", "testEventDescription", null, 5, eventId, new Date(), new Date(), "123 Spooner St.", true);
+        Event newEvent = new Event(user, "testEvent", "testEventDescription", null, 5, eventId, new Date(), new Date(), "123 Spooner St.", "QRLink");
         fbc.addEvent(newEvent);
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), BrowseEventsActivity.class);
         intent.putExtra("eventID", eventId);

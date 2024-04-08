@@ -148,7 +148,7 @@ public class MassUserTest {
         for (int i = 0; i < 20; i++) {
             String eventID = FirebaseController.getInstance().getUniqueEventID();
             int randomEvent = random.nextInt(50);
-            Event newEvent = new Event(userList.get(randomEvent), eventID, "Test Event Number: " + i, null, null, eventID, new Date(), new Date(999999999L), String.valueOf(i), true);
+            Event newEvent = new Event(userList.get(randomEvent), eventID, "Test Event Number: " + i, null, null, eventID, new Date(), new Date(999999999L), String.valueOf(i), "QRLink");
             eventList.add(newEvent);
             FirebaseController.getInstance().addEvent(newEvent);
         }

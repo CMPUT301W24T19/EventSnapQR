@@ -333,7 +333,7 @@ public class AdminTests {
     public void removeEvent(){
         FirebaseController firebaseController = FirebaseController.getInstance();
         String eventId = firebaseController.getUniqueEventID();
-        Event newEvent = new Event(new User(androidId), "testEvent", "testEventDescription", null, 5,eventId, new Date(), new Date(), "123 Spooner St.",true);
+        Event newEvent = new Event(new User(androidId), "testEvent", "testEventDescription", null, 5,eventId, new Date(), new Date(), "123 Spooner St.","QRLink");
         firebaseController.addEvent(newEvent);
         firebaseController.getEvent(eventId, new FirebaseController.OnEventRetrievedListener() {
             @Override
@@ -377,17 +377,12 @@ public class AdminTests {
         boolean eventNotFound = true;
         ArrayList<Event> activeEvents = new ArrayList<>();
         for (Event event : foundEvents) {
-            if(event.isActive()){
-                activeEvents.add(event);
+            if(event.getEventID().equals(eventId)){
+                eventNotFound = false;
             }
 
         }
-        for(Event activeEvent: activeEvents){
-            if (activeEvent.getEventID().equals(eventId)) {
-                eventNotFound = false;
-                break;
-            }
-        }
+
         assertTrue("The event should not be found in the list",eventNotFound);
     }
     boolean userFound = false;
@@ -414,7 +409,16 @@ public class AdminTests {
     @Test
     public void removeUserTest(){
         FirebaseController firebaseController = FirebaseController.getInstance();
+
+        firebaseController.addUser(new User(androidId), new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+
         firebaseController.addUser(new User(androidId), null);
+
 
         firebaseController.getUser(androidId, new FirebaseController.OnUserRetrievedListener() {
             @Override
@@ -495,11 +499,11 @@ public class AdminTests {
         }
 
         Log.d("TAG", "end");
-        Event testEvent = new Event(testUser, "testEvent", "testDescription", result[0].toString(), 5, "eventID", new Date(), new Date(), "123", true);
+        Event testEvent = new Event(testUser, "testEvent", "testDescription", result[0].toString(), 5, "eventID", new Date(), new Date(), "123", "QRLink");
         Log.d("TAG", "Making event");
         Log.d("TAG", "Event URI: " + result[0].toString());
         //Event testEvent = new Event(testUser, "testEvent", "testDescription", result[0].toString(), 5, "eventID", null, null, true);
-        Event testEvent = null;
+
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseFirestore.collection("users").document(androidId).set(testUser);
         firebaseFirestore.collection("admin").document(androidId).set(testUser);
