@@ -140,7 +140,7 @@ public class ListOrganizedEventsFragment extends Fragment {
 
                                                                 eventDocument.getBoolean("active"),
                                                                 latitude,
-                                                                longitude
+                                                                longitude,
 
                                                                 eventDocument.getString("QR")
 

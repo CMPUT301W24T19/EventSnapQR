@@ -23,6 +23,7 @@ public class Event {
     private boolean active;
     private double latitude;
     private double longitude;
+    private String QR;
 
     /**
      * constructor for event requiring a user instance, QR code, event name, a description, a URL
@@ -34,7 +35,7 @@ public class Event {
      * @param maxAttendees maximum number of attendees
      */
     public Event(User organizer, String eventName, String description, String posterURI, Integer maxAttendees,
-                 String eventID, Date eventStartDateTime, Date eventEndDateTime, String address, boolean active, double latitude, double longitude) {
+                 String eventID, Date eventStartDateTime, Date eventEndDateTime, String address, boolean active, double latitude, double longitude, String QR) {
         this.organizer = organizer;
         this.eventName = eventName;
         this.description = description;

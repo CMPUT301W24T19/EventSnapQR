@@ -398,17 +398,8 @@ class ImageCarouselAdapter extends RecyclerView.Adapter<ImageCarouselAdapter.Vie
         });
     }
 
-        holder.eventNameTextView.setText(eventName);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    listener.onItemClick(imageUri);
-                }
-            }
-        });
-    }
+
 
 
     /**

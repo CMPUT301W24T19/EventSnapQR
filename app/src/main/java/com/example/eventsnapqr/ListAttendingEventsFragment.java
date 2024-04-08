@@ -136,7 +136,7 @@ public class ListAttendingEventsFragment extends Fragment {
 
                                                                 eventDocument.getBoolean("active"),
                                                                 document.getDouble("latitude"),
-                                                                document.getDouble("longitude")
+                                                                document.getDouble("longitude"),
                                                                 eventDocument.getString("QR")
 
                                                         );
