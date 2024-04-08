@@ -218,9 +218,9 @@ public class FirebaseController {
     }
 
     /**
-     *
-     * @param db
-     * @param eventId
+     * gets all of a users events and deletes them. used for user deletion
+     * @param db instance of db
+     * @param eventId the
      * @return
      */
     private Task<Void> fetchAndDeleteEvent(FirebaseFirestore db, String eventId) {
@@ -404,45 +404,34 @@ public class FirebaseController {
     }
 
     /**
-     * uses an interface to return a list of all the attendees in an event
-     * @param event
-     * @param callback
+     *
+     * @param documents
      */
-    public void getEventAttendees(Event event, User.AttendeesCallback callback) {
-        db.collection("events").document(event.getEventID()).collection("attendees").get()
-                .addOnSuccessListener(querySnapshot -> {
-                    List<String> attendees = new ArrayList<>();
-                    for (DocumentSnapshot document : querySnapshot) {
-                        String androidId = document.getString("organizerID");
-                        attendees.add(androidId);
-                    }
-                    callback.onAttendeesLoaded(attendees); // Pass the attendees list to the callback
-                })
-                .addOnFailureListener(e -> {
-                    // Handle failure
-                });
-    }
-
     void parseDocuments(List<DocumentSnapshot> documents) {
         for(DocumentSnapshot doc: documents){
-
             Event event = new Event();
             event.setEventID(doc.getId());
             event.setOrganizer(new User(doc.getString("organizerID")));
-            //doc.get("attendees");
             event.setDescription(doc.getString("description"));
             event.setEventName(doc.getString("eventName"));
             event.setPosterURI(doc.getString("posterURL"));
             event.setQR(doc.getString("QR"));
             events.add(event);
-            //Event(User organizer, QR qrCode, String eventName, String description, String posterUrl, Integer maxAttendees)
         }
     }
+
+    /**
+     * listener to return all the events for getAllEvents()
+     */
     public interface OnEventsLoadedListener {
         void onEventsLoaded(ArrayList<Event> events);
     }
     ArrayList<Event> events = new ArrayList<>();
 
+    /**
+     * retrieve every event in the firebase db as a list of events
+     * @param listener
+     */
     public void getAllEvents(final OnEventsLoadedListener listener) {
         eventReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -468,7 +457,7 @@ public class FirebaseController {
 
     /**
      * adds an event and its fields to the firestore database
-     * @param event The event to add
+     * @param event the event to add
      */
     public void addEvent(Event event) {
         Map<String, Object> eventData = new HashMap<>();
@@ -505,6 +494,11 @@ public class FirebaseController {
     }
 
     ArrayList<User> users = new ArrayList<>();
+
+    /**
+     * populate the users list with every user from the db
+     * @param listener used to return the list
+     */
     public void getAllUsers(OnAllUsersLoadedListener listener){
         userReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -520,6 +514,10 @@ public class FirebaseController {
 
     }
 
+    /**
+     *
+     * @param documents
+     */
     void parseUsers(List<DocumentSnapshot> documents){
         for(DocumentSnapshot doc: documents){
             String phoneNumber = doc.getString("phoneNumber");
@@ -531,9 +529,20 @@ public class FirebaseController {
             users.add(user);
         }
     }
+
+    /**
+     * listener to return the list of users
+     */
     public interface OnAllUsersLoadedListener{
         void onUsersLoaded(List<User> users);
     }
+
+    /**
+     * create an notification in the firebase db
+     * @param context activity context
+     * @param announcement the contents of the announcement
+     * @param event the associated event
+     */
     private void makeNotification(Context context, String announcement, Event event) {
         Intent intent = new Intent(context, BrowseEventsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -558,6 +567,13 @@ public class FirebaseController {
         }
         notificationManager.notify(0, builder.build());
     }
+
+    /**
+     * checks if a given user is attending a given event
+     * @param androidId unique id of the user
+     * @param event
+     * @param callback
+     */
     public void isAttendee(String androidId, Event event, AttendeeCheckCallback callback){
         db.collection("events").document(event.getEventID()).collection("attendees").get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -581,6 +597,12 @@ public class FirebaseController {
     public interface NotificationSeenCallback {
         void onSeen(boolean seen);
     }
+
+    /**
+     *
+     * @param context
+     * @param event
+     */
     public void listenForAnnouncements(Context context, Event event) {
         if (event == null || event.getEventID() == null) {
             Log.e("FirebaseController", "Event or Event ID is null");

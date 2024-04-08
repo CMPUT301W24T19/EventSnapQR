@@ -44,7 +44,6 @@ public class EventAdapter extends ArrayAdapter<Event> {
      * @param parent The parent that this view will eventually be attached to
      * @return
      */
-
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {

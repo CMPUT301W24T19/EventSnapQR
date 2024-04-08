@@ -388,7 +388,6 @@ public class EventDetailFragment extends Fragment {
 
     /**
      * returns the correct suffix for the given integer
-     *
      * @param n the number in which to retrieve the suffix
      */
     public String getSuffix(Integer n) {
