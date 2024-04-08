@@ -582,12 +582,13 @@ public class OrganizeEventFragment extends Fragment implements MapFragmentOrgani
                     if (imageUri != null) {
                         StorageReference userRef = storageRef.child("eventPosters/" + eventID); // specifies the path on the cloud storage
                         String finalEventID = eventID;
+                        String finalEventID1 = eventID;
                         userRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
                             userRef.getDownloadUrl().addOnSuccessListener(uri -> {
                                 imageUri = uri;
                                 uriString = imageUri.toString();
 
-                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, eventAddress, true, latitude, longitude);
+                                Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, finalEventID1, startDateTime, endDateTime, eventAddress, true, latitude, longitude, QR);
 
                                 Log.d("USER NAME", newEvent.getOrganizer().getName());
                                 firebaseController.addEvent(newEvent);
@@ -611,7 +612,7 @@ public class OrganizeEventFragment extends Fragment implements MapFragmentOrgani
                     } else {
                         uriString = null;
 
-                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, eventAddress, true, latitude, longitude);
+                        Event newEvent = new Event(user, eventName, eventDesc, uriString, eventMaxAttendees, eventID, startDateTime, endDateTime, eventAddress, true, latitude, longitude, QR);
 
                         Log.d("USER NAME", " "+newEvent.getOrganizer().getName());
 

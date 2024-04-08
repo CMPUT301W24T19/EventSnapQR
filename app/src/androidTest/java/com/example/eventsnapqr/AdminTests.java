@@ -16,6 +16,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParentIndex;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static junit.framework.TestCase.assertEquals;
@@ -58,8 +59,10 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
 import com.beust.ah.A;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Firebase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -83,6 +86,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 /**
@@ -95,6 +99,7 @@ public class AdminTests {
     private List<Event> eventList;
     private List<User> userList;
     private List<Object> eventsAndUsers;
+    public boolean isFinished;
 
     @Rule
     public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<MainActivity>(MainActivity.class);
@@ -107,8 +112,29 @@ public class AdminTests {
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         testUser = new User("testUser", androidId, "testHomePage", "testNumber", "testEmail");
-        firebaseFirestore.collection("admin").document(androidId).set(testUser);
-        FirebaseController.getInstance().addUser(testUser, null);
+
+        isFinished = false;
+        firebaseFirestore.collection("admin").document(androidId).set(testUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                isFinished = true;
+            }
+        });
+
+        while (!isFinished) {}
+        Log.d("TAG", "Finished adding admin");
+        isFinished = false;
+
+        FirebaseController.getInstance().addUser(testUser, new Runnable() {
+            @Override
+            public void run() {
+                isFinished = true;
+            }
+        });
+
+        while (!isFinished) {}
+        Log.d("TAG", "Finished adding user");
+        isFinished = false;
 
         eventsAndUsers = new ArrayList<>();
         // getting all the events
@@ -128,8 +154,13 @@ public class AdminTests {
                         return event1.compareTo(event2);
                     }
                 });
+                isFinished = true;
             }
         });
+
+        while (!isFinished) {}
+        Log.d("TAG", "Finished adding events");
+        isFinished = false;
 
         userList = new ArrayList<>();
         FirebaseController.getInstance().getAllUsers(new FirebaseController.OnAllUsersLoadedListener() {
@@ -147,16 +178,13 @@ public class AdminTests {
                         return event1.compareTo(event2);
                     }
                 });
+                isFinished = true;
             }
         });
 
-        CountDownLatch latch = new CountDownLatch(1);
-        try {
-            latch.await(20, TimeUnit.SECONDS);
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        while (!isFinished) {}
+        Log.d("TAG", "Finished adding users");
+
         eventsAndUsers.sort(new Comparator<Object>() {
             @Override
             public int compare(Object o1, Object o2) {
@@ -190,7 +218,7 @@ public class AdminTests {
     public void afterTest() {
         CountDownLatch latch = new CountDownLatch(1);
 
-        //FirebaseController.getInstance().deleteUser(testUser);
+        FirebaseController.getInstance().deleteUser(testUser);
         try {
             latch.await(10, TimeUnit.SECONDS);
             Thread.sleep(5000);
@@ -213,15 +241,18 @@ public class AdminTests {
                 "settings put global animator_duration_scale 0");
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseFirestore.collection("admin").document(androidId).delete();
 
-        CountDownLatch latch = new CountDownLatch(1);
-        try {
-            latch.await(1, TimeUnit.SECONDS);
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        isFinished = false;
+        firebaseFirestore.collection("admin").document(androidId).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                isFinished = true;
+            }
+        });
+
+        while (!isFinished) {}
+        Log.d("TAG", "Finished removing admin");
+
         ActivityScenario.launch(MainActivity.class);
         onView(withId(R.id.admin_button)).check(matches(not(isDisplayed())));
     }
@@ -239,13 +270,6 @@ public class AdminTests {
                 "settings put global transition_animation_scale 0");
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global animator_duration_scale 0");
-        CountDownLatch latch = new CountDownLatch(1);
-        try {
-            latch.await(1, TimeUnit.SECONDS);
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         onView(withId(R.id.admin_button)).check(matches(isDisplayed()));
         onView(withId(R.id.admin_button)).perform(click());
@@ -275,8 +299,8 @@ public class AdminTests {
         ActivityScenario.launch(MainActivity.class);
         CountDownLatch latch = new CountDownLatch(1);
         try {
-            latch.await(10, TimeUnit.SECONDS);
-            Thread.sleep(1000);
+            latch.await(1, TimeUnit.SECONDS);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -292,10 +316,17 @@ public class AdminTests {
         onView(withId(R.id.browseProfileFragment)).check(doesNotExist());
         onView(withId(R.id.buttonBrowseUserProfiles)).perform(click());
         onView(withId(R.id.user_profile_pictures)).check(matches(isDisplayed()));
-        onView(withText(testUser.getName())).check(matches(isDisplayed()));
-        onView(withId(R.id.userContent)).check(matches(isDisplayed()));
+        
+        int testUserPos = 0;
+        for (int i = 0; i < userList.size(); i++) {
+            onView(withText(userList.get(i).getName())).check(matches(isDisplayed()));
+            onView(allOf(withId(R.id.userContent), withParentIndex(i))).check(matches(isDisplayed()));
+            if (Objects.equals(userList.get(i).getDeviceID(), testUser.getDeviceID())) {
+                testUserPos = i;
+            }
+        }
         onView(withId(R.id.user_profile_pictures))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+                .perform(RecyclerViewActions.actionOnItemAtPosition(testUserPos, click()));
         onView(withText("User information")).check(matches(isDisplayed()));
         onView(withText("Name: " + testUser.getName() + "\n" +
                         "Home Page: " + testUser.getHomepage() + "\n" +

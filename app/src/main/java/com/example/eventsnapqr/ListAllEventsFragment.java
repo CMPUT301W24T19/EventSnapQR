@@ -122,33 +122,15 @@ public class ListAllEventsFragment extends Fragment {
                                                     document.getString("address"),
                                                     document.getBoolean("active"),
                                                     document.getDouble("latitude"),
-                                                    document.getDouble("longitude")
-                                            );
+                                                    document.getDouble("longitude"),
+                                                    document.getString("QR")
+
+                                                    );
                                             events.add(event);
                                         } else {
                                             Toast.makeText(requireContext(), "Organizer not found for event: " + document.getId(), Toast.LENGTH_SHORT).show();
 
                                         }
-                                        if (endTimestamp != null) {
-                                            endDateTime = endTimestamp.toDate();
-                                        }
-
-                                        Event event = new Event(
-                                                user,
-                                                document.getString("eventName"),
-                                                document.getString("description"),
-                                                document.getString("posterURI"),
-                                                maxAttendees,
-                                                document.getId(),
-                                                startDateTime,
-                                                endDateTime,
-                                                document.getString("address"),
-                                                document.getString("QR")
-                                        );
-                                        events.add(event);
-                                    } else {
-                                        Toast.makeText(requireContext(), "Organizer not found for event: " + document.getId(), Toast.LENGTH_SHORT).show();
-                                    }
                                     if (i[0] == documents.size() - 1) {
                                         events.sort(Comparator.comparing(o -> o.getEventName().toLowerCase()));
                                         eventListView.setVisibility(View.VISIBLE);
