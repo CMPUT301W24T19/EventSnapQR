@@ -137,7 +137,7 @@
                     android:id="@+id/noEventsText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No Events to Display"
+                    android:text="No Featured Events"
                     android:textSize="18sp"
                     android:textColor="@color/black"
                     android:layout_gravity="center" />
