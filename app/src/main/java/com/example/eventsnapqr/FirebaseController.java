@@ -320,7 +320,7 @@ public class FirebaseController {
      * adds a given user to the firestore database
      * @param user user object
      */
-    public void addUser(User user) {
+    public void addUser(User user, Runnable callback) {
         Map<String, Object> userData = new HashMap<>();
         userData.put("name", user.getName());
         if (user.getHomepage() != null) {
@@ -338,6 +338,7 @@ public class FirebaseController {
                     @Override
                     public void onSuccess(Void unused) {
                         Log.d("Added user success", "User added successfully!");
+                        callback.run();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

@@ -142,7 +142,7 @@ public class MassUserTest {
             String userID = FirebaseController.getInstance().getUniqueEventID();
             User newUser = new User(userID, userID, null, null, null);
             userList.add(newUser);
-            FirebaseController.getInstance().addUser(newUser);
+            FirebaseController.getInstance().addUser(newUser, null);
         }
 
         for (int i = 0; i < 20; i++) {

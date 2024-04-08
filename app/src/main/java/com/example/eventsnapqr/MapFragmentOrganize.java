@@ -162,7 +162,9 @@ public class MapFragmentOrganize extends Fragment {
         }
 
 
-        view.findViewById(R.id.button_back_button).setOnClickListener(v -> requireActivity().onBackPressed());
+        view.findViewById(R.id.button_back_button).setOnClickListener(v -> {
+            requireActivity().getOnBackPressedDispatcher().onBackPressed();
+        });
         setupMap();
 
         view.findViewById(R.id.search_button).setOnClickListener(new View.OnClickListener() {
