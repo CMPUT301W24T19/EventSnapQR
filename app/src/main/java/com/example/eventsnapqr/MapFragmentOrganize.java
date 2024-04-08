@@ -130,9 +130,7 @@ public class MapFragmentOrganize extends Fragment {
 
                         getActivity().runOnUiThread(() -> {
                             GeoPoint startPoint = new GeoPoint(latitude, longitude);
-
                             new ReverseGeocodingTask(addressTextBox).execute(startPoint);
-
                             mapController.setCenter(startPoint);
                             Marker startMarker = new Marker(mapView);
                             startMarker.setPosition(startPoint);
