@@ -43,7 +43,7 @@ public class AuthenticationTest {
     }
 
     /**
-     * US 02.06.01
+     * US 02.06.01 This test ensures we are logging in without loggin in
      */
     @Test
     public void loginTest(){
