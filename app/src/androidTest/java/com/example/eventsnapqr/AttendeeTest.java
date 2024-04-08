@@ -216,7 +216,7 @@ public class AttendeeTest {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseController firebaseController = new FirebaseController();
         id = firebaseController.getUniqueEventID();
-        Event newEvent = new Event(new User(androidId), "testEvent", "testEventDescription", null, 5, id, new Date(), new Date(), "123 Spooner St.",true);
+        Event newEvent = new Event(new User(androidId), "testEvent", "testEventDescription", null, 5, id, new Date(), new Date(), "123 Spooner St.",true, 0.0,0.0);
         firebaseController.addEvent(newEvent);
         String announcement = "Test Announcement";
         CollectionReference announcementsRef = db.collection("events").document(id).collection("announcements");
