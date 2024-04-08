@@ -118,6 +118,7 @@ public class MainPageFragment extends Fragment {
     public interface ImageUriCallback {
         void onImageUrisLoaded(List<String> imageUris);
     }
+
     public void getImageUris(ImageUriCallback callback) {
         FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -139,6 +140,7 @@ public class MainPageFragment extends Fragment {
             }
         });
     }
+
     public List<String> eventImages;
     /**
      * handles button presses throughout the fragment
@@ -210,17 +212,12 @@ public class MainPageFragment extends Fragment {
                 adapter.setOnItemClickListener(new ImageCarouselAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(String imageUri) {
-
                          String uriComponents[] = Uri.parse(imageUri).getPath().split("/");
                          String eventId = uriComponents[uriComponents.length - 1];
                          Log.d("clicked event id", eventId);
                         Intent intent = new Intent(getActivity(), BrowseEventsActivity.class);
                         intent.putExtra("eventID", eventId);
                         startActivity(intent);
-
-
-
-
                     }
                 });
                 recyclerView.setAdapter(adapter);

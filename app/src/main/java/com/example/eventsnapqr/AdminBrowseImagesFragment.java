@@ -34,7 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Fragment for an admin to browse and delete all images in the database
+ * fragment for an admin to browse and delete all images in the database
  */
 public class AdminBrowseImagesFragment extends Fragment {
     private RecyclerView recyclerView;
@@ -44,7 +44,7 @@ public class AdminBrowseImagesFragment extends Fragment {
     private boolean initial;
 
     /**
-     * What should be executed when the fragment is created
+     * what should be executed when the fragment is created
      *
      * @param savedInstanceState If the fragment is being re-created from
      *                           a previous saved state, this is the state.
@@ -84,7 +84,7 @@ public class AdminBrowseImagesFragment extends Fragment {
         ImageAdapter adapter = new ImageAdapter(posters); // Change the adapter type
         recyclerView.setAdapter(adapter);
 
-        // fetch both events and users from Firestore and populate the posters list
+        // fetch both events from Firestore and populate the posters list
         FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -130,6 +130,7 @@ public class AdminBrowseImagesFragment extends Fragment {
             }
         });
 
+        // fetch users from Firestore
         FirebaseFirestore.getInstance().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -171,6 +172,7 @@ public class AdminBrowseImagesFragment extends Fragment {
         });
 
 
+        // back button navigation
         buttonBackToAdminMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -255,6 +257,7 @@ public class AdminBrowseImagesFragment extends Fragment {
                     if (item instanceof Event) {
                         Event event = (Event) item;
                         if (itemID != null) {
+                            // use firebase controller method to delete the image entirely
                             FirebaseController.getInstance().deleteImage(event.getPosterURI(), event, getContext());
                             posters.remove(event);
                         }

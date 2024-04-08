@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.anything;
+import static org.junit.Assert.assertTrue;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -38,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import java.util.Date;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 
 @RunWith(AndroidJUnit4.class)
@@ -47,6 +49,16 @@ public class MoreAttendeeTests {
     Context context = InstrumentationRegistry.getInstrumentation().getContext();
     ContentResolver contentResolver = context.getContentResolver();
     String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+    @Before
+    public void beforeTest(){
+        // Disable animations
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 0");
+    }
     @Before
     public void deleteEvents() throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
@@ -83,7 +95,7 @@ public class MoreAttendeeTests {
 
 
     /**
-     * US 02.09.01 Test
+     * US 02.09.01, US 02.07.01 Test
      * As an attendee,
      * I want to know what events I signed up for currently and in the future.
      */
@@ -92,7 +104,12 @@ public class MoreAttendeeTests {
         FirebaseController fbc = FirebaseController.getInstance();
         String eventId = fbc.getUniqueEventID();
         User user = new User(androidId);
-        fbc.addUser(user);
+        fbc.addUser(user, new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
         Event newEvent = new Event(user, "testEvent", "testEventDescription", null, 5, eventId, new Date(), new Date(), "123 Spooner St.", true);
         fbc.addEvent(newEvent);
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), BrowseEventsActivity.class);
@@ -100,15 +117,32 @@ public class MoreAttendeeTests {
         ActivityScenario<BrowseEventsActivity> scenario = ActivityScenario.launch(intent);
 
         Thread.sleep(5000);
+        // US 02.07.01
         onView(withText("Sign-Up")).perform(click());
         scenario.close();
+
+        fbc.isAttendee(androidId, newEvent, new FirebaseController.AttendeeCheckCallback() {
+            @Override
+            public void onChecked(boolean isAttendee, Event event) {
+                assertTrue(isAttendee); // US 02.07.01 check
+            }
+        });
         Intent intentTwo = new Intent(ApplicationProvider.getApplicationContext(), BrowseEventsActivity.class);
-        ActivityScenario.launch(intentTwo);
+        ActivityScenario<BrowseEventsActivity> scenarioTwo = ActivityScenario.launch(intentTwo);
 
         Thread.sleep(5000);
         onView(withText("Attending")).perform(click());
         Thread.sleep(5000);
-        onData(anything()).inAdapterView(Matchers.allOf(withId(R.id.events), isDisplayed())).atPosition(0).onChildView(withId(R.id.eventName)).check(matches(withText("testEvent")));
+        onData(anything())
+                .inAdapterView(Matchers.allOf(withId(R.id.events),
+                isDisplayed())).atPosition(0)
+                .onChildView(withId(R.id.eventName))
+                .check(matches(withText("testEvent")));
+        // now test notifications
+        scenarioTwo.close();
+        CountDownLatch latch = new CountDownLatch(1);
+
+
     }
 
 
