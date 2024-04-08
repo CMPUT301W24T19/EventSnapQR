@@ -92,7 +92,7 @@ public class MoreAttendeeTests {
         FirebaseController fbc = FirebaseController.getInstance();
         String eventId = fbc.getUniqueEventID();
         User user = new User(androidId);
-        fbc.addUser(user);
+        fbc.addUser(user, null);
         Event newEvent = new Event(user, "testEvent", "testEventDescription", null, 5, eventId, new Date(), new Date(), "123 Spooner St.", true);
         fbc.addEvent(newEvent);
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), BrowseEventsActivity.class);
