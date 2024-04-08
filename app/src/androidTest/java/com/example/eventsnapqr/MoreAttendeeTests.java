@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.anything;
+import static org.junit.Assert.assertTrue;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -48,6 +49,16 @@ public class MoreAttendeeTests {
     ContentResolver contentResolver = context.getContentResolver();
     String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
     @Before
+    public void beforeTest(){
+        // Disable animations
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 0");
+    }
+    @Before
     public void deleteEvents() throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
         FirebaseController fbc = FirebaseController.getInstance();
@@ -83,7 +94,7 @@ public class MoreAttendeeTests {
 
 
     /**
-     * US 02.09.01 Test
+     * US 02.09.01, US 02.07.01 Test
      * As an attendee,
      * I want to know what events I signed up for currently and in the future.
      */
@@ -100,8 +111,16 @@ public class MoreAttendeeTests {
         ActivityScenario<BrowseEventsActivity> scenario = ActivityScenario.launch(intent);
 
         Thread.sleep(5000);
+        // US 02.07.01
         onView(withText("Sign-Up")).perform(click());
         scenario.close();
+
+        fbc.isAttendee(androidId, newEvent, new FirebaseController.AttendeeCheckCallback() {
+            @Override
+            public void onChecked(boolean isAttendee, Event event) {
+                assertTrue(isAttendee); // US 02.07.01 check
+            }
+        });
         Intent intentTwo = new Intent(ApplicationProvider.getApplicationContext(), BrowseEventsActivity.class);
         ActivityScenario.launch(intentTwo);
 
