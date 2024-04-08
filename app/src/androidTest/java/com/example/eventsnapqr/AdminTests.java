@@ -2,93 +2,64 @@ package com.example.eventsnapqr;
 
 
 import static android.app.PendingIntent.getActivity;
-import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.scrollTo;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
-import static androidx.test.espresso.matcher.ViewMatchers.doesNotHaveFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParentIndex;
-import static androidx.test.espresso.matcher.ViewMatchers.withSubstring;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static junit.framework.TestCase.assertEquals;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ActivityScenario;
 
-import androidx.test.espresso.UiController;
- 
-import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.action.CloseKeyboardAction;
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.rule.ActivityTestRule;
 
-import com.beust.ah.A;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Firebase;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
@@ -311,7 +282,7 @@ public class AdminTests {
     }
 
     @Test
-    public void checkUserInfo() {
+    public void browseUserTest() {
         Context context = InstrumentationRegistry.getInstrumentation().getContext();
         ContentResolver contentResolver = context.getContentResolver();
         String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
@@ -492,6 +463,101 @@ public class AdminTests {
             e.printStackTrace();
         }
         isFinished = true;
+    }
+
+    @Test
+    public void browseEventTest() {
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        ContentResolver contentResolver = context.getContentResolver();
+        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+
+        // Disable animations
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 0");
+
+        ActivityScenario.launch(MainActivity.class);
+        CountDownLatch latch = new CountDownLatch(1);
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Event testEvent = new Event(testUser, "eventTest", "testDescription", null, null, "testEventID", new Date(), new Date(), "testAdress", "testQR");
+        FirebaseController.getInstance().addEvent(testEvent);
+        FirebaseController.getInstance().addOrganizedEvent(testUser, testEvent);
+        eventList.add(testEvent);
+        eventList.sort(new Comparator<Event>() {
+            @Override
+            public int compare(Event o1, Event o2) {
+                String event1 = (String) o1.getEventName();
+                event1 = event1.toLowerCase();
+                String event2 = (String) o2.getEventName();
+                event2 = event2.toLowerCase();
+                return event1.compareTo(event2);
+            }
+        });
+
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        isFinished = false;
+        onView(withId(R.id.admin_button)).perform(click());
+        onView(withId(R.id.buttonBrowseEvents)).perform(click());
+
+        int testUserPos = 0;
+        Log.d("TAG", "" + eventList.size());
+        for (int i = 0; i < eventList.size(); i++) {
+            onView(withText(eventList.get(i).getEventName())).check(matches(isDisplayed()));
+            onData(anything()).inAdapterView(withId(R.id.events)).atPosition(i).check(matches(isDisplayed()));
+
+            if (Objects.equals(testEvent.getEventName(), eventList.get(i).getEventName())) {
+                Log.d("TAG", "matched");
+                testUserPos = i;
+            }
+        }
+
+        onData(anything()).inAdapterView(withId(R.id.events)).atPosition(testUserPos).perform(click());
+        Log.d("TAG", "true0");
+        Log.d("TAG", "" + onView(withText("Event")).check(matches(isDisplayed())));
+        Log.d("TAG", "true1");
+        /*onView(withText("Event Name: " + testEvent.getEventName() + "\n" +
+                "Organizer Name: " + testEvent.getOrganizer().getName() + "\n" +
+                "Organizer ID: " + testEvent.getOrganizer().getDeviceID() + "\n" +
+                "Description: " + testEvent.getDescription())).check(matches(isDisplayed()));*/
+        Log.d("TAG", "true2");
+        onView(withText("View Event Page")).check(matches(isDisplayed()));
+        Log.d("TAG", "true3");
+        onView(withText("Delete")).check(matches(isDisplayed()));
+        Log.d("TAG", "true4");
+        onView(withText("Cancel")).check(matches(isDisplayed()));
+        Log.d("TAG", "true5");
+        onView(withText("View Event Page")).perform(click());
+        onView(withId(R.id.userInfoActivity)).check(matches(isDisplayed()));
+
+        FirebaseController.getInstance().deleteEvent(testEvent, new FirebaseController.FirestoreOperationCallback() {
+            @Override
+            public void onCompleted() {
+                isFinished = true;
+            }
+        });
+
+        // Enable animations after the test is finished
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 1");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 1");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 1");
     }
 
     Context context = InstrumentationRegistry.getInstrumentation().getContext();
