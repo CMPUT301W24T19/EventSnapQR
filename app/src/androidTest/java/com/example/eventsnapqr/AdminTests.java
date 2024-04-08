@@ -664,19 +664,6 @@ public class AdminTests {
 
     Context context = InstrumentationRegistry.getInstrumentation().getContext();
     ContentResolver contentResolver = context.getContentResolver();
-    String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
-    boolean gotEvent = false;
-    boolean eventDeleted = false;
-    boolean eventsFound = false;
-    Event retrievedEvent;
-    ArrayList<Event> foundEvents = new ArrayList<>();
-
-
-    boolean userFound = false;
-    boolean userListFound = false;
-    boolean userDeleted = false;
-    ArrayList<User> listOfUsers = new ArrayList<>();
-    User foundUser;
 
     @Test
     public void browsePicturesTest() {
@@ -698,29 +685,65 @@ public class AdminTests {
                         result[0] = uri;
                         testUser.setProfilePicture(uri.toString());
                         Log.d("TAG", "Add user");
-                        FirebaseController.getInstance().addUser(testUser, null);
+                        FirebaseController.getInstance().addUser(testUser, new Runnable() {
+                            @Override
+                            public void run() {
+                                isFinished = true;
+                            }
+                        });
                     }
                 });
             }
         });
 
-        try {
-            latch.await(30, TimeUnit.SECONDS);
-            Thread.sleep(30000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        while (!isFinished) {}
 
         Log.d("TAG", "end");
         Event testEvent = new Event(testUser, "testEvent", "testDescription", result[0].toString(), 5, "eventID", new Date(), new Date(), "123", "QRLink");
         Log.d("TAG", "Making event");
         Log.d("TAG", "Event URI: " + result[0].toString());
-        //Event testEvent = new Event(testUser, "testEvent", "testDescription", result[0].toString(), 5, "eventID", null, null, true);
 
-        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseFirestore.collection("users").document(androidId).set(testUser);
-        firebaseFirestore.collection("admin").document(androidId).set(testUser);
-        firebaseFirestore.collection("events").document("eventID").set(testEvent);
+        FirebaseController.getInstance().addEvent(testEvent);
+
+        try {
+            latch.await(15, TimeUnit.SECONDS);
+            Thread.sleep(15000);
+        } catch (Exception e) {
+            Log.d("TAG", "wait failed");
+        }
+        eventsAndUsers.sort(new Comparator<Object>() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                String name1;
+                String name2;
+                if (o1 instanceof Event) {
+                    name1 = ((Event) o1).getEventName();
+                }
+                else {
+                    name1 = ((User) o1).getName();
+                }
+
+                if (o2 instanceof Event) {
+                    name2 = ((Event) o2).getEventName();
+                }
+                else {
+                    name2 = ((User) o2).getName();
+                }
+                name1 = name1.toLowerCase();
+                name2 = name2.toLowerCase();
+                return name1.compareTo(name2);
+            }
+        });
+
+        int eventPos = 0;
+        for (int i = 0; i < eventsAndUsers.size(); i++) {
+            if (eventsAndUsers.get(i) instanceof Event) {
+                if (Objects.equals(((Event) eventsAndUsers.get(i)).getEventName(), testEvent.getEventName())) {
+                    eventPos = i;
+                }
+            }
+        }
+
         // Disable animations
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global window_animation_scale 0");
@@ -741,23 +764,45 @@ public class AdminTests {
         onView(withId(R.id.buttonBrowseImages)).perform(click());
         onView(withId(R.id.adminMainPage)).check(doesNotExist());
         onView(withId(R.id.browseImageFragment)).check(matches(isDisplayed()));
+        try {
+            latch.await(5, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         onView(withId(R.id.rv_event_posters)).check(matches(isDisplayed()));
-        onView(withId(R.id.eventPoster)).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.eventPoster), withParentIndex(eventPos))).check(matches(isDisplayed()));
         onView(withId(R.id.browseImageFragment)).check(matches(isDisplayed()));
         onView(withId(R.id.rv_event_posters))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
-        onView(withText("Event Poster for " + testEvent.getEventName())).check(matches(isDisplayed()));
-        onView(withText("View")).check(matches(isDisplayed()));
+                .perform(RecyclerViewActions.actionOnItemAtPosition(eventPos, click()));
+
+        try {
+            latch.await(5, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        onView(withText("Image Details")).check(matches(isDisplayed()));
+        //onView(withText("Type: " + "Event Poster" + "\n"
+         //       + "Event Name: " + testEvent.getEventName())).check(matches(isDisplayed()));
         onView(withText("Delete")).check(matches(isDisplayed()));
         onView(withText("Cancel")).check(matches(isDisplayed()));
-        onView(withText("View")).perform(click());
+        onView(withText("View Poster")).perform(click());
         onView(withId(R.id.activityEventPoster)).check(matches(isDisplayed()));
         onView(withId(R.id.browseImageFragment)).check(doesNotExist());
         onView(withId(R.id.button_back_button)).perform(click());
         onView(withId(R.id.activityEventPoster)).check(doesNotExist());
         onView(withId(R.id.browseImageFragment)).check(matches(isDisplayed()));
 
-
+        isFinished = false;
+        FirebaseController.getInstance().deleteEvent(testEvent, new FirebaseController.FirestoreOperationCallback() {
+            @Override
+            public void onCompleted() {
+                isFinished = true;
+            }
+        });
         // Enable animations after the test is finished
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global window_animation_scale 1");
@@ -766,10 +811,7 @@ public class AdminTests {
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
                 "settings put global animator_duration_scale 1");
     }
-
-    @Test
-    public void deletePictureTest() {
-    }
+}
 
 
 
