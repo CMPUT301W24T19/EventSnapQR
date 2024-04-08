@@ -134,7 +134,7 @@ public class AttendeeTest {
         //onView(withId(R.id.iv_profile_pic)).check(matches(withTagValue(is((Object) "TE"))));
 
         onView(withId(R.id.button_edit_profile_button)).perform(click());
-        String testName = "TestName";
+        String testName = "TESTNAME";
 
         onView(withId(R.id.editTextUserName)).perform(scrollTo(), click(), clearText(),typeText(testName), closeSoftKeyboard());
 

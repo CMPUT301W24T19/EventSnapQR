@@ -27,7 +27,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
@@ -36,6 +39,7 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -79,7 +83,9 @@ public class OrganizeEventTest {
     private String endTime = "17:43";
 
 
-
+    Context context = InstrumentationRegistry.getInstrumentation().getContext();
+    ContentResolver contentResolver = context.getContentResolver();
+    String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -109,10 +115,13 @@ public class OrganizeEventTest {
     @Test
     public void testCreateAndVerifyEvent() throws InterruptedException {
         // Initialize FirebaseController and Firestore
+        ActivityScenarioRule<OrganizeAnEventActivity> scenario = new
+                ActivityScenarioRule<OrganizeAnEventActivity>(OrganizeAnEventActivity.class);
+
         FirebaseController firebaseController = FirebaseController.getInstance();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        User organizer = new User("organizerDeviceID", "Organizer Name", null, null, null);
+        User organizer = new User(androidId, "Organizer Name", null, null, null);
         String eventName = "Test Event";
         String eventDescription = "This is a test event.";
         String posterUri = "http://example.com/poster.png";
@@ -127,10 +136,10 @@ public class OrganizeEventTest {
         CountDownLatch latch = new CountDownLatch(1);
         AtomicBoolean eventExists = new AtomicBoolean(false);
 
-        eventId = firebaseController.getUniqueEventID();
+        String eventId = firebaseController.getUniqueEventID();
         Event event = new Event(organizer, eventName, eventDescription, posterUri, maxAttendees, eventId, startDateTime, endDateTime, address, "TestQR");
 
-
+        event.setEventID(eventId);
         firebaseController.addEvent(event);
 
         Integer expectedMaxAttendees = maxAttendees;
@@ -153,6 +162,7 @@ public class OrganizeEventTest {
 
         // Assert event was created successfully
         assertTrue("Event was not created successfully", eventExists.get());
+
         // test notifications
         Intent intentThree = new Intent(ApplicationProvider.getApplicationContext(), ManageEventActivity.class);
         ActivityScenario<ManageEventActivity> scenarioThree = ActivityScenario.launch(intentThree);
@@ -253,9 +263,6 @@ public class OrganizeEventTest {
     public void tearDown() {
 
     }
-    @Rule
-    public ActivityScenarioRule<OrganizeAnEventActivity> scenario = new
-            ActivityScenarioRule<OrganizeAnEventActivity>(OrganizeAnEventActivity.class);
 
 
 }
