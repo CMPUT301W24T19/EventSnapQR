@@ -44,6 +44,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
      * @param parent The parent that this view will eventually be attached to
      * @return
      */
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -55,15 +56,12 @@ public class EventAdapter extends ArrayAdapter<Event> {
         ImageView eventImage = itemView.findViewById(R.id.eventImage);
         TextView eventName = itemView.findViewById(R.id.eventName);
         TextView eventAddress = itemView.findViewById(R.id.eventAddress);
-        TextView eventStartDateTime = itemView.findViewById(R.id.eventDateTime);
+        TextView eventOrganizer = itemView.findViewById(R.id.eventOrganizer);
 
         Event event = getItem(position);
         eventName.setText(event.getEventName());
         eventAddress.setText(event.getAddress());
-
-        if (event.getEventStartDateTime() != null) {
-            eventStartDateTime.setText(event.getEventStartDateTime().toString());
-        }
+        eventOrganizer.setText(event.getOrganizer().getName());
 
         Glide.with(getContext())
                 .load(event.getPosterURI())

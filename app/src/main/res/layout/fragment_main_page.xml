@@ -26,7 +26,7 @@
         android:id="@+id/admin_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Upcoming Events"
+        android:text="Featured Events"
         android:textSize="20dp"
         android:textColor="@android:color/black"
         app:layout_constraintStart_toStartOf="@id/carouselCardView"
@@ -35,7 +35,7 @@
         android:layout_marginTop="60dp"
         android:layout_marginStart="12dp"/>
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/view_user_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,34 +43,36 @@
         android:layout_marginTop="14dp"
         app:cardCornerRadius="120dp"
         app:cardElevation="5dp"
-        app:cardPreventCornerOverlap="false"
+        app:strokeColor="@color/black"
+        app:strokeWidth="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center">
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/view_user_button"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:clickable="true"
-                android:focusable="true"
-                android:src="@drawable/profile_pic" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/view_user_button"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/profile_pic" />
 
-            <View
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:background="#70000000" />
+        <View
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:background="#70000000" />
 
-        </FrameLayout>
-    </androidx.cardview.widget.CardView>
+    </FrameLayout>
+</com.google.android.material.card.MaterialCardView>
 
-    <com.google.android.material.button.MaterialButton
+
+<com.google.android.material.button.MaterialButton
         android:id="@+id/browse_events_button"
         android:layout_width="300dp"
         android:layout_height="80dp"
@@ -127,6 +129,14 @@
                 android:background="@drawable/place_holder_img"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
+            <LinearLayout
+                android:id="@+id/dotLayout"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3000dp">
+            </LinearLayout>
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
 

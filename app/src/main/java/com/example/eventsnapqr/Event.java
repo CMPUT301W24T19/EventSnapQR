@@ -15,10 +15,10 @@ public class Event {
     private String description; // description of the event
     private String posterURI; // URL for the event poster image
     private Integer maxAttendees; // optional max attendees
-    private List<String> announcements; //announcements related to the Event
+    private List<String> announcements; // announcements related to the Event
     private String eventID, address;
     private Date eventStartDateTime, eventEndDateTime;
-    private boolean active;
+    private String QR;
 
     /**
      * constructor for event requiring a user instance, QR code, event name, a description, a URL
