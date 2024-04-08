@@ -106,10 +106,18 @@ public class MainPageFragment extends Fragment {
         FirebaseController.checkUserExists(androidId, listener);
 
     }
+
+    /**
+     * callback listener to return lists of the names and uris of the events
+     */
     public interface ImageUriCallback {
         void onImageUrisLoaded(List<String> imageUris, List<String> eventNames);
     }
 
+    /**
+     * find the first six events with image uris and populate the adapter
+     * @param callback
+     */
     public void getImageUris(ImageUriCallback callback) {
         FirebaseFirestore.getInstance().collection("events").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -327,14 +335,27 @@ class ImageCarouselAdapter extends RecyclerView.Adapter<ImageCarouselAdapter.Vie
         this.eventNames = eventNames;
     }
 
+    /**
+     * carousel click listener
+     */
     public interface OnItemClickListener {
         void onItemClick(String imageUri);
     }
 
+    /**
+     * nested click listener
+     * @param listener instance
+     */
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
 
+    /**
+     * actions to be taken when the view is created
+     * @param parent parent context
+     * @param viewType type of view
+     * @return viewHolder
+     */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -342,6 +363,20 @@ class ImageCarouselAdapter extends RecyclerView.Adapter<ImageCarouselAdapter.Vie
         return new ViewHolder(itemView);
     }
 
+    /**
+     * return the number of images in the carousel (fixed to 6)
+     * @return number of items
+     */
+    @Override
+    public int getItemCount() {
+        return imageUris.size();
+    }
+
+    /**
+     * populate each slide with the correct data
+     * @param holder holder view
+     * @param position current position of the carousel
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String imageUri = imageUris.get(position);
@@ -363,11 +398,22 @@ class ImageCarouselAdapter extends RecyclerView.Adapter<ImageCarouselAdapter.Vie
         });
     }
 
-    @Override
-    public int getItemCount() {
-        return imageUris.size();
+        holder.eventNameTextView.setText(eventName);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    listener.onItemClick(imageUri);
+                }
+            }
+        });
     }
 
+
+    /**
+     * holds carousel context
+     */
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView eventNameTextView;
