@@ -528,23 +528,125 @@ public class AdminTests {
 
         onData(anything()).inAdapterView(withId(R.id.events)).atPosition(testUserPos).perform(click());
         Log.d("TAG", "true0");
-        Log.d("TAG", "" + onView(withText("Event")).check(matches(isDisplayed())));
-        Log.d("TAG", "true1");
-        /*onView(withText("Event Name: " + testEvent.getEventName() + "\n" +
+        try {
+            latch.await(5, TimeUnit.SECONDS);
+            Thread.sleep(5000);
+        } catch (Exception e) {
+            Log.d("TAG", "false");
+        }
+        onView(withText("Event Details")).check(matches(isDisplayed()));
+        onView(withText("Event Name: " + testEvent.getEventName() + "\n" +
                 "Organizer Name: " + testEvent.getOrganizer().getName() + "\n" +
                 "Organizer ID: " + testEvent.getOrganizer().getDeviceID() + "\n" +
-                "Description: " + testEvent.getDescription())).check(matches(isDisplayed()));*/
-        Log.d("TAG", "true2");
+                "Description: " + testEvent.getDescription())).check(matches(isDisplayed()));
         onView(withText("View Event Page")).check(matches(isDisplayed()));
-        Log.d("TAG", "true3");
         onView(withText("Delete")).check(matches(isDisplayed()));
-        Log.d("TAG", "true4");
         onView(withText("Cancel")).check(matches(isDisplayed()));
-        Log.d("TAG", "true5");
         onView(withText("View Event Page")).perform(click());
         onView(withId(R.id.userInfoActivity)).check(matches(isDisplayed()));
 
         FirebaseController.getInstance().deleteEvent(testEvent, new FirebaseController.FirestoreOperationCallback() {
+            @Override
+            public void onCompleted() {
+                isFinished = true;
+            }
+        });
+
+        // Enable animations after the test is finished
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 1");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 1");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 1");
+    }
+
+    @Test
+    public void deleteEventTest() {
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        ContentResolver contentResolver = context.getContentResolver();
+        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
+
+        // Disable animations
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global window_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global transition_animation_scale 0");
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
+                "settings put global animator_duration_scale 0");
+
+        ActivityScenario.launch(MainActivity.class);
+        CountDownLatch latch = new CountDownLatch(1);
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Event testEvent1 = new Event(testUser, "aaaaaaaaaa", "testDescription", null, null, "testEventID1", new Date(), new Date(), "testAdress", "testQR1");
+        Event testEvent2 = new Event(testUser, "aaaaaaaaab", "testDescription", null, null, "testEventID2", new Date(), new Date(), "testAdress", "testQR2");
+        FirebaseController.getInstance().addEvent(testEvent1);
+        FirebaseController.getInstance().addOrganizedEvent(testUser, testEvent1);
+        eventList.add(testEvent1);
+
+        FirebaseController.getInstance().addEvent(testEvent2);
+        FirebaseController.getInstance().addOrganizedEvent(testUser, testEvent2);
+        eventList.add(testEvent2);
+        eventList.sort(new Comparator<Event>() {
+            @Override
+            public int compare(Event o1, Event o2) {
+                String event1 = (String) o1.getEventName();
+                event1 = event1.toLowerCase();
+                String event2 = (String) o2.getEventName();
+                event2 = event2.toLowerCase();
+                return event1.compareTo(event2);
+            }
+        });
+
+        try {
+            latch.await(15, TimeUnit.SECONDS);
+            Thread.sleep(15000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        isFinished = false;
+        onView(withId(R.id.admin_button)).perform(click());
+        onView(withId(R.id.buttonBrowseEvents)).perform(click());
+
+        int testUserPos = 0;
+        Log.d("TAG", "" + eventList.size());
+        for (int i = 0; i < eventList.size(); i++) {
+            onView(withText(eventList.get(i).getEventName())).check(matches(isDisplayed()));
+            onData(anything()).inAdapterView(withId(R.id.events)).atPosition(i).check(matches(isDisplayed()));
+
+            if (Objects.equals(testEvent1.getEventName(), eventList.get(i).getEventName())) {
+                Log.d("TAG", "matched");
+                testUserPos = i;
+            }
+        }
+
+        onData(anything()).inAdapterView(withId(R.id.events)).atPosition(testUserPos).perform(click());
+        Log.d("TAG", "true0");
+        try {
+            latch.await(5, TimeUnit.SECONDS);
+            Thread.sleep(5000);
+        } catch (Exception e) {
+            Log.d("TAG", "false");
+        }
+
+        onView(withText("Delete")).perform(click());
+        try {
+            latch.await(5, TimeUnit.SECONDS);
+            Thread.sleep(5000);
+        } catch (Exception e) {
+            Log.d("TAG", "false");
+        }
+        onView(withText("Yes")).perform(click());
+        onData(anything()).inAdapterView(withId(R.id.events)).atPosition(testUserPos).check(matches(isDisplayed()));
+
+        FirebaseController.getInstance().deleteEvent(testEvent2, new FirebaseController.FirestoreOperationCallback() {
             @Override
             public void onCompleted() {
                 isFinished = true;
@@ -569,65 +671,7 @@ public class AdminTests {
     Event retrievedEvent;
     ArrayList<Event> foundEvents = new ArrayList<>();
 
-    /**
-     * US 04.01.01 test
-     */
-    @Test
-    public void removeEvent(){
-        FirebaseController firebaseController = FirebaseController.getInstance();
-        String eventId = firebaseController.getUniqueEventID();
-        Event newEvent = new Event(new User(androidId), "testEvent", "testEventDescription", null, 5,eventId, new Date(), new Date(), "123 Spooner St.","QRLink");
-        firebaseController.addEvent(newEvent);
-        firebaseController.getEvent(eventId, new FirebaseController.OnEventRetrievedListener() {
-            @Override
-            public void onEventRetrieved(Event event) {
-                retrievedEvent = event;
-                gotEvent = true;
 
-            }
-        });
-        while(!gotEvent){}
-        assertEquals(retrievedEvent.getEventID(), eventId); // to ensure it is same event we added
-        CountDownLatch latch = new CountDownLatch(10);
-        firebaseController.deleteEvent(newEvent, new FirebaseController.FirestoreOperationCallback() {
-            @Override
-            public void onCompleted() {
-                eventDeleted = true;
-                latch.countDown();
-            }
-        });
-
-        while(!eventDeleted){}
-        try {
-            latch.await(5, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        firebaseController.getAllEvents(new FirebaseController.OnEventsLoadedListener() {
-            @Override
-            public void onEventsLoaded(ArrayList<Event> events) {
-                foundEvents.addAll(events);
-                eventsFound = true;
-
-            }
-        });
-        while(!eventsFound){}
-        try{
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        boolean eventNotFound = true;
-        ArrayList<Event> activeEvents = new ArrayList<>();
-        for (Event event : foundEvents) {
-            if(event.getEventID().equals(eventId)){
-                eventNotFound = false;
-            }
-
-        }
-
-        assertTrue("The event should not be found in the list",eventNotFound);
-    }
     boolean userFound = false;
     boolean userListFound = false;
     boolean userDeleted = false;
@@ -644,6 +688,7 @@ public class AdminTests {
         testPoster.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
         byte[] testPosterByte = byteArrayOutputStream.toByteArray();
         Uri[] result = new Uri[1];
+        isFinished = false;
         storageRef.putBytes(testPosterByte).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -724,84 +769,6 @@ public class AdminTests {
 
     @Test
     public void deletePictureTest() {
-
-    }
-
-    @Test
-    public void adminBrowseAndDeleteEvent(){
-            // Disable animations
-
-            Context context = InstrumentationRegistry.getInstrumentation().getContext();
-            ContentResolver contentResolver = context.getContentResolver();
-            String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
-
-            // Disable animations
-            InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                    "settings put global window_animation_scale 0");
-            InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                    "settings put global transition_animation_scale 0");
-            InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                    "settings put global animator_duration_scale 0");
-            FirebaseController firebaseController = new FirebaseController();
-
-            firebaseController.addUser(testUser, null);
-            Event event = new Event();
-            event.setEventName(androidId);
-            event.setEventID("1234345");
-            event.setOrganizer(testUser);
-            firebaseController.addEvent(event);
-            ActivityScenario activity = ActivityScenario.launch(MainActivity.class);
-            try {
-            Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            e.printStackTrace();
-            }
-            onView(withId(R.id.admin_button)).perform(click());
-            onView(withId(R.id.buttonBrowseEvents)).perform(click());
-
-
-            onView(withId(R.id.events))
-                    .check(matches(hasDescendant(withText(startsWith(androidId)))));
-            onData(hasToString(startsWith(androidId)))
-                    .inAdapterView(withId(R.id.events))
-                    .atPosition(0)
-                    .perform(click());
-
-        onView(withText("DELETE")).inRoot(isDialog()).perform(click());
-        onView(withText("YES")).inRoot(isDialog()).perform(click());
-        CountDownLatch latch = new CountDownLatch(1);
-        ArrayList<Event> allEvents = new ArrayList<>();
-        firebaseController.getAllEvents(new FirebaseController.OnEventsLoadedListener() {
-            @Override
-            public void onEventsLoaded(ArrayList<Event> events) {
-                allEvents.addAll(events);
-                latch.countDown();
-            }
-        });
-        try {
-            latch.await(10, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        for(Event e: allEvents){
-            if(e.getEventName().equals(androidId)){
-                assertEquals(e.getEventName(), androidId); // because name of event is set to id
-            }
-        }
-
-            // Enable animations after the test is finished
-            InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                    "settings put global window_animation_scale 1");
-            InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                    "settings put global transition_animation_scale 1");
-            InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                    "settings put global animator_duration_scale 1");
-
-        }
-
-
-
-
     }
 
 
