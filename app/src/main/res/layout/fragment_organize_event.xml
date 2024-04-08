@@ -59,7 +59,7 @@
                 android:id="@+id/posterCardView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginStart="32dp"
                 app:cardElevation="4dp"
                 android:backgroundTint="@color/greyer"
@@ -80,10 +80,10 @@
                         android:id="@+id/imageViewPoster"
                         android:layout_width="match_parent"
                         android:layout_height="260dp"
-                        android:scaleType="center"
-                        android:src="@android:drawable/ic_menu_upload"
                         android:contentDescription="Upload Poster"
-                        android:gravity="center"/>
+                        android:gravity="center"
+                        android:scaleType="center"
+                        android:src="@android:drawable/ic_menu_upload" />
 
                     <TextView
                         android:id="@+id/textViewHint"

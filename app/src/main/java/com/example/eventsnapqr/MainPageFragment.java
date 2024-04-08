@@ -3,22 +3,18 @@ package com.example.eventsnapqr;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.helper.widget.Carousel;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,7 +24,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.bumptech.glide.Glide;
@@ -40,12 +35,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 
 /**
  * the main page of EventSnapQR. Allows the user to go to scanQR to check-in, go to organize
@@ -174,6 +165,7 @@ public class MainPageFragment extends Fragment {
         carouselCardView = view.findViewById(R.id.carouselCardView);
         upComingEvent = view.findViewById(R.id.admin_text);
 
+
         views.add(buttonOrganizeEvent);
         views.add(buttonBrowseEvent);
         views.add(buttonScanQR);
@@ -187,6 +179,7 @@ public class MainPageFragment extends Fragment {
         for (View view1: views) {
             view1.setVisibility(View.INVISIBLE);
         }
+
         updateProfilePicture();
         eventImages = new ArrayList<>();
         getImageUris(new ImageUriCallback() {
@@ -208,6 +201,9 @@ public class MainPageFragment extends Fragment {
                     return;
                 }
 
+                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+                recyclerView.setLayoutManager(layoutManager);
+
                 ImageCarouselAdapter adapter = new ImageCarouselAdapter(context, imageUris);
                 adapter.setOnItemClickListener(new ImageCarouselAdapter.OnItemClickListener() {
                     @Override
@@ -215,9 +211,9 @@ public class MainPageFragment extends Fragment {
                          String uriComponents[] = Uri.parse(imageUri).getPath().split("/");
                          String eventId = uriComponents[uriComponents.length - 1];
                          Log.d("clicked event id", eventId);
-                        Intent intent = new Intent(getActivity(), BrowseEventsActivity.class);
-                        intent.putExtra("eventID", eventId);
-                        startActivity(intent);
+                         Intent intent = new Intent(getActivity(), BrowseEventsActivity.class);
+                         intent.putExtra("eventID", eventId);
+                         startActivity(intent);
                     }
                 });
                 recyclerView.setAdapter(adapter);
@@ -279,8 +275,7 @@ public class MainPageFragment extends Fragment {
                             .circleCrop()
                             .into(buttonViewProfile);
                 } else {
-                    // Optionally, set a default image if there's no profile picture
-                    buttonViewProfile.setImageResource(R.drawable.profile_pic); // Adjust with your default drawable
+                    buttonViewProfile.setImageResource(R.drawable.profile_pic);
                 }
             }
         });
@@ -312,14 +307,13 @@ class ImageCarouselAdapter extends RecyclerView.Adapter<ImageCarouselAdapter.Vie
         return new ViewHolder(imageView);
     }
 
-
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String imageUri = imageUris.get(position);
         Glide.with(context)
                 .load(imageUri)
                 .into(holder.imageView);
-        holder.bind(imageUri, listener); // Call the bind method here
+        holder.bind(imageUri, listener);
     }
 
     @Override
