@@ -209,10 +209,10 @@ public class AttendeeTest {
     }
 **/
     /**
-     * Test for  US 02.07.01, US 02.04.01
+     * Test for  US 02.04.01, US 02.08.01
      */
     @Test
-    public void signUpForEventTest(){
+    public void viewEventAnnouncementTest(){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseController firebaseController = new FirebaseController();
         id = firebaseController.getUniqueEventID();
